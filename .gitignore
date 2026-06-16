@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# secrets / local config — NEVER commit
+.env
+.env.*
+*.key
+*.pem
+cf_key*
+*-pat.txt
+*-resend.txt
+*-turnstile.txt
+
+# Cloudflare / wrangler
+.wrangler/
+wrangler.toml.local
+
+# Node (if we ever add tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
