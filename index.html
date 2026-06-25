@@ -17,6 +17,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="preload" as="image" href="./holonograph.webp" imagesrcset="./holonograph-mobile.webp 1280w, ./holonograph.webp 2560w" imagesizes="100vw" />
 <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 <style>
   :root {
     --bg: #000;
@@ -75,6 +83,7 @@
   .hero-bg {
     position: absolute;
     inset: -10%;
+    z-index: 0;
     background-image: image-set(
       url("./holonograph.webp") type("image/webp") 1x
     );
@@ -87,16 +96,42 @@
     animation: breathe 28s ease-in-out infinite;
   }
 
+  /* generative WebGL scene (holon.js) sits on top of the static fallback (desktop only) */
+  .holon {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1200ms ease;
+  }
+
+  /* faded in by JS once the first frame has rendered */
+  .holon.ready { opacity: 1; }
+
+  /* fall back to the static image: mobile, reduced-motion, or no WebGL */
   @media (max-width: 900px) {
     .hero-bg { background-image: url("./holonograph-mobile.webp"); }
+    .holon { display: none; }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .holon { display: none; }
+  }
+
+  .no-webgl .holon { display: none; }
 
   @keyframes breathe {
     0%, 100% { transform: scale(1.00); }
     50%      { transform: scale(1.045); }
   }
 
-  /* ---------- cursor lens (boosts contrast / saturation under the cursor) ---------- */
+  /* ---------- cursor glow (soft violet light that follows the pointer) ----------
+     NOTE: a backdrop-filter here would force the <video> off its hardware overlay
+     into a software-composited buffer (blurry + aliased + costly), so we use a
+     plain radial tint instead — it never reads the video's pixels. */
   @property --halo-size {
     syntax: "<length>";
     inherits: false;
@@ -124,13 +159,12 @@
       rgba(0,0,0,0.16) 80%,
       transparent 100%
     );
-    -webkit-backdrop-filter: contrast(1.45) saturate(1.55) brightness(1.04);
-    backdrop-filter: contrast(1.45) saturate(1.55) brightness(1.04);
-    /* faint violet tint, optional flourish */
+    /* soft violet glow only — no backdrop-filter (see note above) */
     background: radial-gradient(
       var(--halo-size, 460px) circle at var(--mx, 50%) var(--my, 50%),
-      rgba(167, 139, 250, 0.05),
-      transparent 70%
+      rgba(167, 139, 250, 0.14),
+      rgba(125, 211, 252, 0.05) 45%,
+      transparent 72%
     );
     z-index: 3;
     animation: haloBreathe 7s ease-in-out infinite;
@@ -146,8 +180,9 @@
     position: absolute;
     inset: -20%;
     pointer-events: none;
-    opacity: 0.06;
-    mix-blend-mode: overlay;
+    opacity: 0.05;
+    /* normal blend (no mix-blend-mode) so the grain never groups with the
+       video below it — mix-blend would pull the video into a degraded buffer */
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     animation: grainShift 1.6s steps(6) infinite;
     z-index: 4;
@@ -634,6 +669,7 @@
     <div class="hero" id="hero">
       <div class="hero-bg"></div>
     </div>
+    <canvas class="holon" id="holon"></canvas>
     <div class="halo" id="halo"></div>
     <div class="grain"></div>
     <span class="tick tl"></span>
@@ -893,5 +929,6 @@
       });
     })();
   </script>
+  <script type="module" src="./holon.js?v=8"></script>
 </body>
 </html>
