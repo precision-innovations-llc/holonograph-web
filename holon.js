@@ -41,10 +41,21 @@ const CONFIG = {
   sheathLenCells: [0.8, 1.7],    // glow length in units of the node's own grid step
   densityRadius: 1.3, densityMax: 13, // local-density normalisation
 
-  myceliumLinks: [1, 2],
-  myceliumOpacity: 0.15,
-
-  sparks: 6, sparkSize: 0.07, sparkSpeed: [1.8, 4.5],
+  // organic straight vectors fired from the bright cluster cores toward other
+  // clusters. length × direction decide whether they arrive; reaching lines are
+  // coloured source→dest with a dark no-man's-land gap, and carry sporadic pulses.
+  emittersPerCluster: 2,         // origin points scattered around each cluster core
+  emitterJitter: 1.3,            // how far the emitters spread from the core
+  raysPerEmitter: [1, 2],
+  rayJitter: 0.3,                // angular wobble (rad) — bigger = more misses
+  rayLen: [0.45, 1.15],          // length as a fraction of the distance to the target
+  arriveRadius: 1.8,             // how close the tip must land to count as "reached"
+  lineBright: 0.85,
+  lineGap: 0.36,                 // fade length from each end (middle = dark no-man's land)
+  stubFade: 0.7,                 // where an unreached stub fades to nothing
+  sparkWait: [0.4, 3.5],         // sporadic gap between a connector's pulses (s)
+  sparkTravel: [0.6, 1.5],       // pulse speed (fraction of line / s)
+  sparkSize: 0.11,
 
   bloom: { strength: 1.1, radius: 0.55, threshold: 0.0 },
 
@@ -80,12 +91,6 @@ const rand = (a, b) => a + Math.random() * (b - a);
 const irand = (a, b) => Math.round(rand(a, b));
 function gauss(scale) { return ((Math.random() + Math.random() + Math.random()) / 3 - 0.5) * 2 * scale; }
 const axisVec = (a, s) => new THREE.Vector3(a === 0 ? s : 0, a === 1 ? s : 0, a === 2 ? s : 0);
-function cubic(a, c1, c2, b, t, out) {
-  const it = 1 - t, w0 = it * it * it, w1 = 3 * it * it * t, w2 = 3 * it * t * t, w3 = t * t * t;
-  out.x = w0 * a.x + w1 * c1.x + w2 * c2.x + w3 * b.x;
-  out.y = w0 * a.y + w1 * c1.y + w2 * c2.y + w3 * b.y;
-  out.z = w0 * a.z + w1 * c1.z + w2 * c2.z + w3 * b.z; return out;
-}
 // the grid is only HINTED: most lines aren't drawn at all (big empty regions),
 // and the kept ones appear as short fragments that fade to true zero at both ends
 function makeFragmentedGrid(half, divisions, grey, keep) {
@@ -239,34 +244,66 @@ function start() {
   shGeo.setAttribute("color", new THREE.Float32BufferAttribute(shCol, 3));
   world.add(new THREE.LineSegments(shGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.92, depthWrite: false, blending: THREE.AdditiveBlending })));
 
-  // ── mycelium strands threading inward to other clusters ─────────────────────
-  const strands = [], myPos = [], myCol = [], seen = new Set(), tA = new THREE.Vector3(), tB = new THREE.Vector3();
+  // ── organic straight vectors fired from the cluster cores ───────────────────
+  const SEGO = 18, connectors = [], orgPos = [], orgCol = [], tmpP = new THREE.Vector3();
+  const pushOrg = (a, b, ca, cb) => { orgPos.push(a.x, a.y, a.z, b.x, b.y, b.z); orgCol.push(ca[0], ca[1], ca[2], cb[0], cb[1], cb[2]); };
+  // jitter a unit direction by a small angle around a random perpendicular axis
+  const jitterDir = (base, angle) => {
+    const r = new THREE.Vector3(rand(-1, 1), rand(-1, 1), rand(-1, 1));
+    const perp = new THREE.Vector3().crossVectors(base, r);
+    if (perp.lengthSq() < 1e-6) perp.set(1, 0, 0); else perp.normalize();
+    return base.clone().applyAxisAngle(perp, angle);
+  };
   for (const ac of anchors) {
-    const others = anchors.filter((o) => o.idx !== ac.idx).sort((a, b) => ac.pos.distanceTo(a.pos) - ac.pos.distanceTo(b.pos));
-    const links = irand(CONFIG.myceliumLinks[0], CONFIG.myceliumLinks[1]);
-    for (let n = 0; n < links && n < others.length; n++) {
-      const o = others[n], k = ac.idx < o.idx ? `${ac.idx}-${o.idx}` : `${o.idx}-${ac.idx}`;
-      if (seen.has(k)) continue; seen.add(k);
-      const c1 = ac.pos.clone().lerp(o.pos, 0.33).multiplyScalar(0.5).add(new THREE.Vector3(gauss(2.2), gauss(2.2), gauss(2.2)));
-      const c2 = ac.pos.clone().lerp(o.pos, 0.66).multiplyScalar(0.5).add(new THREE.Vector3(gauss(2.2), gauss(2.2), gauss(2.2)));
-      strands.push({ a: ac.pos.clone(), c1, c2, b: o.pos.clone() });
-      const SEG = 30; cubic(ac.pos, c1, c2, o.pos, 0, tA);
-      for (let s = 1; s <= SEG; s++) { cubic(ac.pos, c1, c2, o.pos, s / SEG, tB); myPos.push(tA.x, tA.y, tA.z, tB.x, tB.y, tB.z); myCol.push(0.5, 0.52, 0.62, 0.5, 0.52, 0.62); tA.copy(tB); }
+    for (let e = 0; e < CONFIG.emittersPerCluster; e++) {
+      const origin = ac.pos.clone().add(new THREE.Vector3(gauss(CONFIG.emitterJitter), gauss(CONFIG.emitterJitter), gauss(CONFIG.emitterJitter)));
+      const rays = irand(CONFIG.raysPerEmitter[0], CONFIG.raysPerEmitter[1]);
+      for (let r = 0; r < rays; r++) {
+        const tgt = anchors[(Math.random() * anchors.length) | 0];
+        if (tgt.idx === ac.idx) continue;
+        const to = tgt.pos.clone().sub(origin); const dist = to.length(); if (dist < 0.5) continue;
+        const dir = jitterDir(to.multiplyScalar(1 / dist), gauss(CONFIG.rayJitter));
+        const lf = rand(CONFIG.rayLen[0], CONFIG.rayLen[1]);
+        const end = origin.clone().addScaledVector(dir, dist * lf);
+        const reached = lf >= 0.85 && end.distanceTo(tgt.pos) < CONFIG.arriveRadius;
+        const ca = ac.color, cb = tgt.color, B = CONFIG.lineBright;
+        let prev = null, prevC = null;
+        if (reached) {
+          // connector: src colour → 0 (no-man's land) → dst colour
+          const a = origin, b = tgt.pos, gap = CONFIG.lineGap;
+          for (let s = 0; s <= SEGO; s++) {
+            const t = s / SEGO; tmpP.lerpVectors(a, b, t);
+            const sg = Math.max(0, 1 - t / gap), dg = Math.max(0, (t - (1 - gap)) / gap);
+            const c = [(ca.r * sg + cb.r * dg) * B, (ca.g * sg + cb.g * dg) * B, (ca.b * sg + cb.b * dg) * B];
+            if (prev) pushOrg(prev, tmpP, prevC, c);
+            prev = tmpP.clone(); prevC = c;
+          }
+          connectors.push({ a: origin.clone(), b: tgt.pos.clone(), ca: ca.clone(), cb: cb.clone() });
+        } else {
+          // stub: src colour fading to nothing in space
+          for (let s = 0; s <= SEGO; s++) {
+            const t = s / SEGO; tmpP.lerpVectors(origin, end, t);
+            const glow = Math.max(0, 1 - t / CONFIG.stubFade) * B;
+            const c = [ca.r * glow, ca.g * glow, ca.b * glow];
+            if (prev) pushOrg(prev, tmpP, prevC, c);
+            prev = tmpP.clone(); prevC = c;
+          }
+        }
+      }
     }
   }
-  if (myPos.length) {
-    const myGeo = new THREE.BufferGeometry();
-    myGeo.setAttribute("position", new THREE.Float32BufferAttribute(myPos, 3));
-    myGeo.setAttribute("color", new THREE.Float32BufferAttribute(myCol, 3));
-    world.add(new THREE.LineSegments(myGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: CONFIG.myceliumOpacity, depthWrite: false, blending: THREE.AdditiveBlending })));
+  if (orgPos.length) {
+    const orgGeo = new THREE.BufferGeometry();
+    orgGeo.setAttribute("position", new THREE.Float32BufferAttribute(orgPos, 3));
+    orgGeo.setAttribute("color", new THREE.Float32BufferAttribute(orgCol, 3));
+    world.add(new THREE.LineSegments(orgGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false, blending: THREE.AdditiveBlending })));
   }
 
-  // ── sparks: a FEW fast glints skipping the mycelium (muon-style flows) ───────
-  const NPaths = strands.length || 1;
-  const nS = Math.min(CONFIG.sparks, NPaths * 2);
+  // ── sporadic pulses on the connectors (colour-shift, do NOT fade in the gap) ──
+  const nS = connectors.length;
   const sparks = [];
-  for (let i = 0; i < nS; i++) sparks.push({ s: (Math.random() * NPaths) | 0, t: Math.random(), speed: rand(CONFIG.sparkSpeed[0], CONFIG.sparkSpeed[1]), phase: Math.random() * 6.28 });
-  const spPos = new Float32Array(nS * 3), spCol = new Float32Array(nS * 3);
+  for (let i = 0; i < nS; i++) sparks.push({ active: Math.random() < 0.3, t: 0, wait: rand(0, CONFIG.sparkWait[1]), speed: rand(CONFIG.sparkTravel[0], CONFIG.sparkTravel[1]), phase: Math.random() * 6.28 });
+  const spPos = new Float32Array(Math.max(1, nS) * 3), spCol = new Float32Array(Math.max(1, nS) * 3);
   const spGeo = new THREE.BufferGeometry();
   spGeo.setAttribute("position", new THREE.BufferAttribute(spPos, 3).setUsage(THREE.DynamicDrawUsage));
   spGeo.setAttribute("color", new THREE.BufferAttribute(spCol, 3).setUsage(THREE.DynamicDrawUsage));
@@ -298,14 +335,22 @@ function start() {
     const t = clock.elapsedTime;
     world.rotation.y += CONFIG.spin * dt;
     for (let i = 0; i < nS; i++) {
-      const sp = sparks[i];
+      const sp = sparks[i], cn = connectors[i];
+      if (!sp.active) {                                   // sporadic: idle, then fire
+        sp.wait -= dt;
+        if (sp.wait <= 0) { sp.active = true; sp.t = 0; sp.speed = rand(CONFIG.sparkTravel[0], CONFIG.sparkTravel[1]); }
+        spCol[i * 3] = spCol[i * 3 + 1] = spCol[i * 3 + 2] = 0;
+        continue;
+      }
       sp.t += sp.speed * dt;
-      if (sp.t >= 1) { sp.t = 0; sp.s = (Math.random() * NPaths) | 0; sp.speed = rand(CONFIG.sparkSpeed[0], CONFIG.sparkSpeed[1]); }
-      const st = strands[sp.s];
-      cubic(st.a, st.c1, st.c2, st.b, sp.t, pos);
+      if (sp.t >= 1) { sp.active = false; sp.wait = rand(CONFIG.sparkWait[0], CONFIG.sparkWait[1]); spCol[i * 3] = spCol[i * 3 + 1] = spCol[i * 3 + 2] = 0; continue; }
+      pos.lerpVectors(cn.a, cn.b, sp.t);
       spPos[i * 3] = pos.x; spPos[i * 3 + 1] = pos.y; spPos[i * 3 + 2] = pos.z;
-      const tw = 0.5 + 0.5 * Math.sin(t * 55 + sp.phase);
-      spCol[i * 3] = tw; spCol[i * 3 + 1] = tw; spCol[i * 3 + 2] = tw;
+      // colour shifts source→dest, full brightness across (does NOT fade in the gap)
+      const tc = sp.t * sp.t * (3 - 2 * sp.t), tw = 0.8 + 0.2 * Math.sin(t * 40 + sp.phase);
+      spCol[i * 3] = (cn.ca.r + (cn.cb.r - cn.ca.r) * tc) * tw;
+      spCol[i * 3 + 1] = (cn.ca.g + (cn.cb.g - cn.ca.g) * tc) * tw;
+      spCol[i * 3 + 2] = (cn.ca.b + (cn.cb.b - cn.ca.b) * tc) * tw;
     }
     spGeo.attributes.position.needsUpdate = true; spGeo.attributes.color.needsUpdate = true;
     composer.render();
