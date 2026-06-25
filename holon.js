@@ -20,8 +20,12 @@ const CONFIG = {
   half: 9,                       // cube half-size
   snapSteps: [0.5, 0.75, 1.0],   // several tightly-packed grids nodes can land on
 
-  soilGrid: { divisions: 18, color: 0x352b4e, opacity: 0.04 }, // faint interior grid
-  cubeEdge: { color: 0x7059a6, opacity: 0.5 },                 // the 12 edges — the frame
+  // the grid system: faint grey lattices whose lines FADE to zero in random
+  // windows, so we see pieces of the grids — never a clean full cube / hard edges.
+  grids: [
+    { divisions: 18, grey: 0.17, segs: 8 }, // main grid
+    { divisions: 8,  grey: 0.12, segs: 6 }, // coarser overlay
+  ],
 
   clusters: 16,
   pointsPerCluster: [90, 170],
@@ -82,14 +86,30 @@ function cubic(a, c1, c2, b, t, out) {
   out.y = w0 * a.y + w1 * c1.y + w2 * c2.y + w3 * b.y;
   out.z = w0 * a.z + w1 * c1.z + w2 * c2.z + w3 * b.z; return out;
 }
-function makeGridCube(size, divisions, colorHex, opacity) {
-  const half = size, step = (size * 2) / divisions, pts = [];
-  for (let i = 0; i <= divisions; i++) for (let j = 0; j <= divisions; j++) {
-    const a = -half + i * step, b = -half + j * step;
-    pts.push(-half, a, b, half, a, b); pts.push(a, -half, b, a, half, b); pts.push(a, b, -half, a, b, half);
+// faint grey grid whose lines fade to zero in a random window → we see fragments,
+// not a clean lattice (and no hard cube edges)
+function makeFragmentedGrid(half, divisions, grey, segs) {
+  const step = (half * 2) / divisions, pos = [], col = [];
+  for (let dir = 0; dir < 3; dir++) {
+    const o = [0, 1, 2].filter((a) => a !== dir);
+    for (let i = 0; i <= divisions; i++) for (let j = 0; j <= divisions; j++) {
+      const lineMax = grey * rand(0.12, 1.0);        // some lines barely there
+      const center = rand(-0.1, 1.1), width = rand(0.12, 0.55); // random visible window
+      const br = (t) => { const d = (t - center) / width; return lineMax * Math.exp(-d * d); };
+      const v = [0, 0, 0]; v[o[0]] = -half + i * step; v[o[1]] = -half + j * step;
+      for (let s = 0; s < segs; s++) {
+        const t0 = s / segs, t1 = (s + 1) / segs;
+        v[dir] = -half + t0 * half * 2; pos.push(v[0], v[1], v[2]);
+        v[dir] = -half + t1 * half * 2; pos.push(v[0], v[1], v[2]);
+        const b0 = br(t0), b1 = br(t1);
+        col.push(b0, b0, b0 * 1.18, b1, b1, b1 * 1.18); // faint blue-grey
+      }
+    }
   }
-  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-  return new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+  return new THREE.LineSegments(g, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 1, depthWrite: false, blending: THREE.AdditiveBlending }));
 }
 
 // ───────────────────────────── scene build ──────────────────────────────────
@@ -111,12 +131,8 @@ function start() {
   world.rotation.set(0.28, 0.5, 0);
   scene.add(world);
 
-  // faint interior grid ("soil") + bright 12-edge frame
-  world.add(makeGridCube(H, CONFIG.soilGrid.divisions, CONFIG.soilGrid.color, CONFIG.soilGrid.opacity));
-  world.add(new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.BoxGeometry(H * 2, H * 2, H * 2)),
-    new THREE.LineBasicMaterial({ color: CONFIG.cubeEdge.color, transparent: true, opacity: CONFIG.cubeEdge.opacity, blending: THREE.AdditiveBlending, depthWrite: false })
-  ));
+  // fragmented grey grid system (no explicit cube frame — the cube is only implied)
+  for (const G of CONFIG.grids) world.add(makeFragmentedGrid(H, G.divisions, G.grey, G.segs));
 
   function zoneColor(a) {
     const up = a.y / H;
@@ -195,6 +211,7 @@ function start() {
   const shPos = [], shCol = [];
   const addSheath = (from, ax, dir, len, col, b) => {
     const e = from.clone().add(axisVec(ax, dir * len));
+    e.x = clamp(e.x); e.y = clamp(e.y); e.z = clamp(e.z); // never extend beyond the cube
     shPos.push(from.x, from.y, from.z, e.x, e.y, e.z);
     shCol.push(col.r * b, col.g * b, col.b * b, 0, 0, 0);
   };
