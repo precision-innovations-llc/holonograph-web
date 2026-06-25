@@ -45,14 +45,16 @@ const CONFIG = {
   // clusters. length × direction decide whether they arrive; reaching lines are
   // coloured source→dest with a dark no-man's-land gap, and carry sporadic pulses.
   emittersPerCluster: 2,         // origin points scattered around each cluster core
-  emitterJitter: 1.3,            // how far the emitters spread from the core
-  raysPerEmitter: [1, 2],
-  rayJitter: 0.3,                // angular wobble (rad) — bigger = more misses
-  rayLen: [0.45, 1.15],          // length as a fraction of the distance to the target
-  arriveRadius: 1.8,             // how close the tip must land to count as "reached"
+  emitterJitter: 1.0,            // how far the emitters spread (kept inside the cube)
+  blastShots: [6, 12],           // many SHORT shotgun shots per cluster (most go nowhere)
+  blastLen: [1.0, 4.0],          // short shot length (world units) — not full-length beams
+  aimedShots: [2, 4],            // long shots aimed at other clusters (only a few reach)
+  rayJitter: 0.32,               // angular wobble (rad) on aimed shots — bigger = more misses
+  rayLen: [0.55, 1.12],          // aimed length as a fraction of distance to the target
+  arriveRadius: 1.7,             // how close the tip must land to count as "reached"
   lineBright: 0.85,
-  lineGap: 0.36,                 // fade length from each end (middle = dark no-man's land)
-  stubFade: 0.7,                 // where an unreached stub fades to nothing
+  lineGap: 0.36,                 // fade length from each end of a connector (dark middle)
+  stubFade: 0.7,                 // where an unreached shot fades to nothing
   sparkWait: [0.4, 3.5],         // sporadic gap between a connector's pulses (s)
   sparkTravel: [0.6, 1.5],       // pulse speed (fraction of line / s)
   sparkSize: 0.11,
@@ -244,52 +246,66 @@ function start() {
   shGeo.setAttribute("color", new THREE.Float32BufferAttribute(shCol, 3));
   world.add(new THREE.LineSegments(shGeo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.92, depthWrite: false, blending: THREE.AdditiveBlending })));
 
-  // ── organic straight vectors fired from the cluster cores ───────────────────
-  const SEGO = 18, connectors = [], orgPos = [], orgCol = [], tmpP = new THREE.Vector3();
+  // ── organic vectors: a SHOTGUN of short shots per cluster; only a few aimed
+  //    shots reach another cluster (connectors). All points kept inside the cube. ─
+  const SEGO = 16, connectors = [], orgPos = [], orgCol = [], tmpP = new THREE.Vector3();
+  const clampV = (p) => { p.x = Math.max(-H, Math.min(H, p.x)); p.y = Math.max(-H, Math.min(H, p.y)); p.z = Math.max(-H, Math.min(H, p.z)); return p; };
   const pushOrg = (a, b, ca, cb) => { orgPos.push(a.x, a.y, a.z, b.x, b.y, b.z); orgCol.push(ca[0], ca[1], ca[2], cb[0], cb[1], cb[2]); };
-  // jitter a unit direction by a small angle around a random perpendicular axis
   const jitterDir = (base, angle) => {
     const r = new THREE.Vector3(rand(-1, 1), rand(-1, 1), rand(-1, 1));
     const perp = new THREE.Vector3().crossVectors(base, r);
     if (perp.lengthSq() < 1e-6) perp.set(1, 0, 0); else perp.normalize();
     return base.clone().applyAxisAngle(perp, angle);
   };
+  const buildStub = (a, end, col) => {
+    let prev = null, prevC = null;
+    for (let s = 0; s <= SEGO; s++) {
+      const t = s / SEGO; tmpP.lerpVectors(a, end, t);
+      const glow = Math.max(0, 1 - t / CONFIG.stubFade) * CONFIG.lineBright;
+      const c = [col.r * glow, col.g * glow, col.b * glow];
+      if (prev) pushOrg(prev, tmpP, prevC, c);
+      prev = tmpP.clone(); prevC = c;
+    }
+  };
+  const buildConnector = (a, b, ca, cb) => {
+    const gap = CONFIG.lineGap, B = CONFIG.lineBright;
+    let prev = null, prevC = null;
+    for (let s = 0; s <= SEGO; s++) {
+      const t = s / SEGO; tmpP.lerpVectors(a, b, t);
+      const sg = Math.max(0, 1 - t / gap), dg = Math.max(0, (t - (1 - gap)) / gap);
+      const c = [(ca.r * sg + cb.r * dg) * B, (ca.g * sg + cb.g * dg) * B, (ca.b * sg + cb.b * dg) * B];
+      if (prev) pushOrg(prev, tmpP, prevC, c);
+      prev = tmpP.clone(); prevC = c;
+    }
+    connectors.push({ a: a.clone(), b: b.clone(), ca: ca.clone(), cb: cb.clone() });
+  };
   for (const ac of anchors) {
-    for (let e = 0; e < CONFIG.emittersPerCluster; e++) {
-      const origin = ac.pos.clone().add(new THREE.Vector3(gauss(CONFIG.emitterJitter), gauss(CONFIG.emitterJitter), gauss(CONFIG.emitterJitter)));
-      const rays = irand(CONFIG.raysPerEmitter[0], CONFIG.raysPerEmitter[1]);
-      for (let r = 0; r < rays; r++) {
-        const tgt = anchors[(Math.random() * anchors.length) | 0];
-        if (tgt.idx === ac.idx) continue;
-        const to = tgt.pos.clone().sub(origin); const dist = to.length(); if (dist < 0.5) continue;
-        const dir = jitterDir(to.multiplyScalar(1 / dist), gauss(CONFIG.rayJitter));
-        const lf = rand(CONFIG.rayLen[0], CONFIG.rayLen[1]);
-        const end = origin.clone().addScaledVector(dir, dist * lf);
-        const reached = lf >= 0.85 && end.distanceTo(tgt.pos) < CONFIG.arriveRadius;
-        const ca = ac.color, cb = tgt.color, B = CONFIG.lineBright;
-        let prev = null, prevC = null;
-        if (reached) {
-          // connector: src colour → 0 (no-man's land) → dst colour
-          const a = origin, b = tgt.pos, gap = CONFIG.lineGap;
-          for (let s = 0; s <= SEGO; s++) {
-            const t = s / SEGO; tmpP.lerpVectors(a, b, t);
-            const sg = Math.max(0, 1 - t / gap), dg = Math.max(0, (t - (1 - gap)) / gap);
-            const c = [(ca.r * sg + cb.r * dg) * B, (ca.g * sg + cb.g * dg) * B, (ca.b * sg + cb.b * dg) * B];
-            if (prev) pushOrg(prev, tmpP, prevC, c);
-            prev = tmpP.clone(); prevC = c;
-          }
-          connectors.push({ a: origin.clone(), b: tgt.pos.clone(), ca: ca.clone(), cb: cb.clone() });
-        } else {
-          // stub: src colour fading to nothing in space
-          for (let s = 0; s <= SEGO; s++) {
-            const t = s / SEGO; tmpP.lerpVectors(origin, end, t);
-            const glow = Math.max(0, 1 - t / CONFIG.stubFade) * B;
-            const c = [ca.r * glow, ca.g * glow, ca.b * glow];
-            if (prev) pushOrg(prev, tmpP, prevC, c);
-            prev = tmpP.clone(); prevC = c;
-          }
-        }
-      }
+    const emitters = [];
+    for (let e = 0; e < CONFIG.emittersPerCluster; e++)
+      emitters.push(clampV(ac.pos.clone().add(new THREE.Vector3(gauss(CONFIG.emitterJitter), gauss(CONFIG.emitterJitter), gauss(CONFIG.emitterJitter)))));
+    const pick = () => emitters[(Math.random() * emitters.length) | 0];
+
+    // shotgun: many short shots in random directions (the blast — most go nowhere)
+    const shots = irand(CONFIG.blastShots[0], CONFIG.blastShots[1]);
+    for (let s = 0; s < shots; s++) {
+      const o = pick();
+      const dir = new THREE.Vector3(rand(-1, 1), rand(-1, 1), rand(-1, 1)).normalize();
+      const end = clampV(o.clone().addScaledVector(dir, rand(CONFIG.blastLen[0], CONFIG.blastLen[1])));
+      buildStub(o, end, ac.color);
+    }
+
+    // aimed long shots: only the ones with enough length + small jitter reach → connectors
+    const aimed = irand(CONFIG.aimedShots[0], CONFIG.aimedShots[1]);
+    for (let r = 0; r < aimed; r++) {
+      const o = pick();
+      const tgt = anchors[(Math.random() * anchors.length) | 0];
+      if (tgt.idx === ac.idx) continue;
+      const to = tgt.pos.clone().sub(o); const dist = to.length(); if (dist < 0.5) continue;
+      const dir = jitterDir(to.multiplyScalar(1 / dist), gauss(CONFIG.rayJitter));
+      const lf = rand(CONFIG.rayLen[0], CONFIG.rayLen[1]);
+      const end = o.clone().addScaledVector(dir, dist * lf);
+      if (lf >= 0.85 && end.distanceTo(tgt.pos) < CONFIG.arriveRadius) buildConnector(o, tgt.pos, ac.color, tgt.color);
+      else buildStub(o, clampV(end), ac.color);
     }
   }
   if (orgPos.length) {
