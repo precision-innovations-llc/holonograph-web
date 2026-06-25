@@ -23,8 +23,8 @@ const CONFIG = {
   // the grid system: faint grey lattices whose lines FADE to zero in random
   // windows, so we see pieces of the grids — never a clean full cube / hard edges.
   grids: [
-    { divisions: 18, grey: 0.17, segs: 8 }, // main grid
-    { divisions: 8,  grey: 0.12, segs: 6 }, // coarser overlay
+    { divisions: 18, grey: 0.27, keep: 0.22 }, // fine grid — only ~22% of lines, sparse hint
+    { divisions: 8,  grey: 0.18, keep: 0.4 },  // coarse grid — carries the cube hint
   ],
 
   clusters: 16,
@@ -86,23 +86,29 @@ function cubic(a, c1, c2, b, t, out) {
   out.y = w0 * a.y + w1 * c1.y + w2 * c2.y + w3 * b.y;
   out.z = w0 * a.z + w1 * c1.z + w2 * c2.z + w3 * b.z; return out;
 }
-// faint grey grid whose lines fade to zero in a random window → we see fragments,
-// not a clean lattice (and no hard cube edges)
-function makeFragmentedGrid(half, divisions, grey, segs) {
-  const step = (half * 2) / divisions, pos = [], col = [];
+// the grid is only HINTED: most lines aren't drawn at all (big empty regions),
+// and the kept ones appear as short fragments that fade to true zero at both ends
+function makeFragmentedGrid(half, divisions, grey, keep) {
+  const step = (half * 2) / divisions, pos = [], col = [], SUB = 9;
+  const push2 = (a, b, ba, bb) => { pos.push(a[0], a[1], a[2], b[0], b[1], b[2]); col.push(ba, ba, ba * 1.18, bb, bb, bb * 1.18); };
   for (let dir = 0; dir < 3; dir++) {
     const o = [0, 1, 2].filter((a) => a !== dir);
     for (let i = 0; i <= divisions; i++) for (let j = 0; j <= divisions; j++) {
-      const lineMax = grey * rand(0.12, 1.0);        // some lines barely there
-      const center = rand(-0.1, 1.1), width = rand(0.12, 0.55); // random visible window
-      const br = (t) => { const d = (t - center) / width; return lineMax * Math.exp(-d * d); };
+      if (Math.random() > keep) continue;                 // most lines: not drawn → real gaps
       const v = [0, 0, 0]; v[o[0]] = -half + i * step; v[o[1]] = -half + j * step;
-      for (let s = 0; s < segs; s++) {
-        const t0 = s / segs, t1 = (s + 1) / segs;
-        v[dir] = -half + t0 * half * 2; pos.push(v[0], v[1], v[2]);
-        v[dir] = -half + t1 * half * 2; pos.push(v[0], v[1], v[2]);
-        const b0 = br(t0), b1 = br(t1);
-        col.push(b0, b0, b0 * 1.18, b1, b1, b1 * 1.18); // faint blue-grey
+      const frags = Math.random() < 0.22 ? 2 : 1;
+      for (let f = 0; f < frags; f++) {
+        const lineMax = grey * rand(0.4, 1.0);
+        const hl = rand(0.04, 0.15), c = rand(hl, 1 - hl); // a short fragment somewhere on the line
+        let prev = null, prevBr = 0;
+        for (let s = 0; s <= SUB; s++) {
+          const t = (c - hl) + 2 * hl * (s / SUB);
+          const br = lineMax * Math.sin((s / SUB) * Math.PI); // 0 at both ends → fades to nothing
+          v[dir] = -half + t * half * 2;
+          const cur = [v[0], v[1], v[2]];
+          if (prev) push2(prev, cur, prevBr, br);
+          prev = cur; prevBr = br;
+        }
       }
     }
   }
@@ -132,7 +138,7 @@ function start() {
   scene.add(world);
 
   // fragmented grey grid system (no explicit cube frame — the cube is only implied)
-  for (const G of CONFIG.grids) world.add(makeFragmentedGrid(H, G.divisions, G.grey, G.segs));
+  for (const G of CONFIG.grids) world.add(makeFragmentedGrid(H, G.divisions, G.grey, G.keep));
 
   function zoneColor(a) {
     const up = a.y / H;
