@@ -78,8 +78,9 @@ function webglOK() {
   try { const c = document.createElement("canvas"); return !!(window.WebGLRenderingContext && (c.getContext("webgl2") || c.getContext("webgl"))); }
   catch (e) { return false; }
 }
-// runs on mobile too now — only reduced-motion or missing WebGL fall back to the image
-const shouldRun = () => !!canvas && !reduceMQ.matches && webglOK();
+// runs wherever WebGL is available (desktop + mobile). Reduced-motion renders a
+// STATIC frame (no animation loop); only missing WebGL falls back to the image.
+const shouldRun = () => !!canvas && webglOK();
 let started = false;
 function maybeStart() {
   if (started || !shouldRun()) { if (!webglOK()) document.documentElement.classList.add("no-webgl"); return; }
@@ -335,33 +336,36 @@ function start() {
   function loop() {
     if (!running) return;
     const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+    const motion = !reduceMQ.matches; // reduced-motion → render a single static frame
 
-    world.rotation.y += CONFIG.spin * dt;
+    if (motion) {
+      world.rotation.y += CONFIG.spin * dt;
+      if (swarmMat) swarmMat.size = CONFIG.coreSize * (1 + 0.08 * Math.sin(t * 1.5));
+      for (let i = 0; i < nS; i++) {
+        const sp = sparks[i], cn = connectors[i];
+        if (!sp.active) {
+          sp.wait -= dt;
+          if (sp.wait <= 0) { sp.active = true; sp.t = 0; sp.speedF = rand(0.8, 1.2); }
+          spCol[i * 3] = spCol[i * 3 + 1] = spCol[i * 3 + 2] = 0; continue;
+        }
+        sp.t += CONFIG.sparkSpeed * sp.speedF * dt;
+        if (sp.t >= 1) { sp.active = false; sp.wait = rand(CONFIG.sparkWait[0], CONFIG.sparkWait[1]); spCol[i * 3] = spCol[i * 3 + 1] = spCol[i * 3 + 2] = 0; continue; }
+        const ss = sp.t * sp.t * (3 - 2 * sp.t), te = sp.t * (1 - CONFIG.sparkEase) + ss * CONFIG.sparkEase; // eased travel
+        pos.lerpVectors(cn.a, cn.b, te);
+        spPos[i * 3] = pos.x; spPos[i * 3 + 1] = pos.y; spPos[i * 3 + 2] = pos.z;
+        const tw = 0.8 + 0.2 * Math.sin(t * 40 + sp.phase);
+        spCol[i * 3] = (cn.ca.r + (cn.cb.r - cn.ca.r) * te) * tw;
+        spCol[i * 3 + 1] = (cn.ca.g + (cn.cb.g - cn.ca.g) * te) * tw;
+        spCol[i * 3 + 2] = (cn.ca.b + (cn.cb.b - cn.ca.b) * te) * tw;
+      }
+      if (spGeo) { spGeo.attributes.position.needsUpdate = true; spGeo.attributes.color.needsUpdate = true; }
+    }
+
     bloom.strength = CONFIG.bloom.strength; bloom.radius = CONFIG.bloom.radius; // live
-    if (swarmMat) swarmMat.size = CONFIG.coreSize * (1 + 0.08 * Math.sin(t * 1.5));
     if (spMat) spMat.size = CONFIG.sparkSize;
 
-    for (let i = 0; i < nS; i++) {
-      const sp = sparks[i], cn = connectors[i];
-      if (!sp.active) {
-        sp.wait -= dt;
-        if (sp.wait <= 0) { sp.active = true; sp.t = 0; sp.speedF = rand(0.8, 1.2); }
-        spCol[i * 3] = spCol[i * 3 + 1] = spCol[i * 3 + 2] = 0; continue;
-      }
-      sp.t += CONFIG.sparkSpeed * sp.speedF * dt;
-      if (sp.t >= 1) { sp.active = false; sp.wait = rand(CONFIG.sparkWait[0], CONFIG.sparkWait[1]); spCol[i * 3] = spCol[i * 3 + 1] = spCol[i * 3 + 2] = 0; continue; }
-      const ss = sp.t * sp.t * (3 - 2 * sp.t), te = sp.t * (1 - CONFIG.sparkEase) + ss * CONFIG.sparkEase; // eased travel
-      pos.lerpVectors(cn.a, cn.b, te);
-      spPos[i * 3] = pos.x; spPos[i * 3 + 1] = pos.y; spPos[i * 3 + 2] = pos.z;
-      const tw = 0.8 + 0.2 * Math.sin(t * 40 + sp.phase);
-      spCol[i * 3] = (cn.ca.r + (cn.cb.r - cn.ca.r) * te) * tw;
-      spCol[i * 3 + 1] = (cn.ca.g + (cn.cb.g - cn.ca.g) * te) * tw;
-      spCol[i * 3 + 2] = (cn.ca.b + (cn.cb.b - cn.ca.b) * te) * tw;
-    }
-    if (spGeo) { spGeo.attributes.position.needsUpdate = true; spGeo.attributes.color.needsUpdate = true; }
-
     composer.render();
-    requestAnimationFrame(loop);
+    if (motion) requestAnimationFrame(loop); // static under reduced-motion
   }
 
   // ── tuner GUI (only when the URL contains "tune") ────────────────────────────
@@ -416,14 +420,14 @@ function start() {
   rebuild();
   resize();
   setupGUI();
-  requestAnimationFrame(() => { canvas.classList.add("ready"); });
+  // reveal the scene AND clear any safety-net fallback (e.g. a slow load that tripped it)
+  requestAnimationFrame(() => { canvas.classList.add("ready"); document.documentElement.classList.remove("no-webgl"); });
   loop();
 
-  const onPref = () => { if (!shouldRun()) { running = false; canvas.classList.remove("ready"); } };
-  reduceMQ.addEventListener && reduceMQ.addEventListener("change", onPref);
-  smallMQ.addEventListener && smallMQ.addEventListener("change", onPref);
+  // if the user turns OFF reduce-motion at runtime, resume the animation loop
+  reduceMQ.addEventListener && reduceMQ.addEventListener("change", () => {
+    if (!reduceMQ.matches && running) { clock.getDelta(); loop(); }
+  });
 }
 
 maybeStart();
-smallMQ.addEventListener && smallMQ.addEventListener("change", maybeStart);
-reduceMQ.addEventListener && reduceMQ.addEventListener("change", maybeStart);

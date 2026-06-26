@@ -118,12 +118,8 @@
     .hero-bg { background-image: url("./holonograph-mobile.webp"); }
   }
 
-  /* fall back to the static image only when the scene can't / shouldn't run */
-  @media (prefers-reduced-motion: reduce) {
-    .hero-bg { display: block; }
-    .holon { display: none; }
-  }
-
+  /* fall back to the static image only when WebGL is unavailable
+     (reduced-motion still shows the scene — holon.js just renders it static) */
   .no-webgl .hero-bg { display: block; }
   .no-webgl .holon { display: none; }
 
@@ -939,8 +935,8 @@
     setTimeout(function () {
       var c = document.getElementById("holon");
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
-    }, 6000);
+    }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=16"></script>
+  <script type="module" src="./holon.js?v=17"></script>
 </body>
 </html>
