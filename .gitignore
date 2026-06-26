@@ -26,3 +26,7 @@ yarn-error.log*
 .idea/
 *.swp
 *.swo
+
+# Large source/intermediate video — kept on disk, not in git (superseded by the WebGL scene)
+holonograph_anim.mp4
+holonograph-loop*.mp4
