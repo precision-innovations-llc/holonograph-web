@@ -7,7 +7,7 @@
 // no-man's-land middle and carry sporadic, colour-shifting pulses.
 //
 // Tuner: append ?tune to the URL for an on-screen control panel (dev only).
-// Desktop only. Mobile / reduced-motion / no-WebGL fall back to the static image.
+// Runs on desktop AND mobile; reduced-motion / no-WebGL fall back to the static image.
 
 import * as THREE from "three";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
@@ -78,7 +78,8 @@ function webglOK() {
   try { const c = document.createElement("canvas"); return !!(window.WebGLRenderingContext && (c.getContext("webgl2") || c.getContext("webgl"))); }
   catch (e) { return false; }
 }
-const shouldRun = () => !!canvas && !reduceMQ.matches && !smallMQ.matches && webglOK();
+// runs on mobile too now — only reduced-motion or missing WebGL fall back to the image
+const shouldRun = () => !!canvas && !reduceMQ.matches && webglOK();
 let started = false;
 function maybeStart() {
   if (started || !shouldRun()) { if (!webglOK()) document.documentElement.classList.add("no-webgl"); return; }

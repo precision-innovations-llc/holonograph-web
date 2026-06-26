@@ -97,7 +97,7 @@
     animation: breathe 28s ease-in-out infinite;
   }
 
-  /* generative WebGL scene (holon.js) sits on top of the static fallback (desktop only) */
+  /* generative WebGL scene (holon.js) — runs on desktop and mobile */
   .holon {
     position: absolute;
     inset: 0;
@@ -112,12 +112,13 @@
   /* faded in by JS once the first frame has rendered */
   .holon.ready { opacity: 1; }
 
-  /* fall back to the static image only when the scene can't run: mobile, reduced-motion, no WebGL */
+  /* on small screens, just swap the fallback image to the lighter mobile asset
+     (only matters when the image is actually shown — reduced-motion / no WebGL) */
   @media (max-width: 900px) {
-    .hero-bg { display: block; background-image: url("./holonograph-mobile.webp"); }
-    .holon { display: none; }
+    .hero-bg { background-image: url("./holonograph-mobile.webp"); }
   }
 
+  /* fall back to the static image only when the scene can't / shouldn't run */
   @media (prefers-reduced-motion: reduce) {
     .hero-bg { display: block; }
     .holon { display: none; }
@@ -932,6 +933,14 @@
       });
     })();
   </script>
-  <script type="module" src="./holon.js?v=15"></script>
+  <script>
+    // safety net: if the WebGL scene hasn't rendered within a few seconds (e.g. the
+    // Three.js CDN failed or the device is too slow), reveal the static fallback image.
+    setTimeout(function () {
+      var c = document.getElementById("holon");
+      if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
+    }, 6000);
+  </script>
+  <script type="module" src="./holon.js?v=16"></script>
 </body>
 </html>
