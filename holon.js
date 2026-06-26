@@ -20,13 +20,13 @@ const CONFIG = {
   snapSteps: [0.5, 0.75, 1.0],
 
   grids: [
-    { divisions: 18, grey: 0.27, keep: 0.22 }, // fine grid — sparse hint
-    { divisions: 8,  grey: 0.18, keep: 0.4 },  // coarse grid — carries the cube hint
+    { divisions: 18, grey: 0.3,  keep: 0.5 },  // fine grid — sparse hint
+    { divisions: 8,  grey: 0.18, keep: 0.76 }, // coarse grid — carries the cube hint
   ],
 
-  clusters: 16,
+  clusters: 21,
   pointsPerCluster: [90, 170],
-  slabThin: [0.3, 0.85],
+  slabThin: [0.5, 1.1],
   slabWide: [2.2, 4.3],
   slabSkew: 0.14,
   tendrilFrac: 0.3,
@@ -34,14 +34,14 @@ const CONFIG = {
 
   coreSize: 0.05, coreBright: 1.1,
   sheathBase: 0.6,
-  sheathDenseBoost: 1.0,
+  sheathDenseBoost: 1.25,
   sheathLenCells: [0.8, 1.7],
   densityRadius: 1.3, densityMax: 13,
 
   // organic vectors fired from the bright cluster cores
   emittersPerCluster: 2,
   emitterJitter: 1.0,
-  blastShots: [6, 12],
+  blastShots: [12, 10],
   blastLen: [1.0, 4.0],
   aimedShots: [2, 4],
   rayJitter: 0.32,
@@ -52,15 +52,15 @@ const CONFIG = {
   stubFade: 0.7,
 
   // travelling pulses (live-tunable)
-  sparkSize: 0.11,
-  sparkSpeed: 0.9,       // fraction of the line per second
+  sparkSize: 0.115,
+  sparkSpeed: 1.45,      // fraction of the line per second
   sparkEase: 0.5,        // 0 = linear travel, 1 = full smoothstep ease in/out
-  sparkWait: [0.4, 3.5], // sporadic idle gap between a connector's pulses (s)
+  sparkWait: [0.4, 3.3], // sporadic idle gap between a connector's pulses (s)
 
-  bloom: { strength: 1.1, radius: 0.55, threshold: 0.0 },
+  bloom: { strength: 1.7, radius: 0.85, threshold: 0.0 },
 
   camDist: 21, fov: 55,
-  spin: 0.05, fog: [14, 50],
+  spin: 0.145, fog: [14, 50],
 };
 
 const ZONES = [
