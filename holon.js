@@ -68,9 +68,10 @@ const CONFIG = {
   spinFriction: 1.7,     // how fast a fling decays back toward the ambient spin
   maxFling: 2.4,         // cap on fling speed (rad/s)
 
-  // cursor highlight: brighten the nodes nearest the pointer (replaces the halo)
+  // cursor highlight: bright sprites pop on the nodes nearest the pointer (replaces halo)
   highlightRadius: 130,  // screen px
   highlightStrength: 1.7,
+  highlightSize: 0.42,   // sprite size of the highlight glow (much bigger than the cores)
 };
 
 const ZONES = [
@@ -190,7 +191,8 @@ function start() {
 
   // ── rebuildable scene content (the GUI calls rebuild() on structural edits) ──
   let swarmMat, spMat, spGeo, spPos, spCol, sparks = [], connectors = [], nS = 0;
-  let coreGeo, coreCol, coreBase, nodePos, nodeCount = 0; // dynamic cores → cursor highlight
+  let coreGeo, coreCol, coreBase, nodePos, nodeCount = 0; // node cores + base colours
+  let hlGeo, hlCol, hlMat;                                // cursor-highlight layer (bigger sprites)
   let angVelY = CONFIG.spin;                              // live spin speed, decays to CONFIG.spin
 
   function clearWorld() {
@@ -263,6 +265,14 @@ function start() {
     coreGeo.setAttribute("color", new THREE.BufferAttribute(coreCol, 3).setUsage(THREE.DynamicDrawUsage));
     swarmMat = new THREE.PointsMaterial({ size: CONFIG.coreSize, map: sprite, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true });
     world.add(new THREE.Points(coreGeo, swarmMat));
+
+    // cursor-highlight layer — larger bright sprites, all dark until a node is near the pointer
+    hlCol = new Float32Array(nodeCount * 3);
+    hlGeo = new THREE.BufferGeometry();
+    hlGeo.setAttribute("position", new THREE.BufferAttribute(nodePos, 3));
+    hlGeo.setAttribute("color", new THREE.BufferAttribute(hlCol, 3).setUsage(THREE.DynamicDrawUsage));
+    hlMat = new THREE.PointsMaterial({ size: CONFIG.highlightSize, map: sprite, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true });
+    world.add(new THREE.Points(hlGeo, hlMat));
 
     // sheaths along grid lines, thicker where dense
     const shPos = [], shCol = [];
@@ -383,19 +393,25 @@ function start() {
         world.rotation.y += angVelY * dt;
         angVelY += (CONFIG.spin - angVelY) * Math.min(1, CONFIG.spinFriction * dt);
       }
-      // cursor highlight: reset cores to base, then brighten the nodes nearest the pointer
-      coreCol.set(coreBase);
+      // cursor highlight: bright sprites pop on the nodes nearest the pointer
+      hlCol.fill(0);
+      if (hlMat) hlMat.size = CONFIG.highlightSize;
       if (mouseOn && nodeCount) {
-        world.updateMatrixWorld();
+        world.updateMatrixWorld(); camera.updateMatrixWorld();
         const W = window.innerWidth, H = window.innerHeight, R = CONFIG.highlightRadius, R2 = R * R, HS = CONFIG.highlightStrength;
         for (let n = 0; n < nodeCount; n++) {
           proj.set(nodePos[n * 3], nodePos[n * 3 + 1], nodePos[n * 3 + 2]).applyMatrix4(world.matrixWorld).project(camera);
           if (proj.z > 1) continue; // behind the camera / beyond the far plane
           const dxs = (proj.x * 0.5 + 0.5) * W - mxPx, dys = (-proj.y * 0.5 + 0.5) * H - myPx, dsq = dxs * dxs + dys * dys;
-          if (dsq < R2) { const f = (1 - Math.sqrt(dsq) / R) * HS; coreCol[n * 3] += f; coreCol[n * 3 + 1] += f; coreCol[n * 3 + 2] += f; }
+          if (dsq < R2) {
+            const f = (1 - Math.sqrt(dsq) / R) * HS;        // node hue, lifted toward white
+            hlCol[n * 3] = coreBase[n * 3] * f + 0.35 * f;
+            hlCol[n * 3 + 1] = coreBase[n * 3 + 1] * f + 0.35 * f;
+            hlCol[n * 3 + 2] = coreBase[n * 3 + 2] * f + 0.35 * f;
+          }
         }
       }
-      coreGeo.attributes.color.needsUpdate = true;
+      hlGeo.attributes.color.needsUpdate = true;
       if (swarmMat) swarmMat.size = CONFIG.coreSize * (1 + 0.08 * Math.sin(t * 1.5));
       for (let i = 0; i < nS; i++) {
         const sp = sparks[i], cn = connectors[i];
@@ -453,6 +469,7 @@ function start() {
     fI.add(CONFIG, "maxFling", 0.5, 6, 0.1).name("max fling");
     fI.add(CONFIG, "highlightRadius", 30, 400, 10).name("highlight radius");
     fI.add(CONFIG, "highlightStrength", 0, 4, 0.1).name("highlight strength");
+    fI.add(CONFIG, "highlightSize", 0.1, 1.2, 0.02).name("highlight size");
 
     const fO = gui.addFolder("Organics");
     addRange(fO, "blast shots", CONFIG.blastShots, 0, 30, 1, true);
