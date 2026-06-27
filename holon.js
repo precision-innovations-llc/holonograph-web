@@ -61,6 +61,16 @@ const CONFIG = {
 
   camDist: 21, fov: 55,
   spin: 0.145, fog: [14, 50],
+
+  // drag left/right to spin; release flings with momentum, and resistance decays
+  // the fling back to the ambient spin (the released velocity is the fastest point).
+  dragSpinSens: 0.005,   // radians of spin per pixel dragged
+  spinFriction: 1.7,     // how fast a fling decays back toward the ambient spin
+  maxFling: 2.4,         // cap on fling speed (rad/s)
+
+  // cursor highlight: brighten the nodes nearest the pointer (replaces the halo)
+  highlightRadius: 130,  // screen px
+  highlightStrength: 1.7,
 };
 
 const ZONES = [
@@ -156,8 +166,32 @@ function start() {
   const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), CONFIG.bloom.strength, CONFIG.bloom.radius, CONFIG.bloom.threshold);
   composer.addPass(bloom);
 
+  // ── interaction: drag L/R to spin (fling + resistance); cursor highlights nodes ──
+  let dragging = false, lastX = 0, lastMoveT = 0;
+  let mxPx = -1, myPx = -1, mouseOn = false; // cursor in screen px for the node highlight
+  const interactive = (el) => el && el.closest && el.closest("a, button, input, textarea, .contact-panel");
+  window.addEventListener("pointerdown", (e) => {
+    if (interactive(e.target)) return;
+    dragging = true; lastX = e.clientX; lastMoveT = performance.now();
+    document.body.style.cursor = "grabbing";
+  });
+  window.addEventListener("pointermove", (e) => {
+    mxPx = e.clientX; myPx = e.clientY; mouseOn = true;
+    if (!dragging) return;
+    const now = performance.now(), ddt = Math.max(8, now - lastMoveT) / 1000, dx = e.clientX - lastX;
+    world.rotation.y += dx * CONFIG.dragSpinSens;                        // drag spins directly
+    angVelY = Math.max(-CONFIG.maxFling, Math.min(CONFIG.maxFling, (dx * CONFIG.dragSpinSens) / ddt)); // release velocity
+    lastX = e.clientX; lastMoveT = now;
+  }, { passive: true });
+  const endDrag = () => { dragging = false; document.body.style.cursor = ""; };
+  window.addEventListener("pointerup", endDrag);
+  window.addEventListener("pointercancel", endDrag);
+  window.addEventListener("pointerout", (e) => { if (!e.relatedTarget) mouseOn = false; });
+
   // ── rebuildable scene content (the GUI calls rebuild() on structural edits) ──
   let swarmMat, spMat, spGeo, spPos, spCol, sparks = [], connectors = [], nS = 0;
+  let coreGeo, coreCol, coreBase, nodePos, nodeCount = 0; // dynamic cores → cursor highlight
+  let angVelY = CONFIG.spin;                              // live spin speed, decays to CONFIG.spin
 
   function clearWorld() {
     for (let i = world.children.length - 1; i >= 0; i--) {
@@ -214,16 +248,19 @@ function start() {
       nd.density = Math.min(1, cnt / CONFIG.densityMax);
     }
 
-    // node cores
-    const nPos = new Float32Array(nodes.length * 3), nCol = new Float32Array(nodes.length * 3);
+    // node cores (dynamic colour buffer so the cursor can highlight nearby nodes)
+    nodeCount = nodes.length;
+    nodePos = new Float32Array(nodeCount * 3);
+    coreCol = new Float32Array(nodeCount * 3);
     nodes.forEach((nd, i) => {
       const b = CONFIG.coreBright * (0.7 + 0.6 * nd.density);
-      nPos[i * 3] = nd.pos.x; nPos[i * 3 + 1] = nd.pos.y; nPos[i * 3 + 2] = nd.pos.z;
-      nCol[i * 3] = nd.color.r * b; nCol[i * 3 + 1] = nd.color.g * b; nCol[i * 3 + 2] = nd.color.b * b;
+      nodePos[i * 3] = nd.pos.x; nodePos[i * 3 + 1] = nd.pos.y; nodePos[i * 3 + 2] = nd.pos.z;
+      coreCol[i * 3] = nd.color.r * b; coreCol[i * 3 + 1] = nd.color.g * b; coreCol[i * 3 + 2] = nd.color.b * b;
     });
-    const coreGeo = new THREE.BufferGeometry();
-    coreGeo.setAttribute("position", new THREE.BufferAttribute(nPos, 3));
-    coreGeo.setAttribute("color", new THREE.BufferAttribute(nCol, 3));
+    coreBase = coreCol.slice(); // immutable base; highlight is added on top each frame
+    coreGeo = new THREE.BufferGeometry();
+    coreGeo.setAttribute("position", new THREE.BufferAttribute(nodePos, 3));
+    coreGeo.setAttribute("color", new THREE.BufferAttribute(coreCol, 3).setUsage(THREE.DynamicDrawUsage));
     swarmMat = new THREE.PointsMaterial({ size: CONFIG.coreSize, map: sprite, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true });
     world.add(new THREE.Points(coreGeo, swarmMat));
 
@@ -330,6 +367,7 @@ function start() {
   // ── animation loop ───────────────────────────────────────────────────────────
   const clock = new THREE.Clock();
   const pos = new THREE.Vector3();
+  const proj = new THREE.Vector3();
   let running = true;
   document.addEventListener("visibilitychange", () => { running = !document.hidden; if (running) { clock.getDelta(); loop(); } });
 
@@ -339,7 +377,25 @@ function start() {
     const motion = !reduceMQ.matches; // reduced-motion → render a single static frame
 
     if (motion) {
-      world.rotation.y += CONFIG.spin * dt;
+      // spin: while dragging, the pointer drives rotation directly; otherwise the
+      // fling coasts and resistance eases it back toward the ambient spin
+      if (!dragging) {
+        world.rotation.y += angVelY * dt;
+        angVelY += (CONFIG.spin - angVelY) * Math.min(1, CONFIG.spinFriction * dt);
+      }
+      // cursor highlight: reset cores to base, then brighten the nodes nearest the pointer
+      coreCol.set(coreBase);
+      if (mouseOn && nodeCount) {
+        world.updateMatrixWorld();
+        const W = window.innerWidth, H = window.innerHeight, R = CONFIG.highlightRadius, R2 = R * R, HS = CONFIG.highlightStrength;
+        for (let n = 0; n < nodeCount; n++) {
+          proj.set(nodePos[n * 3], nodePos[n * 3 + 1], nodePos[n * 3 + 2]).applyMatrix4(world.matrixWorld).project(camera);
+          if (proj.z > 1) continue; // behind the camera / beyond the far plane
+          const dxs = (proj.x * 0.5 + 0.5) * W - mxPx, dys = (-proj.y * 0.5 + 0.5) * H - myPx, dsq = dxs * dxs + dys * dys;
+          if (dsq < R2) { const f = (1 - Math.sqrt(dsq) / R) * HS; coreCol[n * 3] += f; coreCol[n * 3 + 1] += f; coreCol[n * 3 + 2] += f; }
+        }
+      }
+      coreGeo.attributes.color.needsUpdate = true;
       if (swarmMat) swarmMat.size = CONFIG.coreSize * (1 + 0.08 * Math.sin(t * 1.5));
       for (let i = 0; i < nS; i++) {
         const sp = sparks[i], cn = connectors[i];

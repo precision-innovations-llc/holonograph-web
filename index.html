@@ -128,53 +128,6 @@
     50%      { transform: scale(1.045); }
   }
 
-  /* ---------- cursor glow (soft violet light that follows the pointer) ----------
-     NOTE: a backdrop-filter here would force the <video> off its hardware overlay
-     into a software-composited buffer (blurry + aliased + costly), so we use a
-     plain radial tint instead — it never reads the video's pixels. */
-  @property --halo-size {
-    syntax: "<length>";
-    inherits: false;
-    initial-value: 460px;
-  }
-
-  .halo {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    /* soft mask = no hard edge */
-    -webkit-mask-image: radial-gradient(
-      var(--halo-size, 460px) circle at var(--mx, 50%) var(--my, 50%),
-      rgba(0,0,0,0.92) 0%,
-      rgba(0,0,0,0.72) 25%,
-      rgba(0,0,0,0.42) 55%,
-      rgba(0,0,0,0.16) 80%,
-      transparent 100%
-    );
-    mask-image: radial-gradient(
-      var(--halo-size, 460px) circle at var(--mx, 50%) var(--my, 50%),
-      rgba(0,0,0,0.92) 0%,
-      rgba(0,0,0,0.72) 25%,
-      rgba(0,0,0,0.42) 55%,
-      rgba(0,0,0,0.16) 80%,
-      transparent 100%
-    );
-    /* soft violet glow only — no backdrop-filter (see note above) */
-    background: radial-gradient(
-      var(--halo-size, 460px) circle at var(--mx, 50%) var(--my, 50%),
-      rgba(167, 139, 250, 0.14),
-      rgba(125, 211, 252, 0.05) 45%,
-      transparent 72%
-    );
-    z-index: 3;
-    animation: haloBreathe 7s ease-in-out infinite;
-  }
-
-  @keyframes haloBreathe {
-    0%, 100% { --halo-size: 380px; }
-    50%      { --halo-size: 560px; }
-  }
-
   /* ---------- film grain (SVG noise) ---------- */
   .grain {
     position: absolute;
@@ -670,7 +623,6 @@
       <div class="hero-bg"></div>
     </div>
     <canvas class="holon" id="holon"></canvas>
-    <div class="halo" id="halo"></div>
     <div class="grain"></div>
     <span class="tick tl"></span>
     <span class="tick tr"></span>
@@ -730,10 +682,9 @@
   </div>
 
   <script>
-    // mouse-driven cube tilt + cursor halo position
+    // mouse-driven wordmark tilt (the cube spin + node highlight live in holon.js)
     (function () {
       const hero = document.getElementById("hero");
-      const halo = document.getElementById("halo");
       const depth = document.getElementById("depth");
       const MAX_TILT = 9;        // degrees of rotation at the viewport edge
       const COUNTER = 0.55;      // wordmark counter-tilt magnitude vs cube
@@ -763,8 +714,6 @@
         const ny = (clientY / window.innerHeight) - 0.5;
         targetRY = nx * 2 * MAX_TILT;          // mouse right → tilt right edge away
         targetRX = -ny * 2 * MAX_TILT;         // mouse down → tilt bottom toward you
-        halo.style.setProperty("--mx", clientX + "px");
-        halo.style.setProperty("--my", clientY + "px");
         if (!raf) raf = requestAnimationFrame(tick);
       }
 
@@ -937,6 +886,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=17"></script>
+  <script type="module" src="./holon.js?v=18"></script>
 </body>
 </html>
