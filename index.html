@@ -661,16 +661,15 @@
     top: 0;
     width: clamp(320px, 34vw, 460px);
     padding: clamp(24px, 2.8vw, 36px);
-    background: rgba(8, 6, 22, 0.82);
-    border: 1px solid var(--cluster-accent, rgba(167, 139, 250, 0.40));
-    border-radius: 16px;
+    background: rgba(242, 241, 248, 0.96);  /* light enterprise surface */
+    border: 1px solid rgba(22, 19, 45, 0.12);
+    border-radius: 5px;                      /* significantly squared, not sharp */
     cursor: auto;
-    -webkit-backdrop-filter: blur(26px) saturate(150%);
-    backdrop-filter: blur(26px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(115%);
+    backdrop-filter: blur(16px) saturate(115%);
     box-shadow:
-      0 16px 60px rgba(0, 0, 0, 0.6),
-      0 0 0 1px rgba(255, 255, 255, 0.02),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      0 18px 50px rgba(0, 0, 0, 0.45),
+      0 2px 8px rgba(0, 0, 0, 0.22);
     pointer-events: auto;
     opacity: 0;
     transform: scale(0.96);
@@ -685,10 +684,10 @@
     right: 9px;
     width: 28px;
     height: 28px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    border: 1px solid rgba(22, 19, 45, 0.18);
     background: transparent;
-    color: var(--fg-dim);
+    color: rgba(22, 19, 45, 0.55);
     font-size: 18px;
     line-height: 1;
     cursor: pointer;
@@ -698,31 +697,30 @@
     transition: color 200ms, border-color 200ms, background 200ms;
   }
   .cluster-close:hover {
-    color: var(--fg);
+    color: #16131f;
     border-color: var(--cluster-accent, rgba(167, 139, 250, 0.45));
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(22, 19, 45, 0.05);
   }
 
   .cluster-title {
     font-family: "Kodchasan", ui-sans-serif, sans-serif;
-    font-weight: 200;
+    font-weight: 300;
     font-size: clamp(22px, 3vw, 30px);
-    letter-spacing: 0.12em;
+    letter-spacing: 0.06em;
     margin: 0 0 14px;
     padding-right: 28px;
-    color: #fff;
-    text-shadow: 0 0 22px var(--cluster-accent, rgba(167, 139, 250, 0.6));
+    color: #16131f;
   }
   .cluster-body {
     font-size: 14px;
     line-height: 1.65;
-    color: var(--fg-dim);
+    color: rgba(30, 26, 52, 0.74);
   }
   .cluster-body p { margin: 0 0 10px; }
   .cluster-body p:last-child { margin-bottom: 0; }
   .cluster-img {
     width: 100%;
-    border-radius: 8px;
+    border-radius: 4px;
     margin: 0 0 12px;
     display: block;
   }
@@ -736,17 +734,18 @@
     font-size: 10px;
     letter-spacing: 0.20em;
     text-transform: uppercase;
-    color: var(--fg);
+    color: #16131f;
     text-decoration: none;
     background: transparent;
-    border: 1px solid var(--cluster-accent, rgba(167, 139, 250, 0.40));
-    border-radius: 6px;
+    border: 1px solid rgba(22, 19, 45, 0.22);
+    border-radius: 3px;
     cursor: pointer;
-    transition: background 220ms, color 220ms;
+    transition: background 220ms, color 220ms, border-color 220ms;
   }
   .cluster-cta:hover {
-    background: color-mix(in srgb, var(--cluster-accent, #a78bfa) 16%, transparent);
-    color: #fff;
+    background: color-mix(in srgb, var(--cluster-accent, #a78bfa) 14%, transparent);
+    border-color: var(--cluster-accent, #a78bfa);
+    color: #16131f;
   }
 
   @media (prefers-reduced-motion: reduce) {
