@@ -209,9 +209,9 @@ function start() {
     }
   }, { passive: true });
   const endPress = (e) => {
-    if (pointerDown && !movedFar) {                 // a tap, not a drag → cluster hit-test
+    if (pointerDown && !movedFar) {                 // a tap, not a drag → cluster hit-test (touch / click)
       const hit = pickAnchor(e.clientX, e.clientY);
-      if (hit) openSection(hit.sectionIndex);
+      if (hit) { if (hit.sectionIndex !== activeIdx) openSection(hit.sectionIndex); }
       else if (activeIdx >= 0) closeSection();
     }
     pointerDown = false; dragging = false; movedFar = false;
@@ -238,6 +238,8 @@ function start() {
   const connectorDot = panelEl && panelEl.querySelector(".cluster-connector circle");
   const closeBtn = panelEl && panelEl.querySelector("[data-cluster-close]");
   const projv = new THREE.Vector3();
+  let hoverLeftAt = 0, cardBox = { l: 0, t: 0, w: 0, h: 0 }; // grace-close timer + cached card rect
+  const HOVER_GRACE = 350;                                   // ms an un-hovered panel lingers before auto-closing
 
   // pick the section-bearing cluster nearest a screen point (px), or null
   function pickAnchor(px, py) {
@@ -285,7 +287,7 @@ function start() {
     return h;
   }
 
-  // place the card opposite the cluster and draw the connector to its near edge
+  // anchor the card in the cluster's own screen quadrant, tethered by a connector line
   function updateConnector(draw) {
     if (activeIdx < 0 || !cardEl) return;
     const sa = sectionAnchors[activeIdx];
@@ -294,15 +296,16 @@ function start() {
     const W = window.innerWidth, Hh = window.innerHeight;
     projv.copy(sa.pos).applyMatrix4(world.matrixWorld).project(camera);
     const sx = (projv.x * 0.5 + 0.5) * W, sy = (-projv.y * 0.5 + 0.5) * Hh;
-    const margin = Math.max(16, Math.min(W, Hh) * 0.04);
+    const margin = Math.max(18, Math.min(W, Hh) * 0.035);
     const cardW = cardEl.offsetWidth, cardH = cardEl.offsetHeight;
-    const onLeft = sx < W / 2;                          // cluster on left → card on the right
-    const cardLeft = onLeft ? (W - cardW - margin) : margin;
-    const cardTop = Math.max(margin, Math.min(Hh - cardH - margin, sy - cardH / 2));
+    const left = sx < W / 2, top = sy < Hh / 2;        // pin to the quadrant the cluster sits in
+    const cardLeft = left ? margin : (W - cardW - margin);
+    const cardTop = top ? margin : (Hh - cardH - margin);
     cardEl.style.left = cardLeft + "px";
     cardEl.style.top = cardTop + "px";
-    const ax = onLeft ? cardLeft : (cardLeft + cardW); // attach to the card edge facing the cube
-    const ay = Math.max(cardTop + 14, Math.min(cardTop + cardH - 14, sy));
+    cardBox = { l: cardLeft, t: cardTop, w: cardW, h: cardH };
+    const ax = Math.max(cardLeft, Math.min(cardLeft + cardW, sx)); // closest point on the card to the cluster
+    const ay = Math.max(cardTop, Math.min(cardTop + cardH, sy));
     if (connectorDot) { connectorDot.setAttribute("cx", sx); connectorDot.setAttribute("cy", sy); }
     if (connectorLine) {
       connectorLine.setAttribute("x1", sx); connectorLine.setAttribute("y1", sy);
@@ -322,7 +325,7 @@ function start() {
   function openSection(i) {
     if (!panelEl || i < 0 || i >= sectionAnchors.length) return;
     const sa = sectionAnchors[i];
-    activeIdx = i; frozen = true; angVelY = CONFIG.spin;  // freeze the spin while the panel is open
+    activeIdx = i; frozen = true; angVelY = CONFIG.spin; hoverLeftAt = 0; // freeze the spin while the panel is open
     panelEl.style.setProperty("--cluster-accent", "#" + sa.color.getHexString());
     if (contentEl) contentEl.innerHTML = renderSection(SECTIONS[i]);
     panelEl.classList.add("open");
@@ -332,16 +335,36 @@ function start() {
 
   function closeSection() {
     if (activeIdx < 0 && !frozen) return;
-    activeIdx = -1; frozen = false; angVelY = CONFIG.spin;
+    activeIdx = -1; frozen = false; angVelY = CONFIG.spin; hoverLeftAt = 0;
     if (panelEl) { panelEl.classList.remove("open"); panelEl.setAttribute("aria-hidden", "true"); }
   }
 
-  // hover: pointer cursor over a clickable cluster (also drives discoverability)
+  // is a screen point within (a forgiving margin around) the open card?
+  function pointInCard(px, py) {
+    if (activeIdx < 0) return false;
+    const pad = 28;
+    return px >= cardBox.l - pad && px <= cardBox.l + cardBox.w + pad &&
+           py >= cardBox.t - pad && py <= cardBox.t + cardBox.h + pad;
+  }
+
+  // rollover drives everything: hovering a cluster opens its panel + freezes the spin;
+  // leaving both the cluster and the card (after a short grace) closes it and resumes.
   function updateHover() {
-    if (dragging || pointerDown) return;               // don't fight the grab
+    if (dragging || pointerDown) return;               // don't fight a drag
     const hit = mouseOn ? pickAnchor(mxPx, myPx) : null;
     const idx = hit ? hit.sectionIndex : -1;
     if (idx !== hoverIdx) { hoverIdx = idx; document.body.style.cursor = idx >= 0 ? "pointer" : ""; }
+    if (idx >= 0) {                                     // over a cluster → open / switch
+      hoverLeftAt = 0;
+      if (idx !== activeIdx) openSection(idx);
+      return;
+    }
+    if (activeIdx >= 0) {                               // panel open, cursor off the cluster
+      if (mouseOn && pointInCard(mxPx, myPx)) { hoverLeftAt = 0; return; } // still reading the card
+      const now = performance.now();
+      if (!hoverLeftAt) hoverLeftAt = now;             // start the grace timer
+      else if (now - hoverLeftAt > HOVER_GRACE) closeSection();
+    }
   }
 
   if (closeBtn) closeBtn.addEventListener("click", closeSection);

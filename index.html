@@ -620,7 +620,7 @@
   .cluster-panel {
     position: fixed;
     inset: 0;
-    z-index: 40;            /* above the scene + frame, below the contact modal (50) */
+    z-index: 45;            /* above the scene + wordmark, below the contact modal (50) */
     pointer-events: none;   /* only the card catches clicks; background clicks fall through to the canvas */
     visibility: hidden;
   }
@@ -653,15 +653,16 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: min(340px, calc(100% - 28px));
-    padding: clamp(18px, 2.4vw, 26px);
-    background: rgba(8, 6, 22, 0.80);
+    width: clamp(320px, 34vw, 460px);
+    padding: clamp(24px, 2.8vw, 36px);
+    background: rgba(8, 6, 22, 0.82);
     border: 1px solid var(--cluster-accent, rgba(167, 139, 250, 0.40));
-    border-radius: 14px;
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    backdrop-filter: blur(24px) saturate(150%);
+    border-radius: 16px;
+    cursor: auto;
+    -webkit-backdrop-filter: blur(26px) saturate(150%);
+    backdrop-filter: blur(26px) saturate(150%);
     box-shadow:
-      0 12px 48px rgba(0, 0, 0, 0.55),
+      0 16px 60px rgba(0, 0, 0, 0.6),
       0 0 0 1px rgba(255, 255, 255, 0.02),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
     pointer-events: auto;
@@ -698,16 +699,16 @@
   .cluster-title {
     font-family: "Kodchasan", ui-sans-serif, sans-serif;
     font-weight: 200;
-    font-size: clamp(18px, 2.4vw, 24px);
+    font-size: clamp(22px, 3vw, 30px);
     letter-spacing: 0.12em;
-    margin: 0 0 12px;
+    margin: 0 0 14px;
     padding-right: 28px;
     color: #fff;
-    text-shadow: 0 0 20px var(--cluster-accent, rgba(167, 139, 250, 0.6));
+    text-shadow: 0 0 22px var(--cluster-accent, rgba(167, 139, 250, 0.6));
   }
   .cluster-body {
-    font-size: 13px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.65;
     color: var(--fg-dim);
   }
   .cluster-body p { margin: 0 0 10px; }
@@ -1032,6 +1033,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=23"></script>
+  <script type="module" src="./holon.js?v=24"></script>
 </body>
 </html>
