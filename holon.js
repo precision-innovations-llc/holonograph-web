@@ -53,14 +53,14 @@ const CONFIG = {
 
   // travelling pulses (live-tunable)
   sparkSize: 0.115,
-  sparkSpeed: 1.45,      // fraction of the line per second
-  sparkEase: 0.5,        // 0 = linear travel, 1 = full smoothstep ease in/out
+  sparkSpeed: 1.25,      // fraction of the line per second
+  sparkEase: 0.4,        // 0 = linear travel, 1 = full smoothstep ease in/out
   sparkWait: [0.4, 3.3], // sporadic idle gap between a connector's pulses (s)
 
-  bloom: { strength: 1.7, radius: 0.85, threshold: 0.0 },
+  bloom: { strength: 1.65, radius: 0.85, threshold: 0.0 },
 
   camDist: 21, fov: 55,
-  spin: 0.145, fog: [14, 50],
+  spin: 0.06, fog: [14, 50],
 
   // drag left/right to spin; release flings with momentum, and resistance decays
   // the fling back to the ambient spin (the released velocity is the fastest point).
@@ -70,8 +70,8 @@ const CONFIG = {
 
   // cursor highlight: bright sprites pop on the nodes nearest the pointer (replaces halo)
   highlightRadius: 130,  // screen px
-  highlightStrength: 1.7,
-  highlightSize: 0.42,   // sprite size of the highlight glow (much bigger than the cores)
+  highlightStrength: 0.4,
+  highlightSize: 0.18,   // sprite size of the highlight glow
 };
 
 const ZONES = [
