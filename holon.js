@@ -72,6 +72,9 @@ const CONFIG = {
   highlightRadius: 130,  // screen px
   highlightStrength: 0.4,
   highlightSize: 0.18,   // sprite size of the highlight glow
+
+  // clickable cluster zones → freeze the spin + open an HTML panel
+  clusterHitRadius: 48,  // screen-px tap/hover tolerance around a cluster anchor
 };
 
 const ZONES = [
@@ -79,6 +82,17 @@ const ZONES = [
   { c: [6.0, -2.0, -3.0], cols: [0xfcd34d, 0xf0abfc] },
   { c: [1.5, -4.5, 4.0],  cols: [0x7dd3fc, 0x818cf8] },
   { c: [3.0, 5.0, -4.5],  cols: [0xe879f9, 0xa78bfa] },
+];
+
+// Clickable cluster sections. Each entry binds to one cluster zone in the scene
+// (auto-assigned to the most spread-out clusters). The count here = how many
+// clusters become interactive. PLACEHOLDER copy/links — replace with real content.
+// Per section: { title, body (HTML), image? (url), cta? ({ label, href? }) }.
+const SECTIONS = [
+  { title: "Observe",   body: "<p>Placeholder — continuous, model-agnostic observation of behavior as it changes over time.</p>", cta: { label: "learn more" } },
+  { title: "Attribute", body: "<p>Placeholder — trace drift back to the change that caused it, not just the symptom.</p>", cta: { label: "see how" } },
+  { title: "Align",     body: "<p>Placeholder — keep systems anchored to intent as they evolve.</p>", cta: { label: "the approach" } },
+  { title: "Connect",   body: "<p>Placeholder — questions, pilots, partnerships.</p>", cta: { label: "open a channel", href: "mailto:hello@holonograph.ai" } },
 ];
 
 // ───────────────────────────── boot guards ──────────────────────────────────
@@ -167,33 +181,171 @@ function start() {
   const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), CONFIG.bloom.strength, CONFIG.bloom.radius, CONFIG.bloom.threshold);
   composer.addPass(bloom);
 
-  // ── interaction: drag L/R to spin (fling + resistance); cursor highlights nodes ──
+  // ── interaction: tap a cluster to open its panel; drag L/R to spin (fling + resistance) ──
   let dragging = false, lastX = 0, lastMoveT = 0;
-  let mxPx = -1, myPx = -1, mouseOn = false; // cursor in screen px for the node highlight
-  const interactive = (el) => el && el.closest && el.closest("a, button, input, textarea, .contact-panel");
+  let mxPx = -1, myPx = -1, mouseOn = false;       // cursor in screen px (node highlight + hit-test)
+  let pointerDown = false, downX = 0, downY = 0, movedFar = false;
+  const DRAG_THRESH = 6;                            // px of travel before a press becomes a spin-drag
+  const interactive = (el) => el && el.closest && el.closest("a, button, input, textarea, .contact-panel, .cluster-card");
   window.addEventListener("pointerdown", (e) => {
     if (interactive(e.target)) return;
-    dragging = true; lastX = e.clientX; lastMoveT = performance.now();
-    document.body.style.cursor = "grabbing";
+    pointerDown = true; movedFar = false; downX = e.clientX; downY = e.clientY;
+    lastX = e.clientX; lastMoveT = performance.now();
   });
   window.addEventListener("pointermove", (e) => {
     mxPx = e.clientX; myPx = e.clientY; mouseOn = true;
-    if (!dragging) return;
-    const now = performance.now(), ddt = Math.max(8, now - lastMoveT) / 1000, dx = e.clientX - lastX;
-    world.rotation.y += dx * CONFIG.dragSpinSens;                        // drag spins directly
-    angVelY = Math.max(-CONFIG.maxFling, Math.min(CONFIG.maxFling, (dx * CONFIG.dragSpinSens) / ddt)); // release velocity
-    lastX = e.clientX; lastMoveT = now;
+    if (!pointerDown) { updateHover(); return; }
+    if (!movedFar && (Math.abs(e.clientX - downX) > DRAG_THRESH || Math.abs(e.clientY - downY) > DRAG_THRESH)) {
+      movedFar = true;
+      if (frozen) closeSection();                   // dragging the cube dismisses an open panel
+      dragging = true; document.body.style.cursor = "grabbing";
+      lastX = e.clientX; lastMoveT = performance.now();
+    }
+    if (dragging) {
+      const now = performance.now(), ddt = Math.max(8, now - lastMoveT) / 1000, dx = e.clientX - lastX;
+      world.rotation.y += dx * CONFIG.dragSpinSens;                        // drag spins directly
+      angVelY = Math.max(-CONFIG.maxFling, Math.min(CONFIG.maxFling, (dx * CONFIG.dragSpinSens) / ddt)); // release velocity
+      lastX = e.clientX; lastMoveT = now;
+    }
   }, { passive: true });
-  const endDrag = () => { dragging = false; document.body.style.cursor = ""; };
-  window.addEventListener("pointerup", endDrag);
-  window.addEventListener("pointercancel", endDrag);
-  window.addEventListener("pointerout", (e) => { if (!e.relatedTarget) mouseOn = false; });
+  const endPress = (e) => {
+    if (pointerDown && !movedFar) {                 // a tap, not a drag → cluster hit-test
+      const hit = pickAnchor(e.clientX, e.clientY);
+      if (hit) openSection(hit.sectionIndex);
+      else if (activeIdx >= 0) closeSection();
+    }
+    pointerDown = false; dragging = false; movedFar = false;
+    document.body.style.cursor = "";
+    updateHover();
+  };
+  window.addEventListener("pointerup", endPress);
+  window.addEventListener("pointercancel", () => { pointerDown = false; dragging = false; movedFar = false; document.body.style.cursor = ""; });
+  window.addEventListener("pointerout", (e) => { if (!e.relatedTarget) { mouseOn = false; updateHover(); } });
 
   // ── rebuildable scene content (the GUI calls rebuild() on structural edits) ──
   let swarmMat, spMat, spGeo, spPos, spCol, sparks = [], connectors = [], nS = 0;
   let coreGeo, coreCol, coreBase, nodePos, nodeCount = 0; // node cores + base colours
   let hlGeo, hlCol, hlMat;                                // cursor-highlight layer (bigger sprites)
   let angVelY = CONFIG.spin;                              // live spin speed, decays to CONFIG.spin
+  let anchors = [];                                       // cluster centres (promoted from rebuild → click/connector read it)
+
+  // ── clickable cluster zones → freeze + HTML panel with a connector line ──
+  let frozen = false, activeIdx = -1, hoverIdx = -1, sectionAnchors = [];
+  const panelEl = document.getElementById("clusterPanel");
+  const cardEl = panelEl && panelEl.querySelector(".cluster-card");
+  const contentEl = document.getElementById("clusterContent");
+  const connectorLine = panelEl && panelEl.querySelector(".cluster-connector line");
+  const connectorDot = panelEl && panelEl.querySelector(".cluster-connector circle");
+  const closeBtn = panelEl && panelEl.querySelector("[data-cluster-close]");
+  const projv = new THREE.Vector3();
+
+  // pick the section-bearing cluster nearest a screen point (px), or null
+  function pickAnchor(px, py) {
+    if (!sectionAnchors.length) return null;
+    world.updateMatrixWorld(); camera.updateMatrixWorld();
+    const W = window.innerWidth, Hh = window.innerHeight, R2 = CONFIG.clusterHitRadius * CONFIG.clusterHitRadius;
+    let best = null, bestD = R2;
+    for (const sa of sectionAnchors) {
+      projv.copy(sa.pos).applyMatrix4(world.matrixWorld).project(camera);
+      if (projv.z > 1) continue;                       // behind the camera / beyond far plane
+      const sx = (projv.x * 0.5 + 0.5) * W, sy = (-projv.y * 0.5 + 0.5) * Hh;
+      const d2 = (sx - px) * (sx - px) + (sy - py) * (sy - py);
+      if (d2 < bestD) { bestD = d2; best = sa; }
+    }
+    return best;
+  }
+
+  // bind each SECTION to a cluster, spread across the cube (farthest-point pick)
+  function assignSections() {
+    sectionAnchors = [];
+    if (!panelEl || !anchors.length || !SECTIONS.length) return;
+    const n = Math.min(SECTIONS.length, anchors.length), chosen = [anchors[0]];
+    while (chosen.length < n) {
+      let pickA = null, far = -1;
+      for (const a of anchors) {
+        if (chosen.indexOf(a) !== -1) continue;
+        let mind = Infinity;
+        for (const c of chosen) mind = Math.min(mind, a.pos.distanceToSquared(c.pos));
+        if (mind > far) { far = mind; pickA = a; }
+      }
+      chosen.push(pickA);
+    }
+    chosen.forEach((a, i) => sectionAnchors.push({ pos: a.pos, color: a.color, sectionIndex: i }));
+  }
+
+  function renderSection(sec) {
+    let h = `<h3 class="cluster-title">${sec.title}</h3>`;
+    if (sec.image) h += `<img class="cluster-img" src="${sec.image}" alt="" />`;
+    h += `<div class="cluster-body">${sec.body}</div>`;
+    if (sec.cta) {
+      h += sec.cta.href
+        ? `<a class="cluster-cta" href="${sec.cta.href}">${sec.cta.label} →</a>`
+        : `<button type="button" class="cluster-cta">${sec.cta.label} →</button>`;
+    }
+    return h;
+  }
+
+  // place the card opposite the cluster and draw the connector to its near edge
+  function updateConnector(draw) {
+    if (activeIdx < 0 || !cardEl) return;
+    const sa = sectionAnchors[activeIdx];
+    if (!sa) return;
+    world.updateMatrixWorld(); camera.updateMatrixWorld();
+    const W = window.innerWidth, Hh = window.innerHeight;
+    projv.copy(sa.pos).applyMatrix4(world.matrixWorld).project(camera);
+    const sx = (projv.x * 0.5 + 0.5) * W, sy = (-projv.y * 0.5 + 0.5) * Hh;
+    const margin = Math.max(16, Math.min(W, Hh) * 0.04);
+    const cardW = cardEl.offsetWidth, cardH = cardEl.offsetHeight;
+    const onLeft = sx < W / 2;                          // cluster on left → card on the right
+    const cardLeft = onLeft ? (W - cardW - margin) : margin;
+    const cardTop = Math.max(margin, Math.min(Hh - cardH - margin, sy - cardH / 2));
+    cardEl.style.left = cardLeft + "px";
+    cardEl.style.top = cardTop + "px";
+    const ax = onLeft ? cardLeft : (cardLeft + cardW); // attach to the card edge facing the cube
+    const ay = Math.max(cardTop + 14, Math.min(cardTop + cardH - 14, sy));
+    if (connectorDot) { connectorDot.setAttribute("cx", sx); connectorDot.setAttribute("cy", sy); }
+    if (connectorLine) {
+      connectorLine.setAttribute("x1", sx); connectorLine.setAttribute("y1", sy);
+      connectorLine.setAttribute("x2", ax); connectorLine.setAttribute("y2", ay);
+      if (draw) {                                       // animate the line drawing itself in
+        const len = Math.hypot(ax - sx, ay - sy);
+        connectorLine.style.transition = "none";
+        connectorLine.style.strokeDasharray = len;
+        connectorLine.style.strokeDashoffset = len;
+        void connectorLine.getBoundingClientRect();     // force reflow before the transition
+        connectorLine.style.transition = "stroke-dashoffset 620ms cubic-bezier(0.2,0.8,0.2,1), opacity 320ms ease";
+        connectorLine.style.strokeDashoffset = 0;
+      }
+    }
+  }
+
+  function openSection(i) {
+    if (!panelEl || i < 0 || i >= sectionAnchors.length) return;
+    const sa = sectionAnchors[i];
+    activeIdx = i; frozen = true; angVelY = CONFIG.spin;  // freeze the spin while the panel is open
+    panelEl.style.setProperty("--cluster-accent", "#" + sa.color.getHexString());
+    if (contentEl) contentEl.innerHTML = renderSection(SECTIONS[i]);
+    panelEl.classList.add("open");
+    panelEl.setAttribute("aria-hidden", "false");
+    updateConnector(true);
+  }
+
+  function closeSection() {
+    if (activeIdx < 0 && !frozen) return;
+    activeIdx = -1; frozen = false; angVelY = CONFIG.spin;
+    if (panelEl) { panelEl.classList.remove("open"); panelEl.setAttribute("aria-hidden", "true"); }
+  }
+
+  // hover: pointer cursor over a clickable cluster (also drives discoverability)
+  function updateHover() {
+    if (dragging || pointerDown) return;               // don't fight the grab
+    const hit = mouseOn ? pickAnchor(mxPx, myPx) : null;
+    const idx = hit ? hit.sectionIndex : -1;
+    if (idx !== hoverIdx) { hoverIdx = idx; document.body.style.cursor = idx >= 0 ? "pointer" : ""; }
+  }
+
+  if (closeBtn) closeBtn.addEventListener("click", closeSection);
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape" && activeIdx >= 0) closeSection(); });
 
   function clearWorld() {
     for (let i = world.children.length - 1; i >= 0; i--) {
@@ -206,11 +358,13 @@ function start() {
 
   function rebuild() {
     clearWorld();
+    closeSection();                       // a reseed invalidates section→cluster bindings
 
     for (const G of CONFIG.grids) world.add(makeFragmentedGrid(H, G.divisions, G.grey, G.keep));
 
     // clusters as thin organic wall-slabs
-    const nodes = [], anchors = [];
+    const nodes = [];
+    anchors = [];
     for (let ci = 0; ci < CONFIG.clusters; ci++) {
       const nAxis = (Math.random() * 3) | 0, sign = Math.random() < 0.5 ? -1 : 1, ip = [0, 1, 2].filter((a) => a !== nAxis);
       const center = new THREE.Vector3();
@@ -363,6 +517,8 @@ function start() {
     spGeo.setAttribute("color", new THREE.BufferAttribute(spCol, 3).setUsage(THREE.DynamicDrawUsage));
     spMat = new THREE.PointsMaterial({ size: CONFIG.sparkSize, map: sprite, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true });
     world.add(new THREE.Points(spGeo, spMat));
+
+    assignSections(); // bind the clickable SECTIONS to spread-out clusters
   }
 
   // ── resize ───────────────────────────────────────────────────────────────────
@@ -371,6 +527,7 @@ function start() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(w, h, false); composer.setSize(w, h); bloom.setSize(w, h);
     camera.aspect = w / h; camera.updateProjectionMatrix();
+    if (activeIdx >= 0) updateConnector(false); // keep the open panel glued to its cluster
   }
   window.addEventListener("resize", resize);
 
@@ -389,7 +546,7 @@ function start() {
     if (motion) {
       // spin: while dragging, the pointer drives rotation directly; otherwise the
       // fling coasts and resistance eases it back toward the ambient spin
-      if (!dragging) {
+      if (!dragging && !frozen) {
         world.rotation.y += angVelY * dt;
         angVelY += (CONFIG.spin - angVelY) * Math.min(1, CONFIG.spinFriction * dt);
       }
@@ -412,6 +569,7 @@ function start() {
         }
       }
       hlGeo.attributes.color.needsUpdate = true;
+      updateHover(); // pointer cursor tracks clickable clusters as the cube spins
       if (swarmMat) swarmMat.size = CONFIG.coreSize * (1 + 0.08 * Math.sin(t * 1.5));
       for (let i = 0; i < nS; i++) {
         const sp = sparks[i], cn = connectors[i];

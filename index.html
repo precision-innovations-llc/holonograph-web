@@ -615,6 +615,140 @@
     .panel-card { transition: none; }
     .panel-backdrop { transition: none; }
   }
+
+  /* ---------- cluster info panel (driven by the 3D scene) ---------- */
+  .cluster-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 40;            /* above the scene + frame, below the contact modal (50) */
+    pointer-events: none;   /* only the card catches clicks; background clicks fall through to the canvas */
+    visibility: hidden;
+  }
+  .cluster-panel.open { visibility: visible; }
+
+  .cluster-connector {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .cluster-connector line {
+    stroke: var(--cluster-accent, #a78bfa);
+    stroke-width: 1.25;
+    opacity: 0;
+    filter: drop-shadow(0 0 6px var(--cluster-accent, #a78bfa));
+  }
+  .cluster-connector circle {
+    fill: var(--cluster-accent, #a78bfa);
+    opacity: 0;
+    filter: drop-shadow(0 0 9px var(--cluster-accent, #a78bfa));
+    transition: opacity 320ms ease;
+  }
+  .cluster-panel.open .cluster-connector line { opacity: 0.85; }
+  .cluster-panel.open .cluster-connector circle { opacity: 1; }
+
+  .cluster-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: min(340px, calc(100% - 28px));
+    padding: clamp(18px, 2.4vw, 26px);
+    background: rgba(8, 6, 22, 0.80);
+    border: 1px solid var(--cluster-accent, rgba(167, 139, 250, 0.40));
+    border-radius: 14px;
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+    box-shadow:
+      0 12px 48px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(255, 255, 255, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    pointer-events: auto;
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 360ms ease, transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .cluster-panel.open .cluster-card { opacity: 1; transform: scale(1); }
+
+  .cluster-close {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: transparent;
+    color: var(--fg-dim);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    transition: color 200ms, border-color 200ms, background 200ms;
+  }
+  .cluster-close:hover {
+    color: var(--fg);
+    border-color: var(--cluster-accent, rgba(167, 139, 250, 0.45));
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .cluster-title {
+    font-family: "Kodchasan", ui-sans-serif, sans-serif;
+    font-weight: 200;
+    font-size: clamp(18px, 2.4vw, 24px);
+    letter-spacing: 0.12em;
+    margin: 0 0 12px;
+    padding-right: 28px;
+    color: #fff;
+    text-shadow: 0 0 20px var(--cluster-accent, rgba(167, 139, 250, 0.6));
+  }
+  .cluster-body {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--fg-dim);
+  }
+  .cluster-body p { margin: 0 0 10px; }
+  .cluster-body p:last-child { margin-bottom: 0; }
+  .cluster-img {
+    width: 100%;
+    border-radius: 8px;
+    margin: 0 0 12px;
+    display: block;
+  }
+  .cluster-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 9px 14px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--fg);
+    text-decoration: none;
+    background: transparent;
+    border: 1px solid var(--cluster-accent, rgba(167, 139, 250, 0.40));
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 220ms, color 220ms;
+  }
+  .cluster-cta:hover {
+    background: color-mix(in srgb, var(--cluster-accent, #a78bfa) 16%, transparent);
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cluster-card,
+    .cluster-connector line,
+    .cluster-connector circle { transition: none; }
+  }
+  @media (max-width: 760px) {
+    .cluster-card { width: calc(100% - 24px); }
+  }
 </style>
 </head>
 <body>
@@ -678,6 +812,18 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- cluster info panel — content + positioning driven by holon.js (the 3D scene) -->
+  <div class="cluster-panel" id="clusterPanel" aria-hidden="true">
+    <svg class="cluster-connector" id="clusterConnector" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <line x1="0" y1="0" x2="0" y2="0" />
+      <circle cx="0" cy="0" r="3.5" />
+    </svg>
+    <div class="cluster-card" role="dialog" aria-modal="false" aria-labelledby="clusterContent">
+      <button type="button" class="cluster-close" data-cluster-close aria-label="close">×</button>
+      <div class="cluster-content" id="clusterContent"></div>
     </div>
   </div>
 
@@ -886,6 +1032,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=22"></script>
+  <script type="module" src="./holon.js?v=23"></script>
 </body>
 </html>
