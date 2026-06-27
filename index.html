@@ -128,53 +128,6 @@
     50%      { transform: scale(1.045); }
   }
 
-  /* ---------- cursor glow (soft violet light that follows the pointer) ----------
-     NOTE: a backdrop-filter here would force the <video> off its hardware overlay
-     into a software-composited buffer (blurry + aliased + costly), so we use a
-     plain radial tint instead — it never reads the video's pixels. */
-  @property --halo-size {
-    syntax: "<length>";
-    inherits: false;
-    initial-value: 460px;
-  }
-
-  .halo {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    /* soft mask = no hard edge */
-    -webkit-mask-image: radial-gradient(
-      var(--halo-size, 460px) circle at var(--mx, 50%) var(--my, 50%),
-      rgba(0,0,0,0.92) 0%,
-      rgba(0,0,0,0.72) 25%,
-      rgba(0,0,0,0.42) 55%,
-      rgba(0,0,0,0.16) 80%,
-      transparent 100%
-    );
-    mask-image: radial-gradient(
-      var(--halo-size, 460px) circle at var(--mx, 50%) var(--my, 50%),
-      rgba(0,0,0,0.92) 0%,
-      rgba(0,0,0,0.72) 25%,
-      rgba(0,0,0,0.42) 55%,
-      rgba(0,0,0,0.16) 80%,
-      transparent 100%
-    );
-    /* soft violet glow only — no backdrop-filter (see note above) */
-    background: radial-gradient(
-      var(--halo-size, 460px) circle at var(--mx, 50%) var(--my, 50%),
-      rgba(167, 139, 250, 0.14),
-      rgba(125, 211, 252, 0.05) 45%,
-      transparent 72%
-    );
-    z-index: 3;
-    animation: haloBreathe 7s ease-in-out infinite;
-  }
-
-  @keyframes haloBreathe {
-    0%, 100% { --halo-size: 380px; }
-    50%      { --halo-size: 560px; }
-  }
-
   /* ---------- film grain (SVG noise) ---------- */
   .grain {
     position: absolute;
@@ -662,6 +615,141 @@
     .panel-card { transition: none; }
     .panel-backdrop { transition: none; }
   }
+
+  /* ---------- cluster info panel (driven by the 3D scene) ---------- */
+  .cluster-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 45;            /* above the scene + wordmark, below the contact modal (50) */
+    pointer-events: none;   /* only the card catches clicks; background clicks fall through to the canvas */
+    visibility: hidden;
+  }
+  .cluster-panel.open { visibility: visible; }
+
+  .cluster-connector {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .cluster-connector line {
+    stroke: var(--cluster-accent, #a78bfa);
+    stroke-width: 1.25;
+    opacity: 0;
+    filter: drop-shadow(0 0 6px var(--cluster-accent, #a78bfa));
+  }
+  .cluster-connector circle {
+    fill: var(--cluster-accent, #a78bfa);
+    opacity: 0;
+    filter: drop-shadow(0 0 9px var(--cluster-accent, #a78bfa));
+    transition: opacity 320ms ease;
+  }
+  .cluster-panel.open .cluster-connector line { opacity: 0.85; }
+  .cluster-panel.open .cluster-connector circle { opacity: 1; }
+
+  .cluster-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: clamp(320px, 34vw, 460px);
+    padding: clamp(24px, 2.8vw, 36px);
+    background: rgba(8, 6, 22, 0.82);
+    border: 1px solid var(--cluster-accent, rgba(167, 139, 250, 0.40));
+    border-radius: 16px;
+    cursor: auto;
+    -webkit-backdrop-filter: blur(26px) saturate(150%);
+    backdrop-filter: blur(26px) saturate(150%);
+    box-shadow:
+      0 16px 60px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    pointer-events: auto;
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 360ms ease, transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .cluster-panel.open .cluster-card { opacity: 1; transform: scale(1); }
+
+  .cluster-close {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: transparent;
+    color: var(--fg-dim);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    transition: color 200ms, border-color 200ms, background 200ms;
+  }
+  .cluster-close:hover {
+    color: var(--fg);
+    border-color: var(--cluster-accent, rgba(167, 139, 250, 0.45));
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .cluster-title {
+    font-family: "Kodchasan", ui-sans-serif, sans-serif;
+    font-weight: 200;
+    font-size: clamp(22px, 3vw, 30px);
+    letter-spacing: 0.12em;
+    margin: 0 0 14px;
+    padding-right: 28px;
+    color: #fff;
+    text-shadow: 0 0 22px var(--cluster-accent, rgba(167, 139, 250, 0.6));
+  }
+  .cluster-body {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--fg-dim);
+  }
+  .cluster-body p { margin: 0 0 10px; }
+  .cluster-body p:last-child { margin-bottom: 0; }
+  .cluster-img {
+    width: 100%;
+    border-radius: 8px;
+    margin: 0 0 12px;
+    display: block;
+  }
+  .cluster-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 9px 14px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--fg);
+    text-decoration: none;
+    background: transparent;
+    border: 1px solid var(--cluster-accent, rgba(167, 139, 250, 0.40));
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 220ms, color 220ms;
+  }
+  .cluster-cta:hover {
+    background: color-mix(in srgb, var(--cluster-accent, #a78bfa) 16%, transparent);
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cluster-card,
+    .cluster-connector line,
+    .cluster-connector circle { transition: none; }
+  }
+  @media (max-width: 760px) {
+    .cluster-card { width: calc(100% - 24px); }
+  }
 </style>
 </head>
 <body>
@@ -670,7 +758,6 @@
       <div class="hero-bg"></div>
     </div>
     <canvas class="holon" id="holon"></canvas>
-    <div class="halo" id="halo"></div>
     <div class="grain"></div>
     <span class="tick tl"></span>
     <span class="tick tr"></span>
@@ -729,11 +816,22 @@
     </div>
   </div>
 
+  <!-- cluster info panel — content + positioning driven by holon.js (the 3D scene) -->
+  <div class="cluster-panel" id="clusterPanel" aria-hidden="true">
+    <svg class="cluster-connector" id="clusterConnector" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <line x1="0" y1="0" x2="0" y2="0" />
+      <circle cx="0" cy="0" r="3.5" />
+    </svg>
+    <div class="cluster-card" role="dialog" aria-modal="false" aria-labelledby="clusterContent">
+      <button type="button" class="cluster-close" data-cluster-close aria-label="close">×</button>
+      <div class="cluster-content" id="clusterContent"></div>
+    </div>
+  </div>
+
   <script>
-    // mouse-driven cube tilt + cursor halo position
+    // mouse-driven wordmark tilt (the cube spin + node highlight live in holon.js)
     (function () {
       const hero = document.getElementById("hero");
-      const halo = document.getElementById("halo");
       const depth = document.getElementById("depth");
       const MAX_TILT = 9;        // degrees of rotation at the viewport edge
       const COUNTER = 0.55;      // wordmark counter-tilt magnitude vs cube
@@ -763,8 +861,6 @@
         const ny = (clientY / window.innerHeight) - 0.5;
         targetRY = nx * 2 * MAX_TILT;          // mouse right → tilt right edge away
         targetRX = -ny * 2 * MAX_TILT;         // mouse down → tilt bottom toward you
-        halo.style.setProperty("--mx", clientX + "px");
-        halo.style.setProperty("--my", clientY + "px");
         if (!raf) raf = requestAnimationFrame(tick);
       }
 
@@ -937,6 +1033,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=17"></script>
+  <script type="module" src="./holon.js?v=24"></script>
 </body>
 </html>
