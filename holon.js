@@ -240,6 +240,9 @@ function start() {
   const projv = new THREE.Vector3();
   let hoverLeftAt = 0, cardBox = { l: 0, t: 0, w: 0, h: 0 }; // grace-close timer + cached card rect
   const HOVER_GRACE = 350;                                   // ms an un-hovered panel lingers before auto-closing
+  let drawTimer = 0;                                         // holds the card back until the connector finishes drawing
+  const LINE_DRAW_MS = 900;                                  // connector draw-in duration (the card reveals after this)
+  const WHITE = new THREE.Color(0xffffff);
 
   // pick the section-bearing cluster nearest a screen point (px), or null
   function pickAnchor(px, py) {
@@ -316,7 +319,7 @@ function start() {
         connectorLine.style.strokeDasharray = len;
         connectorLine.style.strokeDashoffset = len;
         void connectorLine.getBoundingClientRect();     // force reflow before the transition
-        connectorLine.style.transition = "stroke-dashoffset 620ms cubic-bezier(0.2,0.8,0.2,1), opacity 320ms ease";
+        connectorLine.style.transition = "stroke-dashoffset " + LINE_DRAW_MS + "ms cubic-bezier(0.2,0.8,0.2,1), opacity 200ms ease";
         connectorLine.style.strokeDashoffset = 0;
       }
     }
@@ -325,18 +328,28 @@ function start() {
   function openSection(i) {
     if (!panelEl || i < 0 || i >= sectionAnchors.length) return;
     const sa = sectionAnchors[i];
+    const wasOpen = activeIdx >= 0 && panelEl.classList.contains("open");
     activeIdx = i; frozen = true; angVelY = CONFIG.spin; hoverLeftAt = 0; // freeze the spin while the panel is open
     panelEl.style.setProperty("--cluster-accent", "#" + sa.color.getHexString());
+    panelEl.style.setProperty("--cluster-line", "#" + sa.color.clone().lerp(WHITE, 0.4).getHexString()); // brightened tether colour
     if (contentEl) contentEl.innerHTML = renderSection(SECTIONS[i]);
     panelEl.classList.add("open");
     panelEl.setAttribute("aria-hidden", "false");
-    updateConnector(true);
+    if (drawTimer) { clearTimeout(drawTimer); drawTimer = 0; }
+    updateConnector(true);                                  // (re)draw the tether
+    if (wasOpen) {
+      panelEl.classList.add("drawn");                       // switching clusters: card already shown, just re-tether
+    } else {
+      panelEl.classList.remove("drawn");                    // fresh open: hold the card back until the line finishes
+      drawTimer = setTimeout(() => { panelEl.classList.add("drawn"); drawTimer = 0; }, LINE_DRAW_MS);
+    }
   }
 
   function closeSection() {
     if (activeIdx < 0 && !frozen) return;
     activeIdx = -1; frozen = false; angVelY = CONFIG.spin; hoverLeftAt = 0;
-    if (panelEl) { panelEl.classList.remove("open"); panelEl.setAttribute("aria-hidden", "true"); }
+    if (drawTimer) { clearTimeout(drawTimer); drawTimer = 0; }
+    if (panelEl) { panelEl.classList.remove("open", "drawn"); panelEl.setAttribute("aria-hidden", "true"); }
   }
 
   // is a screen point within (a forgiving margin around) the open card?

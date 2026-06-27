@@ -635,18 +635,24 @@
     overflow: visible;
   }
   .cluster-connector line {
-    stroke: var(--cluster-accent, #a78bfa);
-    stroke-width: 1.25;
+    stroke: var(--cluster-line, #d8ccff);  /* brightened cluster colour — extremely visible */
+    stroke-width: 1.25;                    /* not thicker, just brighter */
+    stroke-linecap: round;
     opacity: 0;
-    filter: drop-shadow(0 0 6px var(--cluster-accent, #a78bfa));
+    filter:
+      drop-shadow(0 0 3px var(--cluster-line, #d8ccff))
+      drop-shadow(0 0 10px var(--cluster-accent, #a78bfa))
+      drop-shadow(0 0 18px var(--cluster-accent, #a78bfa));
   }
   .cluster-connector circle {
-    fill: var(--cluster-accent, #a78bfa);
+    fill: var(--cluster-line, #ffffff);
     opacity: 0;
-    filter: drop-shadow(0 0 9px var(--cluster-accent, #a78bfa));
-    transition: opacity 320ms ease;
+    filter:
+      drop-shadow(0 0 5px var(--cluster-line, #d8ccff))
+      drop-shadow(0 0 13px var(--cluster-accent, #a78bfa));
+    transition: opacity 240ms ease;
   }
-  .cluster-panel.open .cluster-connector line { opacity: 0.85; }
+  .cluster-panel.open .cluster-connector line { opacity: 1; }
   .cluster-panel.open .cluster-connector circle { opacity: 1; }
 
   .cluster-card {
@@ -670,7 +676,8 @@
     transform: scale(0.96);
     transition: opacity 360ms ease, transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
-  .cluster-panel.open .cluster-card { opacity: 1; transform: scale(1); }
+  /* card reveals only once the connector line has finished drawing (.drawn) */
+  .cluster-panel.open.drawn .cluster-card { opacity: 1; transform: scale(1); }
 
   .cluster-close {
     position: absolute;
@@ -1033,6 +1040,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=24"></script>
+  <script type="module" src="./holon.js?v=25"></script>
 </body>
 </html>
