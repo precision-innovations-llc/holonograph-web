@@ -447,6 +447,13 @@ function start() {
     fP.add(CONFIG, "sparkEase", 0, 1, 0.05).name("easing");
     addRange(fP, "wait", CONFIG.sparkWait, 0, 8, 0.1, false);
 
+    const fI = gui.addFolder("Cube & cursor"); // all live, no rebuild
+    fI.add(CONFIG, "dragSpinSens", 0.001, 0.02, 0.001).name("drag sensitivity");
+    fI.add(CONFIG, "spinFriction", 0.2, 5, 0.1).name("spin resistance");
+    fI.add(CONFIG, "maxFling", 0.5, 6, 0.1).name("max fling");
+    fI.add(CONFIG, "highlightRadius", 30, 400, 10).name("highlight radius");
+    fI.add(CONFIG, "highlightStrength", 0, 4, 0.1).name("highlight strength");
+
     const fO = gui.addFolder("Organics");
     addRange(fO, "blast shots", CONFIG.blastShots, 0, 30, 1, true);
     addRange(fO, "blast len", CONFIG.blastLen, 0.2, 8, 0.1, true);
