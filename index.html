@@ -404,6 +404,60 @@
     }
   }
 
+  /* ---------- top-left navigation ---------- */
+  /* Small, text-only list of the four interactive sections. Clicking a link spins
+     the cube so the corresponding cluster lands on the left half of the viewport
+     (taking the shortest rotation direction), then opens the rail. */
+  .topnav {
+    position: absolute;
+    top: clamp(50px, 6.5vw, 76px);
+    left: clamp(20px, 3vw, 36px);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 11;
+    pointer-events: auto;
+    margin: 0;
+    padding: 0;
+  }
+  .topnav-link {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(231, 227, 255, 0.50);
+    background: transparent;
+    border: 0;
+    padding: 3px 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: left;
+    transition: color 200ms ease, letter-spacing 200ms ease;
+  }
+  .topnav-link:hover {
+    color: rgba(255, 255, 255, 0.95);
+  }
+  .topnav-link.active {
+    color: rgba(255, 255, 255, 1);
+    letter-spacing: 0.22em;
+  }
+  .topnav-link::before {
+    content: "·  ";
+    opacity: 0.6;
+  }
+  .topnav-link.active::before {
+    content: "›  ";
+    opacity: 1;
+  }
+  @media (max-width: 760px) {
+    .topnav { top: 40px; gap: 2px; }
+    .topnav-link { font-size: 9px; letter-spacing: 0.14em; }
+  }
+  @media (max-width: 440px) {
+    .topnav { display: none; }  /* re-enable later with a hamburger if needed */
+  }
+
   /* ---------- contact form: slide-up panel ---------- */
   #contactTrigger {
     cursor: pointer;
@@ -617,16 +671,17 @@
     .panel-backdrop { transition: none; }
   }
 
-  /* ---------- cluster info panel (driven by the 3D scene) ---------- */
+  /* ---------- cluster info: right rail (dark glass) + interior lightmode tile ---------- */
   .cluster-panel {
     position: fixed;
     inset: 0;
     z-index: 45;            /* above the scene + wordmark, below the contact modal (50) */
-    pointer-events: none;   /* only the card catches clicks; background clicks fall through to the canvas */
-    visibility: hidden;
+    pointer-events: none;   /* only the rail catches clicks (rail flips this on when open) */
   }
-  .cluster-panel.open { visibility: visible; }
 
+  /* SVG layer for the cluster→rail connector — sits BEHIND the rail. The rail's
+     transparent dark glass dims the line into a softer glow but doesn't fully
+     occlude it; the card content stays clean (line never crosses over text). */
   .cluster-connector {
     position: absolute;
     inset: 0;
@@ -634,12 +689,14 @@
     height: 100%;
     pointer-events: none;
     overflow: visible;
+    z-index: 1;
   }
   .cluster-connector line {
-    stroke: var(--cluster-line, #d8ccff);  /* brightened cluster colour — extremely visible */
-    stroke-width: 1.25;                    /* not thicker, just brighter */
+    stroke: var(--cluster-line, #d8ccff);
+    stroke-width: 1.25;
     stroke-linecap: round;
     opacity: 0;
+    transition: opacity 220ms ease;
     filter:
       drop-shadow(0 0 3px var(--cluster-line, #d8ccff))
       drop-shadow(0 0 10px var(--cluster-accent, #a78bfa))
@@ -648,107 +705,205 @@
   .cluster-connector circle {
     fill: var(--cluster-line, #ffffff);
     opacity: 0;
+    transition: opacity 220ms ease;
     filter:
       drop-shadow(0 0 5px var(--cluster-line, #d8ccff))
       drop-shadow(0 0 13px var(--cluster-accent, #a78bfa));
-    transition: opacity 240ms ease;
   }
-  .cluster-panel.open .cluster-connector line { opacity: 1; }
-  .cluster-panel.open .cluster-connector circle { opacity: 1; }
+  .cluster-panel.open.tethered .cluster-connector line,
+  .cluster-panel.open.tethered .cluster-connector circle { opacity: 1; }
 
-  .cluster-card {
+  /* dark glass right rail, slides in from the right */
+  .cluster-rail {
     position: absolute;
-    left: 0;
-    top: 0;
-    width: clamp(320px, 34vw, 460px);
-    padding: clamp(24px, 2.8vw, 36px);
-    font-family: var(--font-ui);
-    background: rgba(242, 241, 248, 0.96);  /* light enterprise surface */
-    border: 1px solid rgba(22, 19, 45, 0.12);
-    border-radius: 5px;                      /* significantly squared, not sharp */
-    cursor: auto;
-    -webkit-backdrop-filter: blur(16px) saturate(115%);
-    backdrop-filter: blur(16px) saturate(115%);
-    box-shadow:
-      0 18px 50px rgba(0, 0, 0, 0.45),
-      0 2px 8px rgba(0, 0, 0, 0.22);
+    top: 0; right: 0; bottom: 0;
+    width: clamp(380px, 33vw, 520px);
+    padding: 56px 24px 24px;
+    z-index: 2;
     pointer-events: auto;
-    opacity: 0;
-    transform: scale(0.96);
-    transition: opacity 360ms ease, transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    background: linear-gradient(180deg,
+      rgba(10, 8, 24, 0.55) 0%,
+      rgba(8, 6, 22, 0.60) 100%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    backdrop-filter: blur(22px) saturate(140%);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transform: translateX(100%);
+    transition: transform 380ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
-  /* card reveals only once the connector line has finished drawing (.drawn) */
-  .cluster-panel.open.drawn .cluster-card { opacity: 1; transform: scale(1); }
+  .cluster-panel.open .cluster-rail { transform: translateX(0); }
 
-  .cluster-close {
+  /* anchor dot at the rail's top-left — the connector terminates here; z-index sits above the line so the dot caps it cleanly */
+  .cluster-anchor {
     position: absolute;
-    top: 9px;
-    right: 9px;
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    border: 1px solid rgba(22, 19, 45, 0.18);
+    top: 22px;
+    left: 22px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--cluster-line, #d8ccff);
+    opacity: 0;
+    transition: opacity 220ms ease;
+    pointer-events: none;
+    z-index: 4;
+    filter:
+      drop-shadow(0 0 4px var(--cluster-line, #d8ccff))
+      drop-shadow(0 0 12px var(--cluster-accent, #a78bfa));
+  }
+  .cluster-panel.open.tethered .cluster-anchor { opacity: 1; }
+
+  /* close button — sits on the dark rail header, not inside the tile */
+  .rail-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
     background: transparent;
-    color: rgba(22, 19, 45, 0.55);
-    font-size: 18px;
+    color: rgba(231, 227, 255, 0.55);
+    font-size: 20px;
     line-height: 1;
     cursor: pointer;
     display: grid;
     place-items: center;
     padding: 0;
-    transition: color 200ms, border-color 200ms, background 200ms;
+    transition: color 180ms, background 180ms;
+    z-index: 5;
   }
-  .cluster-close:hover {
-    color: #16131f;
-    border-color: var(--cluster-accent, rgba(167, 139, 250, 0.45));
-    background: rgba(22, 19, 45, 0.05);
+  .rail-close:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* warm-dark tile sits inside the rail — low-contrast text, cluster-accent tint, no hacker glow */
+  .cluster-card {
+    position: relative;
+    width: 100%;
+    padding: clamp(22px, 2.4vw, 30px);
+    font-family: var(--font-ui);
+    background:
+      /* soft cluster-accent radial in the top-left, no harsh edge */
+      radial-gradient(120% 80% at 0% 0%,
+        color-mix(in srgb, var(--cluster-accent, #a78bfa) 22%, transparent),
+        transparent 55%),
+      /* warm dark surface — NOT pure black, slight purple cast away from the hacker palette */
+      rgba(22, 18, 38, 0.62);
+    border: 1px solid color-mix(in srgb, var(--cluster-accent, #a78bfa) 34%, transparent);
+    border-radius: 12px;
+    cursor: auto;
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    backdrop-filter: blur(10px) saturate(120%);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.35),
+      0 14px 36px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 0 0 1px color-mix(in srgb, var(--cluster-accent, #a78bfa) 10%, transparent);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 280ms ease 80ms, transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1) 80ms;
+  }
+  .cluster-panel.open .cluster-card { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 720px) {
+    .cluster-rail { width: 100%; }
   }
 
   .cluster-title {
     font-family: var(--font-ui);
     font-weight: 600;
-    font-size: clamp(20px, 2.6vw, 27px);
-    letter-spacing: -0.01em;
-    margin: 0 0 14px;
-    padding-right: 28px;
-    color: #16131f;
+    font-size: clamp(19px, 2.1vw, 24px);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 0 0 10px;
+    padding-right: 32px;
+    color: rgba(248, 246, 255, 0.94);     /* near-white, lavender cast — softer than pure white */
   }
   .cluster-body {
     font-size: 14px;
-    line-height: 1.65;
-    color: rgba(30, 26, 52, 0.74);
+    line-height: 1.6;
+    color: rgba(230, 226, 248, 0.88);     /* light lavender, comfortably bright on the warm-dark card */
   }
-  .cluster-body p { margin: 0 0 10px; }
+  .cluster-body p { margin: 0 0 8px; }
   .cluster-body p:last-child { margin-bottom: 0; }
+
   .cluster-img {
     width: 100%;
-    border-radius: 4px;
-    margin: 0 0 12px;
+    aspect-ratio: 16 / 6;
+    max-height: 200px;
+    border-radius: 8px;
+    margin: 0 0 14px;
     display: block;
+    object-fit: cover;
+    /* dark placeholder with cluster-accent glow — sits on the warm-dark card */
+    background:
+      radial-gradient(120% 80% at 20% 15%,
+        color-mix(in srgb, var(--cluster-accent, #a78bfa) 42%, transparent),
+        transparent 60%),
+      radial-gradient(120% 80% at 85% 80%,
+        color-mix(in srgb, var(--cluster-accent, #a78bfa) 24%, transparent),
+        transparent 65%),
+      linear-gradient(135deg,
+        rgba(30, 24, 52, 0.55),
+        rgba(18, 14, 36, 0.35) 60%,
+        color-mix(in srgb, var(--cluster-accent, #a78bfa) 14%, transparent));
   }
+  .cluster-img--placeholder {
+    border: 1px dashed color-mix(in srgb, var(--cluster-accent, #a78bfa) 38%, transparent);
+  }
+
+  /* CTA row — supports one button or several side-by-side */
+  .cluster-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  /* dark-mode CTA — subtle white-fill + accent-tinted border, avoids the hacker filled-button vibe */
   .cluster-cta {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 16px;
-    padding: 10px 15px;
+    gap: 6px;
+    padding: 9px 14px;
     font-family: var(--font-ui);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #16131f;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: rgba(248, 246, 255, 0.94);
     text-decoration: none;
-    background: transparent;
-    border: 1px solid rgba(22, 19, 45, 0.22);
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid color-mix(in srgb, var(--cluster-accent, #a78bfa) 38%, transparent);
+    border-radius: 8px;
     cursor: pointer;
-    transition: background 220ms, color 220ms, border-color 220ms;
+    transition: background 200ms ease, transform 200ms ease, border-color 200ms ease, color 200ms ease;
   }
   .cluster-cta:hover {
-    background: color-mix(in srgb, var(--cluster-accent, #a78bfa) 14%, transparent);
-    border-color: var(--cluster-accent, #a78bfa);
-    color: #16131f;
+    background: rgba(255, 255, 255, 0.11);
+    border-color: color-mix(in srgb, var(--cluster-accent, #a78bfa) 70%, transparent);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+  .cluster-cta:active { transform: translateY(0); }
+  .cluster-cta:focus-visible {
+    outline: 2px solid var(--cluster-accent, #a78bfa);
+    outline-offset: 2px;
+  }
+
+  /* Secondary variant — even quieter, for "the other thing on this row" (e.g. NPM next to GitHub) */
+  .cluster-cta--ghost {
+    background: transparent;
+    color: rgba(220, 215, 240, 0.80);
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+  .cluster-cta--ghost:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.30);
+    color: rgba(248, 246, 255, 0.96);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -779,6 +934,8 @@
       <span><span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v0</span>
       <span class="right">PRECISION&nbsp;INNOVATIONS</span>
     </header>
+
+    <nav class="topnav" id="topnav" aria-label="Sections"></nav>
 
     <main class="center">
       <div class="depth" id="depth">
@@ -825,16 +982,19 @@
     </div>
   </div>
 
-  <!-- cluster info panel — content + positioning driven by holon.js (the 3D scene) -->
+  <!-- cluster info: right rail + tethered connector — content + interaction driven by holon.js -->
   <div class="cluster-panel" id="clusterPanel" aria-hidden="true">
     <svg class="cluster-connector" id="clusterConnector" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <line x1="0" y1="0" x2="0" y2="0" />
       <circle cx="0" cy="0" r="3.5" />
     </svg>
-    <div class="cluster-card" role="dialog" aria-modal="false" aria-labelledby="clusterContent">
-      <button type="button" class="cluster-close" data-cluster-close aria-label="close">×</button>
-      <div class="cluster-content" id="clusterContent"></div>
-    </div>
+    <aside class="cluster-rail" id="clusterRail" role="dialog" aria-modal="false" aria-labelledby="clusterContent">
+      <span class="cluster-anchor" id="clusterAnchor" aria-hidden="true"></span>
+      <button type="button" class="rail-close" data-cluster-close aria-label="close panel">×</button>
+      <div class="cluster-card">
+        <div class="cluster-content" id="clusterContent"></div>
+      </div>
+    </aside>
   </div>
 
   <script>

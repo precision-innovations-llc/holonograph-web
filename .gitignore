@@ -30,3 +30,7 @@ yarn-error.log*
 # Large source/intermediate video — kept on disk, not in git (superseded by the WebGL scene)
 holonograph_anim.mp4
 holonograph-loop*.mp4
+
+# Source assets (psd, original-resolution png, manuscript drafts) — kept on disk
+# locally; the deployed bundle uses the optimized webp at the root.
+assets/

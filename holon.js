@@ -69,9 +69,19 @@ const CONFIG = {
   maxFling: 2.4,         // cap on fling speed (rad/s)
 
   // cursor highlight: bright sprites pop on the nodes nearest the pointer (replaces halo)
-  highlightRadius: 130,  // screen px
+  highlightRadius: 80,   // screen px
   highlightStrength: 0.4,
   highlightSize: 0.18,   // sprite size of the highlight glow
+
+  // section-anchor amplification: clusters tied to nav items are markedly brighter
+  // (UnrealBloom contribution scales with pixel intensity) and fire more blast shots
+  // than ambient clusters. Pairing the section boost with an ambient dim creates
+  // strong visual hierarchy — the menu-item clusters are unambiguously the brightest.
+  sectionBoostBright: 3.0,
+  ambientDim: 0.62,                // non-section clusters render at 62% of normal brightness
+  sectionBlastShots: [16, 20],
+  // deterministic palette for the section anchors (one per SECTION; cycled for extras)
+  sectionPalette: [0xfcd34d, 0x7dd3fc, 0xa78bfa, 0xe879f9],
 
   // clickable cluster zones → freeze the spin + open an HTML panel
   clusterHitRadius: 48,  // screen-px tap/hover tolerance around a cluster anchor
@@ -89,10 +99,30 @@ const ZONES = [
 // clusters become interactive. PLACEHOLDER copy/links — replace with real content.
 // Per section: { title, body (HTML), image? (url), cta? ({ label, href? }) }.
 const SECTIONS = [
-  { title: "Observe",   body: "<p>Placeholder — continuous, model-agnostic observation of behavior as it changes over time.</p>", cta: { label: "learn more" } },
-  { title: "Attribute", body: "<p>Placeholder — trace drift back to the change that caused it, not just the symptom.</p>", cta: { label: "see how" } },
-  { title: "Align",     body: "<p>Placeholder — keep systems anchored to intent as they evolve.</p>", cta: { label: "the approach" } },
-  { title: "Connect",   body: "<p>Placeholder — questions, pilots, partnerships.</p>", cta: { label: "open a channel", href: "mailto:hello@holonograph.ai" } },
+  {
+    title: "Observe",
+    body: "<p>Placeholder — continuous, model-agnostic observation of agent behavior as it changes over time. Holonograph captures multi-resolution traces from production systems: response shapes, tool-call patterns, latency cohorts, and the higher-order signals that standard eval suites aren't built to surface.</p>" +
+          "<p>Placeholder — observation runs in-flight alongside live traffic, not as a post-hoc batch evaluation. The substrate accumulates so that when something shifts upstream, the instrument already has the longitudinal record needed to recognise what changed and where.</p>",
+    cta: { label: "learn more" },
+  },
+  {
+    title: "Attribute",
+    body: "<p>Placeholder — once drift is observed, attribution walks the signal back through the system to the change that caused it: a prompt revision, a tool update, a model swap, an upstream input shift. The instrument distinguishes between stochastic noise and structural drift, and between cohort-localised changes and global ones.</p>" +
+          "<p>Placeholder — the output is a ranked list of candidate causes with confidence bounds, not a single guess. Operators get evidence they can act on, expressed in the language of the change they actually made.</p>",
+    cta: { label: "see how" },
+  },
+  {
+    title: "Align",
+    body: "<p>Placeholder — alignment isn't a one-time gate before shipping; it's a continuous measurement against the substrate of what the system was meant to do. Holonograph carries intent forward across model updates, prompt rewrites, and operator changes, and surfaces drift the moment it appears.</p>" +
+          "<p>Placeholder — the lens framework provides cross-vendor comparability, cohort drift tracking, and intent anchors that survive model swaps. The instrument that lets you say \"this update is on-axis\" or \"this update has shifted us off-intent in this cohort\" with evidence rather than vibes.</p>",
+    cta: { label: "the approach" },
+  },
+  {
+    title: "Connect",
+    body: "<p>Placeholder — we're working with a small number of design partners running production agentic systems where observability gaps are starting to bite. If that's you and you've felt the standard eval frameworks come up short for cohort drift or attribution, reach out.</p>" +
+          "<p>Placeholder — questions, pilot inquiries, and partnership conversations all welcome. Replies usually come within a day. The channel below routes directly to the founder.</p>",
+    cta: { label: "open a channel", href: "mailto:hello@holonograph.ai" },
+  },
 ];
 
 // ───────────────────────────── boot guards ──────────────────────────────────
@@ -186,7 +216,7 @@ function start() {
   let mxPx = -1, myPx = -1, mouseOn = false;       // cursor in screen px (node highlight + hit-test)
   let pointerDown = false, downX = 0, downY = 0, movedFar = false;
   const DRAG_THRESH = 6;                            // px of travel before a press becomes a spin-drag
-  const interactive = (el) => el && el.closest && el.closest("a, button, input, textarea, .contact-panel, .cluster-card");
+  const interactive = (el) => el && el.closest && el.closest("a, button, input, textarea, .contact-panel, .cluster-rail");
   window.addEventListener("pointerdown", (e) => {
     if (interactive(e.target)) return;
     pointerDown = true; movedFar = false; downX = e.clientX; downY = e.clientY;
@@ -197,7 +227,10 @@ function start() {
     if (!pointerDown) { updateHover(); return; }
     if (!movedFar && (Math.abs(e.clientX - downX) > DRAG_THRESH || Math.abs(e.clientY - downY) > DRAG_THRESH)) {
       movedFar = true;
-      if (frozen) closeSection();                   // dragging the cube dismisses an open panel
+      // Dragging the cube while the rail is open: keep the tether AND the rail.
+      // The cube stays frozen so it doesn't auto-spin; the drag still rotates it
+      // directly via dx below, and the per-frame updateConnector in the render
+      // loop keeps the line glued to the cluster's moving screen position.
       dragging = true; document.body.style.cursor = "grabbing";
       lastX = e.clientX; lastMoveT = performance.now();
     }
@@ -211,8 +244,8 @@ function start() {
   const endPress = (e) => {
     if (pointerDown && !movedFar) {                 // a tap, not a drag → cluster hit-test (touch / click)
       const hit = pickAnchor(e.clientX, e.clientY);
-      if (hit) { if (hit.sectionIndex !== activeIdx) openSection(hit.sectionIndex); }
-      else if (activeIdx >= 0) closeSection();
+      if (hit && hit.sectionIndex !== activeIdx) openSection(hit.sectionIndex);
+      // tap on empty space does NOT close the rail — only × / ESC do that.
     }
     pointerDown = false; dragging = false; movedFar = false;
     document.body.style.cursor = "";
@@ -229,19 +262,23 @@ function start() {
   let angVelY = CONFIG.spin;                              // live spin speed, decays to CONFIG.spin
   let anchors = [];                                       // cluster centres (promoted from rebuild → click/connector read it)
 
-  // ── clickable cluster zones → freeze + HTML panel with a connector line ──
-  let frozen = false, activeIdx = -1, hoverIdx = -1, sectionAnchors = [];
+  // ── clickable cluster zones → persistent right rail + tethered connector line ──
+  let frozen = false, activeIdx = -1, hoverIdx = -1, sectionAnchors = [], sectionPickIndices = [];
+  // smooth spin-to-target tween (driven by nav clicks)
+  let tween = null;                          // { from: number, delta: number, start: ms, duration: ms } | null
+  const SPIN_TWEEN_MS = 750;                 // how long the cube takes to rotate the selected cluster into place
+  const NAV_TARGET_BETA = -Math.PI / 2;      // -90° — cluster lands at the BACK of the cube (far side from the camera).
+                                             // Its bloom glows through the front-facing wireframe; the connector line
+                                             // exits the cube on the SVG layer en route to the rail anchor.
   const panelEl = document.getElementById("clusterPanel");
-  const cardEl = panelEl && panelEl.querySelector(".cluster-card");
+  const railEl = document.getElementById("clusterRail");
+  const anchorEl = document.getElementById("clusterAnchor");
   const contentEl = document.getElementById("clusterContent");
   const connectorLine = panelEl && panelEl.querySelector(".cluster-connector line");
   const connectorDot = panelEl && panelEl.querySelector(".cluster-connector circle");
   const closeBtn = panelEl && panelEl.querySelector("[data-cluster-close]");
   const projv = new THREE.Vector3();
-  let hoverLeftAt = 0, cardBox = { l: 0, t: 0, w: 0, h: 0 }; // grace-close timer + cached card rect
-  const HOVER_GRACE = 350;                                   // ms an un-hovered panel lingers before auto-closing
-  let drawTimer = 0;                                         // holds the card back until the connector finishes drawing
-  const LINE_DRAW_MS = 900;                                  // connector draw-in duration (the card reveals after this)
+  const LINE_DRAW_MS = 350;                                  // connector draw-in duration (fast — rail is the focus)
   const WHITE = new THREE.Color(0xffffff);
 
   // pick the section-bearing cluster nearest a screen point (px), or null
@@ -260,55 +297,137 @@ function start() {
     return best;
   }
 
-  // bind each SECTION to a cluster, spread across the cube (farthest-point pick)
+  // bind each SECTION to a cluster — picks were done inside rebuild() so the
+  // colors / boosts are baked in by the time geometry was generated.
   function assignSections() {
     sectionAnchors = [];
-    if (!panelEl || !anchors.length || !SECTIONS.length) return;
-    const n = Math.min(SECTIONS.length, anchors.length), chosen = [anchors[0]];
-    while (chosen.length < n) {
-      let pickA = null, far = -1;
-      for (const a of anchors) {
-        if (chosen.indexOf(a) !== -1) continue;
-        let mind = Infinity;
-        for (const c of chosen) mind = Math.min(mind, a.pos.distanceToSquared(c.pos));
-        if (mind > far) { far = mind; pickA = a; }
-      }
-      chosen.push(pickA);
-    }
-    chosen.forEach((a, i) => sectionAnchors.push({ pos: a.pos, color: a.color, sectionIndex: i }));
+    if (!panelEl || !anchors.length || !SECTIONS.length || !sectionPickIndices.length) return;
+    sectionPickIndices.forEach((ai, i) => {
+      const a = anchors[ai];
+      if (a) sectionAnchors.push({ pos: a.pos, color: a.color, sectionIndex: i });
+    });
   }
+
+  // ── top-left navigation: text-only links, click spins the cube + opens the rail ──
+  const navEl = document.getElementById("topnav");
+
+  function buildNav() {
+    if (!navEl || !SECTIONS.length) return;
+    navEl.innerHTML = SECTIONS.map(
+      (s, i) => `<button type="button" class="topnav-link" data-section="${i}">${s.title}</button>`
+    ).join("");
+  }
+
+  function updateNavActive() {
+    if (!navEl) return;
+    const links = navEl.querySelectorAll(".topnav-link");
+    links.forEach((b) => {
+      const idx = parseInt(b.dataset.section, 10);
+      b.classList.toggle("active", idx === activeIdx);
+    });
+  }
+
+  // Smoothly rotate world.rotation.y to a target angle, picking the shortest arc.
+  function startSpinTo(targetY, durationMs) {
+    let delta = (targetY - world.rotation.y) % (2 * Math.PI);
+    if (delta > Math.PI)  delta -= 2 * Math.PI;
+    if (delta < -Math.PI) delta += 2 * Math.PI;
+    if (Math.abs(delta) < 0.005) { tween = null; return; }
+    tween = {
+      from: world.rotation.y,
+      delta,
+      start: performance.now(),
+      duration: durationMs || SPIN_TWEEN_MS,
+    };
+    angVelY = 0; // cancel any residual fling so the tween is the only motion
+  }
+
+  // ease-in-out cubic — smooth start, smooth landing
+  function tweenEase(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function updateTween() {
+    if (!tween) return;
+    const t = Math.min(1, (performance.now() - tween.start) / tween.duration);
+    world.rotation.y = tween.from + tween.delta * tweenEase(t);
+    if (t >= 1) tween = null;
+  }
+
+  // Click a nav item: spin the cube so the section's cluster lands front-left,
+  // then open the rail. Shortest direction wins via startSpinTo().
+  function navTo(idx) {
+    if (idx < 0 || idx >= sectionPickIndices.length) return;
+    const a = anchors[sectionPickIndices[idx]];
+    if (!a) return;
+    const alpha = Math.atan2(a.pos.z, a.pos.x);
+    const targetY = alpha - NAV_TARGET_BETA;
+    startSpinTo(targetY);
+    openSection(idx);
+  }
+
+  if (navEl) {
+    navEl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".topnav-link");
+      if (!btn) return;
+      const idx = parseInt(btn.dataset.section, 10);
+      if (!Number.isNaN(idx)) navTo(idx);
+    });
+  }
+  buildNav();
 
   function renderSection(sec) {
     let h = `<h3 class="cluster-title">${sec.title}</h3>`;
-    if (sec.image) h += `<img class="cluster-img" src="${sec.image}" alt="" />`;
+    // media slot is always present unless the section explicitly opts out (image: false).
+    // placeholder picks up the cluster accent so even "empty" tiles feel branded.
+    if (sec.image !== false) {
+      h += sec.image
+        ? `<img class="cluster-img" src="${sec.image}" alt="" />`
+        : `<div class="cluster-img cluster-img--placeholder" aria-hidden="true"></div>`;
+    }
     h += `<div class="cluster-body">${sec.body}</div>`;
-    if (sec.cta) {
-      h += sec.cta.href
-        ? `<a class="cluster-cta" href="${sec.cta.href}">${sec.cta.label} →</a>`
-        : `<button type="button" class="cluster-cta">${sec.cta.label} →</button>`;
+    // cta accepts a single object or an array — Open Source tile can host GitHub + NPM side by side
+    const ctas = Array.isArray(sec.cta) ? sec.cta : (sec.cta ? [sec.cta] : []);
+    if (ctas.length) {
+      h += `<div class="cluster-ctas">`;
+      for (const c of ctas) {
+        const cls = "cluster-cta" + (c.variant === "ghost" ? " cluster-cta--ghost" : "");
+        const ext = c.external ? ' target="_blank" rel="noopener"' : "";
+        h += c.href
+          ? `<a class="${cls}" href="${c.href}"${ext}>${c.label} →</a>`
+          : `<button type="button" class="${cls}">${c.label} →</button>`;
+      }
+      h += `</div>`;
     }
     return h;
   }
 
-  // anchor the card in the cluster's own screen quadrant, tethered by a connector line
+  // Resolve the rail's anchor dot to screen pixels using LAYOUT coords,
+  // so the connector targets the anchor's FINAL position even while the rail is mid-slide.
+  function getAnchorScreenPoint() {
+    if (!railEl || !anchorEl) return null;
+    const railLeft = window.innerWidth - railEl.offsetWidth;
+    const cx = railLeft + anchorEl.offsetLeft + anchorEl.offsetWidth / 2;
+    const cy = anchorEl.offsetTop + anchorEl.offsetHeight / 2;
+    return { x: cx, y: cy };
+  }
+
+  // Draw / update the connector from the active cluster to the rail's anchor dot.
+  // After the initial dash-draw-in animation completes, dasharray is cleared so the
+  // line renders FULL LENGTH each frame regardless of how the cube rotates — otherwise
+  // a longer-than-initial line would render only up to the original dasharray (looks cut off).
+  let dashClearTimer = 0;
   function updateConnector(draw) {
-    if (activeIdx < 0 || !cardEl) return;
+    if (activeIdx < 0) return;
     const sa = sectionAnchors[activeIdx];
     if (!sa) return;
+    const anchor = getAnchorScreenPoint();
+    if (!anchor) return;
     world.updateMatrixWorld(); camera.updateMatrixWorld();
     const W = window.innerWidth, Hh = window.innerHeight;
     projv.copy(sa.pos).applyMatrix4(world.matrixWorld).project(camera);
     const sx = (projv.x * 0.5 + 0.5) * W, sy = (-projv.y * 0.5 + 0.5) * Hh;
-    const margin = Math.max(18, Math.min(W, Hh) * 0.035);
-    const cardW = cardEl.offsetWidth, cardH = cardEl.offsetHeight;
-    const left = sx < W / 2, top = sy < Hh / 2;        // pin to the quadrant the cluster sits in
-    const cardLeft = left ? margin : (W - cardW - margin);
-    const cardTop = top ? margin : (Hh - cardH - margin);
-    cardEl.style.left = cardLeft + "px";
-    cardEl.style.top = cardTop + "px";
-    cardBox = { l: cardLeft, t: cardTop, w: cardW, h: cardH };
-    const ax = Math.max(cardLeft, Math.min(cardLeft + cardW, sx)); // closest point on the card to the cluster
-    const ay = Math.max(cardTop, Math.min(cardTop + cardH, sy));
+    const ax = anchor.x, ay = anchor.y;
     if (connectorDot) { connectorDot.setAttribute("cx", sx); connectorDot.setAttribute("cy", sy); }
     if (connectorLine) {
       connectorLine.setAttribute("x1", sx); connectorLine.setAttribute("y1", sy);
@@ -321,6 +440,16 @@ function start() {
         void connectorLine.getBoundingClientRect();     // force reflow before the transition
         connectorLine.style.transition = "stroke-dashoffset " + LINE_DRAW_MS + "ms cubic-bezier(0.2,0.8,0.2,1), opacity 200ms ease";
         connectorLine.style.strokeDashoffset = 0;
+        // After the draw-in animation completes, drop the dasharray so per-frame
+        // updates during cube rotation always render the full line.
+        if (dashClearTimer) clearTimeout(dashClearTimer);
+        dashClearTimer = setTimeout(() => {
+          if (activeIdx >= 0 && connectorLine) {
+            connectorLine.style.strokeDasharray = "none";
+            connectorLine.style.strokeDashoffset = "0";
+          }
+          dashClearTimer = 0;
+        }, LINE_DRAW_MS + 40);
       }
     }
   }
@@ -328,56 +457,34 @@ function start() {
   function openSection(i) {
     if (!panelEl || i < 0 || i >= sectionAnchors.length) return;
     const sa = sectionAnchors[i];
-    const wasOpen = activeIdx >= 0 && panelEl.classList.contains("open");
-    activeIdx = i; frozen = true; angVelY = CONFIG.spin; hoverLeftAt = 0; // freeze the spin while the panel is open
+    activeIdx = i; frozen = true; angVelY = CONFIG.spin;     // freeze the spin while the rail is engaged
     panelEl.style.setProperty("--cluster-accent", "#" + sa.color.getHexString());
-    panelEl.style.setProperty("--cluster-line", "#" + sa.color.clone().lerp(WHITE, 0.4).getHexString()); // brightened tether colour
+    panelEl.style.setProperty("--cluster-line", "#" + sa.color.clone().lerp(WHITE, 0.4).getHexString());
     if (contentEl) contentEl.innerHTML = renderSection(SECTIONS[i]);
     panelEl.classList.add("open");
+    panelEl.classList.add("tethered");
     panelEl.setAttribute("aria-hidden", "false");
-    if (drawTimer) { clearTimeout(drawTimer); drawTimer = 0; }
-    updateConnector(true);                                  // (re)draw the tether
-    if (wasOpen) {
-      panelEl.classList.add("drawn");                       // switching clusters: card already shown, just re-tether
-    } else {
-      panelEl.classList.remove("drawn");                    // fresh open: hold the card back until the line finishes
-      drawTimer = setTimeout(() => { panelEl.classList.add("drawn"); drawTimer = 0; }, LINE_DRAW_MS);
-    }
+    updateConnector(true);                                   // (re)draw the tether to the rail anchor
+    updateNavActive();
   }
 
   function closeSection() {
     if (activeIdx < 0 && !frozen) return;
-    activeIdx = -1; frozen = false; angVelY = CONFIG.spin; hoverLeftAt = 0;
-    if (drawTimer) { clearTimeout(drawTimer); drawTimer = 0; }
-    if (panelEl) { panelEl.classList.remove("open", "drawn"); panelEl.setAttribute("aria-hidden", "true"); }
+    activeIdx = -1; frozen = false; angVelY = CONFIG.spin;
+    tween = null;                                            // cancel any in-flight spin tween
+    if (panelEl) {
+      panelEl.classList.remove("open", "tethered");
+      panelEl.setAttribute("aria-hidden", "true");
+    }
+    updateNavActive();
   }
 
-  // is a screen point within (a forgiving margin around) the open card?
-  function pointInCard(px, py) {
-    if (activeIdx < 0) return false;
-    const pad = 28;
-    return px >= cardBox.l - pad && px <= cardBox.l + cardBox.w + pad &&
-           py >= cardBox.t - pad && py <= cardBox.t + cardBox.h + pad;
-  }
-
-  // rollover drives everything: hovering a cluster opens its panel + freezes the spin;
-  // leaving both the cluster and the card (after a short grace) closes it and resumes.
+  // Cursor feedback only — opening / closing is click-driven now.
   function updateHover() {
-    if (dragging || pointerDown) return;               // don't fight a drag
+    if (dragging || pointerDown) return;
     const hit = mouseOn ? pickAnchor(mxPx, myPx) : null;
     const idx = hit ? hit.sectionIndex : -1;
     if (idx !== hoverIdx) { hoverIdx = idx; document.body.style.cursor = idx >= 0 ? "pointer" : ""; }
-    if (idx >= 0) {                                     // over a cluster → open / switch
-      hoverLeftAt = 0;
-      if (idx !== activeIdx) openSection(idx);
-      return;
-    }
-    if (activeIdx >= 0) {                               // panel open, cursor off the cluster
-      if (mouseOn && pointInCard(mxPx, myPx)) { hoverLeftAt = 0; return; } // still reading the card
-      const now = performance.now();
-      if (!hoverLeftAt) hoverLeftAt = now;             // start the grace timer
-      else if (now - hoverLeftAt > HOVER_GRACE) closeSection();
-    }
   }
 
   if (closeBtn) closeBtn.addEventListener("click", closeSection);
@@ -409,7 +516,7 @@ function start() {
       center.setComponent(ip[1], rand(-H * 0.62, H * 0.62));
       const set = center.y / H > 0.2 ? [0xe879f9, 0xa78bfa, 0xc4b5fd] : center.y / H < -0.2 ? [0xfcd34d, 0xf0abfc] : [0x7dd3fc, 0x818cf8, 0xe879f9];
       const color = new THREE.Color(set[(Math.random() * set.length) | 0]);
-      anchors.push({ pos: center.clone(), color, idx: ci });
+      const nodeStart = nodes.length;
       const sigN = rand(CONFIG.slabThin[0], CONFIG.slabThin[1]), sigP = rand(CONFIG.slabWide[0], CONFIG.slabWide[1]);
       const count = irand(CONFIG.pointsPerCluster[0], CONFIG.pointsPerCluster[1]);
       for (let j = 0; j < count; j++) {
@@ -424,8 +531,38 @@ function start() {
         const step = CONFIG.snapSteps[(Math.random() * CONFIG.snapSteps.length) | 0], free = (Math.random() * 3) | 0, sn = (x) => Math.round(x / step) * step;
         if (free !== 0) p.x = clamp(sn(p.x)); if (free !== 1) p.y = clamp(sn(p.y)); if (free !== 2) p.z = clamp(sn(p.z));
         p.x = clamp(p.x); p.y = clamp(p.y); p.z = clamp(p.z);
-        nodes.push({ pos: p, color: color.clone().multiplyScalar(rand(0.72, 1.05)), free, step });
+        nodes.push({ pos: p, color: color.clone().multiplyScalar(rand(0.72, 1.05)), free, step, clusterIdx: ci });
       }
+      anchors.push({ pos: center.clone(), color, idx: ci, isSection: false, nodeStart, nodeEnd: nodes.length });
+    }
+
+    // ── section anchors get deterministic colors + 2× brightness boost ──────
+    // Pick the N most spread-out clusters via farthest-point, recolor them with the
+    // section palette (so the cube always has a clear gold / blue / purple/magenta
+    // distribution among the interactive clusters), and re-tint their nodes.
+    sectionPickIndices = [];
+    if (anchors.length && SECTIONS.length) {
+      const n = Math.min(SECTIONS.length, anchors.length);
+      sectionPickIndices.push(0);
+      while (sectionPickIndices.length < n) {
+        let pickI = -1, far = -1;
+        for (let i = 0; i < anchors.length; i++) {
+          if (sectionPickIndices.indexOf(i) !== -1) continue;
+          let mind = Infinity;
+          for (const ci of sectionPickIndices) mind = Math.min(mind, anchors[i].pos.distanceToSquared(anchors[ci].pos));
+          if (mind > far) { far = mind; pickI = i; }
+        }
+        sectionPickIndices.push(pickI);
+      }
+      sectionPickIndices.forEach((ai, sIdx) => {
+        const newColor = new THREE.Color(CONFIG.sectionPalette[sIdx % CONFIG.sectionPalette.length]);
+        const a = anchors[ai];
+        a.color = newColor;
+        a.isSection = true;
+        for (let n = a.nodeStart; n < a.nodeEnd; n++) {
+          nodes[n].color = newColor.clone().multiplyScalar(rand(0.72, 1.05));
+        }
+      });
     }
 
     // local density → sheath thickening
@@ -441,11 +578,15 @@ function start() {
     }
 
     // node cores (dynamic colour buffer so the cursor can highlight nearby nodes)
+    // section-anchor nodes get a brightness multiplier — UnrealBloom contribution
+    // scales with pixel intensity, so this is effectively "more bloom" on those clusters.
     nodeCount = nodes.length;
     nodePos = new Float32Array(nodeCount * 3);
     coreCol = new Float32Array(nodeCount * 3);
     nodes.forEach((nd, i) => {
-      const b = CONFIG.coreBright * (0.7 + 0.6 * nd.density);
+      const isSection = anchors[nd.clusterIdx] && anchors[nd.clusterIdx].isSection;
+      const boost = isSection ? CONFIG.sectionBoostBright : CONFIG.ambientDim;
+      const b = CONFIG.coreBright * boost * (0.7 + 0.6 * nd.density);
       nodePos[i * 3] = nd.pos.x; nodePos[i * 3 + 1] = nd.pos.y; nodePos[i * 3 + 2] = nd.pos.z;
       coreCol[i * 3] = nd.color.r * b; coreCol[i * 3 + 1] = nd.color.g * b; coreCol[i * 3 + 2] = nd.color.b * b;
     });
@@ -520,7 +661,8 @@ function start() {
       for (let e = 0; e < CONFIG.emittersPerCluster; e++)
         emitters.push(clampV(ac.pos.clone().add(new THREE.Vector3(gauss(CONFIG.emitterJitter), gauss(CONFIG.emitterJitter), gauss(CONFIG.emitterJitter)))));
       const pick = () => emitters[(Math.random() * emitters.length) | 0];
-      const shots = irand(CONFIG.blastShots[0], CONFIG.blastShots[1]);
+      const shotsRange = ac.isSection ? CONFIG.sectionBlastShots : CONFIG.blastShots;
+      const shots = irand(shotsRange[0], shotsRange[1]);
       for (let s = 0; s < shots; s++) {
         const o = pick(), dir = new THREE.Vector3(rand(-1, 1), rand(-1, 1), rand(-1, 1)).normalize();
         buildStub(o, clampV(o.clone().addScaledVector(dir, rand(CONFIG.blastLen[0], CONFIG.blastLen[1]))), ac.color);
@@ -581,8 +723,11 @@ function start() {
 
     if (motion) {
       // spin: while dragging, the pointer drives rotation directly; otherwise the
-      // fling coasts and resistance eases it back toward the ambient spin
-      if (!dragging && !frozen) {
+      // fling coasts and resistance eases it back toward the ambient spin.
+      // An active nav-spin tween overrides both — it sets rotation.y directly.
+      if (tween) {
+        updateTween();
+      } else if (!dragging && !frozen) {
         world.rotation.y += angVelY * dt;
         angVelY += (CONFIG.spin - angVelY) * Math.min(1, CONFIG.spinFriction * dt);
       }
@@ -629,6 +774,9 @@ function start() {
 
     bloom.strength = CONFIG.bloom.strength; bloom.radius = CONFIG.bloom.radius; // live
     if (spMat) spMat.size = CONFIG.sparkSize;
+
+    // keep the tether glued to the cluster as the cube rotates (drag-spin / fling-decay)
+    if (activeIdx >= 0) updateConnector(false);
 
     composer.render();
     if (motion) requestAnimationFrame(loop); // static under reduced-motion
