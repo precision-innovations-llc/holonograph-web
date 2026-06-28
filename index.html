@@ -202,6 +202,13 @@
     color: var(--fg-dim);
   }
 
+  /* Inline separator used between EST. 2026 and PATENT PENDING in the top-right.
+     Same dim opacity as the top-row text so the dot reads as a punctuation mark. */
+  .top-sep {
+    opacity: 0.45;
+    margin: 0 8px;
+  }
+
   .top .dot, .bottom .dot {
     display: inline-block;
     width: 6px;
@@ -295,6 +302,17 @@
         drop-shadow(0 0 22px rgba(167, 139, 250, 0.42))
         drop-shadow(0 0 56px rgba(125, 211, 252, 0.18));
     }
+  }
+
+  /* ™ on the HOLONOGRAPH wordmark — small, fixed-tracking superscript that
+     opts out of the letter-spacing animation so it doesn't get dragged wide. */
+  .wordmark-tm {
+    font-size: 0.32em;
+    vertical-align: super;
+    letter-spacing: 0;
+    margin-left: 0.05em;
+    font-weight: 300;
+    /* inherits the iris gradient + drop-shadows from the parent .wordmark */
   }
 
   .tagline {
@@ -1161,14 +1179,14 @@
   <div class="frame">
     <header class="top">
       <span><span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v0.17.2</span>
-      <span class="right">EST.&nbsp;2026</span>
+      <span class="right">EST.&nbsp;2026<span class="top-sep">·</span>PATENT&nbsp;PENDING</span>
     </header>
 
     <nav class="topnav" id="topnav" aria-label="Sections"></nav>
 
     <main class="center">
       <div class="depth" id="depth">
-        <h1 class="wordmark">HOLONOGRAPH</h1>
+        <h1 class="wordmark">HOLONOGRAPH<span class="wordmark-tm" aria-hidden="true">™</span></h1>
         <p class="tagline">an observational holon for drift attribution in <span class="ai">AI</span> systems</p>
       </div>
     </main>
@@ -1180,13 +1198,7 @@
     </div>
 
     <footer class="bottom">
-      <span class="footer-legal">
-        ©&nbsp;2026&nbsp;Precision&nbsp;Innovations&nbsp;LLC
-        <span class="footer-legal-sep">·</span>
-        <span>Holonograph™</span>
-        <span class="footer-legal-sep">·</span>
-        <span>Patent&nbsp;Pending <span class="footer-legal-aside">(provisional&nbsp;filed)</span></span>
-      </span>
+      <span class="footer-legal">©&nbsp;2026&nbsp;Precision&nbsp;Innovations&nbsp;LLC</span>
       <span class="right footer-social" aria-label="Holonograph social">
         <a href="https://github.com/holonograph" target="_blank" rel="noopener" class="footer-icon" aria-label="GitHub">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39s1.98.13 2.9.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.84 1.18 3.1 0 4.44-2.69 5.41-5.25 5.69.41.36.78 1.07.78 2.15 0 1.55-.01 2.8-.01 3.18 0 .31.21.67.8.56C20.21 21.38 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
