@@ -81,8 +81,8 @@ const CONFIG = {
   ambientDim: 0.62,                // non-section clusters render at 62% of normal brightness
   sectionBlastShots: [16, 20],
   // deterministic palette for the section anchors (one per SECTION; cycled for extras)
-  // Order matches the SECTIONS order: About, Observability, Attribution, Lens, Connect.
-  sectionPalette: [0x60a5fa, 0xfcd34d, 0x7dd3fc, 0xa78bfa, 0xe879f9],
+  // Order matches SECTIONS: About, Observability, Attribution, Lens, Request-a-Pilot, Read-the-Guide.
+  sectionPalette: [0x60a5fa, 0xfcd34d, 0x7dd3fc, 0xa78bfa, 0xe879f9, 0xfb923c],
 
   // clickable cluster zones → freeze the spin + open an HTML panel
   clusterHitRadius: 48,  // screen-px tap/hover tolerance around a cluster anchor
@@ -172,19 +172,26 @@ const SECTIONS = [
       "<p>It composes on top of OpenTelemetry and is closed under multi-agent composition — handoffs between agents become substrate references rather than new evaluation boundaries — so the four-source decomposition holds whether you are observing a single agent or a cooperating swarm.</p>",
   },
   {
-    title: "Connect",
+    title: "Request a Pilot",
     body: "<p>We're working with a small number of design partners running production agentic systems where evaluation drift is starting to bite. If that's you — and you've felt the standard eval frameworks come up short for cohort drift or attribution — reach out.</p>" +
           "<p>Pilots, partnerships, press, or a conversation about the work. Replies usually come within a day.</p>",
     cta: { label: "request a pilot", action: "open-contact" },
     readMore:
-      "<h4>Where else to find us.</h4>" +
-      "<p>Open issues, follow updates, or just lurk.</p>" +
-      "<ul class=\"social-links\">" +
-        "<li><a href=\"https://github.com/precision-innovations-llc\" target=\"_blank\" rel=\"noopener\">GitHub — precision-innovations-llc</a></li>" +
-        "<li><a href=\"https://x.com/holonograph\" target=\"_blank\" rel=\"noopener\">X — @holonograph</a> <span class=\"tk\">(placeholder handle)</span></li>" +
-        "<li><a href=\"https://reddit.com\" target=\"_blank\" rel=\"noopener\">Reddit</a> <span class=\"tk\">(community TK)</span></li>" +
-        "<li><a href=\"https://precision-innovations.us\" target=\"_blank\" rel=\"noopener\">Precision Innovations</a></li>" +
-      "</ul>",
+      "<h4>What a pilot looks like.</h4>" +
+      "<p>A pilot is a scoped engagement: deploy Holonograph alongside an existing production agent, instrument the first lens, and run four-source attribution on real traffic. We do the integration and the methodology lift together. Outputs are yours — the binary, the lens versions, the captured substrate. Nothing goes back to a vendor cloud.</p>" +
+      "<h4>What we ask of design partners.</h4>" +
+      "<p>Honest feedback on the methodology and the operator surface, and a willingness to publish at least one finding (anonymised at your call) so the field can compound on it. We sign a mutual NDA, you sign nothing exclusive.</p>",
+  },
+  {
+    title: "Read the Guide",
+    body: "<p>The Guide, Mark II is the long-form methodology document — the operator's manual for the four-source decomposition, the lens architecture, and the curation loop. It's how the practice is taught, not just how the binary is configured.</p>" +
+          "<p>Currently in revision. We'll publish it openly when the language is locked in.</p>",
+    cta: { label: "notify me when it ships", action: "open-contact" },
+    readMore:
+      "<h4>What's in it.</h4>" +
+      "<p>Roughly: the substrate-vs-lens framing, how to construct a lens version, when to retire one, how to read the four-source decomposition, and the curation loop end-to-end including the approval-gate workflow. Filed-spec depth, but written for operators, not patent examiners.</p>" +
+      "<h4>Until then.</h4>" +
+      "<p>The four sections above are the public summary. The provisional filing on record at the USPTO is the canonical reference for terminology and scope.</p>",
   },
 ];
 
@@ -603,14 +610,24 @@ function start() {
         e.preventDefault();
         closeReadMore();
         closeSection();
-        const trigger = document.getElementById("contactTrigger");
-        if (trigger) trigger.click();
+        // Open the contact form via the globally-exposed function (no fake-click hop).
+        if (typeof window.openContactPanel === "function") window.openContactPanel();
         return;
       }
       const ctaReadMore = e.target.closest("[data-open-readmore]");
       if (ctaReadMore) { e.preventDefault(); openReadMore(); return; }
     });
   }
+
+  // Bottom-left hero CTA links can use data-section-by-title to navTo a specific section.
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-section-by-title]");
+    if (!t) return;
+    e.preventDefault();
+    const title = t.getAttribute("data-section-by-title");
+    const idx = SECTIONS.findIndex((s) => s.title === title);
+    if (idx >= 0) navTo(idx);
+  });
 
   function clearWorld() {
     for (let i = world.children.length - 1; i >= 0; i--) {

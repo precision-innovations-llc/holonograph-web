@@ -532,11 +532,32 @@
     line-height: 1;
   }
 
-  /* ---------- contact form: slide-up panel ---------- */
-  #contactTrigger {
-    cursor: pointer;
+  /* ---------- footer legal stamp (replaces EST. 2026 — copyright + trademark + patent line) ---------- */
+  .footer-legal {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    color: var(--fg-dim);
+  }
+  .footer-legal-sep {
+    opacity: 0.4;
+    margin: 0 2px;
+  }
+  .footer-legal-aside {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 9px;
+    opacity: 0.55;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+    margin-left: 4px;
+  }
+  @media (max-width: 760px) {
+    .footer-legal { font-size: 8px; letter-spacing: 0.06em; gap: 4px; }
+    .footer-legal-aside { display: none; }   /* keep the line short on narrow screens */
   }
 
+  /* ---------- contact form: slide-up panel ---------- */
   .contact-panel {
     position: fixed;
     inset: 0;
@@ -1139,8 +1160,8 @@
 
   <div class="frame">
     <header class="top">
-      <span><span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v0</span>
-      <span class="right">PRECISION&nbsp;INNOVATIONS</span>
+      <span><span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v0.17.2</span>
+      <span class="right">EST.&nbsp;2026</span>
     </header>
 
     <nav class="topnav" id="topnav" aria-label="Sections"></nav>
@@ -1154,20 +1175,26 @@
 
     <!-- Hero CTAs — sit just above the footer line so they're findable without dominating the cube. -->
     <div class="hero-cta" id="heroCta">
-      <button type="button" class="hero-cta-link hero-cta-link--primary" id="contactTrigger" aria-label="Request a pilot">Request a pilot</button>
-      <a class="hero-cta-link" href="#" aria-label="Read the Guide">Read the Guide <span class="tk">(soon)</span></a>
+      <button type="button" class="hero-cta-link hero-cta-link--primary" data-open-contact aria-label="Request a pilot">Request a pilot</button>
+      <button type="button" class="hero-cta-link" data-section-by-title="Read the Guide" aria-label="Read the Guide">Read the Guide</button>
     </div>
 
     <footer class="bottom">
-      <span>EST.&nbsp;2026</span>
+      <span class="footer-legal">
+        ©&nbsp;2026&nbsp;Precision&nbsp;Innovations&nbsp;LLC
+        <span class="footer-legal-sep">·</span>
+        <span>Holonograph™</span>
+        <span class="footer-legal-sep">·</span>
+        <span>Patent&nbsp;Pending <span class="footer-legal-aside">(provisional&nbsp;filed)</span></span>
+      </span>
       <span class="right footer-social" aria-label="Holonograph social">
-        <a href="https://github.com/precision-innovations-llc" target="_blank" rel="noopener" class="footer-icon" aria-label="GitHub">
+        <a href="https://github.com/holonograph" target="_blank" rel="noopener" class="footer-icon" aria-label="GitHub">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39s1.98.13 2.9.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.73.81 1.18 1.84 1.18 3.1 0 4.44-2.69 5.41-5.25 5.69.41.36.78 1.07.78 2.15 0 1.55-.01 2.8-.01 3.18 0 .31.21.67.8.56C20.21 21.38 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
         </a>
         <a href="https://x.com/holonograph" target="_blank" rel="noopener" class="footer-icon" aria-label="X (formerly Twitter)">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zM17.083 19.77h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
         </a>
-        <a href="https://reddit.com" target="_blank" rel="noopener" class="footer-icon" aria-label="Reddit">
+        <a href="https://www.reddit.com/user/holonograph/" target="_blank" rel="noopener" class="footer-icon" aria-label="Reddit">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12.5c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
         </a>
         <a href="https://precision-innovations.us" target="_blank" rel="noopener" class="footer-icon footer-icon--text" aria-label="Precision Innovations">π</a>
@@ -1296,13 +1323,12 @@
     (function () {
       const TURNSTILE_SITE_KEY = "0x4AAAAAADlnV4sIIlFqD4o6"; // holonograph production widget
 
-      const trigger = document.getElementById("contactTrigger");
       const panel   = document.getElementById("contactPanel");
       const form    = document.getElementById("contactForm");
       const status  = document.getElementById("formStatus");
       const submit  = document.getElementById("formSubmit");
       const tsBox   = document.getElementById("turnstile-container");
-      if (!trigger || !panel) return;
+      if (!panel) return;
 
       let lastFocus = null;
       let tsScriptLoaded = false;
@@ -1360,10 +1386,16 @@
         }
       }
 
-      trigger.addEventListener("click", (e) => {
+      // Delegated trigger: any element marked [data-open-contact] opens the form.
+      // Also exposed globally so other scripts (holon.js) can open the form without
+      // a fake-click hop.
+      document.addEventListener("click", (e) => {
+        const t = e.target.closest("[data-open-contact]");
+        if (!t) return;
         e.preventDefault();
         openPanel();
       });
+      window.openContactPanel = openPanel;
 
       // close on backdrop / × / ESC
       panel.addEventListener("click", (e) => {
