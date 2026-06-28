@@ -1046,6 +1046,46 @@
   .expanded-content ul.social-links li { padding-left: 0; }
   .expanded-content ul.social-links li::before { content: ""; }
 
+  /* Tile grid — replaces bulleted lists for the Core Capabilities (About) and
+     Four Sources of Drift (Attribution) per the v1 manuscript. Two-column on
+     desktop, single column on narrow viewports. Each tile: subtle dark surface,
+     accent-tinted border, bold title + short description. */
+  .expanded-content .tile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 8px 0 14px;
+  }
+  .expanded-content .tile-grid .tile {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid color-mix(in srgb, var(--cluster-accent, #a78bfa) 22%, transparent);
+    border-radius: 8px;
+    padding: 11px 12px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: rgba(228, 224, 246, 0.84);
+    transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+  }
+  .expanded-content .tile-grid .tile:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: color-mix(in srgb, var(--cluster-accent, #a78bfa) 45%, transparent);
+    transform: translateY(-1px);
+  }
+  .expanded-content .tile-grid .tile strong {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: rgba(248, 246, 255, 0.96);
+    margin-bottom: 3px;
+    letter-spacing: -0.005em;
+  }
+  .expanded-content .tile-grid .tile span {
+    display: block;
+  }
+  @media (max-width: 720px) {
+    .expanded-content .tile-grid { grid-template-columns: 1fr; }
+  }
+
   @media (max-width: 1100px) {
     /* Narrower viewports: let the panel grow to fill more of the available clipped area. */
     .rail-expanded {
@@ -1076,6 +1116,49 @@
   }
   .cluster-body p { margin: 0 0 8px; }
   .cluster-body p:last-child { margin-bottom: 0; }
+
+  /* Centered italic etymology block — used in the About tile to render
+     "From the Greek holos (whole) and graph (to record)" as a poetic insert. */
+  .cluster-body .etymology {
+    text-align: center;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.4;
+    margin: 12px 0 6px;
+    color: rgba(248, 246, 255, 0.93);
+  }
+  .cluster-body .etymology em {
+    font-style: italic;
+    color: #ffffff;
+  }
+
+  /* Pull-quote treatment for the Adams placeholder in Read the Guide. */
+  .cluster-body .guide-quote {
+    font-size: 16px;
+    font-style: italic;
+    line-height: 1.5;
+    color: rgba(248, 246, 255, 0.96);
+    margin: 4px 0 14px;
+  }
+  .cluster-body sup {
+    font-size: 0.65em;
+    vertical-align: super;
+    color: color-mix(in srgb, var(--cluster-accent, #a78bfa) 75%, transparent);
+    margin-left: 2px;
+  }
+  .cluster-body .guide-citations {
+    list-style: decimal inside;
+    padding: 0;
+    margin: 14px 0 0;
+    font-size: 12px;
+    color: rgba(220, 215, 240, 0.62);
+    font-style: italic;
+  }
+  .cluster-body .guide-citations li {
+    margin: 2px 0;
+    padding-left: 0;
+  }
+  .cluster-body .guide-citations li::before { content: ""; }
 
   .cluster-img {
     width: 100%;

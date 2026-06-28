@@ -99,77 +99,89 @@ const ZONES = [
 // (auto-assigned to the most spread-out clusters). The count here = how many
 // clusters become interactive. PLACEHOLDER copy/links — replace with real content.
 // Per section: { title, body (HTML), image? (url), cta? ({ label, href? }) }.
-// Content drawn from assets/holonograph-site-v1-content.md.
+// Content drawn from the v1 manuscript (assets/holonograph-web-copy-clean.md).
 // Each section has a short `body` (tile lead) and a longer `readMore` (secondary
 // slider that slides leftward off the right rail). CTAs:
 //   - `action: "open-readmore"`  → opens the secondary slider with that section's readMore content
 //   - `action: "open-contact"`   → closes the rail and opens the in-page contact form
+//
+// The Curation Loop sits under Lens Architecture's readMore per the v1 layout
+// (it's part of the framework's recursive-observability story, not a separate
+// page). Core Capabilities and the Four Sources are rendered as .tile-grid
+// components instead of bulleted lists.
 const SECTIONS = [
   {
     title: "About",
-    body: "<p>Holonograph is a signed, notarized native binary that runs as a localhost daemon inside your own infrastructure. It is the observation layer for agentic AI — the layer that sits between OpenTelemetry and the evaluation and observability tools above it — capturing the complete observational record of how your agents actually behave.</p>" +
-          "<p>The name is literal. From the Greek <em>holos</em> (whole) and <em>graph</em> (to record): the instrument that records the whole. An observational holon — whole and part at once. Holonograph is a product of Precision Innovations LLC.</p>",
-    cta: { label: "see the features", action: "open-readmore" },
+    body: "<p>Holonograph™ is a signed, notarized native binary that runs as a localhost daemon inside your own infrastructure. It is the observation layer for agentic AI systems: sitting between your agent and the language models that drive its behavior. Holonograph captures the complete observational record of your agent's activity across every source of change, allowing it to accurately attribute the cause of changes in a non-deterministic system.</p>" +
+          "<p>The name is literal.</p>" +
+          "<div class=\"etymology\">From the Greek <em>holos</em> (whole)<br>and <em>graph</em> (to record)</div>",
+    cta: { label: "see the capabilities", action: "open-readmore" },
     readMore:
-      "<h4>Built for the operators who most need honest measurement.</h4>" +
-      "<p>Every major evaluation product today is server-based SaaS, which structurally rules out the operators who most need honest measurement — regulated industries, air-gapped and sovereign deployments, and mid-market teams without a platform-engineering org. Holonograph is built for exactly that segment: data sovereignty and methodology depth in a single artifact you deploy and own.</p>" +
-      "<h4>Core capabilities</h4>" +
+      "<p>The instrument that records the whole. An observational holon: it observes the system, observes its own apparatus, and observes itself observing, each version of that apparatus immutable, the sequence of versions shifting over time. Holonograph is a patent-pending product of Precision Innovations LLC.</p>" +
+      "<p>Holonograph complements any evaluation system by adding attribution it can't get on its own. And because it ships as a binary rather than SaaS, it reaches the operators that server-based products structurally rule out:</p>" +
       "<ul>" +
-        "<li><strong>Mediating-gateway capture</strong> — observe by position, never by instrumentation in your code.</li>" +
-        "<li><strong>Multiplex routing</strong> — run one call against several vendors at once and compare them head-to-head on speed, price, and accuracy.</li>" +
-        "<li><strong>Four-source drift decomposition</strong> — substrate, light source, lens, and noise, with stated-confidence attribution.</li>" +
-        "<li><strong>Lens versioning</strong> — the evaluation apparatus made an explicit, attributable thing.</li>" +
-        "<li><strong>Closed-loop curation</strong> — captured overrides and approvals cluster into drafted skills, lessons, and fixtures, human-gated before they ship.</li>" +
-        "<li><strong>Fixture drafting</strong> — turn observed behavior into the tests that catch the next regression.</li>" +
-        "<li><strong>Recursive observability</strong> — the drafter is observed by the lens it improves; getting better is itself a measured event.</li>" +
-        "<li><strong>Eval-mode-on-production</strong> — architecturally-enforced run-mode discrimination, against production infrastructure.</li>" +
-        "<li><strong>Vendor-agnostic continuity</strong> — survives model changes and silent reroutes behind an unchanged name.</li>" +
-        "<li><strong>Variance quantification &amp; isolation</strong> — recover true substrate variance by subtracting independently-determined instrument and lens components.</li>" +
-        "<li><strong>Two-tier auto-configuration</strong> — onboards previously-unconfigured agents.</li>" +
-        "<li><strong>Self-hosted, signed &amp; notarized</strong> — your data never leaves your infrastructure.</li>" +
+        "<li>regulated industries</li>" +
+        "<li>air-gapped and sovereign deployments</li>" +
+        "<li>mid-market teams without a platform-engineering org</li>" +
       "</ul>" +
-      "<p class=\"footnote\">Full documentation lives in <em>The Guide, Mark II</em>. <span class=\"tk\">(coming soon)</span></p>",
+      "<p>Holonograph easily accommodates this cohort by nature of its architecture: data sovereignty and methodology depth in a single artifact you deploy and own.</p>" +
+      "<h4>Core capabilities</h4>" +
+      "<div class=\"tile-grid\">" +
+        "<div class=\"tile\"><strong>Mediating-gateway capture</strong><span>observe by position, never by instrumentation in your code.</span></div>" +
+        "<div class=\"tile\"><strong>Multiplex routing</strong><span>run one call against several vendors at once and compare them head-to-head on speed, price, and accuracy.</span></div>" +
+        "<div class=\"tile\"><strong>Four-source drift decomposition</strong><span>substrate, light source, lens, and noise, with stated-confidence attribution.</span></div>" +
+        "<div class=\"tile\"><strong>Lens versioning</strong><span>the evaluation apparatus made an explicit, attributable thing.</span></div>" +
+        "<div class=\"tile\"><strong>Closed-loop curation</strong><span>captured overrides and approvals cluster into drafted skills, lessons, and fixtures, human-gated before they ship.</span></div>" +
+        "<div class=\"tile\"><strong>Fixture drafting</strong><span>turn observed behavior into the tests that catch the next regression.</span></div>" +
+        "<div class=\"tile\"><strong>Recursive observability</strong><span>the drafter is observed by the lens it improves; getting better is itself a measured event.</span></div>" +
+        "<div class=\"tile\"><strong>Eval-mode-on-production</strong><span>architecturally-enforced run-mode discrimination against production infrastructure.</span></div>" +
+        "<div class=\"tile\"><strong>Vendor-agnostic continuity</strong><span>survives model changes and silent reroutes behind an unchanged name.</span></div>" +
+        "<div class=\"tile\"><strong>Variance quantification &amp; isolation</strong><span>recover true substrate variance by subtracting independently-determined instrument and lens components.</span></div>" +
+        "<div class=\"tile\"><strong>Self-hosted, signed &amp; notarized</strong><span>your data never leaves your infrastructure.</span></div>" +
+      "</div>" +
+      "<p class=\"footnote\">Full documentation lives in <em>The Guide, Mark II</em>.</p>",
   },
   {
     title: "Observability",
-    body: "<p>For the whole history of software, a test that passed yesterday and fails today meant you changed something. Large language models broke that assumption. Put a model at the center of your system and the same input no longer produces the same output — not because anything changed, but because the model is non-deterministic by construction. Your data is non-deterministic now.</p>",
-    cta: { label: "read more", action: "open-readmore" },
+    body: "<p>For the whole history of software, a test that passed yesterday and failed today meant you changed something. Large language models broke that assumption. Put a model at the center of your system and <strong>the same input no longer produces the same output</strong>, not because anything changed, but because the model is non-deterministic by construction. <strong>Your data is non-deterministic now.</strong> Holonograph takes advantage of its unique location at the call boundary, allowing for more accurate attribution of substrate variance.</p>",
+    cta: { label: "see the architecture", action: "open-readmore" },
     readMore:
-      "<h4>Observation by position.</h4>" +
-      "<p>Holonograph sits as a bidirectional mediating gateway between your agents and the models they call, capturing every interaction at the wire-format boundary. Because it owns that boundary, it can run a single call against several models at once — <em>multiplex routing</em> — and compare them head-to-head on speed, price, and accuracy, so you switch vendors on evidence without touching your agents.</p>" +
+      "<h4>Observation by position</h4>" +
+      "<p>Holonograph sits as a bidirectional mediating gateway between your agents and the models they call, capturing every interaction at the wire-format boundary. Because it owns that boundary, it can run a single call against several models at once (<em>multiplex routing</em>) and compare them head-to-head on speed, price, and accuracy, so you switch vendors on evidence without touching your agents.</p>" +
       "<p>An OpenTelemetry sidecar covers anything that doesn't pass through the lens, so the result is <em>observational completeness</em>: every call is either graded or captured, and nothing the agent does is structurally invisible to the apparatus.</p>" +
-      "<h4>No code embedded in the system under observation.</h4>" +
-      "<p>None of this lives in your agent's code. There is zero evaluation logic embedded in the system under observation — observation is a property of architectural position, not of instrumentation you have to install, maintain, and reconcile. That separation is what lets Holonograph run evaluation discipline against production traffic itself.</p>",
+      "<h4>No code embedded in the system under observation</h4>" +
+      "<p>No part of Holonograph lives in your agent's code. There is zero evaluation logic embedded in the system under observation, a property of architectural position, not of instrumentation you must install, maintain, and reconcile. That separation is what lets Holonograph run evaluation discipline against production traffic itself, mapping fixtures and gates 1:1 against production responses.</p>",
   },
   {
     title: "Attribution",
-    body: "<p>When a fixture passes Monday and fails Tuesday, the operator needs to know which cause is responsible — and there are four of them. Holonograph decomposes observed drift into four mutually exclusive sources: substrate drift, light-source drift, lens drift, and stochastic noise.</p>",
-    cta: { label: "see the curation loop", action: "open-readmore" },
+    body: "<p>When a fixture passes Monday and fails Tuesday, the operator needs to know which cause is responsible. There are four of them. Holonograph decomposes observed drift into four mutually exclusive sources: substrate drift, light-source drift, lens drift, and stochastic noise.</p>",
+    cta: { label: "see the four sources", action: "open-readmore" },
     readMore:
-      "<h4>The four sources of drift.</h4>" +
-      "<ul>" +
-        "<li><strong>Substrate drift</strong> — operator-controlled changes to the agentic system.</li>" +
-        "<li><strong>Light-source drift</strong> — vendor-controlled evolution of the model, including silent re-routing behind an unchanged model name.</li>" +
-        "<li><strong>Lens drift</strong> — operator-curated evolution of the evaluation apparatus itself.</li>" +
-        "<li><strong>Stochastic noise</strong> — the model's irreducible non-determinism.</li>" +
-      "</ul>" +
-      "<p>Existing practice collapses the first two into \"the system regressed,\" ignores the third entirely, and treats the fourth as either invisible or all-encompassing. Holonograph captures sufficient versioned state across all four at every evaluation event, so any observed change can be attributed to one source with stated confidence — and an artifactual gain produced by a change to the apparatus can be told apart from a genuine improvement in the system.</p>" +
-      "<p>This matters most where it's hardest to see: the vendor of a model cannot honestly grade its own model's drift. The auditor cannot be the auditee. Holonograph is the independent measurement layer that model vendors structurally cannot provide.</p>" +
-      "<h4>The Curation Loop.</h4>" +
-      "<p>A system's interactions contain the information that should make it better — and in conventional practice that information is noted and forgotten, or it demands slow, vendor-dependent fine-tuning. Holonograph closes the loop instead. Every consequential event is captured as first-class ground truth: not only failures, but human overrides (a trainer edits a draft before sending) and human approvals (a trainer reads a draft and sends it as-is). Overrides encode what good looks like right next to what the system produced; approvals are positive signal, not silence.</p>" +
-      "<p>Similar events cluster, and the drafter — an LLM running inside Holonograph — proposes a concrete corrective artifact for each cluster: a new skill, a lesson, a fixture, or a code fix. It drafts fixtures too, turning observed behavior into the very tests that will catch the next regression. Nothing ships unreviewed: every draft lands in an approval gate where a human accepts, edits, or rejects it. Once published, the artifact becomes substrate — versioned, captured, and attributable in future drift analysis like any other change.</p>" +
-      "<p>The loop is recursive by construction. The drafter's own model call is observed by the same lens it is improving, so the act of getting better is itself a measured, attributable event. Holonograph watches the system, watches the apparatus, and watches itself watching — the instrument that records the whole, applied to its own improvement.</p>",
+      "<h4>The four sources of drift</h4>" +
+      "<div class=\"tile-grid\">" +
+        "<div class=\"tile\"><strong>Substrate drift</strong><span>operator-controlled changes to the agentic system.</span></div>" +
+        "<div class=\"tile\"><strong>Light-source drift</strong><span>vendor-controlled evolution of the model, including silent re-routing behind an unchanged model name.</span></div>" +
+        "<div class=\"tile\"><strong>Lens drift</strong><span>operator-curated evolution of the evaluation apparatus itself.</span></div>" +
+        "<div class=\"tile\"><strong>Stochastic noise</strong><span>the model's irreducible non-determinism.</span></div>" +
+      "</div>" +
+      "<p>Existing practice collapses the first two into \"the system regressed,\" ignores the third entirely, and treats the fourth as either invisible or all-encompassing. Holonograph captures sufficient versioned state across all four at every evaluation event, so any observed change can be attributed to one source with stated confidence. An artifactual gain produced by a change to the apparatus can be told apart from a genuine improvement in the system.</p>" +
+      "<p>This matters most where it's hardest to see: the vendor of a model cannot honestly grade its own model's drift. The auditor cannot be the auditee. Holonograph is the independent measurement layer that model vendors structurally cannot provide.</p>",
   },
   {
     title: "Lens Architecture",
-    body: "<p>The core insight is uncomfortable and, as far as we know, new: <em>the evaluation apparatus itself is an independently attributable source of drift.</em> Modern agentic evaluation grades quality with an LLM-as-judge — your measuring instrument is itself a non-deterministic model, drifting on the same vendor reroutes and prompt churn as the system it measures.</p>",
+    body: "<p>The core insight is uncomfortable and, as far as we know, new: <em>the evaluation apparatus itself is an independently attributable source of drift.</em> Modern agentic evaluation grades quality with an LLM-as-judge: the measuring instrument is itself a non-deterministic model, drifting on the same vendor reroutes and prompt churn as the system it measures.</p>",
     cta: { label: "read the framework", action: "open-readmore" },
     readMore:
-      "<h4>The lens as a first-class, versioned instrument.</h4>" +
-      "<p>The Lens Architecture treats the evaluation apparatus as a first-class, versioned, independently attributable thing. The lens — the operator-built evaluation surface, with its fixtures, baselines, cohort scheme, and surface contracts — is immutable within each version and replaced rather than mutated.</p>" +
+      "<h4>The lens as a first-class, versioned instrument</h4>" +
+      "<p>The Lens Architecture treats the evaluation apparatus as a first-class, versioned, independently attributable thing. The lens (the operator-built evaluation surface, with its fixtures, baselines, cohort scheme, and surface contracts) is immutable within each version and replaced rather than mutated.</p>" +
       "<p>Because lens changes are discrete, operator-curated, and versioned, the variance contributed by the apparatus over any window becomes a known quantity rather than an unaccounted-for confounder.</p>" +
-      "<h4>Holonograph is the implementation; the Lens Architecture is the framework.</h4>" +
-      "<p>It composes on top of OpenTelemetry and is closed under multi-agent composition — handoffs between agents become substrate references rather than new evaluation boundaries — so the four-source decomposition holds whether you are observing a single agent or a cooperating swarm.</p>",
+      "<h4>Holonograph is the implementation; the Lens Architecture is the framework</h4>" +
+      "<p>It composes on top of OpenTelemetry and is closed under multi-agent composition: handoffs between agents become substrate references rather than new evaluation boundaries. The four-source decomposition holds whether you are observing a single agent or a cooperating swarm.</p>" +
+      "<h4>The Curation Loop</h4>" +
+      "<p>A system's interactions contain the information that should make it better. In conventional practice that information is noted and forgotten, or it demands slow, vendor-dependent fine-tuning. Holonograph closes the loop instead. Every consequential event is captured as first-class ground truth: not only failures, but human overrides (a trainer edits a draft before sending) and human approvals (a trainer reads a draft and sends it as-is). Overrides encode what good looks like right next to what the system produced; approvals are positive signal, not silence.</p>" +
+      "<p>Similar events cluster, and the drafter (an LLM executed from within Holonograph) proposes a concrete corrective artifact for each cluster: a new skill, a lesson, a fixture, or a code fix. It drafts fixtures too, turning observed behavior into the very tests that will catch the next regression.</p>" +
+      "<p>Nothing ships unreviewed: every draft lands in an approval gate where a human accepts, edits, or rejects it. Once published, the artifact becomes substrate: versioned, captured, and attributable in future drift analysis like any other change.</p>" +
+      "<p>The loop is recursive by construction. The drafter's own model call is observed by the same lens it is improving, so the act of getting better is itself a measured, attributable event. Holonograph watches the system, watches the apparatus, and watches itself watching: the instrument that records the whole, applied to its own improvement.</p>",
   },
   {
     title: "Request a Pilot",
@@ -184,14 +196,13 @@ const SECTIONS = [
   },
   {
     title: "Read the Guide",
-    body: "<p>The Guide, Mark II is the long-form methodology document — the operator's manual for the four-source decomposition, the lens architecture, and the curation loop. It's how the practice is taught, not just how the binary is configured.</p>" +
-          "<p>Currently in revision. We'll publish it openly when the language is locked in.</p>",
+    body: "<p class=\"guide-quote\">The Guide is definitive. Reality is frequently inaccurate.<sup>[1]</sup></p>" +
+          "<p>So that you understand that just because you see something, it doesn't mean to say it's there. And if you don't see something, it doesn't mean to say it's not there. It's only what your senses bring to your attention.<sup>[2]</sup></p>" +
+          "<ol class=\"guide-citations\">" +
+            "<li>Adams, Douglas. <em>The Restaurant at the End of the Universe</em>. Pan Books, 1980.</li>" +
+            "<li>Adams, Douglas. <em>Mostly Harmless</em>. Heinemann, 1992.</li>" +
+          "</ol>",
     cta: { label: "notify me when it ships", action: "open-contact" },
-    readMore:
-      "<h4>What's in it.</h4>" +
-      "<p>Roughly: the substrate-vs-lens framing, how to construct a lens version, when to retire one, how to read the four-source decomposition, and the curation loop end-to-end including the approval-gate workflow. Filed-spec depth, but written for operators, not patent examiners.</p>" +
-      "<h4>Until then.</h4>" +
-      "<p>The four sections above are the public summary. The provisional filing on record at the USPTO is the canonical reference for terminology and scope.</p>",
   },
 ];
 
