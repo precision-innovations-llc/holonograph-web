@@ -98,30 +98,33 @@ const ZONES = [
 // (auto-assigned to the most spread-out clusters). The count here = how many
 // clusters become interactive. PLACEHOLDER copy/links — replace with real content.
 // Per section: { title, body (HTML), image? (url), cta? ({ label, href? }) }.
+// Content drawn from assets/holonograph-site-v1-content.md — first-paragraph lead
+// per cluster, with a placeholder "read more" CTA until the long-form pages exist.
+// Connect's CTA rewires to the in-page contact form (data-open-contact action).
 const SECTIONS = [
   {
-    title: "Observe",
-    body: "<p>Placeholder — continuous, model-agnostic observation of agent behavior as it changes over time. Holonograph captures multi-resolution traces from production systems: response shapes, tool-call patterns, latency cohorts, and the higher-order signals that standard eval suites aren't built to surface.</p>" +
-          "<p>Placeholder — observation runs in-flight alongside live traffic, not as a post-hoc batch evaluation. The substrate accumulates so that when something shifts upstream, the instrument already has the longitudinal record needed to recognise what changed and where.</p>",
-    cta: { label: "learn more" },
+    title: "Observability",
+    body: "<p>For the whole history of software, a test that passed yesterday and fails today meant you changed something. Large language models broke that assumption. Put a model at the center of your system and the same input no longer produces the same output — not because anything changed, but because the model is non-deterministic by construction.</p>" +
+          "<p>Holonograph observes by position. It sits as a bidirectional mediating gateway between your agents and the models they call, capturing every interaction at the wire-format boundary. None of this lives in your agent's code — observation is a property of architectural position, not of instrumentation you have to install.</p>",
+    cta: { label: "read more" },
   },
   {
-    title: "Attribute",
-    body: "<p>Placeholder — once drift is observed, attribution walks the signal back through the system to the change that caused it: a prompt revision, a tool update, a model swap, an upstream input shift. The instrument distinguishes between stochastic noise and structural drift, and between cohort-localised changes and global ones.</p>" +
-          "<p>Placeholder — the output is a ranked list of candidate causes with confidence bounds, not a single guess. Operators get evidence they can act on, expressed in the language of the change they actually made.</p>",
-    cta: { label: "see how" },
+    title: "Attribution",
+    body: "<p>When a fixture passes Monday and fails Tuesday, the operator needs to know which cause is responsible — and there are four of them. Holonograph decomposes observed drift into four mutually exclusive sources: substrate drift, light-source drift, lens drift, and stochastic noise.</p>" +
+          "<p>Existing practice collapses the first two into \"the system regressed,\" ignores the third entirely, and treats the fourth as either invisible or all-encompassing. Holonograph captures sufficient versioned state across all four at every evaluation event, so any observed change can be attributed to one source with stated confidence.</p>",
+    cta: { label: "read more" },
   },
   {
-    title: "Align",
-    body: "<p>Placeholder — alignment isn't a one-time gate before shipping; it's a continuous measurement against the substrate of what the system was meant to do. Holonograph carries intent forward across model updates, prompt rewrites, and operator changes, and surfaces drift the moment it appears.</p>" +
-          "<p>Placeholder — the lens framework provides cross-vendor comparability, cohort drift tracking, and intent anchors that survive model swaps. The instrument that lets you say \"this update is on-axis\" or \"this update has shifted us off-intent in this cohort\" with evidence rather than vibes.</p>",
-    cta: { label: "the approach" },
+    title: "Lens Architecture",
+    body: "<p>The core insight is uncomfortable and, as far as we know, new: <em>the evaluation apparatus itself is an independently attributable source of drift.</em> Modern agentic evaluation grades quality with an LLM-as-judge — your measuring instrument is itself a non-deterministic model, drifting on the same vendor reroutes and prompt churn as the system it measures.</p>" +
+          "<p>The Lens Architecture treats that instrument as a first-class, versioned, independently attributable thing. The lens is immutable within each version and replaced rather than mutated — so the variance contributed by the apparatus becomes a known quantity rather than an unaccounted-for confounder.</p>",
+    cta: { label: "read the framework" },
   },
   {
     title: "Connect",
-    body: "<p>Placeholder — we're working with a small number of design partners running production agentic systems where observability gaps are starting to bite. If that's you and you've felt the standard eval frameworks come up short for cohort drift or attribution, reach out.</p>" +
-          "<p>Placeholder — questions, pilot inquiries, and partnership conversations all welcome. Replies usually come within a day. The channel below routes directly to the founder.</p>",
-    cta: { label: "open a channel", href: "mailto:hello@holonograph.ai" },
+    body: "<p>We're working with a small number of design partners running production agentic systems where evaluation drift is starting to bite. If that's you — and you've felt the standard eval frameworks come up short for cohort drift or attribution — reach out.</p>" +
+          "<p>Pilots, partnerships, press, or a conversation about the work. Replies usually come within a day.</p>",
+    cta: { label: "request a pilot", action: "open-contact" },
   },
 ];
 
@@ -386,16 +389,22 @@ function start() {
         : `<div class="cluster-img cluster-img--placeholder" aria-hidden="true"></div>`;
     }
     h += `<div class="cluster-body">${sec.body}</div>`;
-    // cta accepts a single object or an array — Open Source tile can host GitHub + NPM side by side
+    // cta accepts a single object or an array — Open Source tile can host GitHub + NPM side by side.
+    // Special action "open-contact" renders the CTA as a button that opens the in-page contact form
+    // instead of routing to an external href.
     const ctas = Array.isArray(sec.cta) ? sec.cta : (sec.cta ? [sec.cta] : []);
     if (ctas.length) {
       h += `<div class="cluster-ctas">`;
       for (const c of ctas) {
         const cls = "cluster-cta" + (c.variant === "ghost" ? " cluster-cta--ghost" : "");
         const ext = c.external ? ' target="_blank" rel="noopener"' : "";
-        h += c.href
-          ? `<a class="${cls}" href="${c.href}"${ext}>${c.label} →</a>`
-          : `<button type="button" class="${cls}">${c.label} →</button>`;
+        if (c.action === "open-contact") {
+          h += `<button type="button" class="${cls}" data-open-contact>${c.label} →</button>`;
+        } else if (c.href) {
+          h += `<a class="${cls}" href="${c.href}"${ext}>${c.label} →</a>`;
+        } else {
+          h += `<button type="button" class="${cls}">${c.label} →</button>`;
+        }
       }
       h += `</div>`;
     }
@@ -489,6 +498,19 @@ function start() {
 
   if (closeBtn) closeBtn.addEventListener("click", closeSection);
   window.addEventListener("keydown", (e) => { if (e.key === "Escape" && activeIdx >= 0) closeSection(); });
+
+  // Section CTA action="open-contact" → close the rail, then dispatch a click to the
+  // existing #contactTrigger so the in-page contact form opens (no mailto fallback).
+  if (panelEl) {
+    panelEl.addEventListener("click", (e) => {
+      const ctaContact = e.target.closest("[data-open-contact]");
+      if (!ctaContact) return;
+      e.preventDefault();
+      closeSection();
+      const trigger = document.getElementById("contactTrigger");
+      if (trigger) trigger.click();
+    });
+  }
 
   function clearWorld() {
     for (let i = world.children.length - 1; i >= 0; i--) {
