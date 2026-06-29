@@ -1,0 +1,93 @@
+# Holonograph
+
+> The observation layer for agentic AI systems. A signed, self-hosted binary that decomposes evaluation drift into four sources — substrate, light source, lens, and stochastic noise — and treats the evaluation apparatus itself as a first-class, versioned, independently attributable instrument.
+
+Holonograph runs as a localhost daemon inside the operator's own infrastructure, sitting as a bidirectional mediating gateway between an agentic system and the language models that drive its behavior. It captures every interaction at the wire-format boundary. The Lens Architecture is the underlying methodology; Holonograph is the implementation. A patent-pending product of Precision Innovations LLC.
+
+The site (https://holonograph.ai) is a single-page presentation. The sections below describe its concept areas.
+
+## About
+
+Holonograph is a signed, notarized native binary that runs as a localhost daemon. From the Greek *holos* (whole) and *graph* (to record): the instrument that records the whole. An observational holon — it observes the system, observes its own apparatus, and observes itself observing. Each version of that apparatus is immutable; the sequence of versions shifts over time.
+
+Holonograph complements any evaluation system by adding attribution it can't get on its own. Because it ships as a binary rather than SaaS, it reaches operators that server-based products structurally rule out: regulated industries, air-gapped and sovereign deployments, and mid-market teams without a platform-engineering org. Data sovereignty and methodology depth in a single artifact the operator deploys and owns.
+
+## Agentic Observability
+
+For the whole history of software, a test that passed yesterday and failed today meant something changed. LLMs broke that assumption. Put a model at the center of a system and the same input no longer produces the same output — not because anything changed, but because the model is non-deterministic by construction. The data is non-deterministic now.
+
+Holonograph observes by position. It sits as a bidirectional mediating gateway at the wire-format boundary between agents and the models they call. Because it owns that boundary, it can run a single call against several models at once (multiplex routing) and compare them head-to-head on speed, price, and accuracy — so operators switch vendors on evidence without touching their agents. An OpenTelemetry sidecar covers anything that doesn't pass through the lens, so the result is observational completeness: every call is either graded or captured, and nothing the agent does is structurally invisible to the apparatus.
+
+No part of Holonograph lives in the agent's code. There is zero evaluation logic embedded in the system under observation — a property of architectural position, not of instrumentation. That separation is what lets Holonograph run evaluation discipline against production traffic itself.
+
+## Four Source Attribution
+
+When a fixture passes Monday and fails Tuesday, the operator needs to know which cause is responsible. Holonograph decomposes observed drift into four mutually exclusive sources:
+
+- **Substrate drift** — operator-controlled changes to the agentic system.
+- **Light-source drift** — vendor-controlled evolution of the model, including silent re-routing behind an unchanged model name.
+- **Lens drift** — operator-curated evolution of the evaluation apparatus itself.
+- **Stochastic noise** — the model's irreducible non-determinism.
+
+Existing practice collapses the first two into "the system regressed," ignores the third entirely, and treats the fourth as either invisible or all-encompassing. Holonograph captures sufficient versioned state across all four at every evaluation event, so any observed change can be attributed to one source with stated confidence. An artifactual gain produced by a change to the apparatus can be told apart from a genuine improvement in the system.
+
+This matters most where it is hardest to see: the vendor of a model cannot honestly grade its own model's drift. The auditor cannot be the auditee. Holonograph is the independent measurement layer that model vendors structurally cannot provide.
+
+## The Lens Architecture
+
+The core insight is uncomfortable and, as far as is known, new: the evaluation apparatus itself is an independently attributable source of drift. Modern agentic evaluation grades quality with an LLM-as-judge — the measuring instrument is itself a non-deterministic model, drifting on the same vendor reroutes and prompt churn as the system it measures.
+
+The Lens Architecture treats that instrument as a first-class, versioned, independently attributable thing. The lens (the operator-built evaluation surface, with its fixtures, baselines, cohort scheme, and surface contracts) is immutable within each version and replaced rather than mutated. Because lens changes are discrete, operator-curated, and versioned, the variance contributed by the apparatus over any window becomes a known quantity rather than an unaccounted-for confounder.
+
+Holonograph is the implementation; the Lens Architecture is the framework. It composes on top of OpenTelemetry and is closed under multi-agent composition: handoffs between agents become substrate references rather than new evaluation boundaries. The four-source decomposition holds whether one is observing a single agent or a cooperating swarm.
+
+### The Curation Loop
+
+A system's interactions contain the information that should make it better. In conventional practice that information is noted and forgotten, or it demands slow, vendor-dependent fine-tuning. Holonograph closes the loop instead. Every consequential event is captured as first-class ground truth: not only failures, but human overrides (a trainer edits a draft before sending) and human approvals (a trainer reads a draft and sends it as-is). Overrides encode what good looks like right next to what the system produced; approvals are positive signal, not silence.
+
+Similar events cluster, and the drafter (an LLM executed from within Holonograph) proposes a concrete corrective artifact for each cluster: a new skill, a lesson, a fixture, or a code fix. It drafts fixtures too — turning observed behavior into the very tests that will catch the next regression. Nothing ships unreviewed: every draft lands in an approval gate where a human accepts, edits, or rejects it. Once published, the artifact becomes substrate — versioned, captured, attributable in future drift analysis like any other change.
+
+The loop is recursive by construction. The drafter's own model call is observed by the same lens it is improving, so the act of getting better is itself a measured, attributable event.
+
+## Vocabulary
+
+These terms have specific Holonograph meanings that may differ from generic LLM/ML usage. Listed in roughly conceptual order.
+
+### Framework
+
+- **The Lens Architecture** — the methodology. The operator's evaluation apparatus treated as a first-class, versioned, independently attributable instrument.
+- **Lens** (lowercase, generic) — the operator-built observational instance: surface contract, substrate column schema, fixtures, baselines, lessons in rotation, cohort scheme, analysis parameters. Each operator's lens is unique to their agentic system; it evolves over time and is captured.
+- **Lens topology** — the runtime structural composition of a specific lens instance, derived from its surface contract.
+
+### Architectural primitives
+
+- **Light source** — the LLM the agentic system runs through. Vendor-agnostic canonical identifier. Survives model changes and silent reroutes behind an unchanged model name.
+- **Substrate** — operator-controlled state of the agentic system. Per-agent declarative versioned tuple. The substrate is what changes when the operator deploys a fix or a feature.
+- **Surface** — a named evaluation unit defined by what is being evaluated. May span multiple agents in a swarm.
+- **Surface contract** — the declarative interface between an agentic system and the lens.
+
+### Four-source drift
+
+- **Substrate drift** — pass-rate change attributable to operator-controlled substrate changes.
+- **Light-source drift** — pass-rate change attributable to LLM changes (within- or cross-vendor), including silent same-alias rerouting by the vendor.
+- **Lens drift** — pass-rate change attributable to operator-curated evolution of the lens itself. The source conventional evaluation practice ignores.
+- **Detection mode** — drift attribution presentation for opaque-column root causes; the operator did not know, the lens informs.
+- **Correlation mode** — drift attribution presentation for transparent-column root causes; the operator initiated the change, the lens confirms or refutes.
+- **Convergence anomaly** — a concentrated (not rotational) drift signal warranting operator action.
+
+### Roles
+
+- **HIL Operator** — the human in the loop. The role the deployed product serves; overrides, approvals, baselines, and lens-composition changes pass through the HIL Operator.
+
+### Run-mode discipline
+
+- **runMode** — a discriminator drawn from {production, test, eval, replay, local_dev}, captured at every evaluation event and verified at every async boundary and side-effect gate. Enables single-lens multi-mode operation.
+- **Brand-isolation containment** — a routing pattern that directs test-mode side effects to test-designated resources rather than production resources, enabling test traffic to flow safely through production code paths. The methodology specifies the property; the implementation is the operator's.
+
+## Contact
+
+- Request a pilot or send a message: the in-page contact form at https://holonograph.ai
+- GitHub: https://github.com/holonograph
+- X: https://x.com/holonograph
+- Reddit: https://www.reddit.com/user/holonograph/
+- Precision Innovations LLC: https://precision-innovations.us
