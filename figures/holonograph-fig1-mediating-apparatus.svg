@@ -1,0 +1,105 @@
+<!-- FIG. 1 — Mediating apparatus / the lens (About · Observability) | Holonograph / Precision Innovations | palette: accent=#F2B33D | light=#5BD0E8 | agent=#A569E0 | ink=#EAEAF2 | mut=#8A8A9C | faint=#56566A -->
+<svg viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono','SF Mono',ui-monospace,monospace">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0C0C14"/><stop offset="1" stop-color="#090910"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="85%" cy="12%" r="60%">
+      <stop offset="0" stop-color="#F2B33D" stop-opacity=".16"/><stop offset="1" stop-color="#F2B33D" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="12%" cy="92%" r="55%">
+      <stop offset="0" stop-color="#A569E0" stop-opacity=".13"/><stop offset="1" stop-color="#A569E0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto">
+      <path d="M1,1 L7,4.5 L1,8" fill="none" stroke="#8A8A9C" stroke-width="1.2"/>
+    </marker>
+    <style>
+      .eye{fill:#F2B33D;font-size:13px;letter-spacing:.22em;font-weight:600}
+      .band{fill:#8A8A9C;font-size:11px;letter-spacing:.28em}
+      .ttl{fill:#EAEAF2;font-size:14px;letter-spacing:.04em;font-weight:600}
+      .sub{fill:#8A8A9C;font-size:10.5px;letter-spacing:.02em}
+      .ref{fill:#F2B33D;font-size:10px;letter-spacing:.1em;opacity:.75}
+      .ann{fill:#56566A;font-size:10px;letter-spacing:.06em}
+      .node{fill:rgba(255,255,255,.018);stroke-width:1.25;rx:8}
+      .flow{stroke:#8A8A9C;stroke-width:1.2;fill:none;opacity:.7}
+    </style>
+  </defs>
+
+  <rect x="2" y="2" width="1196" height="671" rx="16" fill="url(#panel)" stroke="rgba(255,255,255,.07)"/>
+  <rect x="2" y="2" width="1196" height="671" rx="16" fill="url(#glowA)"/>
+  <rect x="2" y="2" width="1196" height="671" rx="16" fill="url(#glowB)"/>
+  <g stroke="rgba(255,255,255,.07)" stroke-width="1">
+    <path d="M0,168 H1200 M0,486 H1200" opacity=".5"/>
+  </g>
+
+  <text class="eye" x="44" y="52">FIG. 1</text>
+  <text class="band" x="120" y="51">MEDIATING APPARATUS · THE LENS</text>
+  <text class="ann" x="1156" y="52" text-anchor="end" fill="#8A8A9C" letter-spacing=".2em">100 OCCUPIES THE CALL BOUNDARY</text>
+
+  <!-- LIGHT SOURCE -->
+  <text class="band" x="44" y="108" fill="#5BD0E8">LIGHT SOURCE</text>
+  <g stroke="#5BD0E8">
+    <rect class="node" x="372" y="84" width="216" height="64"/>
+    <rect class="node" x="624" y="84" width="216" height="64"/>
+  </g>
+  <text class="ref" x="388" y="104" fill="#5BD0E8">104</text>
+  <text class="ttl" x="388" y="120">PRIMARY MODEL</text>
+  <text class="sub" x="388" y="138">canonical identifier</text>
+  <text class="ref" x="640" y="104" fill="#5BD0E8">104′</text>
+  <text class="ttl" x="640" y="120">SECONDARY MODEL(S)</text>
+  <text class="sub" x="640" y="138">concurrent route · FIG. 6</text>
+
+  <!-- light <-> lens arrows -->
+  <path class="flow" d="M606,150 V232" marker-end="url(#ah)"/>
+  <path class="flow" d="M620,232 V150" marker-end="url(#ah)"/>
+  <text class="ann" x="660" y="196">request · response · full four-layer capture</text>
+
+  <!-- LENS CONTAINER -->
+  <rect x="44" y="246" width="1112" height="216" rx="12" fill="rgba(242,179,61,.04)" stroke="#F2B33D" stroke-opacity=".55" filter="url(#soft)"/>
+  <text class="band" x="68" y="276" fill="#F2B33D" letter-spacing=".24em">THE LENS · MEDIATING APPARATUS</text>
+  <text class="ref" x="1130" y="276" text-anchor="end" font-size="12px">100</text>
+  <g stroke="#F2B33D" stroke-opacity=".8">
+    <rect class="node" x="68" y="296" width="252" height="146" fill="rgba(242,179,61,.05)"/>
+    <rect class="node" x="340" y="296" width="252" height="146" fill="rgba(242,179,61,.05)"/>
+    <rect class="node" x="612" y="296" width="252" height="146" fill="rgba(242,179,61,.05)"/>
+    <rect class="node" x="884" y="296" width="252" height="146" fill="rgba(242,179,61,.05)"/>
+  </g>
+  <g>
+    <text class="ref" x="86" y="322">110</text>
+    <text class="ttl" x="86" y="356" font-size="13px">BIDIRECTIONAL</text>
+    <text class="ttl" x="86" y="374" font-size="13px">CALL INTERFACE</text>
+    <text class="sub" x="86" y="398">capture path</text>
+
+    <text class="ref" x="358" y="322">120</text>
+    <text class="ttl" x="358" y="356" font-size="13px">CONTENT REGISTRY</text>
+    <text class="sub" x="358" y="378">corrective-artifact</text>
+    <text class="sub" x="358" y="394">injection</text>
+
+    <text class="ref" x="630" y="322">130</text>
+    <text class="ttl" x="630" y="356" font-size="13px">PER-EVENT</text>
+    <text class="ttl" x="630" y="374" font-size="13px">SNAPSHOT STORE</text>
+    <text class="sub" x="630" y="398">four-layer · FIG. 2</text>
+
+    <text class="ref" x="902" y="322">140</text>
+    <text class="ttl" x="902" y="356" font-size="13px">APPARATUS-VERSION</text>
+    <text class="ttl" x="902" y="374" font-size="13px">STORE</text>
+    <text class="sub" x="902" y="398">immutable · monotonic</text>
+  </g>
+
+  <!-- lens <-> agent arrows -->
+  <path class="flow" d="M606,462 V544" marker-end="url(#ah)"/>
+  <path class="flow" d="M620,544 V462" marker-end="url(#ah)"/>
+  <text class="ann" x="660" y="508">agent calls the lens, not the model</text>
+  <text class="ann" x="660" y="524" fill="#8A8A9C" opacity=".7">unaware of source · injection · grading</text>
+
+  <!-- AGENT -->
+  <text class="band" x="44" y="568" fill="#A569E0">AGENTIC SYSTEM</text>
+  <rect class="node" x="372" y="556" width="468" height="72" stroke="#A569E0"/>
+  <text class="ttl" x="396" y="588">AGENTIC SYSTEM</text>
+  <text class="sub" x="396" y="608">single agent or cooperating swarm</text>
+
+  <text x="1158" y="650" text-anchor="end" font-size="20px" fill="#F2B33D" opacity=".5" font-style="italic">&#960;</text>
+</svg>
