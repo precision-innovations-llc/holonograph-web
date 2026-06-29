@@ -95,140 +95,13 @@ const ZONES = [
   { c: [3.0, 5.0, -4.5],  cols: [0xe879f9, 0xa78bfa] },
 ];
 
-// Clickable cluster sections. Each entry binds to one cluster zone in the scene
-// (auto-assigned to the most spread-out clusters). The count here = how many
-// clusters become interactive. PLACEHOLDER copy/links — replace with real content.
-// Per section: { title, body (HTML), image? (url), cta? ({ label, href? }) }.
-// Content drawn from the v1 manuscript (assets/holonograph-web-copy-clean.md).
-// Each section has a short `body` (tile lead) and a longer `readMore` (secondary
-// slider that slides leftward off the right rail). CTAs:
-//   - `action: "open-readmore"`  → opens the secondary slider with that section's readMore content
-//   - `action: "open-contact"`   → closes the rail and opens the in-page contact form
-//
-// The Curation Loop sits under Lens Architecture's readMore per the v1 layout
-// (it's part of the framework's recursive-observability story, not a separate
-// page). Core Capabilities and the Four Sources are rendered as .tile-grid
-// components instead of bulleted lists.
-const SECTIONS = [
-  {
-    title: "About",
-    heading: "About Holonograph<span class=\"heading-tm\" aria-hidden=\"true\">™</span>",
-    image: "./figures/holonograph-fig1-mediating-apparatus.svg",
-    body: "<p>Holonograph is a signed, notarized native binary that runs as a localhost daemon inside your own infrastructure. It is the observation layer for agentic AI systems: sitting between your agent and the language models that drive its behavior. Holonograph captures the complete observational record of your agent's activity across every source of change, allowing it to accurately attribute the cause of changes in a non-deterministic system.</p>" +
-          "<p>The name is literal.</p>" +
-          "<div class=\"etymology\">" +
-            "<div class=\"etymology-label\">from the Greek</div>" +
-            "<div class=\"etymology-pair\"><em>holos</em><span>whole</span></div>" +
-            "<div class=\"etymology-pair\"><em>graph</em><span>to record</span></div>" +
-          "</div>",
-    cta: { label: "see the capabilities", action: "open-readmore" },
-    readMore:
-      "<p>The instrument that records the whole. An observational holon: it observes the system, observes its own apparatus, and observes itself observing, each version of that apparatus immutable, the sequence of versions shifting over time. Holonograph is a patent-pending product of Precision Innovations LLC.</p>" +
-      "<p>Holonograph complements any evaluation system by adding attribution it can't get on its own. And because it ships as a binary rather than SaaS, it reaches the operators that server-based products structurally rule out:</p>" +
-      "<ul>" +
-        "<li>regulated industries</li>" +
-        "<li>air-gapped and sovereign deployments</li>" +
-        "<li>mid-market teams without a platform-engineering org</li>" +
-      "</ul>" +
-      "<p>Holonograph easily accommodates this cohort by nature of its architecture: data sovereignty and methodology depth in a single artifact you deploy and own.</p>" +
-      "<h4>Core capabilities</h4>" +
-      "<div class=\"tile-grid\">" +
-        "<div class=\"tile\"><strong>Mediating-gateway capture</strong><span>observe by position, never by instrumentation in your code.</span></div>" +
-        "<div class=\"tile\"><strong>Multiplex routing</strong><span>run one call against several vendors at once and compare them head-to-head on speed, price, and accuracy.</span></div>" +
-        "<div class=\"tile\"><strong>Four-source drift decomposition</strong><span>substrate, light source, lens, and noise, with stated-confidence attribution.</span></div>" +
-        "<div class=\"tile\"><strong>Lens versioning</strong><span>the evaluation apparatus made an explicit, attributable thing.</span></div>" +
-        "<div class=\"tile\"><strong>Closed-loop curation</strong><span>captured overrides and approvals cluster into drafted skills, lessons, and fixtures, human-gated before they ship.</span></div>" +
-        "<div class=\"tile\"><strong>Fixture drafting</strong><span>turn observed behavior into the tests that catch the next regression.</span></div>" +
-        "<div class=\"tile\"><strong>Recursive observability</strong><span>the drafter is observed by the lens it improves; getting better is itself a measured event.</span></div>" +
-        "<div class=\"tile\"><strong>Eval-mode-on-production</strong><span>architecturally-enforced run-mode discrimination against production infrastructure.</span></div>" +
-        "<div class=\"tile\"><strong>Vendor-agnostic continuity</strong><span>survives model changes and silent reroutes behind an unchanged name.</span></div>" +
-        "<div class=\"tile\"><strong>Variance quantification &amp; isolation</strong><span>recover true substrate variance by subtracting independently-determined instrument and lens components.</span></div>" +
-        "<div class=\"tile\"><strong>Self-hosted, signed &amp; notarized</strong><span>your data never leaves your infrastructure.</span></div>" +
-      "</div>" +
-      "<h4>What Holonograph is not</h4>" +
-      "<p>Holonograph is frequently confused with adjacent tools. It is none of these:</p>" +
-      "<div class=\"tile-grid tile-grid--spaced\">" +
-        "<div class=\"tile\"><strong>Not concept-drift detection</strong><span>that field assumes a deterministic model and a measurable shift in input data. Holonograph addresses agentic systems on non-deterministic foundation LLMs where the model itself can be silently re-routed by the vendor.</span></div>" +
-        "<div class=\"tile\"><strong>Not feature attribution</strong><span>SHAP, LIME, and integrated gradients attribute a model's output to its input features. Holonograph attributes pass-rate changes over time to one of four mutually exclusive sources of change.</span></div>" +
-        "<div class=\"tile\"><strong>Not an MLOps dashboard</strong><span>not a tracing system, not a model registry, not a metrics platform. Holonograph composes on top of OpenTelemetry; the novel layer is the versioned lens and the attribution it enables.</span></div>" +
-        "<div class=\"tile\"><strong>Not LLM-as-judge</strong><span>conventional LLM-as-judge treats the judge as a fixed measuring stick. Holonograph rejects that — it treats the judge itself as a first-class versioned instrument whose drift is independently attributable.</span></div>" +
-        "<div class=\"tile\"><strong>Not a fine-tuning pipeline</strong><span>the Curation Loop produces operator-curated artifacts (skills, lessons, fixtures, code fixes) that ship through a human-approval gate. It does not adjust model weights.</span></div>" +
-        "<div class=\"tile\"><strong>Not SaaS</strong><span>a signed, notarized native binary that runs as a localhost daemon. Data never leaves the operator's infrastructure.</span></div>" +
-      "</div>" +
-      "<p class=\"footnote\">Full documentation lives in <a class=\"guide-link\" href=\"#guide-mark-ii\" data-section-by-title=\"The Guide Mark II\"><em>The Guide Mark II</em></a>.</p>",
-  },
-  {
-    title: "Observability",
-    heading: "Agentic Observability",
-    image: "./figures/holonograph-fig6-multiplex.svg",
-    body: "<p>For the whole history of software, a test that passed yesterday and failed today meant you changed something. Large language models broke that assumption. Put a model at the center of your system and <strong>the same input no longer produces the same output</strong>, not because anything changed, but because the model is non-deterministic by construction. <strong>Your data is non-deterministic now.</strong> Holonograph takes advantage of its unique location at the call boundary, allowing for more accurate attribution of substrate variance.</p>",
-    cta: { label: "see the architecture", action: "open-readmore" },
-    readMore:
-      "<h4>Observation by position</h4>" +
-      "<figure class=\"inline-figure\"><img src=\"./figures/holonograph-fig1-mediating-apparatus.svg\" data-open-figure=\"./figures/holonograph-fig1-mediating-apparatus.svg\" data-figure-caption=\"FIG. 1 — Mediating apparatus: the lens between agent and model.\" alt=\"Holonograph mediating apparatus — agent, lens, and light source\" /><figcaption>FIG. 1 — Mediating apparatus: the lens between agent and model.</figcaption></figure>" +
-      "<p>Holonograph sits as a bidirectional mediating gateway between your agents and the models they call, capturing every interaction at the wire-format boundary. Because it owns that boundary, it can run a single call against several models at once (<em>multiplex routing</em>) and compare them head-to-head on speed, price, and accuracy, so you switch vendors on evidence without touching your agents.</p>" +
-      "<p>An OpenTelemetry sidecar covers anything that doesn't pass through the lens, so the result is <em>observational completeness</em>: every call is either graded or captured, and nothing the agent does is structurally invisible to the apparatus.</p>" +
-      "<h4>No code embedded in the system under observation</h4>" +
-      "<p>No part of Holonograph lives in your agent's code. There is zero evaluation logic embedded in the system under observation, a property of architectural position, not of instrumentation you must install, maintain, and reconcile. That separation is what lets Holonograph run evaluation discipline against production traffic itself, mapping fixtures and gates 1:1 against production responses.</p>",
-  },
-  {
-    title: "Attribution",
-    heading: "Four Source Attribution",
-    image: "./figures/holonograph-fig3-attribution.svg",
-    body: "<p>When a fixture passes Monday and fails Tuesday, the operator needs to know which cause is responsible. There are four of them. Holonograph decomposes observed drift into four mutually exclusive sources: substrate drift, light-source drift, lens drift, and stochastic noise.</p>",
-    cta: { label: "see the four sources", action: "open-readmore" },
-    readMore:
-      "<h4>The four sources of drift</h4>" +
-      "<div class=\"tile-grid tile-grid--spaced\">" +
-        "<div class=\"tile\"><strong>Substrate drift</strong><span>operator-controlled changes to the agentic system.</span></div>" +
-        "<div class=\"tile\"><strong>Light-source drift</strong><span>vendor-controlled evolution of the model, including silent re-routing behind an unchanged model name.</span></div>" +
-        "<div class=\"tile\"><strong>Lens drift</strong><span>operator-curated evolution of the evaluation apparatus itself.</span></div>" +
-        "<div class=\"tile\"><strong>Stochastic noise</strong><span>the model's irreducible non-determinism.</span></div>" +
-      "</div>" +
-      "<p>Existing practice collapses the first two into \"the system regressed,\" ignores the third entirely, and treats the fourth as either invisible or all-encompassing. Holonograph captures sufficient versioned state across all four at every evaluation event, so any observed change can be attributed to one source with stated confidence. An artifactual gain produced by a change to the apparatus can be told apart from a genuine improvement in the system.</p>" +
-      "<p>This matters most where it's hardest to see: the vendor of a model cannot honestly grade its own model's drift. The auditor cannot be the auditee. Holonograph is the independent measurement layer that model vendors structurally cannot provide.</p>",
-  },
-  {
-    title: "Lens Architecture",
-    image: "./figures/holonograph-fig5-curation-loop.svg",
-    body: "<p>The core insight is uncomfortable and, as far as we know, new: <em>the evaluation apparatus itself is an independently attributable source of drift.</em> Modern agentic evaluation grades quality with an LLM-as-judge: the measuring instrument is itself a non-deterministic model, drifting on the same vendor reroutes and prompt churn as the system it measures.</p>",
-    cta: { label: "read the framework", action: "open-readmore" },
-    readMore:
-      "<h4>The lens as a first-class, versioned instrument</h4>" +
-      "<p>The Lens Architecture treats the evaluation apparatus as a first-class, versioned, independently attributable thing. The lens (the operator-built evaluation surface, with its fixtures, baselines, cohort scheme, and surface contracts) is immutable within each version and replaced rather than mutated.</p>" +
-      "<p>Because lens changes are discrete, operator-curated, and versioned, the variance contributed by the apparatus over any window becomes a known quantity rather than an unaccounted-for confounder.</p>" +
-      "<h4>Holonograph is the implementation; the Lens Architecture is the framework</h4>" +
-      "<p>It composes on top of OpenTelemetry and is closed under multi-agent composition: handoffs between agents become substrate references rather than new evaluation boundaries. The four-source decomposition holds whether you are observing a single agent or a cooperating swarm.</p>" +
-      "<h4>The Curation Loop</h4>" +
-      "<p>A system's interactions contain the information that should make it better. In conventional practice that information is noted and forgotten, or it demands slow, vendor-dependent fine-tuning. Holonograph closes the loop instead. Every consequential event is captured as first-class ground truth: not only failures, but human overrides (a trainer edits a draft before sending) and human approvals (a trainer reads a draft and sends it as-is). Overrides encode what good looks like right next to what the system produced; approvals are positive signal, not silence.</p>" +
-      "<p>Similar events cluster, and the drafter (an LLM executed from within Holonograph) proposes a concrete corrective artifact for each cluster: a new skill, a lesson, a fixture, or a code fix. It drafts fixtures too, turning observed behavior into the very tests that will catch the next regression.</p>" +
-      "<p>Nothing ships unreviewed: every draft lands in an approval gate where a human accepts, edits, or rejects it. Once published, the artifact becomes substrate: versioned, captured, and attributable in future drift analysis like any other change.</p>" +
-      "<p>The loop is recursive by construction. The drafter's own model call is observed by the same lens it is improving, so the act of getting better is itself a measured, attributable event. Holonograph watches the system, watches the apparatus, and watches itself watching: the instrument that records the whole, applied to its own improvement.</p>",
-  },
-  {
-    title: "Request a Pilot",
-    excludeFromNav: true,
-    body: "<p>We're working with a small number of design partners running production agentic systems where evaluation drift is starting to bite. If that's you — and you've felt the standard eval frameworks come up short for cohort drift or attribution — reach out.</p>" +
-          "<p>Pilots, partnerships, press, or a conversation about the work. Replies usually come within a day.</p>",
-    cta: { label: "request a pilot", action: "open-contact" },
-    readMore:
-      "<h4>What a pilot looks like.</h4>" +
-      "<p>A pilot is a scoped engagement: deploy Holonograph alongside an existing production agent, instrument the first lens, and run four-source attribution on real traffic. We do the integration and the methodology lift together. Outputs are yours — the binary, the lens versions, the captured substrate. Nothing goes back to a vendor cloud.</p>" +
-      "<h4>What we ask of design partners.</h4>" +
-      "<p>Honest feedback on the methodology and the operator surface, and a willingness to publish at least one finding (anonymised at your call) so the field can compound on it. We sign a mutual NDA, you sign nothing exclusive.</p>",
-  },
-  {
-    title: "The Guide Mark II",
-    excludeFromNav: true,
-    body: "<p class=\"guide-quote\">The Guide is definitive. Reality is frequently inaccurate.<sup>[1]</sup></p>" +
-          "<p>So that you understand that just because you see something, it doesn't mean to say it's there. And if you don't see something, it doesn't mean to say it's not there. It's only what your senses bring to your attention.<sup>[2]</sup></p>" +
-          "<ol class=\"guide-citations\">" +
-            "<li>Adams, Douglas. <em>The Restaurant at the End of the Universe</em>. Pan Books, 1980.</li>" +
-            "<li>Adams, Douglas. <em>Mostly Harmless</em>. Heinemann, 1992.</li>" +
-          "</ol>",
-    cta: { label: "notify me when it ships", action: "open-contact" },
-  },
-];
+// Section list derived from the static, crawlable markup in index.html.
+// The prose lives in the DOM (.section-slide / .readmore-slide); holon.js needs
+// only each section's title + nav flag to drive the scene, nav, and GA. The HTML
+// is the source of truth; the cube/rail just enhance on top of it.
+const SECTIONS = Array.from(document.querySelectorAll("#clusterContent .section-slide")).map(function (el) {
+  return { title: el.dataset.title, excludeFromNav: el.dataset.excludeNav === "true" };
+});
 
 // ───────────────────────────── boot guards ──────────────────────────────────
 const canvas = document.getElementById("holon");
@@ -492,38 +365,22 @@ function start() {
   }
   buildNav();
 
-  function renderSection(sec) {
-    let h = `<h3 class="cluster-title">${sec.heading || sec.title}</h3>`;
-    // media slot is always present unless the section explicitly opts out (image: false).
-    // placeholder picks up the cluster accent so even "empty" tiles feel branded.
-    if (sec.image !== false) {
-      h += sec.image
-        ? `<img class="cluster-img" src="${sec.image}" data-open-figure="${sec.image}" alt="" />`
-        : `<div class="cluster-img cluster-img--placeholder" aria-hidden="true"></div>`;
-    }
-    h += `<div class="cluster-body">${sec.body}</div>`;
-    // cta accepts a single object or an array — Open Source tile can host GitHub + NPM side by side.
-    // Special action "open-contact" renders the CTA as a button that opens the in-page contact form
-    // instead of routing to an external href.
-    const ctas = Array.isArray(sec.cta) ? sec.cta : (sec.cta ? [sec.cta] : []);
-    if (ctas.length) {
-      h += `<div class="cluster-ctas">`;
-      for (const c of ctas) {
-        const cls = "cluster-cta" + (c.variant === "ghost" ? " cluster-cta--ghost" : "");
-        const ext = c.external ? ' target="_blank" rel="noopener"' : "";
-        if (c.action === "open-contact") {
-          h += `<button type="button" class="${cls}" data-open-contact>${c.label} →</button>`;
-        } else if (c.action === "open-readmore") {
-          h += `<button type="button" class="${cls}" data-open-readmore>${c.label} →</button>`;
-        } else if (c.href) {
-          h += `<a class="${cls}" href="${c.href}"${ext}>${c.label} →</a>`;
-        } else {
-          h += `<button type="button" class="${cls}">${c.label} →</button>`;
-        }
-      }
-      h += `</div>`;
-    }
-    return h;
+  // content-first: section + read-more markup is static in index.html (crawlable).
+  // These toggle which slide is visible — JS enhances, it is not the source of the text.
+  function showSlide(i) {
+    if (!contentEl) return;
+    contentEl.querySelectorAll(".section-slide").forEach(function (el) {
+      el.classList.toggle("active", parseInt(el.dataset.index, 10) === i);
+    });
+  }
+  function showReadmore(i) {
+    if (!expandedContentEl) return;
+    expandedContentEl.querySelectorAll(".readmore-slide").forEach(function (el) {
+      el.classList.toggle("active", parseInt(el.dataset.index, 10) === i);
+    });
+  }
+  function hasReadmore(i) {
+    return !!(expandedContentEl && expandedContentEl.querySelector('.readmore-slide[data-index="' + i + '"]'));
   }
 
   // Resolve the rail's anchor dot to screen pixels using LAYOUT coords,
@@ -585,7 +442,7 @@ function start() {
     activeIdx = i; frozen = true; angVelY = CONFIG.spin;     // freeze the spin while the rail is engaged
     panelEl.style.setProperty("--cluster-accent", "#" + sa.color.getHexString());
     panelEl.style.setProperty("--cluster-line", "#" + sa.color.clone().lerp(WHITE, 0.4).getHexString());
-    if (contentEl) contentEl.innerHTML = renderSection(SECTIONS[i]);
+    showSlide(i);
     panelEl.classList.add("open");
     panelEl.classList.add("tethered");
     panelEl.setAttribute("aria-hidden", "false");
@@ -628,14 +485,13 @@ function start() {
   // Secondary "read more" panel — slides leftward off the main rail with the section's long-form content.
   function openReadMore() {
     if (activeIdx < 0 || !panelEl || !expandedEl) return;
-    const sec = SECTIONS[activeIdx];
-    if (!sec || !sec.readMore) return;
-    if (expandedContentEl) expandedContentEl.innerHTML = sec.readMore;
+    if (!hasReadmore(activeIdx)) return;
+    showReadmore(activeIdx);
     panelEl.classList.remove("expanded--figure");
     panelEl.classList.add("expanded");
     expandedEl.setAttribute("aria-hidden", "false");
     if (typeof window.gtag === "function") {
-      window.gtag("event", "open_readmore", { section_name: sec.title });
+      window.gtag("event", "open_readmore", { section_name: SECTIONS[activeIdx] && SECTIONS[activeIdx].title });
     }
   }
   function closeReadMore() {
@@ -648,12 +504,12 @@ function start() {
   // is already open with readMore content, the figure replaces it in-place.
   function openFigure(src, caption) {
     if (!panelEl || !expandedEl || !src) return;
-    if (expandedContentEl) {
-      expandedContentEl.innerHTML =
-        `<figure class="figure-large">` +
-          `<img src="${src}" alt="" />` +
-          (caption ? `<figcaption>${caption}</figcaption>` : "") +
-        `</figure>`;
+    var stage = document.getElementById("figureStage");
+    if (stage) {
+      var img = stage.querySelector("img");
+      if (img) img.src = src;
+      var fc = stage.querySelector("figcaption");
+      if (fc) { fc.textContent = caption || ""; fc.style.display = caption ? "" : "none"; }
     }
     panelEl.classList.add("expanded", "expanded--figure");
     expandedEl.setAttribute("aria-hidden", "false");
