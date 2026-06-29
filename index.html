@@ -74,6 +74,42 @@
     z-index: 2;
   }
 
+  /* Mobile readability bars — fade dark from the top + bottom so the wordmark,
+     tagline, topnav, hero CTAs, and footer are legible over the busy cube.
+     Disabled on desktop (opacity:0); enabled at ≤760px. */
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      /* top band: dark behind header + topnav */
+      linear-gradient(to bottom,
+        rgba(0,0,0,0.78) 0%,
+        rgba(0,0,0,0.55) 20%,
+        rgba(0,0,0,0.30) 35%,
+        transparent 50%),
+      /* bottom band: dark behind hero CTAs + footer */
+      linear-gradient(to top,
+        rgba(0,0,0,0.78) 0%,
+        rgba(0,0,0,0.55) 20%,
+        rgba(0,0,0,0.30) 35%,
+        transparent 50%),
+      /* center band: dark behind wordmark + tagline */
+      linear-gradient(to bottom,
+        transparent 30%,
+        rgba(0,0,0,0.50) 42%,
+        rgba(0,0,0,0.62) 50%,
+        rgba(0,0,0,0.50) 58%,
+        transparent 70%);
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 400ms ease;
+  }
+  @media (max-width: 760px) {
+    .stage::before { opacity: 1; }
+  }
+
   .hero {
     position: absolute;
     inset: 0;
@@ -316,7 +352,7 @@
   }
 
   .tagline {
-    font-size: clamp(12px, 1.1vw, 15px);
+    font-size: clamp(15px, 1.5vw, 20px);
     font-weight: 300;
     letter-spacing: 0.18em;
     margin: 0;
@@ -471,11 +507,17 @@
     opacity: 1;
   }
   @media (max-width: 760px) {
-    .topnav { top: 40px; gap: 2px; }
-    .topnav-link { font-size: 9px; letter-spacing: 0.14em; }
+    .topnav { top: 56px; gap: 3px; z-index: 12; }
+    .topnav-link {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: #ffffff;               /* bright on mobile — the cube competes for contrast */
+    }
   }
   @media (max-width: 440px) {
-    .topnav { display: none; }  /* re-enable later with a hamburger if needed */
+    /* Keep nav visible on phones — readability bars handle the contrast. */
+    .topnav { top: 50px; gap: 2px; }
+    .topnav-link { font-size: 9.5px; letter-spacing: 0.10em; }
   }
 
   /* ---------- bottom-left hero CTAs (Request a pilot · Read the Guide) ---------- */
@@ -519,11 +561,13 @@
     text-transform: lowercase;
   }
   @media (max-width: 760px) {
-    .hero-cta { bottom: 70px; gap: 3px; }    /* half the raise from the first pass on mobile too */
-    .hero-cta-link { font-size: 9px; letter-spacing: 0.12em; }
+    .hero-cta { bottom: 60px; gap: 3px; z-index: 12; }
+    .hero-cta-link { font-size: 10px; letter-spacing: 0.12em; }
   }
   @media (max-width: 440px) {
-    .hero-cta { display: none; }
+    /* Keep CTAs visible on phones — readability bars handle the contrast. */
+    .hero-cta { bottom: 52px; gap: 2px; }
+    .hero-cta-link { font-size: 9.5px; letter-spacing: 0.10em; }
   }
 
   /* ---------- footer social icons ---------- */
@@ -532,16 +576,19 @@
     align-items: center;
     gap: 14px;
   }
-  .footer-icon {
+  .bottom .footer-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: rgba(231, 227, 255, 0.55);
+    color: #ffffff;
     text-decoration: none;
     width: 18px;
     height: 18px;
+    border-bottom: 0;             /* opt out of the .bottom a underline rule */
+    padding-bottom: 0;
     transition: color 200ms ease, transform 200ms ease;
   }
+  .bottom .footer-icon:hover { border-bottom: 0; color: #ffffff; }
   .footer-icon:hover { color: #fff; transform: translateY(-1px); }
   .footer-icon--text {
     font-family: var(--font-ui), serif;
@@ -956,11 +1003,20 @@
     overflow-y: auto;
     overflow-x: hidden;
     /* Closed: panel sits one panel-width to the RIGHT of the container's clip boundary.
-       Visually it's behind the main rail, hidden by the clip — the perfect mask line. */
+       Visually it's behind the main rail, hidden by the clip — the perfect mask line.
+       visibility hides any subpixel bleed of the border-left / box-shadow at the clip
+       boundary when closed; the delay lets the slide-out transform complete first. */
     transform: translateX(100%);
-    transition: transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    visibility: hidden;
+    transition: transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                visibility 0s linear 480ms;
   }
-  .cluster-panel.expanded .rail-expanded { transform: translateX(0); }
+  .cluster-panel.expanded .rail-expanded {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                visibility 0s linear 0s;
+  }
 
   .expanded-card {
     position: relative;
@@ -1056,6 +1112,24 @@
     gap: 8px;
     margin: 8px 0 14px;
   }
+  /* Spaced variant — used for the four-source drift tiles in Attribution, where
+     the smaller tile count + heavier conceptual weight per tile wants more
+     breathing room than the dense 11-tile Core Capabilities grid.
+     Selectors stack .tile-grid.tile-grid--spaced to outrank the later
+     .expanded-content .tile-grid .tile base rules below. */
+  .expanded-content .tile-grid.tile-grid--spaced {
+    gap: 14px;
+    margin: 16px 0 22px;
+  }
+  .expanded-content .tile-grid.tile-grid--spaced .tile {
+    padding: 16px 16px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .expanded-content .tile-grid.tile-grid--spaced .tile strong {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
   .expanded-content .tile-grid .tile {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid color-mix(in srgb, var(--cluster-accent, #a78bfa) 22%, transparent);
@@ -1086,10 +1160,73 @@
     .expanded-content .tile-grid { grid-template-columns: 1fr; }
   }
 
+  /* Figure-mode: when the expanded slider shows a full-size figure (vs prose),
+     the chart owns nearly the whole viewport. The main rail slides off, the
+     connector + anchor dot fade out, and the clip container extends to the
+     left edge of the topnav (with breathing room) and almost to the right
+     viewport edge — giving the figure as much reading-room as possible. */
+  .cluster-panel.expanded--figure .cluster-rail {
+    transform: translateX(100%);
+    pointer-events: none;
+  }
+  .cluster-panel.expanded--figure .cluster-anchor,
+  .cluster-panel.expanded--figure .cluster-connector line,
+  .cluster-panel.expanded--figure .cluster-connector circle {
+    opacity: 0;
+  }
+  .cluster-panel.expanded--figure .rail-expanded-clip {
+    left: clamp(220px, 18vw, 280px);             /* clear of the topnav */
+    right: 0;                                    /* flush to viewport right edge — covers footer-social */
+  }
+  .cluster-panel.expanded--figure .rail-expanded {
+    width: 100%;
+  }
+  .cluster-panel.expanded--figure .expanded-card {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  .figure-large {
+    margin: 0;
+  }
+  .figure-large img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    background: rgba(8, 6, 18, 0.55);
+    border: 1px solid color-mix(in srgb, var(--cluster-accent, #a78bfa) 22%, transparent);
+  }
+  .figure-large figcaption {
+    margin-top: 14px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(220, 215, 240, 0.6);
+    text-align: center;
+  }
+
   @media (max-width: 1100px) {
-    /* Narrower viewports: let the panel grow to fill more of the available clipped area. */
+    /* Narrower viewports: let the text-mode panel grow to fill more of the available clipped area.
+       Figure-mode panel keeps width: 100% (of its clip container) from the base rule. */
     .rail-expanded {
       width: min(calc(100vw - clamp(380px, 33vw, 520px) - 24px), 600px);
+    }
+  }
+  @media (max-width: 720px) {
+    /* Topnav shrinks; figure-mode can give the chart more room on the left side */
+    .cluster-panel.expanded--figure .rail-expanded-clip {
+      left: clamp(150px, 22vw, 220px);
+      right: 0;
+    }
+  }
+  @media (max-width: 440px) {
+    /* Topnav is hidden entirely; figure-mode goes edge-to-edge */
+    .cluster-panel.expanded--figure .rail-expanded-clip {
+      left: 0;
+      right: 0;
     }
   }
   @media (max-width: 720px) {
@@ -1109,6 +1246,27 @@
     padding-right: 32px;
     color: rgba(248, 246, 255, 0.94);     /* near-white, lavender cast — softer than pure white */
   }
+  /* ™ on H1 headings — small superscript with no inherited weight/size baggage */
+  .cluster-title .heading-tm {
+    font-size: 0.45em;
+    vertical-align: super;
+    font-weight: 400;
+    letter-spacing: 0;
+    margin-left: 0.08em;
+    color: rgba(248, 246, 255, 0.78);
+  }
+  /* "The Guide Mark II" cross-link in the About footnote */
+  .expanded-content .guide-link {
+    color: rgba(248, 246, 255, 0.96);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--cluster-accent, #a78bfa) 55%, transparent);
+    transition: color 180ms, border-color 180ms;
+    cursor: pointer;
+  }
+  .expanded-content .guide-link:hover {
+    color: #fff;
+    border-bottom-color: var(--cluster-accent, #a78bfa);
+  }
   .cluster-body {
     font-size: 14px;
     line-height: 1.6;
@@ -1117,19 +1275,46 @@
   .cluster-body p { margin: 0 0 8px; }
   .cluster-body p:last-child { margin-bottom: 0; }
 
-  /* Centered italic etymology block — used in the About tile to render
-     "From the Greek holos (whole) and graph (to record)" as a poetic insert. */
+  /* Etymology — centered, multi-line, generously spaced so it reads as a
+     deliberate poetic insert rather than a prose afterthought. */
   .cluster-body .etymology {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin: 22px 0 24px;
     text-align: center;
-    font-style: italic;
-    font-size: 15px;
-    line-height: 1.4;
-    margin: 12px 0 6px;
-    color: rgba(248, 246, 255, 0.93);
   }
-  .cluster-body .etymology em {
+  .cluster-body .etymology-label {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: rgba(231, 227, 255, 0.50);
+    /* counter the trailing letter-spacing so the line still looks centered */
+    padding-left: 0.42em;
+  }
+  .cluster-body .etymology-pair {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 18px;
+    line-height: 1;
+  }
+  .cluster-body .etymology-pair em {
+    font-family: "Kodchasan", ui-sans-serif, system-ui, sans-serif;
     font-style: italic;
+    font-weight: 300;
+    font-size: 24px;
+    letter-spacing: 0.08em;
     color: #ffffff;
+  }
+  .cluster-body .etymology-pair span {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(248, 246, 255, 0.72);
+    padding-left: 0.32em;
   }
 
   /* Pull-quote treatment for the Adams placeholder in Read the Guide. */
@@ -1162,13 +1347,34 @@
 
   .cluster-img {
     width: 100%;
-    aspect-ratio: 16 / 6;
-    max-height: 200px;
+    aspect-ratio: 16 / 9;
+    max-height: 240px;
     border-radius: 8px;
     margin: 0 0 14px;
     display: block;
+    object-fit: contain;
+    background: rgba(8, 6, 18, 0.55);
+    border: 1px solid color-mix(in srgb, var(--cluster-accent, #a78bfa) 18%, transparent);
+    transition: border-color 200ms ease, transform 200ms ease;
+  }
+  /* Only real images (not the placeholder div) are clickable */
+  img.cluster-img { cursor: zoom-in; }
+  img.cluster-img:hover {
+    border-color: color-mix(in srgb, var(--cluster-accent, #a78bfa) 55%, transparent);
+    transform: translateY(-1px);
+  }
+  .expanded-content .inline-figure img {
+    cursor: zoom-in;
+    transition: border-color 200ms ease, transform 200ms ease;
+  }
+  .expanded-content .inline-figure img:hover {
+    border-color: color-mix(in srgb, var(--cluster-accent, #a78bfa) 55%, transparent);
+    transform: translateY(-1px);
+  }
+  /* Placeholder variant (no image src) keeps the cluster-accent gradient glow */
+  .cluster-img--placeholder {
     object-fit: cover;
-    /* dark placeholder with cluster-accent glow — sits on the warm-dark card */
+    border: 1px dashed color-mix(in srgb, var(--cluster-accent, #a78bfa) 38%, transparent);
     background:
       radial-gradient(120% 80% at 20% 15%,
         color-mix(in srgb, var(--cluster-accent, #a78bfa) 42%, transparent),
@@ -1181,26 +1387,49 @@
         rgba(18, 14, 36, 0.35) 60%,
         color-mix(in srgb, var(--cluster-accent, #a78bfa) 14%, transparent));
   }
-  .cluster-img--placeholder {
-    border: 1px dashed color-mix(in srgb, var(--cluster-accent, #a78bfa) 38%, transparent);
+  /* Inline figures embedded in readMore content (e.g. fig1 inside Observability's
+     "Observation by position" section). Keeps the same border treatment as the
+     hero image, with a captioned label below. */
+  .expanded-content .inline-figure {
+    margin: 14px 0 18px;
+  }
+  .expanded-content .inline-figure img {
+    width: 100%;
+    height: auto;
+    max-height: 320px;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+    background: rgba(8, 6, 18, 0.55);
+    border: 1px solid color-mix(in srgb, var(--cluster-accent, #a78bfa) 18%, transparent);
+  }
+  .expanded-content .inline-figure figcaption {
+    margin-top: 6px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(220, 215, 240, 0.55);
+    text-align: center;
   }
 
   /* CTA row — supports one button or several side-by-side */
   .cluster-ctas {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 28px;
   }
 
   /* dark-mode CTA — subtle white-fill + accent-tinted border, avoids the hacker filled-button vibe */
   .cluster-cta {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 9px 14px;
+    gap: 8px;
+    padding: 13px 22px;
     font-family: var(--font-ui);
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 500;
     letter-spacing: 0;
     text-transform: none;
@@ -1277,7 +1506,7 @@
     <!-- Hero CTAs — sit just above the footer line so they're findable without dominating the cube. -->
     <div class="hero-cta" id="heroCta">
       <button type="button" class="hero-cta-link hero-cta-link--primary" data-open-contact aria-label="Request a pilot">Request a pilot</button>
-      <button type="button" class="hero-cta-link" data-section-by-title="Read the Guide" aria-label="Read the Guide">Read the Guide</button>
+      <button type="button" class="hero-cta-link" data-section-by-title="The Guide Mark II" aria-label="The Guide Mark II">The Guide Mark II</button>
     </div>
 
     <footer class="bottom">
@@ -1301,7 +1530,7 @@
     <div class="panel-backdrop" data-close></div>
     <div class="panel-card" role="dialog" aria-modal="true" aria-labelledby="contactTitle">
       <header class="panel-header">
-        <h2 id="contactTitle">open channel</h2>
+        <h2 id="contactTitle">Contact Team Holon</h2>
         <button type="button" class="panel-close" data-close aria-label="close">×</button>
       </header>
       <form id="contactForm" novalidate>
@@ -1565,6 +1794,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=25"></script>
+  <script type="module" src="./holon.js?v=31"></script>
 </body>
 </html>

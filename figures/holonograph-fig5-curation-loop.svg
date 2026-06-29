@@ -1,0 +1,97 @@
+<!-- FIG. 5 — Closed-loop remediation / curation loop (Lens Architecture) | Holonograph / Precision Innovations | palette: accent=#A569E0 | c1=#F2B33D | c2=#5BD0E8 | c3=#FF4D9E | c4=#4D86F7 | ink=#EAEAF2 | mut=#8A8A9C | faint=#56566A -->
+<svg viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono','SF Mono',ui-monospace,monospace">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0C0C14"/><stop offset="1" stop-color="#090910"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="86%" cy="14%" r="55%">
+      <stop offset="0" stop-color="#A569E0" stop-opacity=".15"/><stop offset="1" stop-color="#A569E0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto">
+      <path d="M1,1 L7,4.5 L1,8" fill="none" stroke="#8A8A9C" stroke-width="1.2"/>
+    </marker>
+    <marker id="ahL" markerWidth="10" markerHeight="10" refX="6.5" refY="5" orient="auto">
+      <path d="M1,1 L8,5 L1,9" fill="none" stroke="#A569E0" stroke-width="1.4"/>
+    </marker>
+    <style>
+      .eye{fill:#A569E0;font-size:13px;letter-spacing:.22em;font-weight:600}
+      .band{fill:#8A8A9C;font-size:11px;letter-spacing:.26em}
+      .ttl{fill:#EAEAF2;font-size:13px;letter-spacing:.03em;font-weight:600}
+      .sub{fill:#8A8A9C;font-size:10px;letter-spacing:.01em}
+      .ref{fill:#A569E0;font-size:10px;letter-spacing:.1em;opacity:.8}
+      .ann{fill:#56566A;font-size:10px;letter-spacing:.06em}
+      .node{fill:rgba(165,105,224,.05);stroke:#A569E0;stroke-opacity:.65;stroke-width:1.25}
+      .flow{stroke:#8A8A9C;stroke-width:1.3;fill:none;opacity:.75}
+    </style>
+  </defs>
+
+  <rect x="2" y="2" width="1196" height="671" rx="16" fill="url(#panel)" stroke="rgba(255,255,255,.07)"/>
+  <rect x="2" y="2" width="1196" height="671" rx="16" fill="url(#glowA)"/>
+
+  <text class="eye" x="44" y="52">FIG. 5</text>
+  <text class="band" x="120" y="51">CLOSED-LOOP REMEDIATION PIPELINE</text>
+
+  <!-- four stage nodes -->
+  <g>
+    <rect class="node" x="44" y="150" width="244" height="118" rx="8"/>
+    <text class="ref" x="62" y="176">510</text>
+    <text class="ttl" x="62" y="206">CLUSTER</text>
+    <text class="sub" x="62" y="226">recurring failures /</text>
+    <text class="sub" x="62" y="240">overrides &#8594; diagnosed pattern</text>
+
+    <rect class="node" x="318" y="150" width="244" height="118" rx="8"/>
+    <text class="ref" x="336" y="176">520</text>
+    <text class="ttl" x="336" y="206">CLASSIFY PATTERN</text>
+    <text class="sub" x="336" y="226">localized vs distributed</text>
+    <text class="sub" x="336" y="240">&#167;9 set-stability</text>
+
+    <rect class="node" x="592" y="150" width="244" height="118" rx="8"/>
+    <text class="ref" x="610" y="176">530</text>
+    <text class="ttl" x="610" y="206">DIAGNOSE ROOT CAUSE</text>
+    <text class="sub" x="610" y="226">classify into</text>
+    <text class="sub" x="610" y="240">remediation tier</text>
+
+    <rect class="node" x="866" y="150" width="290" height="118" rx="8"/>
+    <text class="ref" x="884" y="176">540</text>
+    <text class="ttl" x="884" y="206">SELECT ARTIFACT KIND</text>
+    <text class="sub" x="884" y="226">tier &#8594; kind</text>
+    <text class="sub" x="884" y="240">human-gated before publish</text>
+  </g>
+
+  <!-- arrows between stages -->
+  <path class="flow" d="M288,209 H312" marker-end="url(#ah)"/>
+  <path class="flow" d="M562,209 H586" marker-end="url(#ah)"/>
+  <path class="flow" d="M836,209 H860" marker-end="url(#ah)"/>
+
+  <!-- artifact-kind chips -->
+  <text class="band" x="44" y="328" fill="#8A8A9C">CORRECTIVE-ARTIFACT KINDS</text>
+  <g font-size="12px" letter-spacing=".04em">
+    <rect x="44"  y="344" width="170" height="44" rx="8" fill="rgba(242,179,61,.06)" stroke="#F2B33D" stroke-opacity=".7"/>
+    <text x="129" y="371" text-anchor="middle" fill="#F2B33D">skill</text>
+    <rect x="230" y="344" width="170" height="44" rx="8" fill="rgba(91,208,232,.06)" stroke="#5BD0E8" stroke-opacity=".7"/>
+    <text x="315" y="371" text-anchor="middle" fill="#5BD0E8">lesson</text>
+    <rect x="416" y="344" width="190" height="44" rx="8" fill="rgba(255,77,158,.06)" stroke="#FF4D9E" stroke-opacity=".7"/>
+    <text x="511" y="371" text-anchor="middle" fill="#FF4D9E">code / schema</text>
+    <rect x="622" y="344" width="170" height="44" rx="8" fill="rgba(77,134,247,.06)" stroke="#4D86F7" stroke-opacity=".7"/>
+    <text x="707" y="371" text-anchor="middle" fill="#4D86F7">fixture</text>
+  </g>
+  <!-- 540 selects a kind, then to approval / publish -->
+  <path class="flow" d="M1011,268 V316" marker-end="url(#ah)"/>
+
+  <!-- publish node -->
+  <rect class="node" x="866" y="320" width="290" height="92" rx="8" fill="rgba(165,105,224,.08)" filter="url(#soft)"/>
+  <text class="ref" x="884" y="346">550</text>
+  <text class="ttl" x="884" y="372">HIL APPROVAL &#8594; PUBLISH</text>
+  <text class="sub" x="884" y="392">approved artifact enters content registry</text>
+
+  <!-- closed loop back to capture -->
+  <path d="M1011,412 V556 H24 V209 H40"
+    fill="none" stroke="#A569E0" stroke-width="1.6" opacity=".9" marker-end="url(#ahL)" filter="url(#soft)"/>
+  <text class="ttl" x="600" y="500" text-anchor="middle" font-size="12px" fill="#A569E0">published artifact becomes substrate</text>
+  <text class="sub" x="600" y="520" text-anchor="middle" fill="#8A8A9C">observed by the same lens it improves &#183; the loop is recursive</text>
+
+  <text x="1158" y="650" text-anchor="end" font-size="20px" fill="#A569E0" opacity=".5" font-style="italic">&#960;</text>
+</svg>

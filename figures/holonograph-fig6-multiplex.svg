@@ -1,0 +1,120 @@
+<!-- FIG. 6 — Concurrent multi-model routing & comparison (Multiplex) | Holonograph / Precision Innovations | palette: accent=#F2B33D | p=#F2B33D | a=#4D86F7 | b=#FF4D9E | ink=#EAEAF2 | mut=#8A8A9C | faint=#56566A -->
+<svg viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono','SF Mono',ui-monospace,monospace">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0C0C14"/><stop offset="1" stop-color="#090910"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="14%" cy="14%" r="55%">
+      <stop offset="0" stop-color="#F2B33D" stop-opacity=".13"/><stop offset="1" stop-color="#F2B33D" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto">
+      <path d="M1,1 L7,4.5 L1,8" fill="none" stroke="#8A8A9C" stroke-width="1.2"/>
+    </marker>
+    <style>
+      .eye{fill:#F2B33D;font-size:13px;letter-spacing:.22em;font-weight:600}
+      .band{fill:#8A8A9C;font-size:11px;letter-spacing:.26em}
+      .ttl{fill:#EAEAF2;font-size:13px;letter-spacing:.03em;font-weight:600}
+      .sub{fill:#8A8A9C;font-size:10px;letter-spacing:.01em}
+      .ref{font-size:10px;letter-spacing:.1em;opacity:.85}
+      .ann{fill:#56566A;font-size:10px;letter-spacing:.06em}
+      .flow{stroke:#8A8A9C;stroke-width:1.3;fill:none;opacity:.7}
+      .hd{fill:#8A8A9C;font-size:9px;letter-spacing:.05em}
+      .cell{fill:#EAEAF2;font-size:11px}
+    </style>
+  </defs>
+
+  <rect x="2" y="2" width="1196" height="671" rx="16" fill="url(#panel)" stroke="rgba(255,255,255,.07)"/>
+  <rect x="2" y="2" width="1196" height="671" rx="16" fill="url(#glowA)"/>
+
+  <text class="eye" x="44" y="52">FIG. 6</text>
+  <text class="band" x="120" y="51">CONCURRENT MULTI-MODEL ROUTING &#38; COMPARISON</text>
+
+  <!-- input -->
+  <rect x="44" y="270" width="200" height="132" rx="8" fill="rgba(255,255,255,.018)" stroke="#8A8A9C" stroke-opacity=".55"/>
+  <text class="ref" x="62" y="298" fill="#8A8A9C">610</text>
+  <text class="ttl" x="62" y="326" font-size="12px">IDENTICAL</text>
+  <text class="ttl" x="62" y="344" font-size="12px">REQUEST</text>
+  <text class="sub" x="62" y="366">+ captured state</text>
+  <text class="sub" x="62" y="380">+ injected artifacts</text>
+
+  <!-- fan-out lines -->
+  <path class="flow" d="M244,300 C320,300 320,150 392,150" marker-end="url(#ah)"/>
+  <path class="flow" d="M244,336 H392" marker-end="url(#ah)"/>
+  <path class="flow" d="M244,372 C320,372 320,522 392,522" marker-end="url(#ah)"/>
+  <text class="ann" x="300" y="246">fan-out</text>
+
+  <!-- three model nodes -->
+  <g>
+    <rect x="396" y="116" width="244" height="70" rx="8" fill="rgba(242,179,61,.06)" stroke="#F2B33D" stroke-opacity=".75" filter="url(#soft)"/>
+    <text class="ref" x="414" y="142" fill="#F2B33D">620</text>
+    <text class="ttl" x="414" y="160">PRIMARY MODEL</text>
+    <text class="sub" x="414" y="177">canonical id · returned to caller</text>
+
+    <rect x="396" y="301" width="244" height="70" rx="8" fill="rgba(77,134,247,.06)" stroke="#4D86F7" stroke-opacity=".75"/>
+    <text class="ref" x="414" y="327" fill="#4D86F7">622</text>
+    <text class="ttl" x="414" y="345">SECONDARY A</text>
+    <text class="sub" x="414" y="362">observation route</text>
+
+    <rect x="396" y="487" width="244" height="70" rx="8" fill="rgba(255,77,158,.06)" stroke="#FF4D9E" stroke-opacity=".75"/>
+    <text class="ref" x="414" y="513" fill="#FF4D9E">624</text>
+    <text class="ttl" x="414" y="531">SECONDARY B</text>
+    <text class="sub" x="414" y="548">observation route</text>
+  </g>
+
+  <!-- converge to comparison -->
+  <path class="flow" d="M640,151 C710,151 710,300 740,320" marker-end="url(#ah)"/>
+  <path class="flow" d="M640,336 H740" marker-end="url(#ah)"/>
+  <path class="flow" d="M640,522 C710,522 710,360 740,340" marker-end="url(#ah)"/>
+  <text class="ann" x="648" y="250">snapshot + grade</text>
+  <text class="ann" x="648" y="266" fill="#8A8A9C" opacity=".7">shared corr-id</text>
+
+  <!-- comparison surface -->
+  <rect x="744" y="150" width="412" height="376" rx="10" fill="rgba(242,179,61,.03)" stroke="#F2B33D" stroke-opacity=".5"/>
+  <text class="band" x="768" y="184" fill="#F2B33D" letter-spacing=".2em">MULTI-AXIS COMPARISON SURFACE</text>
+  <text class="ref" x="1132" y="184" text-anchor="end" fill="#F2B33D">650</text>
+
+  <!-- table header -->
+  <g>
+    <text class="hd" x="768" y="226">MODEL</text>
+    <text class="hd" x="928" y="226" text-anchor="middle">DIVERGE</text>
+    <text class="hd" x="1002" y="226" text-anchor="middle">GRADE</text>
+    <text class="hd" x="1064" y="226" text-anchor="middle">COST</text>
+    <text class="hd" x="1140" y="226" text-anchor="end">LATENCY</text>
+    <line x1="768" y1="236" x2="1140" y2="236" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+  </g>
+  <!-- rows -->
+  <g>
+    <circle cx="774" cy="266" r="4" fill="#F2B33D"/>
+    <text class="cell" x="788" y="270">primary</text>
+    <text class="cell" x="928" y="270" text-anchor="middle" fill="#8A8A9C">&#8212;</text>
+    <text class="cell" x="1002" y="270" text-anchor="middle">0.91</text>
+    <text class="cell" x="1064" y="270" text-anchor="middle">$$</text>
+    <text class="cell" x="1140" y="270" text-anchor="end">med</text>
+
+    <line x1="768" y1="288" x2="1140" y2="288" stroke="rgba(255,255,255,.07)" stroke-width="1" opacity=".5"/>
+    <circle cx="774" cy="318" r="4" fill="#4D86F7"/>
+    <text class="cell" x="788" y="322">secondary A</text>
+    <text class="cell" x="928" y="322" text-anchor="middle" fill="#4D86F7">low</text>
+    <text class="cell" x="1002" y="322" text-anchor="middle">0.89</text>
+    <text class="cell" x="1064" y="322" text-anchor="middle" fill="#5BD0E8">$</text>
+    <text class="cell" x="1140" y="322" text-anchor="end" fill="#5BD0E8">fast</text>
+
+    <line x1="768" y1="340" x2="1140" y2="340" stroke="rgba(255,255,255,.07)" stroke-width="1" opacity=".5"/>
+    <circle cx="774" cy="370" r="4" fill="#FF4D9E"/>
+    <text class="cell" x="788" y="374">secondary B</text>
+    <text class="cell" x="928" y="374" text-anchor="middle" fill="#FF4D9E">high</text>
+    <text class="cell" x="1002" y="374" text-anchor="middle">0.72</text>
+    <text class="cell" x="1064" y="374" text-anchor="middle">$$$</text>
+    <text class="cell" x="1140" y="374" text-anchor="end">slow</text>
+  </g>
+
+  <text class="ann" x="768" y="430">decision axes captured per call:</text>
+  <text class="ttl" x="768" y="456" font-size="13px" fill="#F2B33D">accuracy · price · speed</text>
+  <text class="sub" x="768" y="478">switch vendors on evidence, not vendor claims</text>
+  <text class="sub" x="768" y="500" fill="#56566A">primary result returned live; observers captured in parallel</text>
+
+  <text x="1158" y="650" text-anchor="end" font-size="20px" fill="#F2B33D" opacity=".5" font-style="italic">&#960;</text>
+</svg>

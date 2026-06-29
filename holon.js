@@ -112,9 +112,15 @@ const ZONES = [
 const SECTIONS = [
   {
     title: "About",
-    body: "<p>Holonograph™ is a signed, notarized native binary that runs as a localhost daemon inside your own infrastructure. It is the observation layer for agentic AI systems: sitting between your agent and the language models that drive its behavior. Holonograph captures the complete observational record of your agent's activity across every source of change, allowing it to accurately attribute the cause of changes in a non-deterministic system.</p>" +
+    heading: "About Holonograph<span class=\"heading-tm\" aria-hidden=\"true\">™</span>",
+    image: "./figures/holonograph-fig1-mediating-apparatus.svg",
+    body: "<p>Holonograph is a signed, notarized native binary that runs as a localhost daemon inside your own infrastructure. It is the observation layer for agentic AI systems: sitting between your agent and the language models that drive its behavior. Holonograph captures the complete observational record of your agent's activity across every source of change, allowing it to accurately attribute the cause of changes in a non-deterministic system.</p>" +
           "<p>The name is literal.</p>" +
-          "<div class=\"etymology\">From the Greek <em>holos</em> (whole)<br>and <em>graph</em> (to record)</div>",
+          "<div class=\"etymology\">" +
+            "<div class=\"etymology-label\">from the Greek</div>" +
+            "<div class=\"etymology-pair\"><em>holos</em><span>whole</span></div>" +
+            "<div class=\"etymology-pair\"><em>graph</em><span>to record</span></div>" +
+          "</div>",
     cta: { label: "see the capabilities", action: "open-readmore" },
     readMore:
       "<p>The instrument that records the whole. An observational holon: it observes the system, observes its own apparatus, and observes itself observing, each version of that apparatus immutable, the sequence of versions shifting over time. Holonograph is a patent-pending product of Precision Innovations LLC.</p>" +
@@ -139,14 +145,17 @@ const SECTIONS = [
         "<div class=\"tile\"><strong>Variance quantification &amp; isolation</strong><span>recover true substrate variance by subtracting independently-determined instrument and lens components.</span></div>" +
         "<div class=\"tile\"><strong>Self-hosted, signed &amp; notarized</strong><span>your data never leaves your infrastructure.</span></div>" +
       "</div>" +
-      "<p class=\"footnote\">Full documentation lives in <em>The Guide, Mark II</em>.</p>",
+      "<p class=\"footnote\">Full documentation lives in <a class=\"guide-link\" href=\"#guide-mark-ii\" data-section-by-title=\"The Guide Mark II\"><em>The Guide Mark II</em></a>.</p>",
   },
   {
     title: "Observability",
+    heading: "Agentic Observability",
+    image: "./figures/holonograph-fig6-multiplex.svg",
     body: "<p>For the whole history of software, a test that passed yesterday and failed today meant you changed something. Large language models broke that assumption. Put a model at the center of your system and <strong>the same input no longer produces the same output</strong>, not because anything changed, but because the model is non-deterministic by construction. <strong>Your data is non-deterministic now.</strong> Holonograph takes advantage of its unique location at the call boundary, allowing for more accurate attribution of substrate variance.</p>",
     cta: { label: "see the architecture", action: "open-readmore" },
     readMore:
       "<h4>Observation by position</h4>" +
+      "<figure class=\"inline-figure\"><img src=\"./figures/holonograph-fig1-mediating-apparatus.svg\" data-open-figure=\"./figures/holonograph-fig1-mediating-apparatus.svg\" data-figure-caption=\"FIG. 1 — Mediating apparatus: the lens between agent and model.\" alt=\"Holonograph mediating apparatus — agent, lens, and light source\" /><figcaption>FIG. 1 — Mediating apparatus: the lens between agent and model.</figcaption></figure>" +
       "<p>Holonograph sits as a bidirectional mediating gateway between your agents and the models they call, capturing every interaction at the wire-format boundary. Because it owns that boundary, it can run a single call against several models at once (<em>multiplex routing</em>) and compare them head-to-head on speed, price, and accuracy, so you switch vendors on evidence without touching your agents.</p>" +
       "<p>An OpenTelemetry sidecar covers anything that doesn't pass through the lens, so the result is <em>observational completeness</em>: every call is either graded or captured, and nothing the agent does is structurally invisible to the apparatus.</p>" +
       "<h4>No code embedded in the system under observation</h4>" +
@@ -154,11 +163,13 @@ const SECTIONS = [
   },
   {
     title: "Attribution",
+    heading: "Four Source Attribution",
+    image: "./figures/holonograph-fig3-attribution.svg",
     body: "<p>When a fixture passes Monday and fails Tuesday, the operator needs to know which cause is responsible. There are four of them. Holonograph decomposes observed drift into four mutually exclusive sources: substrate drift, light-source drift, lens drift, and stochastic noise.</p>",
     cta: { label: "see the four sources", action: "open-readmore" },
     readMore:
       "<h4>The four sources of drift</h4>" +
-      "<div class=\"tile-grid\">" +
+      "<div class=\"tile-grid tile-grid--spaced\">" +
         "<div class=\"tile\"><strong>Substrate drift</strong><span>operator-controlled changes to the agentic system.</span></div>" +
         "<div class=\"tile\"><strong>Light-source drift</strong><span>vendor-controlled evolution of the model, including silent re-routing behind an unchanged model name.</span></div>" +
         "<div class=\"tile\"><strong>Lens drift</strong><span>operator-curated evolution of the evaluation apparatus itself.</span></div>" +
@@ -169,6 +180,7 @@ const SECTIONS = [
   },
   {
     title: "Lens Architecture",
+    image: "./figures/holonograph-fig5-curation-loop.svg",
     body: "<p>The core insight is uncomfortable and, as far as we know, new: <em>the evaluation apparatus itself is an independently attributable source of drift.</em> Modern agentic evaluation grades quality with an LLM-as-judge: the measuring instrument is itself a non-deterministic model, drifting on the same vendor reroutes and prompt churn as the system it measures.</p>",
     cta: { label: "read the framework", action: "open-readmore" },
     readMore:
@@ -185,6 +197,7 @@ const SECTIONS = [
   },
   {
     title: "Request a Pilot",
+    excludeFromNav: true,
     body: "<p>We're working with a small number of design partners running production agentic systems where evaluation drift is starting to bite. If that's you — and you've felt the standard eval frameworks come up short for cohort drift or attribution — reach out.</p>" +
           "<p>Pilots, partnerships, press, or a conversation about the work. Replies usually come within a day.</p>",
     cta: { label: "request a pilot", action: "open-contact" },
@@ -195,7 +208,8 @@ const SECTIONS = [
       "<p>Honest feedback on the methodology and the operator surface, and a willingness to publish at least one finding (anonymised at your call) so the field can compound on it. We sign a mutual NDA, you sign nothing exclusive.</p>",
   },
   {
-    title: "Read the Guide",
+    title: "The Guide Mark II",
+    excludeFromNav: true,
     body: "<p class=\"guide-quote\">The Guide is definitive. Reality is frequently inaccurate.<sup>[1]</sup></p>" +
           "<p>So that you understand that just because you see something, it doesn't mean to say it's there. And if you don't see something, it doesn't mean to say it's not there. It's only what your senses bring to your attention.<sup>[2]</sup></p>" +
           "<ol class=\"guide-citations\">" +
@@ -293,17 +307,23 @@ function start() {
   composer.addPass(bloom);
 
   // ── interaction: tap a cluster to open its panel; drag L/R to spin (fling + resistance) ──
+  // On mobile (≤760px) the cube is graphics-only — no tap/drag — so the topnav is the
+  // unambiguous navigation surface and accidental touches don't spin the cube or
+  // open sections. Desktop keeps full interaction.
+  const noInteractMQ = window.matchMedia("(max-width: 760px)");
   let dragging = false, lastX = 0, lastMoveT = 0;
   let mxPx = -1, myPx = -1, mouseOn = false;       // cursor in screen px (node highlight + hit-test)
   let pointerDown = false, downX = 0, downY = 0, movedFar = false;
   const DRAG_THRESH = 6;                            // px of travel before a press becomes a spin-drag
   const interactive = (el) => el && el.closest && el.closest("a, button, input, textarea, .contact-panel, .cluster-rail");
   window.addEventListener("pointerdown", (e) => {
+    if (noInteractMQ.matches) return;
     if (interactive(e.target)) return;
     pointerDown = true; movedFar = false; downX = e.clientX; downY = e.clientY;
     lastX = e.clientX; lastMoveT = performance.now();
   });
   window.addEventListener("pointermove", (e) => {
+    if (noInteractMQ.matches) return;
     mxPx = e.clientX; myPx = e.clientY; mouseOn = true;
     if (!pointerDown) { updateHover(); return; }
     if (!movedFar && (Math.abs(e.clientX - downX) > DRAG_THRESH || Math.abs(e.clientY - downY) > DRAG_THRESH)) {
@@ -397,8 +417,10 @@ function start() {
 
   function buildNav() {
     if (!navEl || !SECTIONS.length) return;
-    navEl.innerHTML = SECTIONS.map(
-      (s, i) => `<button type="button" class="topnav-link" data-section="${i}">${s.title}</button>`
+    navEl.innerHTML = SECTIONS.map((s, i) =>
+      s.excludeFromNav
+        ? ""
+        : `<button type="button" class="topnav-link" data-section="${i}">${s.title}</button>`
     ).join("");
   }
 
@@ -461,12 +483,12 @@ function start() {
   buildNav();
 
   function renderSection(sec) {
-    let h = `<h3 class="cluster-title">${sec.title}</h3>`;
+    let h = `<h3 class="cluster-title">${sec.heading || sec.title}</h3>`;
     // media slot is always present unless the section explicitly opts out (image: false).
     // placeholder picks up the cluster accent so even "empty" tiles feel branded.
     if (sec.image !== false) {
       h += sec.image
-        ? `<img class="cluster-img" src="${sec.image}" alt="" />`
+        ? `<img class="cluster-img" src="${sec.image}" data-open-figure="${sec.image}" alt="" />`
         : `<div class="cluster-img cluster-img--placeholder" aria-hidden="true"></div>`;
     }
     h += `<div class="cluster-body">${sec.body}</div>`;
@@ -557,9 +579,10 @@ function start() {
     panelEl.classList.add("open");
     panelEl.classList.add("tethered");
     panelEl.setAttribute("aria-hidden", "false");
-    // switching to a different section closes any open read-more (content was for the old section)
+    // switching to a different section closes any open read-more or figure view
+    // (content was for the old section; figure mode would also hide the new rail).
     if (switchedFrom >= 0 && switchedFrom !== i && panelEl.classList.contains("expanded")) {
-      panelEl.classList.remove("expanded");
+      panelEl.classList.remove("expanded", "expanded--figure");
       if (expandedEl) expandedEl.setAttribute("aria-hidden", "true");
     }
     updateConnector(true);                                   // (re)draw the tether to the rail anchor
@@ -594,13 +617,29 @@ function start() {
     const sec = SECTIONS[activeIdx];
     if (!sec || !sec.readMore) return;
     if (expandedContentEl) expandedContentEl.innerHTML = sec.readMore;
+    panelEl.classList.remove("expanded--figure");
     panelEl.classList.add("expanded");
     expandedEl.setAttribute("aria-hidden", "false");
   }
   function closeReadMore() {
     if (!panelEl) return;
-    panelEl.classList.remove("expanded");
+    panelEl.classList.remove("expanded", "expanded--figure");
     if (expandedEl) expandedEl.setAttribute("aria-hidden", "true");
+  }
+
+  // Open the expanded slider with a full-size figure (image only). If the slider
+  // is already open with readMore content, the figure replaces it in-place.
+  function openFigure(src, caption) {
+    if (!panelEl || !expandedEl || !src) return;
+    if (expandedContentEl) {
+      expandedContentEl.innerHTML =
+        `<figure class="figure-large">` +
+          `<img src="${src}" alt="" />` +
+          (caption ? `<figcaption>${caption}</figcaption>` : "") +
+        `</figure>`;
+    }
+    panelEl.classList.add("expanded", "expanded--figure");
+    expandedEl.setAttribute("aria-hidden", "false");
   }
 
   window.addEventListener("keydown", (e) => {
@@ -627,6 +666,20 @@ function start() {
       }
       const ctaReadMore = e.target.closest("[data-open-readmore]");
       if (ctaReadMore) { e.preventDefault(); openReadMore(); return; }
+      // Click a figure (cluster-img hero OR inline-figure inside readMore) → open
+      // full-size in the expanded slider. If the slider is already open with
+      // readMore content, the figure replaces it in-place. Caption falls back to
+      // the closest <figure>'s figcaption if data-figure-caption isn't set.
+      const figClick = e.target.closest("[data-open-figure]");
+      if (figClick) {
+        e.preventDefault();
+        const cap =
+          figClick.dataset.figureCaption ||
+          figClick.closest("figure")?.querySelector("figcaption")?.textContent.trim() ||
+          "";
+        openFigure(figClick.dataset.openFigure || figClick.getAttribute("src"), cap);
+        return;
+      }
     });
   }
 
