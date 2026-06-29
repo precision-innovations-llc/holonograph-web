@@ -145,6 +145,16 @@ const SECTIONS = [
         "<div class=\"tile\"><strong>Variance quantification &amp; isolation</strong><span>recover true substrate variance by subtracting independently-determined instrument and lens components.</span></div>" +
         "<div class=\"tile\"><strong>Self-hosted, signed &amp; notarized</strong><span>your data never leaves your infrastructure.</span></div>" +
       "</div>" +
+      "<h4>What Holonograph is not</h4>" +
+      "<p>Holonograph is frequently confused with adjacent tools. It is none of these:</p>" +
+      "<div class=\"tile-grid tile-grid--spaced\">" +
+        "<div class=\"tile\"><strong>Not concept-drift detection</strong><span>that field assumes a deterministic model and a measurable shift in input data. Holonograph addresses agentic systems on non-deterministic foundation LLMs where the model itself can be silently re-routed by the vendor.</span></div>" +
+        "<div class=\"tile\"><strong>Not feature attribution</strong><span>SHAP, LIME, and integrated gradients attribute a model's output to its input features. Holonograph attributes pass-rate changes over time to one of four mutually exclusive sources of change.</span></div>" +
+        "<div class=\"tile\"><strong>Not an MLOps dashboard</strong><span>not a tracing system, not a model registry, not a metrics platform. Holonograph composes on top of OpenTelemetry; the novel layer is the versioned lens and the attribution it enables.</span></div>" +
+        "<div class=\"tile\"><strong>Not LLM-as-judge</strong><span>conventional LLM-as-judge treats the judge as a fixed measuring stick. Holonograph rejects that — it treats the judge itself as a first-class versioned instrument whose drift is independently attributable.</span></div>" +
+        "<div class=\"tile\"><strong>Not a fine-tuning pipeline</strong><span>the Curation Loop produces operator-curated artifacts (skills, lessons, fixtures, code fixes) that ship through a human-approval gate. It does not adjust model weights.</span></div>" +
+        "<div class=\"tile\"><strong>Not SaaS</strong><span>a signed, notarized native binary that runs as a localhost daemon. Data never leaves the operator's infrastructure.</span></div>" +
+      "</div>" +
       "<p class=\"footnote\">Full documentation lives in <a class=\"guide-link\" href=\"#guide-mark-ii\" data-section-by-title=\"The Guide Mark II\"><em>The Guide Mark II</em></a>.</p>",
   },
   {
