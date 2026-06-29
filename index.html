@@ -492,6 +492,13 @@
   }
   .hero-explore-arrow { transition: transform 240ms ease; display: inline-block; }
   .hero-explore:hover .hero-explore-arrow { transform: translateX(4px); }
+  /* Once explored, the CTA's job is done — fade it out + drop interactivity */
+  .hero-explore--dismissed {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 480ms ease, transform 480ms ease;
+  }
   @media (max-width: 760px) {
     .hero-explore {
       margin-top: 22px;
@@ -1861,12 +1868,14 @@
       // GA: hero "Explore" CTA — fired in addition to the open_section event
       // that the existing data-section-by-title handler triggers. Lets us tell
       // hero-CTA-driven About opens apart from topnav-driven ones.
+      // Also dismisses the CTA after the click — its job is done.
       document.addEventListener("click", (e) => {
-        if (e.target.closest("[data-explore-cta]")) {
-          if (typeof window.gtag === "function") {
-            window.gtag("event", "explore_click");
-          }
+        const cta = e.target.closest("[data-explore-cta]");
+        if (!cta) return;
+        if (typeof window.gtag === "function") {
+          window.gtag("event", "explore_click");
         }
+        cta.classList.add("hero-explore--dismissed");
       });
 
       // close on backdrop / × / ESC
