@@ -1739,6 +1739,9 @@
         // focus first field shortly after the slide-up settles
         setTimeout(() => form.querySelector("input")?.focus(), 280);
         ensureTurnstile();
+        if (typeof window.gtag === "function") {
+          window.gtag("event", "open_contact");
+        }
       }
 
       function closePanel() {
@@ -1814,11 +1817,17 @@
         if (!name || !email || !message) {
           status.textContent = "all fields required";
           status.classList.add("error");
+          if (typeof window.gtag === "function") {
+            window.gtag("event", "contact_submit", { result: "error_validation" });
+          }
           return;
         }
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
           status.textContent = "invalid email";
           status.classList.add("error");
+          if (typeof window.gtag === "function") {
+            window.gtag("event", "contact_submit", { result: "error_validation" });
+          }
           return;
         }
 
@@ -1842,15 +1851,24 @@
             form.reset();
             resetTurnstile();
             setTimeout(closePanel, 1600);
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "contact_submit", { result: "success" });
+            }
           } else {
             status.textContent = body.error || ("send failed (" + res.status + ")");
             status.classList.add("error");
             resetTurnstile();
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "contact_submit", { result: "error_server", status: res.status });
+            }
           }
         } catch (err) {
           status.textContent = "network error";
           status.classList.add("error");
           resetTurnstile();
+          if (typeof window.gtag === "function") {
+            window.gtag("event", "contact_submit", { result: "error_network" });
+          }
         } finally {
           submit.disabled = false;
           submit.querySelector("span").textContent = oldLabel;
@@ -1866,6 +1884,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=32"></script>
+  <script type="module" src="./holon.js?v=33"></script>
 </body>
 </html>

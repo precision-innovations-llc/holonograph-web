@@ -597,6 +597,10 @@ function start() {
     }
     updateConnector(true);                                   // (re)draw the tether to the rail anchor
     updateNavActive();
+    // GA: section opened (topnav OR cube cluster tap — useful for engagement signal)
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "open_section", { section_name: SECTIONS[i].title });
+    }
   }
 
   function closeSection() {
@@ -630,6 +634,9 @@ function start() {
     panelEl.classList.remove("expanded--figure");
     panelEl.classList.add("expanded");
     expandedEl.setAttribute("aria-hidden", "false");
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "open_readmore", { section_name: sec.title });
+    }
   }
   function closeReadMore() {
     if (!panelEl) return;
@@ -650,6 +657,9 @@ function start() {
     }
     panelEl.classList.add("expanded", "expanded--figure");
     expandedEl.setAttribute("aria-hidden", "false");
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "open_figure", { figure_src: src });
+    }
   }
 
   window.addEventListener("keydown", (e) => {
