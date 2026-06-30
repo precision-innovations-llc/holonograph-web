@@ -518,35 +518,6 @@
 
   .tagline .ai { letter-spacing: 0.22em; }
 
-  /* Hero lead — substantive opening sentence under the tagline. Visible to humans
-     landing cold, indexable for classic ranking (default-visible prose, not
-     hidden-then-revealed), and a real surface for screen readers since the rail
-     content is gated behind open/close. */
-  .hero-lead {
-    max-width: 64ch;
-    margin: clamp(14px, 1.8vw, 22px) auto 0;
-    padding: 0 clamp(12px, 2vw, 24px);
-    font-family: var(--font-ui);
-    font-size: clamp(13px, 1.05vw, 15.5px);
-    font-weight: 400;
-    line-height: 1.55;
-    letter-spacing: 0.005em;
-    color: rgba(248, 246, 255, 0.86);
-    text-align: center;
-    user-select: text;
-    animation: fade 2200ms ease-out 600ms both;
-  }
-  @media (max-width: 760px) {
-    .hero-lead {
-      font-size: 12.5px;
-      line-height: 1.5;
-      padding: 0 14px;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hero-lead { animation: none; }
-  }
-
   /* Primary hero CTA — centered pill under the tagline. Lands first in the eye-line
      after the wordmark + tagline pair; clicks open the About section (navTo via
      data-section-by-title). Fades in after the tagline so it doesn't compete with
@@ -1777,6 +1748,9 @@
   @media (orientation: landscape) and (max-height: 820px) {
     .wordmark { font-size: clamp(24px, 6vh, 54px); margin-bottom: clamp(10px, 1.6vh, 20px); }
     .tagline { font-size: clamp(12px, 2.4vh, 16px); }
+    /* Force the "drift attribution in AI systems" tail onto its own line so
+       the tagline doesn't crash into the topnav on landscape mobile/tablet. */
+    .tagline .tagline-tail { display: block; }
   }
 </style>
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
@@ -1812,8 +1786,7 @@
     <main class="center">
       <div class="depth" id="depth">
         <h1 class="wordmark">HOLONOGRAPH<span class="wordmark-tm" aria-hidden="true">™</span></h1>
-        <p class="tagline">an observational holon for drift attribution in <span class="ai">AI</span> systems</p>
-        <p class="hero-lead">A signed, self-hosted binary that decomposes evaluation drift in agentic AI systems into four mutually exclusive sources — substrate, light source, lens, and stochastic noise — and treats the evaluation apparatus itself as a first-class, versioned, independently attributable instrument.</p>
+        <p class="tagline">an observational holon for <span class="tagline-tail">drift attribution in <span class="ai">AI</span> systems</span></p>
         <button type="button" class="hero-explore" data-section-by-title="About" data-explore-cta aria-label="Explore Holonograph">
           <span class="hero-explore-label">Explore</span>
           <span class="hero-explore-arrow" aria-hidden="true">→</span>
