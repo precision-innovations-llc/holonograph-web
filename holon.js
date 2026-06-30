@@ -67,6 +67,7 @@ const CONFIG = {
   dragSpinSens: 0.005,   // radians of spin per pixel dragged
   spinFriction: 1.7,     // how fast a fling decays back toward the ambient spin
   maxFling: 2.4,         // cap on fling speed (rad/s)
+  scrollSpinSens: 0.004, // scroll-wheel → spin nudge per deltaY unit (momentum via angVelY)
 
   // cursor highlight: bright sprites pop on the nodes nearest the pointer (replaces halo)
   highlightRadius: 80,   // screen px
@@ -200,13 +201,11 @@ function start() {
   const DRAG_THRESH = 6;                            // px of travel before a press becomes a spin-drag
   const interactive = (el) => el && el.closest && el.closest("a, button, input, textarea, .contact-panel, .cluster-rail");
   window.addEventListener("pointerdown", (e) => {
-    if (noInteractMQ.matches) return;
-    if (interactive(e.target)) return;
+    if (interactive(e.target)) return;     // drag-to-spin works on desktop AND mobile (background only)
     pointerDown = true; movedFar = false; downX = e.clientX; downY = e.clientY;
     lastX = e.clientX; lastMoveT = performance.now();
   });
   window.addEventListener("pointermove", (e) => {
-    if (noInteractMQ.matches) return;
     mxPx = e.clientX; myPx = e.clientY; mouseOn = true;
     if (!pointerDown) { updateHover(); return; }
     if (!movedFar && (Math.abs(e.clientX - downX) > DRAG_THRESH || Math.abs(e.clientY - downY) > DRAG_THRESH)) {
@@ -226,10 +225,12 @@ function start() {
     }
   }, { passive: true });
   const endPress = (e) => {
-    if (pointerDown && !movedFar) {                 // a tap, not a drag → cluster hit-test (touch / click)
+    // Desktop: a tap opens the cluster under the pointer. On mobile the cube is
+    // spin-only (swipe) — taps don't open sections, so the topnav stays the
+    // unambiguous nav surface and stray touches don't pop a panel.
+    if (pointerDown && !movedFar && !noInteractMQ.matches) {
       const hit = pickAnchor(e.clientX, e.clientY);
       if (hit && hit.sectionIndex !== activeIdx) openSection(hit.sectionIndex);
-      // tap on empty space does NOT close the rail — only × / ESC do that.
     }
     pointerDown = false; dragging = false; movedFar = false;
     document.body.style.cursor = "";
@@ -238,6 +239,13 @@ function start() {
   window.addEventListener("pointerup", endPress);
   window.addEventListener("pointercancel", () => { pointerDown = false; dragging = false; movedFar = false; document.body.style.cursor = ""; });
   window.addEventListener("pointerout", (e) => { if (!e.relatedTarget) { mouseOn = false; updateHover(); } });
+  // (4) scroll-to-spin: wheel / trackpad over the background nudges the spin (with
+  // momentum via angVelY, decaying back to the ambient spin). Over the rail / nav /
+  // contact form it leaves the native scroll alone. Mobile spins via swipe (above).
+  window.addEventListener("wheel", (e) => {
+    if (frozen || interactive(e.target)) return;
+    angVelY = Math.max(-CONFIG.maxFling, Math.min(CONFIG.maxFling, angVelY + e.deltaY * CONFIG.scrollSpinSens));
+  }, { passive: true });
 
   // ── rebuildable scene content (the GUI calls rebuild() on structural edits) ──
   let swarmMat, spMat, spGeo, spPos, spCol, sparks = [], connectors = [], nS = 0;
@@ -443,6 +451,10 @@ function start() {
     panelEl.style.setProperty("--cluster-accent", "#" + sa.color.getHexString());
     panelEl.style.setProperty("--cluster-line", "#" + sa.color.clone().lerp(WHITE, 0.4).getHexString());
     showSlide(i);
+    if (railEl) railEl.scrollTop = 0;                        // (3) reset rail scroll when changing section
+    if (expandedEl) expandedEl.scrollTop = 0;
+    const ex = document.querySelector(".hero-explore");      // (8) cube engaged → retire the hero CTA
+    if (ex) ex.classList.add("hero-explore--dismissed");
     panelEl.classList.add("open");
     panelEl.classList.add("tethered");
     panelEl.setAttribute("aria-hidden", "false");
@@ -487,6 +499,7 @@ function start() {
     if (activeIdx < 0 || !panelEl || !expandedEl) return;
     if (!hasReadmore(activeIdx)) return;
     showReadmore(activeIdx);
+    expandedEl.scrollTop = 0;                                // (3) read-more opens at the top
     panelEl.classList.remove("expanded--figure");
     panelEl.classList.add("expanded");
     expandedEl.setAttribute("aria-hidden", "false");
