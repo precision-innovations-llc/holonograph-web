@@ -946,4 +946,17 @@ function start() {
   });
 }
 
-maybeStart();
+// Defer the cube boot until AFTER first paint + the rest of the page is loaded.
+// Three.js + addons are heavy to parse and instantiate; running maybeStart() on
+// module-evaluate blocks TTI / TBT for 1-2 seconds. Waiting for window.load and
+// then yielding via requestIdleCallback (with a hard fallback) lets HTML/CSS
+// render first and the cube animates in moments later.
+function bootCube() {
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(maybeStart, { timeout: 1200 });
+  } else {
+    setTimeout(maybeStart, 1);
+  }
+}
+if (document.readyState === "complete") bootCube();
+else window.addEventListener("load", bootCube, { once: true });

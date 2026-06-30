@@ -7,6 +7,20 @@
 /holonograph-mobile.webp
   Cache-Control: public, max-age=31536000, immutable
 
+# Vendored Three.js is content-addressed by path; never changes without a
+# deliberate vendor refresh, so safe to mark immutable.
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Patent figures are content-addressed by filename; safe to immutable.
+/figures/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+# holon.js is cache-busted via the ?v= query in index.html, so once a browser
+# has a specific version it can keep it forever.
+/holon.js
+  Cache-Control: public, max-age=31536000, immutable
+
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
