@@ -451,7 +451,9 @@ function start() {
     panelEl.style.setProperty("--cluster-accent", "#" + sa.color.getHexString());
     panelEl.style.setProperty("--cluster-line", "#" + sa.color.clone().lerp(WHITE, 0.4).getHexString());
     showSlide(i);
-    if (railEl) railEl.scrollTop = 0;                        // (3) reset rail scroll when changing section
+    if (railEl) railEl.scrollTop = 0;                        // (3) reset scroll on section change
+    const cardEl = panelEl.querySelector(".cluster-card");   // on mobile the card is the scroll container
+    if (cardEl) cardEl.scrollTop = 0;
     if (expandedEl) expandedEl.scrollTop = 0;
     const ex = document.querySelector(".hero-explore");      // (8) cube engaged → retire the hero CTA
     if (ex) ex.classList.add("hero-explore--dismissed");

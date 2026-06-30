@@ -496,6 +496,7 @@
   .hero-explore:hover .hero-explore-arrow { transform: translateX(4px); }
   /* Once explored, the CTA's job is done — fade it out + drop interactivity */
   .hero-explore--dismissed {
+    animation: none;   /* drop the fade-in keyframe's "both" fill, which was pinning opacity:1 */
     opacity: 0;
     pointer-events: none;
     transform: translateY(8px);
@@ -1615,11 +1616,12 @@
   .cluster-panel.expanded--figure #figureStage { display: block; }
 
   /* ── responsive refinements ── */
-  /* (1) mobile: center the rail card vertically like a modal popup
-     (margin-block:auto centers when it fits, top-aligns + scrolls when taller) */
+  /* (1) mobile: the rail becomes a centered modal — the card is a height-capped,
+     self-scrolling box centered in the viewport, so it's centered for BOTH short
+     and long sections (long content scrolls inside the card, not the page). */
   @media (max-width: 720px) {
-    .cluster-rail { display: flex; flex-direction: column; }
-    .cluster-card { margin-block: auto; }
+    .cluster-rail { display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding: 44px 20px; }
+    .cluster-card { max-height: calc(100dvh - 88px); overflow-y: auto; }
   }
   /* (2) landscape tablets/phones: let the full-size figure use (near) full width */
   @media (orientation: landscape) and (max-height: 900px) {
@@ -2009,6 +2011,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=35"></script>
+  <script type="module" src="./holon.js?v=36"></script>
 </body>
 </html>
