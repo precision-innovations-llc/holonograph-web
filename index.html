@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#000000" />
 <meta name="color-scheme" content="dark" />
-<title>Holonograph — The observation layer for agentic AI evaluation</title>
+<title>An observational holon for drift attribution in agentic systems — Holonograph</title>
 <meta name="description" content="A signed, self-hosted binary that decomposes evaluation drift into four sources — substrate, light source, lens, and noise — including the evaluation apparatus itself. Built on OpenTelemetry. Patent pending." />
 <meta property="og:title" content="Holonograph" />
 <meta property="og:description" content="The instrument that records the whole. Four-source drift attribution for non-deterministic agentic evaluation." />
@@ -170,7 +170,9 @@
     opacity: 0;
     transition: opacity 400ms ease;
   }
-  @media (max-width: 760px) {
+  /* legibility scrim: phones + tablets + landscape up to iPad-landscape size
+     (kept off only on large/tall desktop where the cube reads fine behind text) */
+  @media (max-width: 1024px), (orientation: landscape) and (max-height: 1024px) {
     .stage::before { opacity: 1; }
   }
 
@@ -1611,6 +1613,24 @@
   .cluster-panel.expanded:not(.expanded--figure) .readmore-slide.active { display: block; }
   #figureStage { display: none; }
   .cluster-panel.expanded--figure #figureStage { display: block; }
+
+  /* ── responsive refinements ── */
+  /* (1) mobile: center the rail card vertically like a modal popup
+     (margin-block:auto centers when it fits, top-aligns + scrolls when taller) */
+  @media (max-width: 720px) {
+    .cluster-rail { display: flex; flex-direction: column; }
+    .cluster-card { margin-block: auto; }
+  }
+  /* (2) landscape tablets/phones: let the full-size figure use (near) full width */
+  @media (orientation: landscape) and (max-height: 900px) {
+    .cluster-panel.expanded--figure .rail-expanded-clip { left: clamp(12px, 3vw, 40px); right: 0; }
+  }
+  /* (7) landscape / short viewports: scale the wordmark to the viewport height so
+     it stops overlapping the topnav and the menu stays legible */
+  @media (orientation: landscape) and (max-height: 820px) {
+    .wordmark { font-size: clamp(24px, 6vh, 54px); margin-bottom: clamp(10px, 1.6vh, 20px); }
+    .tagline { font-size: clamp(12px, 2.4vh, 16px); }
+  }
 </style>
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
@@ -1724,7 +1744,7 @@
           <section class="section-slide" data-index="2" data-title="Attribution" aria-label="Attribution"><h2 class="cluster-title">Four Source Attribution</h2><img class="cluster-img" src="./figures/holonograph-fig3-attribution.svg" data-open-figure="./figures/holonograph-fig3-attribution.svg" alt="Four-source drift attribution" /><div class="cluster-body"><p>When a fixture passes Monday and fails Tuesday, the operator needs to know which cause is responsible. There are four of them. Holonograph decomposes observed drift into four mutually exclusive sources: substrate drift, light-source drift, lens drift, and stochastic noise.</p></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-readmore>see the four sources →</button></div></section>
           <section class="section-slide" data-index="3" data-title="Lens Architecture" aria-label="Lens Architecture"><h2 class="cluster-title">Lens Architecture</h2><img class="cluster-img" src="./figures/holonograph-fig5-curation-loop.svg" data-open-figure="./figures/holonograph-fig5-curation-loop.svg" alt="The Holonograph curation loop" /><div class="cluster-body"><p>The core insight is uncomfortable and, as far as we know, new: <em>the evaluation apparatus itself is an independently attributable source of drift.</em> Modern agentic evaluation grades quality with an LLM-as-judge: the measuring instrument is itself a non-deterministic model, drifting on the same vendor reroutes and prompt churn as the system it measures.</p></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-readmore>read the framework →</button></div></section>
           <section class="section-slide" data-index="4" data-title="Request a Pilot" data-exclude-nav="true" aria-label="Request a Pilot"><h2 class="cluster-title">Request a Pilot</h2><div class="cluster-img cluster-img--placeholder" aria-hidden="true"></div><div class="cluster-body"><p>We're working with a small number of design partners running production agentic systems where evaluation drift is starting to bite. If that's you — and you've felt the standard eval frameworks come up short for cohort drift or attribution — reach out.</p><p>Pilots, partnerships, press, or a conversation about the work. Replies usually come within a day.</p></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-contact>request a pilot →</button></div></section>
-          <section class="section-slide" data-index="5" data-title="The Guide Mark II" data-exclude-nav="true" aria-label="The Guide Mark II"><h2 class="cluster-title">The Guide Mark II</h2><div class="cluster-img cluster-img--placeholder" aria-hidden="true"></div><div class="cluster-body"><p class="guide-quote">The Guide is definitive. Reality is frequently inaccurate.<sup>[1]</sup></p><p>So that you understand that just because you see something, it doesn't mean to say it's there. And if you don't see something, it doesn't mean to say it's not there. It's only what your senses bring to your attention.<sup>[2]</sup></p><ol class="guide-citations"><li>Adams, Douglas. <em>The Restaurant at the End of the Universe</em>. Pan Books, 1980.</li><li>Adams, Douglas. <em>Mostly Harmless</em>. Heinemann, 1992.</li></ol></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-contact>notify me when it ships →</button></div></section>
+          <section class="section-slide" data-index="5" data-title="The Guide Mark II" data-exclude-nav="true" aria-label="The Guide Mark II"><h2 class="cluster-title">The Guide Mark II</h2><div class="cluster-body"><p class="guide-quote">The Guide is definitive. Reality is frequently inaccurate.<sup>[1]</sup></p><p>So that you understand that just because you see something, it doesn't mean to say it's there. And if you don't see something, it doesn't mean to say it's not there. It's only what your senses bring to your attention.<sup>[2]</sup></p><ol class="guide-citations"><li>Adams, Douglas. <em>The Restaurant at the End of the Universe</em>. Pan Books, 1980.</li><li>Adams, Douglas. <em>Mostly Harmless</em>. Heinemann, 1992.</li></ol></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-contact>notify me when it ships →</button></div></section>
         </div>
       </div>
     </aside>
@@ -1989,6 +2009,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=34"></script>
+  <script type="module" src="./holon.js?v=35"></script>
 </body>
 </html>
