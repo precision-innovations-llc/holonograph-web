@@ -79,6 +79,78 @@
   ]
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Holonograph a concept-drift or model-drift detector?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Concept-drift detection assumes a deterministic model and a measurable shift in input data distribution. Holonograph addresses agentic AI systems built on non-deterministic foundation LLMs — where the model itself can be silently re-routed by the vendor behind a stable alias, and where the evaluation apparatus is itself an LLM that drifts independently. The four-source decomposition (substrate, light source, lens, stochastic noise) exists because no single one of those causes can be isolated by data-distribution methods alone."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Holonograph a feature attribution tool like SHAP or LIME?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. SHAP, LIME, and integrated gradients attribute a model's output to its input features for a single inference. Holonograph attributes pass-rate changes over time to one of four mutually exclusive sources of change across versioned state of the system. Different problem, different answer shape."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is Holonograph different from MLOps observability platforms?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Holonograph composes on top of OpenTelemetry rather than replacing it — it is not a tracing system, not a metrics dashboard, not a model registry. The novel layer is the explicitly versioned lens (the evaluation apparatus treated as a first-class instrument) and the four-source attribution that lens enables. Run Holonograph alongside any observability platform; they answer different questions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Holonograph differ from LLM-as-judge frameworks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Conventional LLM-as-judge frameworks grade quality with an LLM and treat the judge as a fixed measuring stick. Holonograph rejects that assumption — it treats the judge itself as a first-class versioned instrument whose drift is independently attributable. The lens drift source exists precisely because the instrument is non-deterministic."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Holonograph fine-tune the model or adjust weights?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The Curation Loop produces operator-curated artifacts — skills, lessons, fixtures, or code fixes — that ship through a human-approval gate and become substrate. Holonograph does not adjust model weights or run RLHF; it is vendor-agnostic and works against any foundation LLM."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Holonograph SaaS or self-hosted?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Self-hosted. Holonograph ships as a signed, notarized native binary that runs as a localhost daemon inside the operator's own infrastructure. Data never leaves the operator's environment — which is what makes it deployable in regulated industries, air-gapped or sovereign deployments, and mid-market teams without a platform-engineering org."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Holonograph require code changes to the agent under observation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Observation is a property of architectural position — Holonograph sits as a bidirectional mediating gateway at the wire-format boundary between the agent and the model. There is zero evaluation logic embedded in the system under observation, and no instrumentation to install, maintain, and reconcile inside the agent's code."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Holonograph handle multi-agent or swarm systems?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The Lens Architecture is closed under multi-agent composition: handoffs between agents become substrate references rather than new evaluation boundaries, so the four-source decomposition holds whether you are observing a single agent or a cooperating swarm."
+      }
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
@@ -445,6 +517,35 @@
   }
 
   .tagline .ai { letter-spacing: 0.22em; }
+
+  /* Hero lead — substantive opening sentence under the tagline. Visible to humans
+     landing cold, indexable for classic ranking (default-visible prose, not
+     hidden-then-revealed), and a real surface for screen readers since the rail
+     content is gated behind open/close. */
+  .hero-lead {
+    max-width: 64ch;
+    margin: clamp(14px, 1.8vw, 22px) auto 0;
+    padding: 0 clamp(12px, 2vw, 24px);
+    font-family: var(--font-ui);
+    font-size: clamp(13px, 1.05vw, 15.5px);
+    font-weight: 400;
+    line-height: 1.55;
+    letter-spacing: 0.005em;
+    color: rgba(248, 246, 255, 0.86);
+    text-align: center;
+    user-select: text;
+    animation: fade 2200ms ease-out 600ms both;
+  }
+  @media (max-width: 760px) {
+    .hero-lead {
+      font-size: 12.5px;
+      line-height: 1.5;
+      padding: 0 14px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-lead { animation: none; }
+  }
 
   /* Primary hero CTA — centered pill under the tagline. Lands first in the eye-line
      after the wordmark + tagline pair; clicks open the About section (navTo via
@@ -1712,6 +1813,7 @@
       <div class="depth" id="depth">
         <h1 class="wordmark">HOLONOGRAPH<span class="wordmark-tm" aria-hidden="true">™</span></h1>
         <p class="tagline">an observational holon for drift attribution in <span class="ai">AI</span> systems</p>
+        <p class="hero-lead">A signed, self-hosted binary that decomposes evaluation drift in agentic AI systems into four mutually exclusive sources — substrate, light source, lens, and stochastic noise — and treats the evaluation apparatus itself as a first-class, versioned, independently attributable instrument.</p>
         <button type="button" class="hero-explore" data-section-by-title="About" data-explore-cta aria-label="Explore Holonograph">
           <span class="hero-explore-label">Explore</span>
           <span class="hero-explore-arrow" aria-hidden="true">→</span>
@@ -1784,7 +1886,7 @@
       <button type="button" class="rail-close" data-cluster-close aria-label="close panel">×</button>
       <div class="cluster-card">
         <div class="cluster-content" id="clusterContent">
-          <section class="section-slide" data-index="0" data-title="About" aria-label="About"><h2 class="cluster-title">About Holonograph<span class="heading-tm" aria-hidden="true">™</span></h2><img class="cluster-img" src="./figures/holonograph-fig1-mediating-apparatus.svg" data-open-figure="./figures/holonograph-fig1-mediating-apparatus.svg" alt="Holonograph mediating apparatus — the lens between agent and model" /><div class="cluster-body"><p>Holonograph is a signed, notarized native binary that runs as a localhost daemon inside your own infrastructure. It is the observation layer for agentic AI systems: sitting between your agent and the language models that drive its behavior. Holonograph captures the complete observational record of your agent's activity across every source of change, allowing it to accurately attribute the cause of changes in a non-deterministic system.</p><p>The name is literal.</p><div class="etymology"><div class="etymology-label">from the Greek</div><div class="etymology-pair"><em>holos</em><span>whole</span></div><div class="etymology-pair"><em>graph</em><span>to record</span></div></div></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-readmore>see the capabilities →</button></div></section>
+          <section class="section-slide active" data-index="0" data-title="About" aria-label="About"><h2 class="cluster-title">About Holonograph<span class="heading-tm" aria-hidden="true">™</span></h2><img class="cluster-img" src="./figures/holonograph-fig1-mediating-apparatus.svg" data-open-figure="./figures/holonograph-fig1-mediating-apparatus.svg" alt="Holonograph mediating apparatus — the lens between agent and model" /><div class="cluster-body"><p>Holonograph is a signed, notarized native binary that runs as a localhost daemon inside your own infrastructure. It is the observation layer for agentic AI systems: sitting between your agent and the language models that drive its behavior. Holonograph captures the complete observational record of your agent's activity across every source of change, allowing it to accurately attribute the cause of changes in a non-deterministic system.</p><p>The name is literal.</p><div class="etymology"><div class="etymology-label">from the Greek</div><div class="etymology-pair"><em>holos</em><span>whole</span></div><div class="etymology-pair"><em>graph</em><span>to record</span></div></div></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-readmore>see the capabilities →</button></div></section>
           <section class="section-slide" data-index="1" data-title="Observability" aria-label="Observability"><h2 class="cluster-title">Agentic Observability</h2><img class="cluster-img" src="./figures/holonograph-fig6-multiplex.svg" data-open-figure="./figures/holonograph-fig6-multiplex.svg" alt="Multiplex routing — one call compared across several models" /><div class="cluster-body"><p>For the whole history of software, a test that passed yesterday and failed today meant you changed something. Large language models broke that assumption. Put a model at the center of your system and <strong>the same input no longer produces the same output</strong>, not because anything changed, but because the model is non-deterministic by construction. <strong>Your data is non-deterministic now.</strong> Holonograph takes advantage of its unique location at the call boundary, allowing for more accurate attribution of substrate variance.</p></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-readmore>see the architecture →</button></div></section>
           <section class="section-slide" data-index="2" data-title="Attribution" aria-label="Attribution"><h2 class="cluster-title">Four Source Attribution</h2><img class="cluster-img" src="./figures/holonograph-fig3-attribution.svg" data-open-figure="./figures/holonograph-fig3-attribution.svg" alt="Four-source drift attribution" /><div class="cluster-body"><p>When a fixture passes Monday and fails Tuesday, the operator needs to know which cause is responsible. There are four of them. Holonograph decomposes observed drift into four mutually exclusive sources: substrate drift, light-source drift, lens drift, and stochastic noise.</p></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-readmore>see the four sources →</button></div></section>
           <section class="section-slide" data-index="3" data-title="Lens Architecture" aria-label="Lens Architecture"><h2 class="cluster-title">Lens Architecture</h2><img class="cluster-img" src="./figures/holonograph-fig5-curation-loop.svg" data-open-figure="./figures/holonograph-fig5-curation-loop.svg" alt="The Holonograph curation loop" /><div class="cluster-body"><p>The core insight is uncomfortable and, as far as we know, new: <em>the evaluation apparatus itself is an independently attributable source of drift.</em> Modern agentic evaluation grades quality with an LLM-as-judge: the measuring instrument is itself a non-deterministic model, drifting on the same vendor reroutes and prompt churn as the system it measures.</p></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-readmore>read the framework →</button></div></section>
