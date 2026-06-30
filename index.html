@@ -167,13 +167,11 @@
         transparent 70%);
     pointer-events: none;
     z-index: 3;
-    opacity: 0;
+    /* legibility scrim: applied at every viewport — the cube reads as ambient
+       graphics behind a consistent dark wash, so the wordmark + nav + footer
+       always have the same contrast envelope to land on. */
+    opacity: 1;
     transition: opacity 400ms ease;
-  }
-  /* legibility scrim: phones + tablets + landscape up to iPad-landscape size
-     (kept off only on large/tall desktop where the cube reads fine behind text) */
-  @media (max-width: 1024px), (orientation: landscape) and (max-height: 1024px) {
-    .stage::before { opacity: 1; }
   }
 
   .hero {
@@ -2057,6 +2055,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=36"></script>
+  <script type="module" src="./holon.js?v=37"></script>
 </body>
 </html>

@@ -20,11 +20,11 @@ const CONFIG = {
   snapSteps: [0.5, 0.75, 1.0],
 
   grids: [
-    { divisions: 18, grey: 0.3,  keep: 0.5 },  // fine grid — sparse hint
+    { divisions: 18, grey: 0.32, keep: 0.5 },  // fine grid — sparse hint
     { divisions: 8,  grey: 0.18, keep: 0.76 }, // coarse grid — carries the cube hint
   ],
 
-  clusters: 21,
+  clusters: 13,
   pointsPerCluster: [90, 170],
   slabThin: [0.5, 1.1],
   slabWide: [2.2, 4.3],
@@ -33,7 +33,7 @@ const CONFIG = {
   tendrilReach: 5.0,
 
   coreSize: 0.05, coreBright: 1.1,
-  sheathBase: 0.6,
+  sheathBase: 1.3,
   sheathDenseBoost: 1.25,
   sheathLenCells: [0.8, 1.7],
   densityRadius: 1.3, densityMax: 13,
@@ -57,7 +57,7 @@ const CONFIG = {
   sparkEase: 0.4,        // 0 = linear travel, 1 = full smoothstep ease in/out
   sparkWait: [0.4, 3.3], // sporadic idle gap between a connector's pulses (s)
 
-  bloom: { strength: 1.65, radius: 0.85, threshold: 0.0 },
+  bloom: { strength: 0.9, radius: 0.45, threshold: 0.0 },
 
   camDist: 21, fov: 55,
   spin: 0.06, fog: [14, 50],
