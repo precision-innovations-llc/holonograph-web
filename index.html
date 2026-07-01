@@ -157,17 +157,6 @@
 <!-- Warm the TLS connection to Turnstile early so the first contact-panel open is snappy.
      Turnstile only loads on demand, but the handshake is the bulk of the latency. -->
 <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin />
-<!-- Modulepreload the Three.js bundle and its postprocessing addons in parallel with HTML
-     parse, so by the time holon.js boots the modules are already in cache. -->
-<link rel="modulepreload" href="./vendor/three/build/three.module.js" />
-<link rel="modulepreload" href="./vendor/three/examples/jsm/postprocessing/EffectComposer.js" />
-<link rel="modulepreload" href="./vendor/three/examples/jsm/postprocessing/RenderPass.js" />
-<link rel="modulepreload" href="./vendor/three/examples/jsm/postprocessing/UnrealBloomPass.js" />
-<link rel="modulepreload" href="./vendor/three/examples/jsm/postprocessing/ShaderPass.js" />
-<link rel="modulepreload" href="./vendor/three/examples/jsm/postprocessing/Pass.js" />
-<link rel="modulepreload" href="./vendor/three/examples/jsm/postprocessing/MaskPass.js" />
-<link rel="modulepreload" href="./vendor/three/examples/jsm/shaders/CopyShader.js" />
-<link rel="modulepreload" href="./vendor/three/examples/jsm/shaders/LuminosityHighPassShader.js" />
 <script type="importmap">
 {
   "imports": {
@@ -2143,6 +2132,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=39"></script>
+  <script type="module" src="./holon.js?v=40"></script>
 </body>
 </html>
