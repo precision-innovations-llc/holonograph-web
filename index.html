@@ -1195,7 +1195,7 @@
     position: absolute;
     top: 0; bottom: 0;
     right: 0;                                   /* anchored to the container's right edge (= rail's left edge) */
-    width: clamp(380px, 38vw, 600px);
+    width: clamp(380px, 48vw, 920px);
     padding: 56px 28px 28px;
     pointer-events: auto;
     background: linear-gradient(180deg,
@@ -1417,7 +1417,7 @@
     /* Narrower viewports: let the text-mode panel grow to fill more of the available clipped area.
        Figure-mode panel keeps width: 100% (of its clip container) from the base rule. */
     .rail-expanded {
-      width: min(calc(100vw - clamp(380px, 33vw, 520px) - 24px), 600px);
+      width: min(calc(100vw - clamp(380px, 33vw, 520px) - 24px), 920px);
     }
   }
   @media (max-width: 720px) {
@@ -1741,6 +1741,32 @@
   @media (max-width: 720px) {
     .cluster-rail { display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding: 44px 20px; }
     .cluster-card { max-height: calc(100dvh - 88px); overflow-y: auto; }
+
+    /* Tighter hero image — 240px was eating half the modal on phone-sized cards */
+    .cluster-img { max-height: 150px; margin-bottom: 12px; }
+    .expanded-content .inline-figure img { max-height: 200px; }
+    .expanded-content .inline-figure { margin: 10px 0 12px; }
+
+    /* Anchor the section's primary CTA to the bottom of the modal card so it's
+       always thumb-reachable. Sticky within the scroll port; a top-fade
+       gradient keeps the last line of copy readable as it passes behind. */
+    .cluster-ctas {
+      position: sticky;
+      bottom: -1px;                        /* eat the 1px subpixel gap under the card padding */
+      margin: 22px calc(clamp(22px, 2.4vw, 30px) * -1) calc(clamp(22px, 2.4vw, 30px) * -1);
+      padding: 18px clamp(22px, 2.4vw, 30px) calc(18px + env(safe-area-inset-bottom));
+      background: linear-gradient(to bottom,
+        rgba(22, 18, 38, 0) 0%,
+        rgba(22, 18, 38, 0.85) 40%,
+        rgba(22, 18, 38, 0.96) 100%);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      z-index: 3;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+    /* Read-more (rail-expanded) uses the same trick against its own scroll port */
+    .rail-expanded { padding-bottom: 0; }
   }
   /* (2) landscape tablets/phones: let the full-size figure use (near) full width */
   @media (orientation: landscape) and (max-height: 900px) {
@@ -1867,7 +1893,7 @@
           <section class="section-slide" data-index="2" data-title="Attribution" aria-label="Attribution"><h2 class="cluster-title">Four Source Attribution</h2><img class="cluster-img" src="./figures/holonograph-fig3-attribution.svg" data-open-figure="./figures/holonograph-fig3-attribution.svg" alt="Four-source drift attribution" /><div class="cluster-body"><p>When a fixture passes Monday and fails Tuesday, the operator needs to know which cause is responsible. There are four of them. Holonograph decomposes observed drift into four mutually exclusive sources: substrate drift, light-source drift, lens drift, and stochastic noise.</p></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-readmore>see the four sources →</button></div></section>
           <section class="section-slide" data-index="3" data-title="Lens Architecture" aria-label="Lens Architecture"><h2 class="cluster-title">Lens Architecture</h2><img class="cluster-img" src="./figures/holonograph-fig5-curation-loop.svg" data-open-figure="./figures/holonograph-fig5-curation-loop.svg" alt="The Holonograph curation loop" /><div class="cluster-body"><p>The core insight is uncomfortable and, as far as we know, new: <em>the evaluation apparatus itself is an independently attributable source of drift.</em> Modern agentic evaluation grades quality with an LLM-as-judge: the measuring instrument is itself a non-deterministic model, drifting on the same vendor reroutes and prompt churn as the system it measures.</p></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-readmore>read the framework →</button></div></section>
           <section class="section-slide" data-index="4" data-title="Request a Pilot" data-exclude-nav="true" aria-label="Request a Pilot"><h2 class="cluster-title">Request a Pilot</h2><div class="cluster-img cluster-img--placeholder" aria-hidden="true"></div><div class="cluster-body"><p>We're working with a small number of design partners running production agentic systems where evaluation drift is starting to bite. If that's you — and you've felt the standard eval frameworks come up short for cohort drift or attribution — reach out.</p><p>Pilots, partnerships, press, or a conversation about the work. Replies usually come within a day.</p></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-contact>request a pilot →</button></div></section>
-          <section class="section-slide" data-index="5" data-title="The Guide Mark II" data-exclude-nav="true" aria-label="The Guide Mark II"><h2 class="cluster-title">The Guide<span class="guide-colon">:</span> Mark II</h2><div class="cluster-body"><p class="guide-meta">v0.17.2 · patent pending</p><blockquote class="guide-epigraph">The Guide is definitive. Reality is frequently inaccurate.<sup>1</sup></blockquote><p class="guide-lede">The Guide is being written. The shape of it, in order:</p><ol class="guide-toc"><li><span class="g-num">01</span><span class="g-body"><span class="g-ttl">Overview &amp; first principles</span><span class="g-gloss">What Holonograph is, what it observes, and why position beats instrumentation.</span></span><span class="g-chip">soon</span></li><li><span class="g-num">02</span><span class="g-body"><span class="g-ttl">The mediating lens: placement and call flow</span><span class="g-gloss">Where the lens sits in the call path, and what it captures at the boundary.</span></span><span class="g-chip">soon</span></li><li><span class="g-num">03</span><span class="g-body"><span class="g-ttl">Surface contracts</span><span class="g-gloss">How an evaluation surface is declared, versioned, and held still across runs.</span></span><span class="g-chip">soon</span></li><li><span class="g-num">04</span><span class="g-body"><span class="g-ttl">The four-layer snapshot</span><span class="g-gloss">The atomic unit of capture that binds every layer of one evaluation event.</span></span><span class="g-chip">soon</span></li><li><span class="g-num">05</span><span class="g-body"><span class="g-ttl">Drift attribution (categorical)</span><span class="g-gloss">Assigning an observed change to exactly one source: substrate, light source, lens, or noise.</span></span><span class="g-chip">soon</span></li><li><span class="g-num">06</span><span class="g-body"><span class="g-ttl">Variance isolation</span><span class="g-gloss">Recovering true substrate variance by subtracting the measured instrument and lens components.</span></span><span class="g-chip">soon</span></li><li><span class="g-num">07</span><span class="g-body"><span class="g-ttl">Run modes</span><span class="g-gloss">Separating evaluation from production with an enforced, fail-closed mode.</span></span><span class="g-chip">soon</span></li><li><span class="g-num">08</span><span class="g-body"><span class="g-ttl">The lessons pipeline</span><span class="g-gloss">How captured overrides and approvals become drafted, human-gated corrective artifacts.</span></span><span class="g-chip">soon</span></li><li><span class="g-num">09</span><span class="g-body"><span class="g-ttl">SDK reference</span><span class="g-gloss">Calling the lens, declaring surfaces, and reading attribution from your own code.</span></span><span class="g-chip">soon</span></li><li><span class="g-num">10</span><span class="g-body"><span class="g-ttl">Sidecar / OTel integration</span><span class="g-gloss">Capturing what does not pass through the lens, via an OpenTelemetry sidecar.</span></span><span class="g-chip">soon</span></li></ol><blockquote class="guide-epigraph guide-epigraph--closing">So that you understand that just because you see something, it doesn't mean to say it's there. And if you don't see something, it doesn't mean to say it's not there. It's only what your senses bring to your attention.<sup>2</sup></blockquote><ol class="guide-citations"><li>Adams, Douglas. <em>The Restaurant at the End of the Universe</em>. Pan Books, 1980.</li><li>Adams, Douglas. <em>Mostly Harmless</em>. Heinemann, 1992.</li></ol></div><div class="cluster-ctas"><button type="button" class="cluster-cta" data-open-contact>notify me when it ships →</button></div></section>
+          <section class="section-slide" data-index="5" data-title="The Guide Mark II" data-exclude-nav="true" aria-label="The Guide Mark II"><h2 class="cluster-title">The Guide<span class="guide-colon">:</span> Mark II</h2><div class="cluster-body"><blockquote class="guide-epigraph">The Guide is definitive. Reality is frequently inaccurate. — Douglas Adams</blockquote><p>The operator's manual for Holonograph — how to call the lens, declare surfaces, populate substrate columns, and read the attribution that comes back.</p><p>Fourteen chapters across three arcs: <strong>integration</strong> (surface contracts, the four-layer snapshot, substrate columns, SDK reference), <strong>workflow</strong> (run modes, sidecar integration, the topology scanner, conformance and fixtures, the multiplexer, the lessons pipeline), and <strong>attribution</strong> (drift labeling, variance isolation).</p></div><div class="cluster-ctas"><a href="./guide/" class="cluster-cta" target="_blank" rel="noopener">read the Guide →</a></div></section>
         </div>
       </div>
     </aside>

@@ -522,7 +522,14 @@ function start() {
     var stage = document.getElementById("figureStage");
     if (stage) {
       var img = stage.querySelector("img");
-      if (img) img.src = src;
+      // Swap to the -mobile.svg sibling on narrow viewports if one exists —
+      // matches the <picture> element on the thumbnail so the full-size view
+      // stays consistent with what the user tapped on.
+      var resolvedSrc = src;
+      if (window.matchMedia && window.matchMedia("(max-width: 720px)").matches) {
+        resolvedSrc = src.replace(/\.svg$/, "-mobile.svg");
+      }
+      if (img) img.src = resolvedSrc;
       var fc = stage.querySelector("figcaption");
       if (fc) { fc.textContent = caption || ""; fc.style.display = caption ? "" : "none"; }
     }

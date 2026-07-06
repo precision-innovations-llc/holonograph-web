@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>The mediating lens: placement &amp; call flow — The Guide — Holonograph</title>
+<meta name="description" content="Where the lens sits in the call path between your agent and the model, and what it captures at the boundary." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/mediating-lens.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · The mediating lens</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li class="current"><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 06</p>
+        <h1 class="guide-h1">The mediating lens: placement &amp; call flow</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+
+        <p class="guide-lede">
+          Holonograph's central affordance — the lens — is <em>where it sits</em>. This chapter is about the physical placement of the lens in your call path and the shape of a single call as it moves through it.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          The lens is a bidirectional in-process mediator between your agent and the model. Your agent doesn't call the vendor directly; it calls <code>POST /holonograph/messages</code> on the local Holonograph daemon, and Holonograph forwards to the vendor on your behalf. Both directions of the exchange — request out and response back — pass through the same code path.
+        </p>
+
+        <p>
+          Practically, that placement gives you three things:
+        </p>
+
+        <ul>
+          <li><strong>One boundary, two directions.</strong> Every call has a single owning process that sees the wire before and after. Nothing is reconstructed from logs after the fact.</li>
+          <li><strong>Vendor-agnostic capture.</strong> The daemon speaks each vendor's protocol at the outbound edge, then hands your agent back a consistent shape at the inbound edge.</li>
+          <li><strong>No SDK version coupling in your code.</strong> When a vendor changes their SDK, the change is absorbed at the lens, not in every consumer.</li>
+        </ul>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          The alternative — instrumenting the agent's code with logging calls — has two structural weaknesses. Log lines can only record what the developer thought to log, and the log format is coupled to the agent's version of the vendor SDK. Placement side-steps both. Because the lens owns the boundary, capture is a property of the architecture, not a discipline the developer must remember.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A useful mental model</span>
+          Treat <code>POST /holonograph/messages</code> as your model provider's endpoint from the agent's point of view. The vendor call still happens — it just happens on the daemon's side of a stable, local wire.
+        </div>
+
+        <h2>How to use it</h2>
+
+        <h3>Direct HTTP</h3>
+
+        <p>The endpoint accepts a shape closely mirroring a vendor's messages call, plus a required <code>surfaceId</code> that ties the call to your contract.</p>
+
+        <pre><code>POST /holonograph/messages
+Authorization: Bearer &lt;token&gt;
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "messages": [
+    { "role": "user", "content": "why was I charged twice?" }
+  ],
+  "system": "You are a billing triage assistant.",
+  "temperature": 0.2,
+  "maxOutputTokens": 512,
+  "tools": [ /* ... */ ],
+  "correlationId": "corr_01H..."
+}</code></pre>
+
+        <p>Response:</p>
+
+        <pre><code>{
+  "callId": "call_01H...",
+  "correlationId": "corr_01H...",
+  "surfaceId": "classify-intent",
+  "lightSourceId": "anthropic/claude-sonnet-5",
+  "result": { /* the primary model's response */ },
+  "observerRecords": [ /* multiplex observers, if any */ ],
+  "gateOutcome": null,
+  "substituted": false
+}</code></pre>
+
+        <h3>Via the SDK</h3>
+
+        <p>
+          Most integrations use the SDK's <code>messages.create()</code>, which wraps the endpoint and returns a call handle documented in <a href="./sdk-reference.html">SDK reference</a>. The wire shape above is what the handle's <code>.result</code> is unpacked from.
+        </p>
+
+        <pre><code>const handle = await client.messages.create({
+  surfaceId: "classify-intent",
+  messages: [{ role: "user", content: "why was I charged twice?" }],
+  system: "You are a billing triage assistant.",
+  temperature: 0.2,
+  maxOutputTokens: 512
+});
+const answer = handle.result;</code></pre>
+
+        <h3>Overrides that ride along</h3>
+
+        <p>Two request fields let you override the surface's contract for a single call, when you know what you're doing:</p>
+
+        <ul>
+          <li><code>systemOverride</code> — replaces the system prompt for this call only. Does not mutate the contract.</li>
+          <li><code>lightSourceIdOverride</code> — routes this call to a specific vendor instead of the surface's default routing. Useful for reproducing an issue against a known-good model.</li>
+        </ul>
+
+        <h2>Reading the output</h2>
+
+        <p>The response carries five load-bearing fields:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>What it tells you</th></tr></thead>
+            <tbody>
+              <tr><td><code>callId</code></td><td>string</td><td>The unique identifier of this call. Use it in a subsequent <code>reportOutcome</code> if you're not using the SDK handle.</td></tr>
+              <tr><td><code>correlationId</code></td><td>string</td><td>Ties this call to the evaluation it belongs to. If you passed one in, it comes back unchanged; if not, one was generated.</td></tr>
+              <tr><td><code>surfaceId</code></td><td>string</td><td>Echo of the surface this call was made against.</td></tr>
+              <tr><td><code>lightSourceId</code></td><td>string</td><td>The vendor and model that actually produced the response (<code>vendor/model/version</code>). Reflects the effective routing after any override.</td></tr>
+              <tr><td><code>result</code></td><td>object</td><td>The primary model's response, in a shape your agent uses.</td></tr>
+              <tr><td><code>observerRecords</code></td><td>array</td><td>Under multiplex routing, the captured records from the observer vendors. Empty when not multiplexing.</td></tr>
+              <tr><td><code>gateOutcome</code></td><td>object (opt)</td><td>Present when a gate fired (e.g. content-policy gate, cost cap). Null otherwise.</td></tr>
+              <tr><td><code>substituted</code></td><td>boolean</td><td>True when the response was substituted (e.g. a cached hit, a canned refusal). Downstream analyses use this to distinguish substitute from live-generated.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Reference</h2>
+
+        <h3>Request fields</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string (req)</td><td>Must exist on the active contract.</td></tr>
+              <tr><td><code>messages[]</code></td><td>array (req)</td><td>The conversation turns.</td></tr>
+              <tr><td><code>system</code></td><td>string (opt)</td><td>System prompt.</td></tr>
+              <tr><td><code>systemOverride</code></td><td>string (opt)</td><td>Per-call system prompt override.</td></tr>
+              <tr><td><code>additionalSkills</code></td><td>string[] (opt)</td><td>Extra skills to inject for this call.</td></tr>
+              <tr><td><code>additionalContextTags</code></td><td>string[] (opt)</td><td>Extra context tags this call carries.</td></tr>
+              <tr><td><code>lightSourceIdOverride</code></td><td>string (opt)</td><td>Overrides the surface's default routing.</td></tr>
+              <tr><td><code>maxOutputTokens</code></td><td>number (opt)</td><td>Cap on the model's output length.</td></tr>
+              <tr><td><code>temperature</code></td><td>number (opt)</td><td>Model sampling temperature.</td></tr>
+              <tr><td><code>tools</code></td><td>array (opt)</td><td>Tool declarations.</td></tr>
+              <tr><td><code>toolChoice</code></td><td>object (opt)</td><td>Which tool the model must invoke.</td></tr>
+              <tr><td><code>cacheControl</code></td><td>object (opt)</td><td>Provider caching hints.</td></tr>
+              <tr><td><code>correlationId</code></td><td>string (opt)</td><td>Pre-existing correlation id to bind this call to a prior evaluation.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./sdk-reference.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">SDK reference</span>
+          </a>
+          <a href="./run-modes.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Run modes</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 06 · The mediating lens</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>

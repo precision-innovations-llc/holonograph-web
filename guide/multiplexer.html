@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>The multiplexer — The Guide — Holonograph</title>
+<meta name="description" content="Fan one surface's calls across multiple vendors for head-to-head comparison, with zero awareness at the calling agent." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/multiplexer.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · The multiplexer</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li class="current"><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 11</p>
+        <h1 class="guide-h1">The multiplexer</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+
+        <p class="guide-lede">
+          The multiplexer lets one call to a surface land on several vendors at once — a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          Multiplexing is declared in the surface contract, in the <code>routings</code> block. A single routing entry with an array-valued <code>lightSourceId</code> is a multiplex: the first entry is the primary, and every subsequent entry is an observer. Each vendor's call goes through the lens as its own event, and all events for the one call share a <code>correlationId</code> so they group cleanly at read time.
+        </p>
+
+        <p>The agent sees only the primary's response. The observers happen alongside it.</p>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          Comparing vendors in production is normally either destructive (you swap and observe production traffic without a control) or duplicative (you build a second call path). Multiplexing makes the comparison a property of your contract instead of your agent code — swap the routing, redeploy the contract, and every subsequent call captures a per-vendor record. Because both sides of every observed call flow through the same lens, you can compare vendors on any dimension your evaluations already record: cost, latency, correctness, tool-invocation shape.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Guarantee</span>
+          The calling agent never learns that multiplexing is happening. It sees the primary's response and returns. Observer results flow into the substrate on their own — the agent's call path is unchanged.
+        </div>
+
+        <h2>How to use it</h2>
+
+        <h3>Declare a multiplex in the contract</h3>
+
+        <p>Register a contract whose routing for the surface uses an array for <code>lightSourceId</code>:</p>
+
+        <pre><code>await client.contract.register({
+  agentId: "billing-triage",
+  surfaces: [
+    {
+      id: "classify-intent",
+      dimensions: [ /* ... */ ],
+      routings: [
+        {
+          surfaceId: "classify-intent",
+          lightSourceId: [
+            "anthropic/claude-sonnet-5",
+            "openai/gpt-5",
+            "google/gemini-2-pro"
+          ],
+          activeRunModes: ["eval", "production"]
+        }
+      ]
+    }
+  ]
+});</code></pre>
+
+        <p>
+          Three vendors, listed in priority order. Claude Sonnet 5 is the primary; GPT-5 and Gemini 2 Pro are observers. The <code>activeRunModes</code> field restricts multiplexing to the modes where you want it — typically <code>eval</code> and <code>production</code>, keeping <code>test</code> and <code>local_dev</code> single-vendor for reproducibility and cost.
+        </p>
+
+        <h3>Fallback in array order</h3>
+
+        <p>
+          If the primary vendor is unavailable, the lens falls back through the array in order. The <em>role</em> tag reflects what actually happened on this call, so a fallback shows up in the data as its own vendor answering as primary — not as the primary's declared identity attributed to a call it did not answer.
+        </p>
+
+        <h3>Grade every vendor's result</h3>
+
+        <p>
+          On the SDK side, the primary's response is <code>handle.result</code>. Observer captures come back on <code>handle.observerRecords[]</code>. Grade the observers <em>before</em> <code>reportOutcome</code> so all vendors' outcomes land in the same evaluation.
+        </p>
+
+        <pre><code>const handle = await client.messages.create({
+  surfaceId: "classify-intent",
+  messages: [ /* ... */ ]
+});
+
+const primaryAnswer = handle.result;
+
+for (const rec of handle.observerRecords) {
+  await handle.gradeObserver(rec, {
+    dimensions: [{
+      dimensionId: "correctness",
+      passed: isCorrect(rec.result),
+      expected: "a correct answer to the user's question",
+      actual: summarize(rec.result)
+    }]
+  });
+}
+await handle.reportOutcome({
+  dimensions: [{
+    dimensionId: "correctness",
+    passed: isCorrect(primaryAnswer),
+    expected: "a correct answer to the user's question",
+    actual: summarize(primaryAnswer)
+  }]
+});</code></pre>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          Each vendor's call is captured as a separate event. The events share a <code>correlationId</code> (the call's) and each carries a <code>multiplex.role</code> cohort tag with one of two values:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Tag value</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>multiplex.role=primary</code></td><td>The vendor whose reply the agent used.</td></tr>
+              <tr><td><code>multiplex.role=observer</code></td><td>A vendor running the same input in parallel; the agent never saw this reply.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          To pull one multiplex call back as a group, query events by <code>correlationId</code>:
+        </p>
+
+        <pre><code>GET /lens/events?correlationId=corr_01H...&amp;provenance=all</code></pre>
+
+        <p>You'll get one event per vendor, each with its own <code>light_source_identifier</code>, its own timings, and its own reported outcome.</p>
+
+        <h3>Comparing vendors</h3>
+
+        <p>
+          The compare-heads-up view is a simple group-by-and-difference on those events. Pick your dimensions (correctness, latency, cost), group by <code>light_source_identifier</code>, and read the deltas straight from the substrate. There's no separate multiplex report — the events already carry everything you need.
+        </p>
+
+        <h3>Cost and latency</h3>
+
+        <p>
+          Per-vendor cost and latency are captured on each event without any operator work. When you multiplex three vendors, you get three vendors' cost and latency for the same input — the piece of the head-to-head that's normally hardest to compare fairly.
+        </p>
+
+        <h2>Reference</h2>
+
+        <h3>Routing shape</h3>
+
+        <p>Each routing entry on the contract has this shape:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string</td><td>Which surface this routing applies to.</td></tr>
+              <tr><td><code>lightSourceId</code></td><td>string \| string[]</td><td>Single string = single-vendor. Array = multiplex (first primary, rest observers). Fallback follows array order.</td></tr>
+              <tr><td><code>activeRunModes</code></td><td>enum[] (opt)</td><td>Which run modes the multiplex is active in. Absent = active in all modes. Restrict to <code>eval</code>/<code>production</code> to keep <code>test</code> and <code>local_dev</code> cheap.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Per-event cohort tag</h3>
+
+        <ul>
+          <li><code>multiplex.role=primary</code> — the vendor whose response was returned to the agent.</li>
+          <li><code>multiplex.role=observer</code> — a vendor whose response was captured but not returned.</li>
+        </ul>
+
+        <h3>Grouping key</h3>
+
+        <ul>
+          <li><code>correlationId</code> — shared across all vendors' events for one call.</li>
+        </ul>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./conformance.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Conformance &amp; fixtures</span>
+          </a>
+          <a href="./lessons-pipeline.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">The lessons pipeline</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 11 · The multiplexer</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>

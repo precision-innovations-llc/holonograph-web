@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>The four-layer snapshot — The Guide — Holonograph</title>
+<meta name="description" content="The atomic record Holonograph captures per evaluation — how the four layers of one evaluation are bound into a single record you can query." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/snapshot.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · The four-layer snapshot</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li class="current"><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 03</p>
+        <h1 class="guide-h1">The four-layer snapshot</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+
+        <p class="guide-lede">
+          Every evaluation Holonograph observes is written as one record — an <code>EvaluationEvent</code> — that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          An event is the atomic unit. It's what <em>reportOutcome</em> writes when you finish an evaluation, and it's what <em>GET /lens/events</em> pages back to you when you're reading history. One event = one call to one surface at one moment.
+        </p>
+
+        <p>The four layers of one event:</p>
+
+        <ul>
+          <li><strong>Substrate</strong> — the state of your deployment at call time. Populated from the columns declared on the contract (<a href="./substrate-columns.html">Substrate columns</a>). This is where <code>prompt_hash</code>, <code>tool_schema_version</code>, and any operator-declared columns land.</li>
+          <li><strong>Light source</strong> — which model produced the output. Captured as <code>vendor/model/version</code>, so a silent vendor re-route behind a stable alias is visible in the record.</li>
+          <li><strong>Lens</strong> — which evaluation configuration was in effect. Captured as <code>lens_version</code>. Downstream analyses use this to tell a change in your evaluation apparatus from a change in the thing being evaluated.</li>
+          <li><strong>Outcome</strong> — what the evaluation reported: dimension scores, cohort tags, side effects, and (if relevant) a fixture identifier.</li>
+        </ul>
+
+        <p>
+          Alongside those four layers, every event carries the metadata that binds them together for query and correlation: <code>eventId</code>, <code>surfaceId</code>, <code>correlationId</code>, <code>run_mode</code>, <code>provenance</code>, and a <code>timestamp</code>.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Provenance vs run mode</span>
+          <code>run_mode</code> is <em>who is calling</em> (production, test, eval, replay, local_dev). <code>provenance</code> is <em>what kind of run this is from Holonograph's point of view</em> (<code>production-state</code> versus <code>exploratory-state</code>). Read queries default to <code>production-state</code>; pass <code>provenance=all</code> when you want the full stream.
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          Two properties fall out of binding these four layers per event:
+        </p>
+
+        <ul>
+          <li><strong>Every reading can be traced to the exact deployment, model, and evaluation config that produced it.</strong> When you look at last week's numbers, you're not looking at a lossy summary — you're looking at the substrate that was in effect for each specific call.</li>
+          <li><strong>Changes at any layer are attributable independently.</strong> Because each layer is captured on its own and versioned on its own schedule, downstream analyses (Chapter 13, Chapter 14) can talk about <em>which layer changed</em>, not just <em>that the number moved</em>.</li>
+        </ul>
+
+        <h2>How to use it</h2>
+
+        <h3>Ingest an event</h3>
+
+        <p>
+          Most integrations never call <code>POST /lens/events</code> directly — the SDK's <code>reportOutcome()</code> writes the event for you at the end of a call. It's documented here because a small number of ingest-only integrations (backfills, custom collectors) need the raw endpoint.
+        </p>
+
+        <pre><code>POST /lens/events
+Authorization: Bearer &lt;token&gt;
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "correlationId": "corr_01H...",
+  "dimensions": [{
+    "dimensionId": "correctness",
+    "passed": true,
+    "expected": "a correct answer to the user's question",
+    "actual": "offered to open a replacement order"
+  }],
+  "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
+  "substrate": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" },
+  "lightSourceId": "anthropic/claude-sonnet-5",
+  "timestamp": "2026-07-05T18:22:14.812Z"
+}</code></pre>
+
+        <p>Response:</p>
+
+        <pre><code>{ "eventId": "evt_01H..." }</code></pre>
+
+        <h3>Read history</h3>
+
+        <p>
+          <code>GET /lens/events</code> pages events back to you. It supports the query parameters you'd expect from a time-ordered log with cohorts.
+        </p>
+
+        <pre><code>GET /lens/events?surfaceId=classify-intent&amp;since=2026-06-01&amp;limit=200&amp;direction=desc
+Authorization: Bearer &lt;token&gt;
+x-holonograph-run-mode: production</code></pre>
+
+        <p>Response:</p>
+
+        <pre><code>{
+  "events": [ { "eventId": "evt_...", "surfaceId": "classify-intent", ... }, ... ],
+  "count": 200,
+  "nextCursor": "cur_01H..."
+}</code></pre>
+
+        <p>
+          Follow the <code>nextCursor</code> to page forward. When there is no more history in the window, <code>nextCursor</code> is absent.
+        </p>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          One event is a snapshot; a query is a slice through them. Two habits keep the slice honest:
+        </p>
+
+        <ul>
+          <li><strong>Filter on cohort tags at read time</strong>, not at write time. Cohort tags are the query keys — write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.</li>
+          <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code> — but the default filter is what keeps replay traffic and local-dev noise out of dashboards.</li>
+        </ul>
+
+        <h2>Reference</h2>
+
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/events</code></td><td>Ingest one <code>EvaluationEvent</code>. Response: <code>{ eventId }</code>.</td></tr>
+              <tr><td><code>GET /lens/events</code></td><td>Query events. Response: <code>{ events[], count, nextCursor? }</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>GET /lens/events</code> query parameters</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Param</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string (opt)</td><td>Restrict to one surface.</td></tr>
+              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>Restrict to events produced by one fixture (Conformance, Chapter 10).</td></tr>
+              <tr><td><code>provenance</code></td><td>enum (opt)</td><td><code>production-state</code> (default), <code>exploratory-state</code>, or <code>all</code>.</td></tr>
+              <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on <code>timestamp</code>.</td></tr>
+              <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound on <code>timestamp</code>.</td></tr>
+              <tr><td><code>limit</code></td><td>number (opt)</td><td>1–10000; default reasonable.</td></tr>
+              <tr><td><code>direction</code></td><td>enum (opt)</td><td><code>asc</code> or <code>desc</code>; default <code>desc</code>. <code>order</code> is accepted as an alias.</td></tr>
+              <tr><td><code>cursor</code></td><td>string (opt)</td><td>Continue from a prior page's <code>nextCursor</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Headers</h3>
+
+        <ul>
+          <li><code>Authorization: Bearer &lt;token&gt;</code> — when the deployment enables bearer auth.</li>
+          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code> — required by fail-closed mode enforcement; see <a href="./run-modes.html">Run modes</a>.</li>
+        </ul>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./surface-contracts.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Surface contracts</span>
+          </a>
+          <a href="./substrate-columns.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Substrate columns</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 03 · The four-layer snapshot</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>

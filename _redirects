@@ -1,0 +1,12 @@
+# Preventive 404s for internal/private content patterns that must never be served.
+# Cloudflare Pages honors this file at the site root. Missing files return 404 by
+# default; these rules extend that guarantee to specific filenames even if a file
+# were ever accidentally committed under one of these paths.
+/guide-build-brief.html          /  404
+/guide/guide-build-brief.html    /  404
+/GUIDE-BUILD-BRIEF*              /  404
+/*methodology*                   /  404
+/*METHODOLOGY*                   /  404
+/*build-brief*                   /  404
+/*BUILD-BRIEF*                   /  404
+/*.internal.*                    /  404

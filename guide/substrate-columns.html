@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>Substrate columns — The Guide — Holonograph</title>
+<meta name="description" content="The named columns you populate so drift can be attributed to what changed about your deployment. Mandatory and operator-declared." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/substrate-columns.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · Substrate columns</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li class="current"><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 04</p>
+        <h1 class="guide-h1">Substrate columns</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~5 min read</p>
+
+        <p class="guide-lede">
+          Substrate columns are the named fields Holonograph captures alongside every call so a later reading can be attributed to <em>what changed about your deployment</em>. Six are mandatory and captured automatically. The rest you declare on the contract and populate yourself, in one of two ways.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          A substrate column is a stable, named slot in the four-layer snapshot's substrate layer. Two categories:
+        </p>
+
+        <ul>
+          <li><strong>Mandatory columns</strong> — always present, always captured by Holonograph. You don't declare them; they're part of the shape.</li>
+          <li><strong>Operator-declared columns</strong> — you declare them in the surface contract and populate them either at call time (<code>deployment-state</code>) or after the outcome is known (<code>diagnostic</code>).</li>
+        </ul>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          A column you declared is a column Holonograph will hold you accountable for. When drift attribution or variance isolation runs later, they use those columns to distinguish <em>your deployment changed</em> from <em>the vendor moved</em> from <em>your evaluation config drifted</em>. Columns you didn't declare are columns those analyses can't use.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Practical guidance</span>
+          Declare a column for every knob in your system that could plausibly change a score — prompt, tool schemas, retrieval index revision, feature flags. It's cheaper to declare too many than to reconstruct a slice you didn't foresee.
+        </div>
+
+        <h2>How to use it</h2>
+
+        <h3>Mandatory columns</h3>
+
+        <p>These six are captured on every event, no declaration required:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Column</th><th>Type</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>lens_version</code></td><td>string</td><td>Which lens configuration was in effect.</td></tr>
+              <tr><td><code>light_source_identifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/model/version</code>. Vendor-controlled.</td></tr>
+              <tr><td><code>run_mode</code></td><td>enum</td><td>Which run mode the evaluation ran under. See <a href="./run-modes.html">Run modes</a>.</td></tr>
+              <tr><td><code>correlation_id</code></td><td>string</td><td>Ties together the calls of one evaluation (e.g. across multiplex vendors).</td></tr>
+              <tr><td><code>provenance</code></td><td>enum</td><td>Origin category of the run — typically <code>production-state</code> versus <code>exploratory-state</code>.</td></tr>
+              <tr><td><code>timestamp</code></td><td>ISO 8601</td><td>When the evaluation occurred.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Operator-declared columns</h3>
+
+        <p>Each declared column has this shape on the contract:</p>
+
+        <pre><code>{
+  id: "prompt_hash",
+  control: "operator" | "vendor" | "platform" | "third-party",
+  visibility: "transparent" | "announced" | "opaque",
+  semantic: "deployment-state" | "diagnostic",
+  description?: string,
+  values?: string[]     // enum, when the column is discrete
+}</code></pre>
+
+        <p>
+          The two fields that decide <em>how</em> you set the column are <code>semantic</code> and <code>values</code>. The rest describe who controls the value, how visible its changes are, and (optionally) a fixed enum you must stay within.
+        </p>
+
+        <h3><code>deployment-state</code> — set at call time</h3>
+
+        <p>
+          These describe the state of your deployment at the moment of the call. Populate them via the <code>operatorColumns</code> map on the <code>SubstrateSnapshot</code> at client construction — the values then attach to every call the client makes until the client is reconstructed with new values.
+        </p>
+
+        <pre><code>const client = new HolonographClient({
+  endpoint: "http://127.0.0.1:8080",
+  runMode: "production",
+  lensVersion: "lv_2026_07_01",
+  substrate: {
+    lensVersion: "lv_2026_07_01",
+    lightSourceIdentifier: "anthropic/claude/4",
+    runMode: "production",
+    provenance: "production",
+    operatorColumns: {
+      prompt_hash: "v2-sha256-9d3f...",
+      tool_schema_version: "3.1.0",
+      retrieval_index_rev: "2026-07-01T00:00Z"
+    }
+  }
+});</code></pre>
+
+        <p>
+          Set <code>prompt_hash</code> to a stable hash of your input. When your prompt changes, the hash changes; when it doesn't, the hash doesn't. Downstream analyses read the column expecting exactly that discipline.
+        </p>
+
+        <h3><code>diagnostic</code> — set post-hoc via cohort tag</h3>
+
+        <p>
+          Diagnostic columns are set after the outcome is known — because the value is a category the evaluation itself decided. You set them by passing a cohort tag formatted as <code>&lt;column.id&gt;=&lt;value&gt;</code> to <code>reportOutcome()</code>.
+        </p>
+
+        <pre><code>await handle.reportOutcome({
+  dimensions: [{
+    dimensionId: "correctness",
+    passed: false,
+    expected: "a correct answer",
+    actual: "misidentified the intent"
+  }],
+  cohortTags: [
+    "customer-tier=enterprise",
+    "fix_tier=tool-input-schema",
+    "severity=high"
+  ]
+});</code></pre>
+
+        <p>
+          If the column declares a <code>values[]</code> enum, the value you pass must be one of them. Anything else is rejected at ingest — not silently accepted.
+        </p>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          Substrate columns come back on every event via <code>GET /lens/events</code>. Filter queries on them the same way you filter on cohort tags: a slice is a set of column-value pairs, and the values you didn't declare aren't queryable — which is the whole point of declaring them ahead of time.
+        </p>
+
+        <h2>Reference</h2>
+
+        <h3>Common diagnostic columns</h3>
+
+        <p>The set below appears often enough in real deployments to document as convention. Declare them if they apply; declare your own if you have a better name.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Column</th><th>Typical values</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>fix_tier</code></td><td><code>llm-judgment</code>, <code>tool-input-schema</code>, <code>tool-handler</code>, <code>code-architecture</code></td><td>Where a corrective artifact would live if this event were part of a lesson cluster.</td></tr>
+              <tr><td><code>failure_category</code></td><td>free-form</td><td>Short label for the failure mode, when the event represents one.</td></tr>
+              <tr><td><code>severity</code></td><td><code>low</code>, <code>medium</code>, <code>high</code>, <code>critical</code></td><td>Operator-assigned severity of the event.</td></tr>
+              <tr><td><code>classification.mode</code></td><td>free-form</td><td>Which classifier or mode assigned the outcome, when relevant.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Column shape</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Values</th><th>What it says</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code></td><td>string</td><td>Stable identifier for the column.</td></tr>
+              <tr><td><code>control</code></td><td><code>operator</code>, <code>vendor</code>, <code>platform</code>, <code>third-party</code></td><td>Who owns the value's changes.</td></tr>
+              <tr><td><code>visibility</code></td><td><code>transparent</code>, <code>announced</code>, <code>opaque</code></td><td>How visible changes are to the operator.</td></tr>
+              <tr><td><code>semantic</code></td><td><code>deployment-state</code>, <code>diagnostic</code></td><td>When and how the value gets set (call time vs post-hoc).</td></tr>
+              <tr><td><code>description</code></td><td>string (opt)</td><td>Human-readable description.</td></tr>
+              <tr><td><code>values</code></td><td>string[] (opt)</td><td>Enum of allowed values. Rejected at ingest if the reported value isn't in the list.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./snapshot.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">The four-layer snapshot</span>
+          </a>
+          <a href="./sdk-reference.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">SDK reference</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 04 · Substrate columns</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>

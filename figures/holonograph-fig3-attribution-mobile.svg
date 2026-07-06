@@ -1,0 +1,86 @@
+<!-- FIG. 3 mobile — Source-resolved attribution | Holonograph / Precision Innovations | portrait, designed at phone width | palette: accent=#4D86F7 | ls=#FF4D9E | st=#5BD0E8 | ln=#A569E0 | ink=#EAEAF2 | mut=#8A8A9C | faint=#56566A -->
+<svg viewBox="0 0 430 660" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono','SF Mono',ui-monospace,monospace">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0C0C14"/><stop offset="1" stop-color="#090910"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="90%" cy="6%" r="55%">
+      <stop offset="0" stop-color="#4D86F7" stop-opacity=".13"/><stop offset="1" stop-color="#4D86F7" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .eye{fill:#4D86F7;font-size:13px;letter-spacing:.18em;font-weight:600}
+      .band{fill:#8A8A9C;font-size:10px;letter-spacing:.18em}
+      .ttl{fill:#EAEAF2;font-size:12px;letter-spacing:.02em;font-weight:600}
+      .sub{fill:#8A8A9C;font-size:10px;letter-spacing:.01em}
+      .ref{fill:#4D86F7;font-size:9.5px;letter-spacing:.08em;opacity:.8}
+      .ann{fill:#56566A;font-size:9.5px;letter-spacing:.04em}
+      .axis{stroke:#8A8A9C;stroke-width:1.1;opacity:.6}
+      .cp{stroke:#8A8A9C;stroke-width:1;stroke-dasharray:3 5;opacity:.45}
+    </style>
+  </defs>
+
+  <rect x="2" y="2" width="426" height="656" rx="16" fill="url(#panel)" stroke="rgba(255,255,255,.07)"/>
+  <rect x="2" y="2" width="426" height="656" rx="16" fill="url(#glowA)"/>
+
+  <text class="eye" x="22" y="40">FIG. 3</text>
+  <text class="band" x="22" y="60">SOURCE-RESOLVED ATTRIBUTION</text>
+
+  <!-- chart -->
+  <line class="axis" x1="52" y1="96" x2="52" y2="330"/>
+  <line class="axis" x1="52" y1="330" x2="408" y2="330"/>
+  <text class="band" x="28" y="215" transform="rotate(-90 28 215)" text-anchor="middle" font-size="9px">EVAL RESULT</text>
+  <text class="ann" x="408" y="352" text-anchor="end" letter-spacing=".14em" fill="#8A8A9C">TIME &#8594;</text>
+  <text class="ann" x="58" y="112" fill="#8A8A9C">350 window</text>
+
+  <!-- baseline band -->
+  <rect x="52" y="196" width="356" height="44" fill="#4D86F7" opacity=".09"/>
+  <line x1="52" y1="218" x2="408" y2="218" stroke="#4D86F7" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>
+  <text class="ref" x="58" y="190" fill="#4D86F7">300 baseline &#177; tol</text>
+
+  <!-- change-points -->
+  <line class="cp" x1="150" y1="96" x2="150" y2="330"/>
+  <line class="cp" x1="250" y1="96" x2="250" y2="330"/>
+  <line class="cp" x1="350" y1="96" x2="350" y2="330"/>
+
+  <!-- eval line -->
+  <polyline points="52,218 150,218 150,150 250,150 250,258 350,258 350,192 408,192"
+    fill="none" stroke="#EAEAF2" stroke-width="2" opacity=".9" filter="url(#soft)"/>
+
+  <!-- markers -->
+  <path d="M150,138 l8,14 l-16,0 z" fill="#FF4D9E" filter="url(#soft)"/>
+  <rect x="243" y="251" width="14" height="14" fill="#5BD0E8" filter="url(#soft)"/>
+  <path d="M350,180 l10,11 l-10,11 l-10,-11 z" fill="#A569E0" filter="url(#soft)"/>
+
+  <text class="ref" x="150" y="348" text-anchor="middle" fill="#FF4D9E">CP1</text>
+  <text class="ref" x="250" y="348" text-anchor="middle" fill="#5BD0E8">CP2</text>
+  <text class="ref" x="350" y="348" text-anchor="middle" fill="#A569E0">CP3</text>
+  <text class="ann" x="58" y="324">310 change-point &#8594; one source</text>
+
+  <!-- legend stacked -->
+  <line x1="22" y1="386" x2="408" y2="386" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+  <text class="band" x="22" y="410" fill="#8A8A9C">ATTRIBUTION AXES</text>
+
+  <g transform="translate(22,430)">
+    <path d="M8,0 l8,14 l-16,0 z" fill="#FF4D9E"/>
+    <text class="ttl" x="30" y="7">LIGHT-SOURCE</text>
+    <text class="ref" x="386" y="7" text-anchor="end" fill="#FF4D9E">330</text>
+    <text class="sub" x="30" y="25">model axis · CP1 · opaque · silent re-route</text>
+  </g>
+  <g transform="translate(22,494)">
+    <rect x="1" y="1" width="14" height="14" fill="#5BD0E8"/>
+    <text class="ttl" x="30" y="7">SUBSTRATE</text>
+    <text class="ref" x="386" y="7" text-anchor="end" fill="#5BD0E8">320</text>
+    <text class="sub" x="30" y="25">operator-state axis · CP2 · operator fix deployed</text>
+  </g>
+  <g transform="translate(22,558)">
+    <path d="M8,0 l10,11 l-10,11 l-10,-11 z" fill="#A569E0"/>
+    <text class="ttl" x="30" y="7">LENS</text>
+    <text class="ref" x="386" y="7" text-anchor="end" fill="#A569E0">340</text>
+    <text class="sub" x="30" y="25">apparatus-config axis · CP3 · announced dep update</text>
+  </g>
+
+  <text x="406" y="636" text-anchor="end" font-size="18px" fill="#4D86F7" opacity=".5" font-style="italic">&#960;</text>
+</svg>

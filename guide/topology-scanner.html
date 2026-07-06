@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>Surface topology scanner — The Guide — Holonograph</title>
+<meta name="description" content="Compare what you declared against what the lens observed, surface coverage gaps and retirement candidates, and bootstrap candidate dimensions from real traffic." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/topology-scanner.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · Surface topology scanner</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li class="current"><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 09</p>
+        <h1 class="guide-h1">Surface topology scanner</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~8 min read</p>
+
+        <p class="guide-lede">
+          The scanner compares what you <em>declared</em> in your surface contract against what the lens actually <em>observed</em> in traffic, and returns the gaps: dimensions you promised the lens would see and it never did, dimensions the lens has been seeing that you never declared, and surfaces that look like they've gone quiet. There's also a bootstrap mode that reads recent traffic and proposes candidate dimensions to add to a new contract.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>Three endpoints, each doing one job:</p>
+
+        <ul>
+          <li><strong>Structural inventory</strong> — you tell the scanner what your codebase says exists (surface ids you can enumerate, or a dispatch map). This becomes the third leg — alongside "declared on the contract" and "observed in traffic" — that the scan can reason about.</li>
+          <li><strong>Scan</strong> — the scanner reads events over a window, joins them against the active contract and any recent structural inventory, and returns the coverage gaps as a set-difference across the three sources.</li>
+          <li><strong>Bootstrap</strong> — when you have traffic against a surface but no contract entry yet, bootstrap reads the traffic and proposes dimensions to declare.</li>
+        </ul>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          A contract that drifts away from reality is a contract that stops helping. Two ways it drifts:
+        </p>
+
+        <ul>
+          <li>A dimension gets added in code and the contract never gets updated. The lens sees it, the contract doesn't; downstream analyses skip it.</li>
+          <li>A dimension gets removed in code and the contract still declares it. Downstream analyses keep looking for it and quietly report it as always-null.</li>
+        </ul>
+
+        <p>
+          The scanner surfaces both directions at read time, so contract maintenance becomes a scheduled operator task with a concrete work-list, not an ad-hoc audit.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Three inputs, not two</span>
+          The scan is honest when it can compare against three inputs — <em>declared</em> (contract), <em>observed</em> (events), and <em>enumerated</em> (structural inventory). With two you can still find gaps; with three you can also tell a genuinely retired surface from a surface that just went quiet for a week.
+        </div>
+
+        <h2>How to use it</h2>
+
+        <h3>1. Declare a structural inventory</h3>
+
+        <p>
+          At startup, or on each deploy, tell the scanner what your codebase currently knows about. Two shapes are accepted:
+        </p>
+
+        <ul>
+          <li><code>surface-ids</code> — a flat list of the surface ids your code can enumerate.</li>
+          <li><code>dispatch-map</code> — a dispatch table mapping keys (intents, tools, or any other routing key) to surface ids.</li>
+        </ul>
+
+        <pre><code>POST /lens/topology/structural-inventory
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "agentId": "billing-triage",
+  "consumerId": "billing-triage-agent",
+  "inventoryKind": "surface-ids",
+  "surfaceIds": ["classify-intent", "review-flagged-charge", "escalate-to-human"],
+  "capturedAt": "2026-07-05T18:00:00Z"
+}</code></pre>
+
+        <p>Response:</p>
+
+        <pre><code>{
+  "inventoryId": "inv_01H...",
+  "consumerId": "billing-triage-agent",
+  "capturedAt": "2026-07-05T18:00:00Z",
+  "created": true
+}</code></pre>
+
+        <h3>2. Run a scan</h3>
+
+        <p>
+          A scan reads events over a window and returns a coverage report. Run it on a schedule (nightly, per deploy) or on-demand.
+        </p>
+
+        <pre><code>POST /lens/topology/scan
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "agentId": "billing-triage",
+  "since": "2026-06-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z",
+  "record": true
+}</code></pre>
+
+        <p>Set <code>record: true</code> to persist the scan result as an event of its own — useful for tracking how coverage changes over time.</p>
+
+        <h3>3. Bootstrap a new surface's dimensions</h3>
+
+        <p>
+          When you're onboarding a new surface — traffic is flowing, but the contract entry is bare — bootstrap reads the traffic and proposes dimensions.
+        </p>
+
+        <pre><code>POST /lens/topology/bootstrap
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "review-flagged-charge",
+  "since": "2026-06-15T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z"
+}</code></pre>
+
+        <p>Each candidate comes back with an <code>inference</code> label:</p>
+
+        <ul>
+          <li><code>deterministic</code> — the dimension appeared consistently and with a stable shape across the window. Safe to declare.</li>
+          <li><code>lowConfidence</code> — the dimension appeared, but sparsely or with an unstable shape. Worth reviewing before adding to the contract.</li>
+        </ul>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          The scan report is a set-difference across three sources — the contract's <em>declared</em>, the events' <em>observed</em>, and (if you captured one) the code's <em>structural</em> inventory. The scanner returns per-surface lattices with these fields:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>What it tells you</th></tr></thead>
+            <tbody>
+              <tr><td><code>declaredUnobserved</code></td><td>Dimensions on the contract that the lens has not seen in the window. Either they're broken in code, or the contract is stale.</td></tr>
+              <tr><td><code>observedUndeclared</code></td><td>Dimensions the lens has seen that the contract does not declare. Add them to the contract or stop emitting them.</td></tr>
+              <tr><td><code>declaredUnstructural</code></td><td>Declared on the contract but not present in the structural inventory. Strong retirement candidate — the code no longer references it.</td></tr>
+              <tr><td><code>structuralUnfired</code></td><td>Present in the structural inventory but never observed. Wired but not exercised — possibly dead paths.</td></tr>
+              <tr><td><code>forwardDeclaredAbsent</code></td><td>Declared in the contract for a future rollout, not yet observed. Expected empty until the feature ships.</td></tr>
+              <tr><td><code>deprecatedAbsent</code></td><td>Marked deprecated on the contract and no longer observed — a clean retirement completed.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Acting on the report</h3>
+
+        <p>
+          The usual cadence: a scan runs nightly, its report gets read by an operator, undeclared dimensions get added to the contract, retirement candidates get retired (see the <code>supersededBy</code> mechanism in <a href="./surface-contracts.html">Surface contracts</a>). Over time, "clean scan" becomes the deploy readiness signal for contract changes.
+        </p>
+
+        <h2>Reference</h2>
+
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/topology/structural-inventory</code></td><td>Declare what your codebase enumerates.</td></tr>
+              <tr><td><code>POST /lens/topology/scan</code></td><td>Compare declared vs observed vs enumerated, return the coverage report.</td></tr>
+              <tr><td><code>POST /lens/topology/bootstrap</code></td><td>Propose candidate dimensions for a surface based on recent traffic.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>POST /lens/topology/structural-inventory</code> — request</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>agentId</code></td><td>string (req)</td><td>The agent this inventory belongs to.</td></tr>
+              <tr><td><code>consumerId</code></td><td>string (opt)</td><td>Identifier of the code that's declaring the inventory (useful when multiple deployments feed one contract).</td></tr>
+              <tr><td><code>capturedAt</code></td><td>ISO 8601 (opt)</td><td>When the inventory was taken. Defaults to now.</td></tr>
+              <tr><td><code>inventoryKind</code></td><td>enum (req)</td><td><code>surface-ids</code> or <code>dispatch-map</code>.</td></tr>
+              <tr><td><code>surfaceIds</code></td><td>string[] (opt)</td><td>Required when <code>inventoryKind = "surface-ids"</code>.</td></tr>
+              <tr><td><code>dispatchMap</code></td><td>object (opt)</td><td>Required when <code>inventoryKind = "dispatch-map"</code>.</td></tr>
+              <tr><td><code>artifactKind</code></td><td>string (opt)</td><td>Freeform label for the source artifact (e.g. <code>codegen</code>, <code>handwritten</code>).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>POST /lens/topology/scan</code> — request</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>agentId</code></td><td>string (opt)</td><td>Restrict the scan to one agent. Omit to scan all.</td></tr>
+              <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on events considered.</td></tr>
+              <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound on events considered.</td></tr>
+              <tr><td><code>asOf</code></td><td>ISO 8601 (opt)</td><td>Contract and inventory versions to compare against (defaults to latest).</td></tr>
+              <tr><td><code>record</code></td><td>boolean (opt)</td><td>Persist the scan as an event.</td></tr>
+              <tr><td><code>artifactKind</code></td><td>string (opt)</td><td>Restrict to inventories with this kind label.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>POST /lens/topology/bootstrap</code> — request</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string (req)</td><td>The surface to propose candidates for.</td></tr>
+              <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on the traffic window.</td></tr>
+              <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./sidecar.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Sidecar / OTel integration</span>
+          </a>
+          <a href="./conformance.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Conformance &amp; fixtures</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 09 · Surface topology scanner</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>
