@@ -580,6 +580,93 @@ html, body {
 .guide-router td:first-child { font-weight: 600; color: var(--fg); }
 .guide-router tr:last-child td { border-bottom: 0; }
 
+/* ---------- phones ---------- */
+/* Phone-tier tuning. Below 720px the sticky-sidebar layout becomes a flat block
+   which shoves the article below 14 chapter titles; hide it entirely on phones
+   (the top-bar "all chapters" link + the prev/next nav at the bottom of each
+   chapter cover navigation cleanly). Meanwhile shrink type + tighten padding
+   so prose reads comfortably at 375–414px widths. */
+@media (max-width: 720px) {
+  /* Topbar — compact, single-line, drop the redundant back-link (brand is the link). */
+  .guide-topbar {
+    padding: 10px clamp(12px, 4vw, 20px);
+    gap: 8px;
+  }
+  .guide-brand { font-size: 13px; letter-spacing: 0.20em; }
+  .guide-crumb { font-size: 10px; letter-spacing: 0.10em; }
+  .guide-topbar-right { gap: 8px; }
+  .guide-version { font-size: 9px; padding: 3px 8px; letter-spacing: 0.12em; }
+  .guide-back-link { display: none; }
+
+  /* Sidebar — hide on phones. Prev/next + topbar handles nav. */
+  .guide-sidebar { display: none; }
+
+  /* Shell — tighter frame, single column already inherited from @900. */
+  .guide-shell { padding: 22px 16px 60px; gap: 0; }
+  .guide-main article { max-width: 100%; }
+
+  /* Article typography — right-sized for phone widths. */
+  .guide-eyebrow { font-size: 10px; letter-spacing: 0.20em; margin-bottom: 10px; }
+  .guide-h1 { font-size: clamp(26px, 8vw, 34px); line-height: 1.15; margin-bottom: 4px; }
+  .guide-meta { font-size: 10px; letter-spacing: 0.12em; margin-bottom: 24px; }
+  .guide-lede { font-size: 16px; line-height: 1.55; padding-bottom: 18px; margin-bottom: 22px; }
+  .guide-main h2 { font-size: 18px; margin: 32px 0 12px; padding-top: 4px; }
+  .guide-main h2::before { width: 28px; margin-bottom: 10px; }
+  .guide-main h3 { font-size: 15.5px; margin: 22px 0 6px; }
+  .guide-main p, .guide-main li { font-size: 15px; line-height: 1.65; }
+  .guide-main ul, .guide-main ol { padding-left: 20px; }
+
+  /* Callout — tighter side padding on narrow screens. */
+  .guide-callout { padding: 12px 14px; font-size: 14px; }
+
+  /* Tables — smaller cells so 3-column tables fit without hard-wrapping. */
+  .guide-table { font-size: 12.5px; }
+  .guide-table th, .guide-table td { padding: 8px 10px; }
+  .guide-table th { font-size: 9.5px; letter-spacing: 0.10em; }
+
+  /* Code — larger inline than desktop-tiny; readable pre. */
+  .guide-main code { font-size: 0.86em; padding: 1.5px 5px; }
+  .guide-main pre { padding: 12px 14px; font-size: 12px; border-radius: 6px; }
+
+  /* Prev/Next nav — bigger tap targets, single column. */
+  .guide-nav { grid-template-columns: 1fr; gap: 10px; margin-top: 40px; padding-top: 22px; }
+  .guide-nav a { padding: 14px 16px; }
+  .guide-nav .nav-label { font-size: 9.5px; letter-spacing: 0.16em; }
+  .guide-nav .nav-title { font-size: 14.5px; }
+
+  /* Footer — stacked. */
+  .guide-footer { padding: 20px 14px 32px; flex-direction: column; gap: 6px; font-size: 9.5px; letter-spacing: 0.10em; }
+
+  /* Index page hero. */
+  .guide-index-hero { margin-bottom: 32px; padding: 0; }
+  .guide-index-hero .guide-h1 { font-size: clamp(28px, 9vw, 38px); }
+  .guide-index-hero .guide-lede { font-size: 16px; }
+  .guide-index-hero .guide-epigraph { font-size: 14px; padding-left: 12px; }
+
+  /* Audience router — smaller table, less padding. */
+  .guide-router { padding: 16px 14px; margin-bottom: 32px; }
+  .guide-router h2 { font-size: 12px !important; }
+  .guide-router table { font-size: 12.5px; margin-top: 10px; }
+  .guide-router th, .guide-router td { padding: 6px 4px; }
+  .guide-router th { font-size: 9px; letter-spacing: 0.10em; }
+
+  /* Chapter index — bigger tappable rows. */
+  .guide-toc-full li { padding: 16px 2px; grid-template-columns: 30px 1fr; gap: 10px; }
+  .guide-toc-full .t-num { font-size: 12px; }
+  .guide-toc-full .t-ttl { font-size: 16px; line-height: 1.35; }
+  .guide-toc-full .t-gloss { font-size: 13px; line-height: 1.5; margin-top: 5px; }
+  .guide-toc-full .t-status { font-size: 8.5px; padding: 3px 8px; margin-top: 8px; }
+}
+
+/* Very narrow phones (≤400px, e.g. iPhone SE portrait). */
+@media (max-width: 400px) {
+  .guide-topbar { padding: 8px 12px; flex-wrap: wrap; }
+  .guide-crumb { flex-basis: 100%; margin-top: 2px; }
+  .guide-h1 { font-size: 24px; }
+  .guide-main pre { font-size: 11.5px; padding: 10px 12px; }
+  .guide-shell { padding-left: 12px; padding-right: 12px; }
+}
+
 /* ---------- print ---------- */
 @media print {
   .guide-topbar, .guide-sidebar, .guide-nav, .guide-footer { display: none; }
