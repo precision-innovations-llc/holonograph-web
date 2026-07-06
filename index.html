@@ -1742,6 +1742,16 @@
     .cluster-rail { display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding: 44px 20px; }
     .cluster-card { max-height: calc(100dvh - 88px); overflow-y: auto; }
 
+    /* Suppress the cube→rail tether affordance on mobile. The panel is a
+       centered modal here (not a right rail), so the connector line has no
+       meaningful trajectory — it flashes for one frame and is immediately
+       covered by the modal, reading as a rendering bug rather than an
+       animation. Kill the SVG line/circle and the anchor dot entirely. */
+    .cluster-connector,
+    .cluster-anchor {
+      display: none !important;
+    }
+
     /* Tighter hero image — 240px was eating half the modal on phone-sized cards */
     .cluster-img { max-height: 150px; margin-bottom: 12px; }
     .expanded-content .inline-figure img { max-height: 200px; }
