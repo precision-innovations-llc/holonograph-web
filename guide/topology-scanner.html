@@ -66,9 +66,9 @@
         <p>Three endpoints, each doing one job:</p>
 
         <ul>
-          <li><strong>Structural inventory</strong> — you tell the scanner what your codebase says exists (surface ids you can enumerate, or a dispatch map). This becomes the third leg — alongside "declared on the contract" and "observed in traffic" — that the scan can reason about.</li>
-          <li><strong>Scan</strong> — the scanner reads events over a window, joins them against the active contract and any recent structural inventory, and returns the coverage gaps as a set-difference across the three sources.</li>
-          <li><strong>Bootstrap</strong> — when you have traffic against a surface but no contract entry yet, bootstrap reads the traffic and proposes dimensions to declare.</li>
+          <li><strong>Structural inventory</strong>: you tell the scanner what your codebase says exists (surface ids you can enumerate, or a dispatch map). This becomes the third leg (alongside "declared on the contract" and "observed in traffic") that the scan can reason about.</li>
+          <li><strong>Scan</strong>: the scanner reads events over a window, joins them against the active contract and any recent structural inventory, and returns the coverage gaps as a set-difference across the three sources.</li>
+          <li><strong>Bootstrap</strong>: when you have traffic against a surface but no contract entry yet, bootstrap reads the traffic and proposes dimensions to declare.</li>
         </ul>
 
         <h2>Why it matters</h2>
@@ -88,7 +88,7 @@
 
         <div class="guide-callout">
           <span class="callout-label">Three inputs, not two</span>
-          The scan is honest when it can compare against three inputs — <em>declared</em> (contract), <em>observed</em> (events), and <em>enumerated</em> (structural inventory). With two you can still find gaps; with three you can also tell a genuinely retired surface from a surface that just went quiet for a week.
+          The scan is honest when it can compare against three inputs: <em>declared</em> (contract), <em>observed</em> (events), and <em>enumerated</em> (structural inventory). With two you can still find gaps; with three you can also tell a genuinely retired surface from a surface that just went quiet for a week.
         </div>
 
         <h2>How to use it</h2>
@@ -100,8 +100,8 @@
         </p>
 
         <ul>
-          <li><code>surface-ids</code> — a flat list of the surface ids your code can enumerate.</li>
-          <li><code>dispatch-map</code> — a dispatch table mapping keys (intents, tools, or any other routing key) to surface ids.</li>
+          <li><code>surface-ids</code>: a flat list of the surface ids your code can enumerate.</li>
+          <li><code>dispatch-map</code>: a dispatch table mapping keys (intents, tools, or any other routing key) to surface ids.</li>
         </ul>
 
         <pre><code>POST /lens/topology/structural-inventory
@@ -142,12 +142,12 @@ Content-Type: application/json
   "record": true
 }</code></pre>
 
-        <p>Set <code>record: true</code> to persist the scan result as an event of its own — useful for tracking how coverage changes over time.</p>
+        <p>Set <code>record: true</code> to persist the scan result as an event of its own. Useful for tracking how coverage changes over time.</p>
 
         <h3>3. Bootstrap a new surface's dimensions</h3>
 
         <p>
-          When you're onboarding a new surface — traffic is flowing, but the contract entry is bare — bootstrap reads the traffic and proposes dimensions.
+          When you're onboarding a new surface (traffic is flowing, but the contract entry is bare), bootstrap reads the traffic and proposes dimensions.
         </p>
 
         <pre><code>POST /lens/topology/bootstrap
@@ -163,14 +163,14 @@ Content-Type: application/json
         <p>Each candidate comes back with an <code>inference</code> label:</p>
 
         <ul>
-          <li><code>deterministic</code> — the dimension appeared consistently and with a stable shape across the window. Safe to declare.</li>
-          <li><code>lowConfidence</code> — the dimension appeared, but sparsely or with an unstable shape. Worth reviewing before adding to the contract.</li>
+          <li><code>deterministic</code>: the dimension appeared consistently and with a stable shape across the window. Safe to declare.</li>
+          <li><code>lowConfidence</code>: the dimension appeared, but sparsely or with an unstable shape. Worth reviewing before adding to the contract.</li>
         </ul>
 
         <h2>Reading the output</h2>
 
         <p>
-          The scan report is a set-difference across three sources — the contract's <em>declared</em>, the events' <em>observed</em>, and (if you captured one) the code's <em>structural</em> inventory. The scanner returns per-surface lattices with these fields:
+          The scan report is a set-difference across three sources: the contract's <em>declared</em>, the events' <em>observed</em>, and (if you captured one) the code's <em>structural</em> inventory. The scanner returns per-surface lattices with these fields:
         </p>
 
         <div class="guide-table-wrap">
@@ -179,10 +179,10 @@ Content-Type: application/json
             <tbody>
               <tr><td><code>declaredUnobserved</code></td><td>Dimensions on the contract that the lens has not seen in the window. Either they're broken in code, or the contract is stale.</td></tr>
               <tr><td><code>observedUndeclared</code></td><td>Dimensions the lens has seen that the contract does not declare. Add them to the contract or stop emitting them.</td></tr>
-              <tr><td><code>declaredUnstructural</code></td><td>Declared on the contract but not present in the structural inventory. Strong retirement candidate — the code no longer references it.</td></tr>
-              <tr><td><code>structuralUnfired</code></td><td>Present in the structural inventory but never observed. Wired but not exercised — possibly dead paths.</td></tr>
+              <tr><td><code>declaredUnstructural</code></td><td>Declared on the contract but not present in the structural inventory. Strong retirement candidate: the code no longer references it.</td></tr>
+              <tr><td><code>structuralUnfired</code></td><td>Present in the structural inventory but never observed. Wired but not exercised: possibly dead paths.</td></tr>
               <tr><td><code>forwardDeclaredAbsent</code></td><td>Declared in the contract for a future rollout, not yet observed. Expected empty until the feature ships.</td></tr>
-              <tr><td><code>deprecatedAbsent</code></td><td>Marked deprecated on the contract and no longer observed — a clean retirement completed.</td></tr>
+              <tr><td><code>deprecatedAbsent</code></td><td>Marked deprecated on the contract and no longer observed: a clean retirement completed.</td></tr>
             </tbody>
           </table>
         </div>
@@ -208,7 +208,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/topology/structural-inventory</code> — request</h3>
+        <h3><code>POST /lens/topology/structural-inventory</code>: request</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -225,7 +225,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/topology/scan</code> — request</h3>
+        <h3><code>POST /lens/topology/scan</code>: request</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -241,7 +241,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/topology/bootstrap</code> — request</h3>
+        <h3><code>POST /lens/topology/bootstrap</code>: request</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">

@@ -58,13 +58,13 @@
         <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
 
         <p class="guide-lede">
-          Holonograph's central affordance — the lens — is <em>where it sits</em>. This chapter is about the physical placement of the lens in your call path and the shape of a single call as it moves through it.
+          Holonograph's central affordance, the lens, is <em>where it sits</em>. This chapter is about the physical placement of the lens in your call path and the shape of a single call as it moves through it.
         </p>
 
         <h2>What it is</h2>
 
         <p>
-          The lens is a bidirectional in-process mediator between your agent and the model. Your agent doesn't call the vendor directly; it calls <code>POST /holonograph/messages</code> on the local Holonograph daemon, and Holonograph forwards to the vendor on your behalf. Both directions of the exchange — request out and response back — pass through the same code path.
+          The lens is a bidirectional in-process mediator between your agent and the model. Your agent doesn't call the vendor directly; it calls <code>POST /holonograph/messages</code> on the local Holonograph daemon, and Holonograph forwards to the vendor on your behalf. Both directions of the exchange (request out and response back) pass through the same code path.
         </p>
 
         <p>
@@ -80,12 +80,12 @@
         <h2>Why it matters</h2>
 
         <p>
-          The alternative — instrumenting the agent's code with logging calls — has two structural weaknesses. Log lines can only record what the developer thought to log, and the log format is coupled to the agent's version of the vendor SDK. Placement side-steps both. Because the lens owns the boundary, capture is a property of the architecture, not a discipline the developer must remember.
+          The alternative, instrumenting the agent's code with logging calls, has two structural weaknesses. Log lines can only record what the developer thought to log, and the log format is coupled to the agent's version of the vendor SDK. Placement side-steps both. Because the lens owns the boundary, capture is a property of the architecture, not a discipline the developer must remember.
         </p>
 
         <div class="guide-callout">
           <span class="callout-label">A useful mental model</span>
-          Treat <code>POST /holonograph/messages</code> as your model provider's endpoint from the agent's point of view. The vendor call still happens — it just happens on the daemon's side of a stable, local wire.
+          Treat <code>POST /holonograph/messages</code> as your model provider's endpoint from the agent's point of view. The vendor call still happens. It just happens on the daemon's side of a stable, local wire.
         </div>
 
         <h2>How to use it</h2>
@@ -144,8 +144,8 @@ const answer = handle.result;</code></pre>
         <p>Two request fields let you override the surface's contract for a single call, when you know what you're doing:</p>
 
         <ul>
-          <li><code>systemOverride</code> — replaces the system prompt for this call only. Does not mutate the contract.</li>
-          <li><code>lightSourceIdOverride</code> — routes this call to a specific vendor instead of the surface's default routing. Useful for reproducing an issue against a known-good model.</li>
+          <li><code>systemOverride</code>: replaces the system prompt for this call only. Does not mutate the contract.</li>
+          <li><code>lightSourceIdOverride</code>: routes this call to a specific vendor instead of the surface's default routing. Useful for reproducing an issue against a known-good model.</li>
         </ul>
 
         <h2>Reading the output</h2>

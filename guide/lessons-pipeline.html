@@ -66,17 +66,17 @@
         <p>A five-step pipeline, one endpoint per step:</p>
 
         <ol>
-          <li><strong>Override</strong> — a human corrects the system's output. Recorded as first-class ground truth: <em>what the system produced</em> next to <em>what good looks like</em>.</li>
-          <li><strong>Cluster</strong> — similar overrides group together, so one fix can address a pattern instead of a single instance.</li>
-          <li><strong>Draft</strong> — the drafter proposes a concrete corrective artifact for a cluster. Four kinds: <code>skill</code>, <code>lesson</code>, <code>fixture</code>, <code>code-change-recommendation</code>.</li>
-          <li><strong>Approve or reject</strong> — a named approver reads the draft, edits or rejects. This is the gate.</li>
-          <li><strong>Publish</strong> — an approved draft becomes substrate. Versioned, captured, and attributable in future readings like any other change.</li>
+          <li><strong>Override</strong>: a human corrects the system's output. Recorded as first-class ground truth: <em>what the system produced</em> next to <em>what good looks like</em>.</li>
+          <li><strong>Cluster</strong>: similar overrides group together, so one fix can address a pattern instead of a single instance.</li>
+          <li><strong>Draft</strong>: the drafter proposes a concrete corrective artifact for a cluster. Four kinds: <code>skill</code>, <code>lesson</code>, <code>fixture</code>, <code>code-change-recommendation</code>.</li>
+          <li><strong>Approve or reject</strong>: a named approver reads the draft, edits or rejects. This is the gate.</li>
+          <li><strong>Publish</strong>: an approved draft becomes substrate. Versioned, captured, and attributable in future readings like any other change.</li>
         </ol>
 
         <h2>Why it matters</h2>
 
         <p>
-          Feedback in most agentic systems is either noted-and-forgotten or wired into a slow fine-tuning loop. Neither is a good fit for the operator running a real product on a real timeline. The lessons pipeline gives that operator a third path: <em>capture the correction, cluster the pattern, ship a concrete artifact through a named gate</em>. The artifact — a new skill, a lesson, a fixture, a code change — is the smallest unit of "the system got better," and every one of them is attributable in future drift readings.
+          Feedback in most agentic systems is either noted-and-forgotten or wired into a slow fine-tuning loop. Neither is a good fit for the operator running a real product on a real timeline. The lessons pipeline gives that operator a third path: <em>capture the correction, cluster the pattern, ship a concrete artifact through a named gate</em>. The artifact (a new skill, a lesson, a fixture, a code change) is the smallest unit of "the system got better," and every one of them is attributable in future drift readings.
         </p>
 
         <div class="guide-callout">
@@ -109,7 +109,7 @@ Content-Type: application/json
         <h3>2. Cluster overrides over a window</h3>
 
         <p>
-          Run the clustering endpoint to group similar overrides — usually on a schedule (nightly), sometimes on-demand when an operator wants to see what's been building up.
+          Run the clustering endpoint to group similar overrides, usually on a schedule (nightly), sometimes on-demand when an operator wants to see what's been building up.
         </p>
 
         <pre><code>POST /lessons/cluster
@@ -170,7 +170,7 @@ Content-Type: application/json
   "comment": "Correction verified against the surface's rules. Approving."
 }</code></pre>
 
-        <p>Reject (a comment is required — the record of why matters):</p>
+        <p>Reject (a comment is required; the record of why matters):</p>
 
         <pre><code>POST /hil/reject
 Content-Type: application/json
@@ -186,7 +186,7 @@ Content-Type: application/json
         <h3>5. Publish</h3>
 
         <p>
-          Once approved, publish the draft to make it live. Provide any existing lessons the publisher should consider superseding — the publisher will merge/replace/link as appropriate.
+          Once approved, publish the draft to make it live. Provide any existing lessons the publisher should consider superseding; the publisher will merge/replace/link as appropriate.
         </p>
 
         <pre><code>POST /lessons/publish
@@ -208,12 +208,12 @@ Content-Type: application/json
 
 { "fixtureId": "fx_01H..." }</code></pre>
 
-        <p>Response includes the actual <code>result</code> the run produced and the <code>expected[]</code> assertions the fixture carries — the diff between the two is your regression signal.</p>
+        <p>Response includes the actual <code>result</code> the run produced and the <code>expected[]</code> assertions the fixture carries. The diff between the two is your regression signal.</p>
 
         <h2>Reading the output</h2>
 
         <p>
-          Published artifacts become substrate. That means they show up as their own events, they get versioned, and — crucially — future drift readings can point at "this artifact was published on Tuesday" as a candidate explanation for a movement in the numbers.
+          Published artifacts become substrate. That means they show up as their own events, they get versioned, and, crucially, future drift readings can point at "this artifact was published on Tuesday" as a candidate explanation for a movement in the numbers.
         </p>
 
         <p>
@@ -239,7 +239,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /hil/override</code> — request</h3>
+        <h3><code>POST /hil/override</code>: request</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -248,7 +248,7 @@ Content-Type: application/json
               <tr><td><code>agentId</code></td><td>string (req)</td><td>The agent this override applies to.</td></tr>
               <tr><td><code>surfaceId</code></td><td>string (opt)</td><td>The surface, when known.</td></tr>
               <tr><td><code>correlationId</code></td><td>string (opt)</td><td>Ties the override to the original call.</td></tr>
-              <tr><td><code>tags</code></td><td>string[] (opt)</td><td>Cohort tags — <code>fix_tier=…</code>, <code>severity=…</code>, and any other identifiers that will help clustering later.</td></tr>
+              <tr><td><code>tags</code></td><td>string[] (opt)</td><td>Cohort tags like <code>fix_tier=…</code>, <code>severity=…</code>, and any other identifiers that will help clustering later.</td></tr>
               <tr><td><code>originalOutput</code></td><td>object (req)</td><td>What the system produced.</td></tr>
               <tr><td><code>correctedOutput</code></td><td>object (req)</td><td>What the human sent instead.</td></tr>
               <tr><td><code>rationale</code></td><td>string (opt)</td><td>Human explanation of the correction.</td></tr>
@@ -257,7 +257,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lessons/draft</code> — request</h3>
+        <h3><code>POST /lessons/draft</code>: request</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">

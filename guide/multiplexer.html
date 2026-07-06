@@ -58,7 +58,7 @@
         <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
 
         <p class="guide-lede">
-          The multiplexer lets one call to a surface land on several vendors at once — a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
+          The multiplexer lets one call to a surface land on several vendors at once: a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
         </p>
 
         <h2>What it is</h2>
@@ -72,12 +72,12 @@
         <h2>Why it matters</h2>
 
         <p>
-          Comparing vendors in production is normally either destructive (you swap and observe production traffic without a control) or duplicative (you build a second call path). Multiplexing makes the comparison a property of your contract instead of your agent code — swap the routing, redeploy the contract, and every subsequent call captures a per-vendor record. Because both sides of every observed call flow through the same lens, you can compare vendors on any dimension your evaluations already record: cost, latency, correctness, tool-invocation shape.
+          Comparing vendors in production is normally either destructive (you swap and observe production traffic without a control) or duplicative (you build a second call path). Multiplexing makes the comparison a property of your contract instead of your agent code. Swap the routing, redeploy the contract, and every subsequent call captures a per-vendor record. Because both sides of every observed call flow through the same lens, you can compare vendors on any dimension your evaluations already record: cost, latency, correctness, tool-invocation shape.
         </p>
 
         <div class="guide-callout">
           <span class="callout-label">Guarantee</span>
-          The calling agent never learns that multiplexing is happening. It sees the primary's response and returns. Observer results flow into the substrate on their own — the agent's call path is unchanged.
+          The calling agent never learns that multiplexing is happening. It sees the primary's response and returns. Observer results flow into the substrate on their own. The agent's call path is unchanged.
         </div>
 
         <h2>How to use it</h2>
@@ -108,13 +108,13 @@
 });</code></pre>
 
         <p>
-          Three vendors, listed in priority order. Claude Sonnet 5 is the primary; GPT-5 and Gemini 2 Pro are observers. The <code>activeRunModes</code> field restricts multiplexing to the modes where you want it — typically <code>eval</code> and <code>production</code>, keeping <code>test</code> and <code>local_dev</code> single-vendor for reproducibility and cost.
+          Three vendors, listed in priority order. Claude Sonnet 5 is the primary; GPT-5 and Gemini 2 Pro are observers. The <code>activeRunModes</code> field restricts multiplexing to the modes where you want it, typically <code>eval</code> and <code>production</code>, keeping <code>test</code> and <code>local_dev</code> single-vendor for reproducibility and cost.
         </p>
 
         <h3>Fallback in array order</h3>
 
         <p>
-          If the primary vendor is unavailable, the lens falls back through the array in order. The <em>role</em> tag reflects what actually happened on this call, so a fallback shows up in the data as its own vendor answering as primary — not as the primary's declared identity attributed to a call it did not answer.
+          If the primary vendor is unavailable, the lens falls back through the array in order. The <em>role</em> tag reflects what actually happened on this call, so a fallback shows up in the data as its own vendor answering as primary, not as the primary's declared identity attributed to a call it did not answer.
         </p>
 
         <h3>Grade every vendor's result</h3>
@@ -176,13 +176,13 @@ await handle.reportOutcome({
         <h3>Comparing vendors</h3>
 
         <p>
-          The compare-heads-up view is a simple group-by-and-difference on those events. Pick your dimensions (correctness, latency, cost), group by <code>light_source_identifier</code>, and read the deltas straight from the substrate. There's no separate multiplex report — the events already carry everything you need.
+          The compare-heads-up view is a simple group-by-and-difference on those events. Pick your dimensions (correctness, latency, cost), group by <code>light_source_identifier</code>, and read the deltas straight from the substrate. There's no separate multiplex report. The events already carry everything you need.
         </p>
 
         <h3>Cost and latency</h3>
 
         <p>
-          Per-vendor cost and latency are captured on each event without any operator work. When you multiplex three vendors, you get three vendors' cost and latency for the same input — the piece of the head-to-head that's normally hardest to compare fairly.
+          Per-vendor cost and latency are captured on each event without any operator work. When you multiplex three vendors, you get three vendors' cost and latency for the same input. That's the piece of the head-to-head that's normally hardest to compare fairly.
         </p>
 
         <h2>Reference</h2>
@@ -205,14 +205,14 @@ await handle.reportOutcome({
         <h3>Per-event cohort tag</h3>
 
         <ul>
-          <li><code>multiplex.role=primary</code> — the vendor whose response was returned to the agent.</li>
-          <li><code>multiplex.role=observer</code> — a vendor whose response was captured but not returned.</li>
+          <li><code>multiplex.role=primary</code>: the vendor whose response was returned to the agent.</li>
+          <li><code>multiplex.role=observer</code>: a vendor whose response was captured but not returned.</li>
         </ul>
 
         <h3>Grouping key</h3>
 
         <ul>
-          <li><code>correlationId</code> — shared across all vendors' events for one call.</li>
+          <li><code>correlationId</code>: shared across all vendors' events for one call.</li>
         </ul>
 
         <nav class="guide-nav" aria-label="Chapter navigation">

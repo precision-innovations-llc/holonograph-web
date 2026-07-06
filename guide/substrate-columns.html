@@ -68,8 +68,8 @@
         </p>
 
         <ul>
-          <li><strong>Mandatory columns</strong> — always present, always captured by Holonograph. You don't declare them; they're part of the shape.</li>
-          <li><strong>Operator-declared columns</strong> — you declare them in the surface contract and populate them either at call time (<code>deployment-state</code>) or after the outcome is known (<code>diagnostic</code>).</li>
+          <li><strong>Mandatory columns</strong>: always present, always captured by Holonograph. You don't declare them; they're part of the shape.</li>
+          <li><strong>Operator-declared columns</strong>: you declare them in the surface contract and populate them either at call time (<code>deployment-state</code>) or after the outcome is known (<code>diagnostic</code>).</li>
         </ul>
 
         <h2>Why it matters</h2>
@@ -80,7 +80,7 @@
 
         <div class="guide-callout">
           <span class="callout-label">Practical guidance</span>
-          Declare a column for every knob in your system that could plausibly change a score — prompt, tool schemas, retrieval index revision, feature flags. It's cheaper to declare too many than to reconstruct a slice you didn't foresee.
+          Declare a column for every knob in your system that could plausibly change a score: prompt, tool schemas, retrieval index revision, feature flags. It's cheaper to declare too many than to reconstruct a slice you didn't foresee.
         </div>
 
         <h2>How to use it</h2>
@@ -97,7 +97,7 @@
               <tr><td><code>light_source_identifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/model/version</code>. Vendor-controlled.</td></tr>
               <tr><td><code>run_mode</code></td><td>enum</td><td>Which run mode the evaluation ran under. See <a href="./run-modes.html">Run modes</a>.</td></tr>
               <tr><td><code>correlation_id</code></td><td>string</td><td>Ties together the calls of one evaluation (e.g. across multiplex vendors).</td></tr>
-              <tr><td><code>provenance</code></td><td>enum</td><td>Origin category of the run — typically <code>production-state</code> versus <code>exploratory-state</code>.</td></tr>
+              <tr><td><code>provenance</code></td><td>enum</td><td>Origin category of the run, typically <code>production-state</code> versus <code>exploratory-state</code>.</td></tr>
               <tr><td><code>timestamp</code></td><td>ISO 8601</td><td>When the evaluation occurred.</td></tr>
             </tbody>
           </table>
@@ -120,10 +120,10 @@
           The two fields that decide <em>how</em> you set the column are <code>semantic</code> and <code>values</code>. The rest describe who controls the value, how visible its changes are, and (optionally) a fixed enum you must stay within.
         </p>
 
-        <h3><code>deployment-state</code> — set at call time</h3>
+        <h3><code>deployment-state</code>: set at call time</h3>
 
         <p>
-          These describe the state of your deployment at the moment of the call. Populate them via the <code>operatorColumns</code> map on the <code>SubstrateSnapshot</code> at client construction — the values then attach to every call the client makes until the client is reconstructed with new values.
+          These describe the state of your deployment at the moment of the call. Populate them via the <code>operatorColumns</code> map on the <code>SubstrateSnapshot</code> at client construction. The values then attach to every call the client makes until the client is reconstructed with new values.
         </p>
 
         <pre><code>const client = new HolonographClient({
@@ -147,10 +147,10 @@
           Set <code>prompt_hash</code> to a stable hash of your input. When your prompt changes, the hash changes; when it doesn't, the hash doesn't. Downstream analyses read the column expecting exactly that discipline.
         </p>
 
-        <h3><code>diagnostic</code> — set post-hoc via cohort tag</h3>
+        <h3><code>diagnostic</code>: set post-hoc via cohort tag</h3>
 
         <p>
-          Diagnostic columns are set after the outcome is known — because the value is a category the evaluation itself decided. You set them by passing a cohort tag formatted as <code>&lt;column.id&gt;=&lt;value&gt;</code> to <code>reportOutcome()</code>.
+          Diagnostic columns are set after the outcome is known, because the value is a category the evaluation itself decided. You set them by passing a cohort tag formatted as <code>&lt;column.id&gt;=&lt;value&gt;</code> to <code>reportOutcome()</code>.
         </p>
 
         <pre><code>await handle.reportOutcome({
@@ -168,13 +168,13 @@
 });</code></pre>
 
         <p>
-          If the column declares a <code>values[]</code> enum, the value you pass must be one of them. Anything else is rejected at ingest — not silently accepted.
+          If the column declares a <code>values[]</code> enum, the value you pass must be one of them. Anything else is rejected at ingest, not silently accepted.
         </p>
 
         <h2>Reading the output</h2>
 
         <p>
-          Substrate columns come back on every event via <code>GET /lens/events</code>. Filter queries on them the same way you filter on cohort tags: a slice is a set of column-value pairs, and the values you didn't declare aren't queryable — which is the whole point of declaring them ahead of time.
+          Substrate columns come back on every event via <code>GET /lens/events</code>. Filter queries on them the same way you filter on cohort tags: a slice is a set of column-value pairs, and the values you didn't declare aren't queryable. That's the whole point of declaring them ahead of time.
         </p>
 
         <h2>Reference</h2>

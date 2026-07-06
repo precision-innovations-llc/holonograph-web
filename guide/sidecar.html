@@ -58,7 +58,7 @@
         <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~5 min read</p>
 
         <p class="guide-lede">
-          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it — a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry, so the work on the other side rejoins the same evaluation.
+          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry, so the work on the other side rejoins the same evaluation.
         </p>
 
         <h2>What it is</h2>
@@ -79,12 +79,12 @@
         <h2>Why it matters</h2>
 
         <p>
-          The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with — often the wrong thing. Baggage keeps that from happening quietly.
+          The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening quietly.
         </p>
 
         <div class="guide-callout">
           <span class="callout-label">The rule of thumb</span>
-          If work happens outside the request that made it, propagate. If work happens inside the same request (same process, same call stack), the SDK's <code>correlationId</code> is enough — you don't need Baggage.
+          If work happens outside the request that made it, propagate. If work happens inside the same request (same process, same call stack), the SDK's <code>correlationId</code> is enough. You don't need Baggage.
         </div>
 
         <h2>How to use it</h2>
@@ -92,7 +92,7 @@
         <h3>Enable OTel in your service</h3>
 
         <p>
-          Use any OTel SDK for your language. Enable auto-instrumentation for the transports you use (HTTP, gRPC, your queue library, your pub-sub client). Nothing Holonograph-specific here — the standard OTel setup is enough.
+          Use any OTel SDK for your language. Enable auto-instrumentation for the transports you use (HTTP, gRPC, your queue library, your pub-sub client). Nothing Holonograph-specific here; the standard OTel setup is enough.
         </p>
 
         <h3>Set Baggage on the originating side</h3>
@@ -150,13 +150,13 @@ async function handleJob(job) {
 }</code></pre>
 
         <p>
-          The call in the worker now shares a <code>correlationId</code> with the request that produced the job, and it inherits the originator's run mode — so a <code>test</code> request that enqueued a job doesn't turn into a <code>production</code> call on the worker.
+          The call in the worker now shares a <code>correlationId</code> with the request that produced the job, and it inherits the originator's run mode, so a <code>test</code> request that enqueued a job doesn't turn into a <code>production</code> call on the worker.
         </p>
 
         <h3>Message-attribute fallback</h3>
 
         <p>
-          For transports where Baggage propagation isn't automatic — some managed queues, some pub-sub platforms — encode the two values as explicit message attributes on the payload, and reconstruct them on the receiving side before setting Baggage manually.
+          For transports where Baggage propagation isn't automatic (some managed queues, some pub-sub platforms), encode the two values as explicit message attributes on the payload, and reconstruct them on the receiving side before setting Baggage manually.
         </p>
 
         <pre><code>await queue.publish({
@@ -174,7 +174,7 @@ async function handleJob(job) {
         <h2>Reading the output</h2>
 
         <p>
-          Nothing changes at read time. Events written from the worker come back through <code>GET /lens/events</code> with the same <code>correlationId</code> as the originating request, and their <code>run_mode</code> column matches the originator's — which is what makes them queryable as one evaluation across the async boundary.
+          Nothing changes at read time. Events written from the worker come back through <code>GET /lens/events</code> with the same <code>correlationId</code> as the originating request, and their <code>run_mode</code> column matches the originator's. That's what makes them queryable as one evaluation across the async boundary.
         </p>
 
         <h2>Reference</h2>
