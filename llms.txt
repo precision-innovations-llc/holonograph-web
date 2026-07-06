@@ -84,6 +84,31 @@ These terms have specific Holonograph meanings that may differ from generic LLM/
 - **runMode** — a discriminator drawn from {production, test, eval, replay, local_dev}, captured at every evaluation event and verified at every async boundary and side-effect gate. Enables single-lens multi-mode operation.
 - **Brand-isolation containment** — a routing pattern that directs test-mode side effects to test-designated resources rather than production resources, enabling test traffic to flow safely through production code paths. The methodology specifies the property; the implementation is the operator's.
 
+## The Guide
+
+The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, and read attribution. Fourteen chapters across three arcs — integration, workflow, and attribution.
+
+- Overview & first principles: https://holonograph.ai/guide/overview.html
+- Surface contracts: https://holonograph.ai/guide/surface-contracts.html
+- The four-layer snapshot: https://holonograph.ai/guide/snapshot.html
+- Substrate columns: https://holonograph.ai/guide/substrate-columns.html
+- SDK reference: https://holonograph.ai/guide/sdk-reference.html
+- The mediating lens — placement & call flow: https://holonograph.ai/guide/mediating-lens.html
+- Run modes: https://holonograph.ai/guide/run-modes.html
+- Sidecar / OTel integration: https://holonograph.ai/guide/sidecar.html
+- Surface topology scanner: https://holonograph.ai/guide/topology-scanner.html
+- Conformance & fixtures: https://holonograph.ai/guide/conformance.html
+- The multiplexer: https://holonograph.ai/guide/multiplexer.html
+- The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline.html
+- Drift attribution: https://holonograph.ai/guide/drift-attribution.html
+- Variance isolation: https://holonograph.ai/guide/variance-isolation.html
+
+The Guide is capability-only by design. Deeper technical validation of the underlying methodology is available under NDA.
+
+## Client SDK
+
+The TypeScript HTTP client is published as `@holonograph/client` on npm. Install with `npm install @holonograph/client`. Import as `import { HolonographClient } from '@holonograph/client'`. Single self-contained ES module, no runtime dependencies, targets Node 18+ and any runtime with a global `fetch`. Package repository: https://github.com/holonograph/client.
+
 ## Contact
 
 - Request a pilot or send a message: the in-page contact form at https://holonograph.ai

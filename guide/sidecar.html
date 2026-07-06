@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>Sidecar / OTel integration — The Guide — Holonograph</title>
+<meta name="description" content="Capturing what doesn't pass through the lens, via OpenTelemetry — baggage propagation, auto-instrumentation, and message-attribute fallback for queues and pub-sub." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/sidecar.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · Sidecar / OTel integration</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li class="current"><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 08</p>
+        <h1 class="guide-h1">Sidecar / OTel integration</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~5 min read</p>
+
+        <p class="guide-lede">
+          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it — a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry, so the work on the other side rejoins the same evaluation.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          Holonograph composes on top of OpenTelemetry rather than replacing it. Two pieces of the OTel spec do the work:
+        </p>
+
+        <ul>
+          <li><strong>Baggage</strong> carries key-value context alongside a trace. Holonograph reads and writes two Baggage keys (<code>holonograph.runmode</code>, <code>holonograph.correlation-id</code>) so the run mode and correlation id survive async boundaries automatically.</li>
+          <li><strong>Auto-instrumentation</strong> covers your framework's normal request/response cycle, so HTTP calls, queue publishes, and pub-sub messages carry the OTel context without you writing propagation code by hand.</li>
+        </ul>
+
+        <p>
+          Where auto-instrumentation doesn't reach, there's a manual fallback: encode the same values as message attributes on the payload and reconstruct them on the receiving side.
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with — often the wrong thing. Baggage keeps that from happening quietly.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">The rule of thumb</span>
+          If work happens outside the request that made it, propagate. If work happens inside the same request (same process, same call stack), the SDK's <code>correlationId</code> is enough — you don't need Baggage.
+        </div>
+
+        <h2>How to use it</h2>
+
+        <h3>Enable OTel in your service</h3>
+
+        <p>
+          Use any OTel SDK for your language. Enable auto-instrumentation for the transports you use (HTTP, gRPC, your queue library, your pub-sub client). Nothing Holonograph-specific here — the standard OTel setup is enough.
+        </p>
+
+        <h3>Set Baggage on the originating side</h3>
+
+        <p>
+          At the top of the request that started the work, put the run mode and correlation id into Baggage:
+        </p>
+
+        <pre><code>import { propagation, context } from "@opentelemetry/api";
+
+const baggage = propagation.getBaggage(context.active())
+  ?? propagation.createBaggage();
+
+const withHolonograph = baggage
+  .setEntry("holonograph.runmode",       { value: "production" })
+  .setEntry("holonograph.correlation-id",{ value: correlationId });
+
+const ctx = propagation.setBaggage(context.active(), withHolonograph);
+
+// run the rest of the request under `ctx`
+context.with(ctx, async () =&gt; {
+  await enqueueBillingReview({ userId });
+});</code></pre>
+
+        <p>
+          Auto-instrumentation on the queue publish serializes Baggage into the message; no message-body changes required.
+        </p>
+
+        <h3>Read Baggage on the receiving side</h3>
+
+        <p>
+          The worker or subscriber picks up the Baggage after auto-instrumentation extracts it. Use it to construct the <code>HolonographClient</code>:
+        </p>
+
+        <pre><code>import { propagation, context } from "@opentelemetry/api";
+
+async function handleJob(job) {
+  const baggage = propagation.getBaggage(context.active());
+  const runMode = baggage?.getEntry("holonograph.runmode")?.value ?? "local_dev";
+  const correlationId = baggage?.getEntry("holonograph.correlation-id")?.value;
+
+  const client = new HolonographClient({
+    endpoint: "http://127.0.0.1:8080",
+    runMode,
+    lensVersion: "billing-lens/v14",
+    substrate: { /* ... */ }
+  });
+
+  const handle = await client.messages.create({
+    surfaceId: "review-flagged-charge",
+    messages: [ /* ... */ ],
+    correlationId
+  });
+  // ...
+}</code></pre>
+
+        <p>
+          The call in the worker now shares a <code>correlationId</code> with the request that produced the job, and it inherits the originator's run mode — so a <code>test</code> request that enqueued a job doesn't turn into a <code>production</code> call on the worker.
+        </p>
+
+        <h3>Message-attribute fallback</h3>
+
+        <p>
+          For transports where Baggage propagation isn't automatic — some managed queues, some pub-sub platforms — encode the two values as explicit message attributes on the payload, and reconstruct them on the receiving side before setting Baggage manually.
+        </p>
+
+        <pre><code>await queue.publish({
+  body: { userId },
+  attributes: {
+    "holonograph.runmode": "production",
+    "holonograph.correlation-id": correlationId
+  }
+});</code></pre>
+
+        <p>
+          On the receiver, read the attributes and set them into Baggage the same way you would in a fully-instrumented setup. The rest of your code doesn't need to know which path they took.
+        </p>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          Nothing changes at read time. Events written from the worker come back through <code>GET /lens/events</code> with the same <code>correlationId</code> as the originating request, and their <code>run_mode</code> column matches the originator's — which is what makes them queryable as one evaluation across the async boundary.
+        </p>
+
+        <h2>Reference</h2>
+
+        <h3>Baggage keys</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Key</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td><code>holonograph.runmode</code></td><td>One of the canonical five run modes (see <a href="./run-modes.html">Run modes</a>).</td></tr>
+              <tr><td><code>holonograph.correlation-id</code></td><td>The correlation id binding calls into one evaluation.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Message-attribute keys</h3>
+
+        <p>Same keys as above, used verbatim as message attributes when Baggage propagation isn't available on the transport.</p>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./run-modes.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Run modes</span>
+          </a>
+          <a href="./topology-scanner.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Surface topology scanner</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 08 · Sidecar / OTel integration</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>

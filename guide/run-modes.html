@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>Run modes — The Guide — Holonograph</title>
+<meta name="description" content="Separating evaluation from production with an enforced, fail-closed envelope. The canonical five run modes and how to wire them at every entry point." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/run-modes.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · Run modes</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li class="current"><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 07</p>
+        <h1 class="guide-h1">Run modes</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~7 min read</p>
+
+        <p class="guide-lede">
+          Every call to the lens declares which run mode it belongs to. The mode gates side effects, decides which events count as production history, and — most importantly — keeps test and evaluation traffic from silently polluting your production substrate. Modes are enforced fail-closed: a missing or unknown mode is rejected at the door.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          A run mode is a single-string label attached to every call. Holonograph's canonical set has five values:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Mode</th><th>Meaning</th><th>Side-effect behavior</th></tr></thead>
+            <tbody>
+              <tr><td><code>production</code></td><td>A real user's request through the real system.</td><td>Full side effects. Persists to <code>production-state</code> provenance.</td></tr>
+              <tr><td><code>test</code></td><td>An automated test exercising the agent.</td><td>Side effects are suppressed or replaced with fixtures. Persists to <code>exploratory-state</code>.</td></tr>
+              <tr><td><code>eval</code></td><td>A deliberate evaluation run — an operator asking "how is the system doing?"</td><td>Side effects suppressed. Persists to <code>exploratory-state</code>. Eligible for cohort-tag-driven grading pipelines.</td></tr>
+              <tr><td><code>replay</code></td><td>Replaying prior traffic against a specific lens version or model.</td><td>Side effects suppressed. Persists to <code>exploratory-state</code>. Tagged so replays don't co-mingle with live evaluation.</td></tr>
+              <tr><td><code>local_dev</code></td><td>A developer poking the system on their laptop.</td><td>Side effects suppressed. Persists to <code>exploratory-state</code>. The permissive mode you use during integration work.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">There is no <code>debug</code> mode</span>
+          The canonical set is exactly the five above. If you see <code>debug</code> anywhere in code or a sample, treat it as an error to correct — not a sixth mode.
+        </div>
+
+        <h2>Why it matters</h2>
+
+        <p>Two properties fall out of enforcing modes at the wire:</p>
+
+        <ul>
+          <li><strong>Substrate integrity.</strong> Your production history stays production. A test that forgot its mode doesn't quietly become a production event when you read it back a month later.</li>
+          <li><strong>Side-effect discipline.</strong> An <code>eval</code> run that touches a downstream system by accident is a serious incident. Fail-closed makes that failure loud instead of silent — the daemon rejects a call with no mode, and modes other than <code>production</code> suppress the side-effect channel.</li>
+        </ul>
+
+        <h2>How to use it</h2>
+
+        <h3>Set once, on the client</h3>
+
+        <p>The simplest wiring: pass <code>runMode</code> once at client construction. Every call the client makes carries it.</p>
+
+        <pre><code>const client = new HolonographClient({
+  endpoint: "http://127.0.0.1:8080",
+  runMode: process.env.NODE_ENV === "production" ? "production" : "local_dev",
+  lensVersion: "billing-lens/v14",
+  substrate: { /* ... */ }
+});</code></pre>
+
+        <h3>Set at the wire</h3>
+
+        <p>
+          If you're calling <code>POST /holonograph/messages</code> directly, send the mode as a header on every request:
+        </p>
+
+        <pre><code>x-holonograph-run-mode: production</code></pre>
+
+        <p>A missing header is rejected with a 400. This is by design — Holonograph does not guess.</p>
+
+        <h3>Resolve per-request in a web framework</h3>
+
+        <p>
+          Web applications often need to resolve the mode from the incoming request — e.g. a header set by a shadow-traffic proxy, or a query flag distinguishing an internal QA session. Wire this at your framework's middleware layer, before any code path that constructs an <code>HolonographClient</code>:
+        </p>
+
+        <pre><code>// Express example
+app.use((req, _res, next) =&gt; {
+  const shadow = req.header("x-shadow-traffic") === "1";
+  req.holonographRunMode = shadow ? "test" : "production";
+  next();
+});
+
+app.post("/agent", async (req, res) =&gt; {
+  const client = new HolonographClient({
+    endpoint: "http://127.0.0.1:8080",
+    runMode: req.holonographRunMode,
+    lensVersion: "billing-lens/v14",
+    substrate: { /* ... */ }
+  });
+  // …
+});</code></pre>
+
+        <h3>Propagate across async and process boundaries</h3>
+
+        <p>
+          When work crosses a boundary the client can't reach — a queue, a background job, a message bus — carry the mode as W3C Baggage so the receiver can reconstruct it. Two keys:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Baggage key</th><th>Carries</th></tr></thead>
+            <tbody>
+              <tr><td><code>holonograph.runmode</code></td><td>The run mode of the originating request.</td></tr>
+              <tr><td><code>holonograph.correlation-id</code></td><td>The correlation id, so calls on the other side of the boundary bind into the same evaluation.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The receiver extracts both keys from Baggage and constructs its <code>HolonographClient</code> with the run mode it inherited, then passes the correlation id through to <code>messages.create()</code>. See <a href="./sidecar.html">Sidecar / OTel integration</a> for the propagation mechanism.
+        </p>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          <code>run_mode</code> is one of the mandatory substrate columns on every event (see <a href="./substrate-columns.html">Substrate columns</a>) — so every reading you do downstream is already sliceable by mode without any extra work.
+        </p>
+
+        <p>
+          Two default habits keep your reads honest:
+        </p>
+
+        <ul>
+          <li><strong><code>provenance</code> defaults to <code>production-state</code>.</strong> That's what filters non-production modes out of dashboards. If you need them, pass <code>provenance=exploratory-state</code> or <code>provenance=all</code>.</li>
+          <li><strong>Never rely on <code>run_mode</code> as a substitute for side-effect gating.</strong> Modes shape which channel side effects go through, but the guarantee is Holonograph-side. Your agent code should still respect the mode when it exists in scope.</li>
+        </ul>
+
+        <h2>Reference</h2>
+
+        <h3>Fail-closed behavior</h3>
+
+        <p>
+          The daemon rejects any request that arrives without a valid mode. Concretely:
+        </p>
+
+        <ul>
+          <li>Missing <code>x-holonograph-run-mode</code> header → <code>400</code> with an <code>error</code> message indicating the run mode is required.</li>
+          <li>Unknown value (anything outside the five canonical modes) → <code>400</code> with an <code>error</code> message indicating the value is not one of the accepted modes.</li>
+        </ul>
+
+        <p>This is not something you can turn off. It's a property of the daemon, not a policy on top of it.</p>
+
+        <h3>Header</h3>
+
+        <ul>
+          <li><code>x-holonograph-run-mode: production | test | eval | replay | local_dev</code></li>
+        </ul>
+
+        <h3>Baggage keys</h3>
+
+        <ul>
+          <li><code>holonograph.runmode</code> — the run mode.</li>
+          <li><code>holonograph.correlation-id</code> — the correlation id binding calls across the boundary.</li>
+        </ul>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./mediating-lens.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">The mediating lens</span>
+          </a>
+          <a href="./sidecar.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Sidecar / OTel integration</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 07 · Run modes</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>

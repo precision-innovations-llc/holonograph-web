@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>SDK reference — The Guide — Holonograph</title>
+<meta name="description" content="The HolonographClient surface end-to-end — constructor options, the messages.create → handle → reportOutcome flow, contract.register, and availability.mark." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/sdk-reference.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · SDK reference</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li class="current"><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 05</p>
+        <h1 class="guide-h1">SDK reference</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> <code>@holonograph/client</code> <span class="dot">·</span> ~10 min read</p>
+
+        <p class="guide-lede">
+          The <code>HolonographClient</code> is the operator-facing surface end-to-end: one class you construct, one call flow — <code>messages.create → handle → reportOutcome</code> — and two auxiliary namespaces (<code>contract</code>, <code>availability</code>) for shape and gap declarations. This chapter documents every method.
+        </p>
+
+        <h2>Install</h2>
+
+        <pre><code>npm install @holonograph/client
+# or
+pnpm add @holonograph/client
+# or
+yarn add @holonograph/client</code></pre>
+
+        <p>
+          Single self-contained ES module, <strong>no runtime dependencies</strong>. Targets Node 18+ and any runtime with a global <code>fetch</code>. Fully typed — the package ships its own type declarations.
+        </p>
+
+        <h2>Construct a client</h2>
+
+        <pre><code>import { HolonographClient } from "@holonograph/client";
+
+const client = new HolonographClient({
+  endpoint: "http://127.0.0.1:8080",
+  token: process.env.HOLONOGRAPH_TOKEN,
+  runMode: "production",
+  lensVersion: "lv_2026_07_01",
+  substrate: {
+    lensVersion: "lv_2026_07_01",
+    lightSourceIdentifier: "anthropic/claude/4",
+    runMode: "production",
+    provenance: "production",
+    operatorColumns: {}
+  }
+});</code></pre>
+
+        <h3>Constructor options</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Option</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>endpoint</code></td><td>string</td><td>URL where your running Holonograph lens is reachable. The README ships with <code>http://127.0.0.1:8080</code> as its example host.</td></tr>
+              <tr><td><code>token</code></td><td>string (opt)</td><td>Bearer token, when the lens requires one.</td></tr>
+              <tr><td><code>runMode</code></td><td>enum (opt)</td><td>One of the canonical modes (<code>production</code>, <code>test</code>, <code>eval</code>, <code>replay</code>, <code>local_dev</code>). Sent as <code>x-holonograph-run-mode</code> on every request. Can be resolved per-call at request time — see <a href="./run-modes.html">Run modes</a>.</td></tr>
+              <tr><td><code>lensVersion</code></td><td>string</td><td>Identifier of the lens configuration this client should call under. Pinned into every evaluation event this client produces.</td></tr>
+              <tr><td><code>substrate</code></td><td>object</td><td>The <code>SubstrateSnapshot</code> attached to every event. Carries <code>lensVersion</code>, <code>lightSourceIdentifier</code>, <code>runMode</code>, <code>provenance</code>, and <code>operatorColumns</code> — see below.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>The <code>substrate</code> object</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>lensVersion</code></td><td>string</td><td>Which lens configuration was in effect.</td></tr>
+              <tr><td><code>lightSourceIdentifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/model/version</code>.</td></tr>
+              <tr><td><code>runMode</code></td><td>enum</td><td>Which run mode the evaluation ran under.</td></tr>
+              <tr><td><code>provenance</code></td><td>string</td><td>Origin category of the run — see <a href="./substrate-columns.html">Substrate columns</a>.</td></tr>
+              <tr><td><code>operatorColumns</code></td><td>object</td><td>The operator-declared deployment-state columns, keyed by column id. For example: <code>{ prompt_hash: "v2-sha256-…", tool_schema_version: "3.1.0" }</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>The call flow</h2>
+
+        <p>One evaluation is three calls: <code>messages.create</code>, then use <code>.result</code>, then <code>.reportOutcome(...)</code>.</p>
+
+        <pre><code>const handle = await client.messages.create({
+  surfaceId: "classify-intent",
+  messages: [{ role: "user", content: "why was I charged twice?" }],
+  tools: [ /* ... */ ]
+});
+
+const answer = handle.result;             // read/act on the model's response
+const isCorrect = grade(answer);          // your evaluation logic
+
+await handle.reportOutcome({
+  dimensions: [{
+    dimensionId: "correctness",
+    passed: isCorrect,
+    expected: "a correct answer to the user's question",
+    actual: summarize(answer)
+  }],
+  cohortTags: ["customer-tier=enterprise"]
+});</code></pre>
+
+        <p>
+          <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop — it persists the evaluation event that binds this call into your history.
+        </p>
+
+        <h3><code>messages.create(req)</code></h3>
+
+        <p>
+          Every field on the request is optional except <code>surfaceId</code> and <code>messages</code>. The rest are passed through to the model when relevant, or interpreted by the lens.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string (req)</td><td>The surface this call belongs to. Must exist on the active contract.</td></tr>
+              <tr><td><code>messages[]</code></td><td>array (req)</td><td>The conversation turns.</td></tr>
+              <tr><td><code>system</code></td><td>string (opt)</td><td>System prompt.</td></tr>
+              <tr><td><code>systemOverride</code></td><td>string (opt)</td><td>Overrides the system prompt for this call only.</td></tr>
+              <tr><td><code>additionalSkills</code></td><td>string[] (opt)</td><td>Extra skills to inject for this call.</td></tr>
+              <tr><td><code>additionalContextTags</code></td><td>string[] (opt)</td><td>Extra context tags this call should carry.</td></tr>
+              <tr><td><code>lightSourceIdOverride</code></td><td>string (opt)</td><td>Overrides the surface's default routing to a specific vendor.</td></tr>
+              <tr><td><code>maxOutputTokens</code></td><td>number (opt)</td><td>Cap on the model's output length.</td></tr>
+              <tr><td><code>temperature</code></td><td>number (opt)</td><td>Model sampling temperature.</td></tr>
+              <tr><td><code>tools</code></td><td>array (opt)</td><td>Tool declarations for the model to invoke.</td></tr>
+              <tr><td><code>toolChoice</code></td><td>object (opt)</td><td>Which tool the model must invoke, if any.</td></tr>
+              <tr><td><code>cacheControl</code></td><td>object (opt)</td><td>Caching hints for the model provider.</td></tr>
+              <tr><td><code>correlationId</code></td><td>string (opt)</td><td>Pass one in to bind this call to a prior call's correlation. Otherwise generated.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>The call handle</h3>
+
+        <p>The object returned by <code>messages.create()</code>.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Member</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>.result</code></td><td>object</td><td>The primary model's response. Use this as the answer in your agent.</td></tr>
+              <tr><td><code>.observerRecords[]</code></td><td>array</td><td>Under multiplex routing, the observer vendors' captured records. Empty when not multiplexing.</td></tr>
+              <tr><td><code>.reportOutcome(outcome)</code></td><td>method</td><td>Persist the evaluation event that closes this call.</td></tr>
+              <tr><td><code>.gradeObserver(recordOrId, outcome)</code></td><td>method</td><td>Attach grades to a cross-vendor observer call before reporting, when the lens returned observer records. Call this <em>before</em> <code>reportOutcome</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>reportOutcome(outcome)</code></h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>dimensions[]</code></td><td>array (req)</td><td>One entry per dimension declared on the surface. Each entry: <code>{ dimensionId, passed, expected, actual }</code>.</td></tr>
+              <tr><td><code>cohortTags[]</code></td><td>string[] (opt)</td><td>Discrete labels to slice on later. For diagnostic substrate columns, use the <code>&lt;column.id&gt;=&lt;value&gt;</code> form.</td></tr>
+              <tr><td><code>sideEffects[]</code></td><td>array (opt)</td><td>Any downstream actions this call triggered — useful for correlated fixtures and lessons later.</td></tr>
+              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>The fixture this call satisfied, when the call was run as part of a conformance check.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Dimension entry shape</h4>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>dimensionId</code></td><td>string</td><td>Must match a dimension declared on the surface's contract.</td></tr>
+              <tr><td><code>passed</code></td><td>boolean</td><td>Whether the dimension passed the evaluation.</td></tr>
+              <tr><td><code>expected</code></td><td>string</td><td>What good looked like — the expected shape of the response.</td></tr>
+              <tr><td><code>actual</code></td><td>string</td><td>What the model actually produced (or a short summary).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate — one row, four layers bound (see <a href="./snapshot.html">The four-layer snapshot</a>). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+        </p>
+
+        <h3>Multiplex: grade the observers</h3>
+
+        <p>
+          When the surface's contract routes to more than one vendor, the primary's response comes back as <code>handle.result</code> and the observers' captured records come back as <code>handle.observerRecords[]</code>. Grade the observers <em>before</em> <code>reportOutcome</code> so all vendors' outcomes land in the same evaluation.
+        </p>
+
+        <pre><code>for (const rec of handle.observerRecords) {
+  await handle.gradeObserver(rec, {
+    dimensions: [{
+      dimensionId: "correctness",
+      passed: isCorrect(rec.result),
+      expected: "a correct answer to the user's question",
+      actual: summarize(rec.result)
+    }]
+  });
+}
+await handle.reportOutcome({
+  dimensions: [{
+    dimensionId: "correctness",
+    passed: isCorrect(handle.result),
+    expected: "a correct answer to the user's question",
+    actual: summarize(handle.result)
+  }]
+});</code></pre>
+
+        <p>See <a href="./multiplexer.html">The multiplexer</a> for how routings are declared.</p>
+
+        <h2>Contract</h2>
+
+        <h3><code>contract.register(contract)</code></h3>
+
+        <p>
+          Registers or replaces the surface contract for this agent. Returns a <code>ContractSummary</code> reflecting the newly-active shape. See <a href="./surface-contracts.html">Surface contracts</a> for the full contract shape and the summary fields.
+        </p>
+
+        <pre><code>const summary = await client.contract.register({
+  agentId: "billing-triage",
+  surfaces: [ /* ... */ ]
+});
+console.log(summary.surfaces[0].dimensionCount);</code></pre>
+
+        <h2>Availability</h2>
+
+        <h3><code>availability.mark(req, opts?)</code></h3>
+
+        <p>
+          Records that a surface is (or is not) available for evaluation over a given interval. Two modes:
+        </p>
+
+        <ul>
+          <li><strong>Single</strong> — one transition event: "this surface just became unavailable" or "…just came back." Pass <code>mode: "single"</code> with a <code>transition</code>.</li>
+          <li><strong>Paired</strong> — bound an interval you already know the extent of. Pass <code>mode: "paired"</code> with <code>unreachableFrom</code> and <code>unreachableUntil</code>. The response includes a <code>pairing</code> reference so downstream analyses can bracket the interval cleanly.</li>
+        </ul>
+
+        <pre><code>await client.availability.mark({
+  mode: "single",
+  surfaceId: "classify-intent",
+  transition: "unavailable",
+  reason: "vendor-outage"
+});</code></pre>
+
+        <p>Response:</p>
+
+        <pre><code>{ "eventIds": ["evt_..."], "pairing": null }</code></pre>
+
+        <h2>Headers &amp; run mode resolution</h2>
+
+        <p>
+          The client sends two headers on every request:
+        </p>
+
+        <ul>
+          <li><code>Authorization: Bearer &lt;token&gt;</code> — when the client was constructed with a <code>token</code>.</li>
+          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code> — from the client's <code>runMode</code>, unless resolved per-call. A missing mode is rejected by the daemon by design (fail-closed).</li>
+        </ul>
+
+        <p>
+          For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see <a href="./run-modes.html">Run modes</a>.
+        </p>
+
+        <h2>Escape hatch: <code>callDirectly</code></h2>
+
+        <p>
+          For scenarios that need the full request shape — a bespoke bridge, a replay tool, or an integration test that wants to prod an edge of the wire — the client exposes a lower-level <code>callDirectly</code> method that skips the <code>messages.create</code> ergonomics and forwards the request as-authored.
+        </p>
+
+        <pre><code>const result = await client.callDirectly(rawRequest);</code></pre>
+
+        <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is an escape hatch, not the everyday path.</p>
+
+        <h2>Errors</h2>
+
+        <p>Errors from the lens surface as <code>HolonographHttpError</code>, which carries the HTTP status, an error code, and any details the lens returned. There are additional typed error classes for the grading and availability flows so a catch block can discriminate on class.</p>
+
+        <pre><code>import { HolonographClient, HolonographHttpError } from "@holonograph/client";
+
+try {
+  await handle.reportOutcome(outcome);
+} catch (err) {
+  if (err instanceof HolonographHttpError) {
+    console.error(err.status, err.code, err.details);
+  } else {
+    throw err;
+  }
+}</code></pre>
+
+        <p>
+          The underlying wire shape every error carries:
+        </p>
+
+        <pre><code>{
+  "error": "human message",
+  "code": "error_code",
+  "details": { }
+}</code></pre>
+
+        <p>
+          <code>4xx</code> covers validation, auth, and not-found. <code>5xx</code> is internal. <code>501</code> means the feature isn't wired on the given deployment.
+        </p>
+
+        <h2>Advanced: <code>HttpTransport</code></h2>
+
+        <p>
+          The client is built on an <code>HttpTransport</code> primitive that's exported for advanced use — swapping in a custom fetch, adding request interceptors, or running the transport under a different runtime harness. Most integrations never touch it. If yours does, the transport surface is fully typed; the tests in the package are the working reference.
+        </p>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./substrate-columns.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Substrate columns</span>
+          </a>
+          <a href="./mediating-lens.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">The mediating lens</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 05 · SDK reference</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>

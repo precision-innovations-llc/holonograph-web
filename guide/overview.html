@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>Overview &amp; first principles — The Guide — Holonograph</title>
+<meta name="description" content="What Holonograph is, what it observes, and why observation-by-position is different from instrumentation. Capability-level introduction." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="wave" content="1" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/overview.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · Overview</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li class="current"><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 01</p>
+        <h1 class="guide-h1">Overview &amp; first principles<span class="guide-h1-tm" aria-hidden="true">™</span></h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~7 min read</p>
+
+        <p class="guide-lede">
+          Holonograph is the observation layer for agentic AI systems. It sits in the call path between your agent and the language models that drive it, and it captures a structured record of every evaluation your system produces. From that record it tells you two things existing tools cannot: <em>which layer</em> of your system a change came from, and <em>how much</em> of an observed spread is real change versus measurement noise.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          A signed, notarized native binary that runs as a localhost daemon inside your own infrastructure. It ships as a bidirectional gateway at the wire-format boundary between your agent and the model — every request out and every response back passes through the lens.
+        </p>
+
+        <p>
+          Because it owns that boundary, Holonograph can do things a library bolted onto your agent structurally cannot:
+        </p>
+
+        <ul>
+          <li><strong>Record the whole call</strong>, in a shape that stays consistent across vendors and model versions.</li>
+          <li><strong>Multiplex</strong> — run one call against several vendors at once and compare them head-to-head on speed, price, and accuracy — while the agent sees only the primary's reply.</li>
+          <li><strong>Attribute a change</strong> to the layer that produced it: your deployment, the vendor's model, your evaluation configuration, or the model's irreducible noise.</li>
+          <li><strong>Isolate variance</strong> — separate real movement from measurement noise, so you know whether a change is worth acting on.</li>
+          <li><strong>Close the loop</strong> — captured overrides and approvals cluster into drafted corrective artifacts (skills, lessons, fixtures) that ship through a human-approval gate.</li>
+        </ul>
+
+        <p>
+          Every one of those is a capability the operator uses. This Guide teaches you how to use them.
+        </p>
+
+        <h2>Why position, not instrumentation</h2>
+
+        <p>
+          Observability tools for LLM systems have converged on a pattern: sprinkle logging calls through the agent's code, ship traces to a dashboard. That pattern works when the thing you're observing is deterministic. Modern agentic systems built on foundation LLMs are not — the model can be silently re-routed by the vendor behind a stable alias, and the evaluation apparatus is itself an LLM that drifts on its own schedule. Instrumentation inside the agent's code can only see what the agent chose to log, and the log format ages the day the SDK changes.
+        </p>
+
+        <p>
+          Holonograph takes a different premise: <strong>observation is a property of architectural position</strong>. Because the lens sits at the wire boundary, no logging call is required, no SDK version is coupled to the record, and nothing the agent does at the model boundary is structurally invisible. An OpenTelemetry sidecar covers anything that <em>doesn't</em> pass through the lens (async work, message queues), so the practical guarantee is <em>observational completeness</em>: every call is either graded by the lens or captured by the sidecar.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">The bet, restated</span>
+          Modern agentic systems are non-deterministic by construction. The instrument that measures them has to be independent of them, and it has to sit somewhere the agent's code cannot silently break.
+        </div>
+
+        <h2>What comes back</h2>
+
+        <p>
+          Holonograph exposes four operator-facing surfaces. Each is documented in its own chapter, but knowing they exist is what makes the rest of the Guide make sense.
+        </p>
+
+        <h3>1. The four-layer snapshot</h3>
+        <p>
+          The atomic unit Holonograph writes for every evaluation. One record binds the layers of that evaluation — the surface that was called, the model that answered, the outcome you reported, the state of your deployment — into a shape you can query as history.
+        </p>
+
+        <h3>2. Drift attribution</h3>
+        <p>
+          When a score changes over time, drift attribution names one of four sources as the likely cause — <strong>substrate</strong> (your own deployment), <strong>light source</strong> (the vendor moved under you), <strong>lens</strong> (your evaluation configuration changed), or <strong>noise</strong> (the model's irreducible non-determinism). What you do about a change depends on which label it wears; that's the Drift attribution chapter's job to walk through.
+        </p>
+
+        <h3>3. Variance isolation</h3>
+        <p>
+          When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a cleaned reading and a trust signal that tells you whether to act on it. The specifics — how to read it, how to hold one still — are the Variance isolation chapter's job.
+        </p>
+
+        <h3>4. The lessons pipeline</h3>
+        <p>
+          Captured overrides (a human edited a draft) and approvals (a human sent it as-is) cluster together. The system drafts a concrete corrective artifact for each cluster — a new skill, lesson, fixture, or code-change recommendation — and nothing ships without a named approver at the gate. Once published, the artifact becomes substrate: versioned, captured, and attributable in future drift readings like any other change.
+        </p>
+
+        <h2>What Holonograph is not</h2>
+
+        <p>Holonograph is frequently confused with adjacent tools. It is none of these:</p>
+
+        <ul>
+          <li><strong>Not concept-drift detection</strong> — that field assumes a deterministic model and a measurable shift in input data. Holonograph addresses non-deterministic foundation LLMs where the model itself can be silently re-routed by the vendor.</li>
+          <li><strong>Not feature attribution</strong> — SHAP, LIME, and integrated gradients attribute a single output to its input features. Holonograph attributes <em>pass-rate changes over time</em> to one of four sources of change.</li>
+          <li><strong>Not an MLOps dashboard</strong> — not a tracing system, not a model registry, not a metrics platform. Holonograph composes on top of OpenTelemetry; the novel layer is the versioned lens and the attribution it enables.</li>
+          <li><strong>Not LLM-as-judge</strong> — conventional LLM-as-judge treats the judge as a fixed measuring stick. Holonograph treats the judge itself as a first-class versioned instrument whose drift is independently attributable.</li>
+          <li><strong>Not a fine-tuning pipeline</strong> — the lessons pipeline produces operator-curated artifacts that ship through a human-approval gate. It does not adjust model weights.</li>
+          <li><strong>Not SaaS</strong> — a signed, notarized native binary that runs as a localhost daemon. Data never leaves your infrastructure.</li>
+        </ul>
+
+        <h2>How to read this Guide</h2>
+
+        <p>
+          One spine of pages, four depths. Every chapter follows the same internal shape — <em>What it is</em>, <em>Why it matters</em>, <em>How to use it</em>, <em>Reading the output</em>, <em>Reference</em> — so a CTO can read only the first two sections of a chapter and leave informed, while a developer working from the same page can jump straight to <em>How to use it</em> and go.
+        </p>
+
+        <p>
+          The audience router on the <a href="./">index page</a> points each role at its entry point. If in doubt, follow the developer path — every other role can skim from there.
+        </p>
+
+        <h2>Where the wall is</h2>
+
+        <p>
+          The Guide teaches you to <strong>operate the instrument</strong>. It does not teach you to <strong>rebuild it</strong>. The line already exists in the software: the SDK exposes a contract (call this, get that back) and hides the mechanism behind it. This Guide documents the contract.
+        </p>
+
+        <p>
+          Concretely: the underlying method is deliberately absent from these pages. If you are a researcher trying to evaluate the method rather than the product, the shortest path is <a href="../#request-a-pilot">to talk to us</a> — deeper technical validation is available under NDA, and the product itself is designed to run in your own environment against your own workload, so nothing about the evaluation happens on our infrastructure.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">If you notice something missing</span>
+          Some capabilities the Guide describes will name a return field, a verdict label, or a workflow — and stop there. That's intentional. When the honest answer is "operate this, don't reconstruct it," the Guide gives you the handle and leaves the rest inside the binary.
+        </div>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./" class="nav-prev">
+            <span class="nav-label">Back to</span>
+            <span class="nav-title">All chapters</span>
+          </a>
+          <a href="./surface-contracts.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Surface contracts</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 01 · Overview</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>

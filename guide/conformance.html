@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>Conformance &amp; fixtures — The Guide — Holonograph</title>
+<meta name="description" content="Turn a capability surface — tools plus prose rules — into reproducible, mechanically-checkable fixtures. Derive candidates, approve fixtures, run checks." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/conformance.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · Conformance &amp; fixtures</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li class="current"><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 10</p>
+        <h1 class="guide-h1">Conformance &amp; fixtures</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~9 min read</p>
+
+        <p class="guide-lede">
+          A capability surface is what you say your agent can do — the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is <em>derive → approve → check</em>.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          Three moving pieces:
+        </p>
+
+        <ul>
+          <li><strong>The derive step</strong> reads a capability surface (its tool declarations and prose rules) and proposes candidate fixtures — one per rule, each with the strongest assertion the rule allows.</li>
+          <li><strong>The fixtures step</strong> is the human-in-the-loop approval gate. A named approver reviews the candidates, edits or discards, and commits the ones they trust. Nothing runs as a check until it's approved.</li>
+          <li><strong>The check step</strong> runs the approved fixtures against real events over a window and returns a verdict per fixture plus a summary.</li>
+        </ul>
+
+        <h3>Enforceability taxonomy</h3>
+
+        <p>
+          Not every rule can be checked mechanically. The derive step labels each candidate with one of three enforceability categories, so the coverage report is honest about which rules the machine can actually hold you to:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Label</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>trace-enforceable</code></td><td>The rule maps to a deterministic check on the captured trace — tool invocation, marker presence, output field.</td></tr>
+              <tr><td><code>judge-required</code></td><td>The rule can only be evaluated by a graded judgment call — an LLM judge running against the event.</td></tr>
+              <tr><td><code>unenforceable</code></td><td>The rule is worth stating but can't be mechanically checked at all (e.g. "be polite"). Recorded for completeness; produces no assertion.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          A prose rule that can't be checked is a rule the system will drift on. Conformance moves rules from "our team believes this" to "the last check confirmed this at 06:00 Tuesday" — the coverage report tells you exactly how many of the surface's rules you have mechanical accountability for, and the needs-repair panel tells you which ones the derive step couldn't formalize on its own.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <h3>1. Derive candidates from the surface</h3>
+
+        <p>
+          Send the capability surface — its tools and its rules — and get back a set of candidate fixtures with per-rule enforceability labels.
+        </p>
+
+        <pre><code>POST /lens/conformance/derive
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "tools": [ /* tool declarations */ ],
+  "rules": [
+    "If the user asks for a refund, invoke the refund_lookup tool before responding.",
+    "Never quote a specific dollar amount unless refund_lookup returned one.",
+    "Be polite."
+  ]
+}</code></pre>
+
+        <p>
+          The response gives you the candidates, a coverage summary (e.g. "2 of 3 rules mechanically enforceable"), and a needs-repair list for rules the derive step could not fully formalize.
+        </p>
+
+        <h3>2. Review and approve</h3>
+
+        <p>
+          Each candidate is a JSON fixture describing an assertion (or a set of assertions, guarded by a <code>when</code> predicate). Review the derived shape, edit if needed, and submit each approved fixture with an <code>approverId</code>.
+        </p>
+
+        <pre><code>POST /lens/conformance/fixtures
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "approverId": "brian",
+  "sourceSurfaceId": "classify-intent",
+  "fixture": {
+    "fixtureId": "refund-requires-lookup",
+    "ruleId": "billing-triage-refund-flow-01",
+    "ruleSource": "Refund rules v3",
+    "description": "If the user asks for a refund, refund_lookup must be invoked before responding.",
+    "enforceability": "trace-enforceable",
+    "appliesTo": { "surfaceId": "classify-intent" },
+    "when": [{ "kind": "marker-contains", "value": "refund" }],
+    "assertion": { "kind": "tool-invoked", "tool": "refund_lookup" }
+  }
+}</code></pre>
+
+        <p>Response: an <code>eventId</code> for the approval event. The fixture is now live in the store and will be picked up by subsequent checks.</p>
+
+        <h3>3. Run a check</h3>
+
+        <p>Point the checker at either an inline fixture or a stored one, plus a window and a surface filter.</p>
+
+        <pre><code>POST /lens/conformance/check
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "fixtureId": "refund-requires-lookup",
+  "surfaceId": "classify-intent",
+  "since": "2026-07-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z"
+}</code></pre>
+
+        <p>The response includes a top-level <code>verdict</code>, a per-event breakdown, the count of events checked, and the window actually used.</p>
+
+        <h2>Reading the output</h2>
+
+        <h3>Assertion kinds</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Kind</th><th>Passes when</th></tr></thead>
+            <tbody>
+              <tr><td><code>marker-contains</code></td><td>The captured output contains the given value.</td></tr>
+              <tr><td><code>marker-not-contains</code></td><td>The captured output does not contain the given value.</td></tr>
+              <tr><td><code>marker-present</code></td><td>A named marker field is present on the event.</td></tr>
+              <tr><td><code>marker-absent</code></td><td>A named marker field is absent from the event.</td></tr>
+              <tr><td><code>tool-invoked</code></td><td>The named tool was invoked during the call.</td></tr>
+              <tr><td><code>tool-not-invoked</code></td><td>The named tool was NOT invoked during the call.</td></tr>
+              <tr><td><code>judge</code></td><td>An LLM judge is invoked and returns a pass/fail verdict against the event.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Guarded assertions</h3>
+
+        <p>
+          A fixture can carry a <code>when</code> predicate that decides whether the assertions apply to a given event. The predicate uses the same assertion kinds as the assertions themselves. If <code>when</code> is absent, the assertions apply to every event in the window.
+        </p>
+
+        <pre><code>{
+  "fixtureId": "no-dollar-figures-without-lookup",
+  "when": [{ "kind": "marker-not-contains", "value": "refund_lookup" }],
+  "assertion": { "kind": "marker-not-contains", "value": "$" }
+}</code></pre>
+
+        <p>An event that fails the <code>when</code> predicate returns <code>not-applicable</code> for this fixture instead of pass/fail.</p>
+
+        <h3>Verdict precedence</h3>
+
+        <p>
+          When multiple assertions run against one event, the overall event verdict is the strongest of the individual assertion verdicts, in this order:
+        </p>
+
+        <ol>
+          <li><code>fail</code> — one assertion definitively failed.</li>
+          <li><code>pass</code> — at least one assertion passed and none failed.</li>
+          <li><code>requires-judge</code> — a <code>judge</code> assertion needs to be run before the verdict is complete.</li>
+          <li><code>unevaluable</code> — the event was missing the shape needed to run the assertion at all.</li>
+          <li><code>not-applicable</code> — the <code>when</code> guard filtered this event out.</li>
+        </ol>
+
+        <p>The check's top-level verdict is the strongest across events, using the same precedence.</p>
+
+        <h3>Coverage report</h3>
+
+        <p>The derive response's coverage summary is the honest headline: <em>K of N rules are mechanically enforceable</em>. It's the number to track over time — as your rules mature and the derive step's classifier improves, the ratio should climb. What it can't yet cover ends up in the needs-repair panel.</p>
+
+        <h3>Needs-repair panel</h3>
+
+        <p>
+          A rule ends up in <code>needsRepair</code> when the derive step couldn't turn it into a check on its own — usually because the rule is ambiguous, or references a system state the fixture format doesn't reach yet. Two ways to clear the entry: rephrase the rule so the derive step can formalize it, or hand-author a fixture and approve it directly.
+        </p>
+
+        <h2>Reference</h2>
+
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/conformance/derive</code></td><td>Propose candidate fixtures from a capability surface.</td></tr>
+              <tr><td><code>POST /lens/conformance/fixtures</code></td><td>Approve a fixture (name an <code>approverId</code>).</td></tr>
+              <tr><td><code>POST /lens/conformance/check</code></td><td>Run one or more fixtures against events in a window.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>POST /lens/conformance/derive</code> — response fields</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string</td><td>Echo of the surface.</td></tr>
+              <tr><td><code>candidates[]</code></td><td>array</td><td>Proposed fixtures, one per rule that could be formalized.</td></tr>
+              <tr><td><code>coverage</code></td><td>object</td><td>"K of N rules mechanically enforceable" summary.</td></tr>
+              <tr><td><code>needsRepair[]</code></td><td>array</td><td>Rules the derive step could not formalize.</td></tr>
+              <tr><td><code>droppedCount</code></td><td>number</td><td>Count of rules discarded outright (empty, duplicate, or unenforceable in a way the format can't record).</td></tr>
+              <tr><td><code>readBy</code></td><td>string</td><td>The identifier of the derive-step version that produced this output.</td></tr>
+              <tr><td><code>clerkResponseIssue</code></td><td>object (opt)</td><td>Present when the derive step's own output had a shape problem worth surfacing.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>POST /lens/conformance/check</code> — request &amp; response</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>fixture</code></td><td>object (opt)</td><td>Inline fixture. One of <code>fixture</code> or <code>fixtureId</code> is required.</td></tr>
+              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>Stored fixture to run.</td></tr>
+              <tr><td><code>surfaceId</code></td><td>string (opt)</td><td>Restrict the check to one surface.</td></tr>
+              <tr><td><code>provenance</code></td><td>enum (opt)</td><td>Default <code>all</code>. Same values as <a href="./snapshot.html">GET /lens/events</a>.</td></tr>
+              <tr><td><code>since</code>, <code>until</code></td><td>ISO 8601 (opt)</td><td>Window bounds.</td></tr>
+              <tr><td><code>limit</code></td><td>number (opt)</td><td>Cap on events considered. Default 1000.</td></tr>
+              <tr><td><code>verdict</code></td><td>enum</td><td>Top-level: <code>pass</code>, <code>fail</code>, <code>requires-judge</code>, <code>unevaluable</code>, <code>not-applicable</code>.</td></tr>
+              <tr><td><code>verdictDetails[]</code></td><td>array</td><td>Per-event breakdown.</td></tr>
+              <tr><td><code>checkedEventCount</code></td><td>number</td><td>How many events were actually evaluated.</td></tr>
+              <tr><td><code>window</code></td><td>object</td><td>The actual window used (may differ from request when bounds were open).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./topology-scanner.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Surface topology scanner</span>
+          </a>
+          <a href="./multiplexer.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">The multiplexer</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 10 · Conformance &amp; fixtures</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>

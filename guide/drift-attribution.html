@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>Drift attribution — The Guide — Holonograph</title>
+<meta name="description" content="When a score changes over time, drift attribution names which of four sources the change came from — substrate, light source, lens, or noise — and what to do about each." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.23.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="true" />
+<meta name="signed-off-by" content="Brian Kerrigan — 2026-07-06" />
+<link rel="canonical" href="https://holonograph.ai/guide/drift-attribution.html" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./_assets/guide.css" />
+</head>
+<body>
+  <header class="guide-topbar">
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <span class="guide-topbar-sep">/</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · Drift attribution</span>
+    <span class="guide-topbar-right">
+      <span class="guide-version">v0.23.0</span>
+      <a href="./" class="guide-back-link">all chapters</a>
+    </span>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
+        <li class="current"><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 13</p>
+        <h1 class="guide-h1">Drift attribution</h1>
+        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+
+        <p class="guide-lede">
+          When a score changes over time, drift attribution tells you <em>which layer</em> of your system the change came from. It answers the question every operator asks after a moved number: <em>is this us, or is this the vendor, or is this our evaluation, or is this just noise?</em>
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          A per-surface analysis over a window that returns a <strong>timeline of change points</strong>. Each change point carries three things: the timestamp of the shift, one of four <strong>source labels</strong>, and the window over which the analysis is confident about that label.
+        </p>
+
+        <p>The four source labels are the same four sources of drift the four-layer snapshot separates at capture time:</p>
+
+        <ul>
+          <li><strong>substrate</strong> — your own deployment</li>
+          <li><strong>light source</strong> — the vendor moved under you</li>
+          <li><strong>lens</strong> — your evaluation configuration changed</li>
+          <li><strong>noise</strong> — the model's irreducible non-determinism</li>
+        </ul>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          Without attribution, a score move is a mystery — the operator has to guess at the cause, and every guess pulls the team in a different direction. With attribution, the same score move is a labeled event with a first suggestion for what to do next. The whole point is to route the response to the layer that can act on it.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <p>Point the analysis at a surface and a window:</p>
+
+        <pre><code>POST /lens/attribute
+Authorization: Bearer &lt;token&gt;
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "since": "2026-06-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z",
+  "bucket": "day",
+  "changePointDeltaThreshold": 0.15
+}</code></pre>
+
+        <p>The response is the timeline plus a couple of companion arrays:</p>
+
+        <pre><code>{
+  "surfaceId": "classify-intent",
+  "eventCount": 12483,
+  "changePoints": [
+    {
+      "timestamp": "2026-06-14T09:20:00Z",
+      "source": "light source",
+      "window": { "from": "2026-06-12T00:00:00Z", "to": "2026-06-15T00:00:00Z" }
+    }
+  ],
+  "bracketedWindows": [ /* companion windows the analysis wants you to know about before acting */ ]
+}</code></pre>
+
+        <p><code>bucket</code> controls the temporal resolution of the timeline. <code>changePointDeltaThreshold</code> is a sensitivity knob: <em>higher = fewer points</em>. Both are optional; the defaults are usually what you want.</p>
+
+        <h2>Reading the output</h2>
+
+        <p>Every change point comes with one of the four source labels. Do this with each:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Label</th><th>What it means</th><th>What to do</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>substrate</code></td>
+                <td>The change tracks something you changed about your deployment.</td>
+                <td>Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your substrate columns (Chapter 04) are where you look first.</td>
+              </tr>
+              <tr>
+                <td><code>light source</code></td>
+                <td>The vendor moved under you — a model was silently re-routed, updated, or its behavior shifted.</td>
+                <td>Check <code>light_source_identifier</code> across the window. If it's stable and the behavior still moved, the vendor changed the model behind an unchanged name.</td>
+              </tr>
+              <tr>
+                <td><code>lens</code></td>
+                <td>Your evaluation configuration changed.</td>
+                <td>Check the lens version history. A new lens version around the change point means you're seeing the apparatus move, not the system.</td>
+              </tr>
+              <tr>
+                <td><code>noise</code></td>
+                <td>The model's irreducible non-determinism dominates this window.</td>
+                <td>Gather more data before acting. A noise-labeled change point is a signal to widen the window, not a signal to ship a fix.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The <code>bracketedWindows</code> array holds companion windows the analysis wants you to see before acting on a source label — periods where the timeline is less confident than usual. Read those first when a change point lands adjacent to one.
+        </p>
+
+        <h3>Working through a report</h3>
+
+        <p>The usual cadence: run the analysis over a window that ends at "yesterday," then walk the change points in order. Each label sends you to a different place — your deploy log, the vendor's changelog, your lens history — and the labeled window tells you where to look. Once every point has an action (or a decision not to act), the report is done.</p>
+
+        <h2>Reference</h2>
+
+        <h3>Endpoint</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/attribute</code></td><td>Run drift attribution over a window.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Request</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string (req)</td><td>The surface to analyze.</td></tr>
+              <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on events considered.</td></tr>
+              <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound.</td></tr>
+              <tr><td><code>bucket</code></td><td>enum (opt)</td><td><code>day</code>, <code>hour</code>, <code>minute</code>. Temporal resolution of the timeline.</td></tr>
+              <tr><td><code>changePointDeltaThreshold</code></td><td>number 0–1 (opt)</td><td>Sensitivity. Higher = fewer change points.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Response</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string</td><td>Echo of the surface.</td></tr>
+              <tr><td><code>eventCount</code></td><td>number</td><td>How many events were considered.</td></tr>
+              <tr><td><code>changePoints[]</code></td><td>array</td><td>Timeline of change points; each has <code>timestamp</code>, <code>source</code> label, and <code>window</code>.</td></tr>
+              <tr><td><code>bracketedWindows[]</code></td><td>array</td><td>Companion windows worth reading before acting on nearby change points.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./lessons-pipeline.html" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">The lessons pipeline</span>
+          </a>
+          <a href="./variance-isolation.html" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Variance isolation</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 13 · Drift attribution</span>
+    <span>Patent pending · v0.23.0</span>
+  </footer>
+</body>
+</html>
