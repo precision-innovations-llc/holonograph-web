@@ -172,7 +172,7 @@ Holonograph itself is a patent-pending commercial product of Precision Innovatio
 
 ### Where can I read more?
 
-Full documentation is in *The Guide Mark II* (coming soon). The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
+Full operator documentation lives at https://holonograph.ai/guide/ — fourteen chapters across three arcs (integration, workflow, attribution), capability-only by design. The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
 
 ---
 
