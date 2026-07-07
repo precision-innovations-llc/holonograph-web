@@ -712,17 +712,18 @@
     opacity: 1;
   }
   @media (max-width: 760px) {
-    .topnav { top: 56px; gap: 3px; z-index: 12; }
+    .topnav { top: 62px; gap: 5px; z-index: 12; }
     .topnav-link {
-      font-size: 10px;
-      letter-spacing: 0.12em;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      padding: 3px 0;               /* larger tap target */
       color: #ffffff;               /* bright on mobile — the cube competes for contrast */
     }
   }
   @media (max-width: 440px) {
-    /* Keep nav visible on phones — readability bars handle the contrast. */
-    .topnav { top: 50px; gap: 2px; }
-    .topnav-link { font-size: 9.5px; letter-spacing: 0.10em; }
+    /* Phones — same font-size floor, slightly tighter but still finger-friendly. */
+    .topnav { top: 56px; gap: 4px; }
+    .topnav-link { font-size: 12px; letter-spacing: 0.14em; padding: 3px 0; }
   }
 
   /* ---------- bottom-left hero CTAs (Request a pilot · Read the Guide) ---------- */
@@ -766,13 +767,22 @@
     text-transform: lowercase;
   }
   @media (max-width: 760px) {
-    .hero-cta { bottom: 60px; gap: 3px; z-index: 12; }
-    .hero-cta-link { font-size: 10px; letter-spacing: 0.12em; }
+    /* Match the topnav treatment on mobile — same font, same tap-target padding,
+       tight gap so the two CTAs read as a pair. */
+    .hero-cta { bottom: 60px; gap: 5px; z-index: 12; }
+    .hero-cta-link { font-size: 13px; letter-spacing: 0.16em; padding: 3px 0; }
   }
   @media (max-width: 440px) {
     /* Keep CTAs visible on phones — readability bars handle the contrast. */
-    .hero-cta { bottom: 52px; gap: 2px; }
-    .hero-cta-link { font-size: 9.5px; letter-spacing: 0.10em; }
+    .hero-cta { bottom: 52px; gap: 4px; }
+    .hero-cta-link { font-size: 12px; letter-spacing: 0.14em; padding: 3px 0; }
+  }
+
+  /* Accent colon in "The Guide: Mark II" hero CTA — matches the modal's
+     `.guide-colon` treatment (accent-magenta punctuation). */
+  .hero-cta-colon {
+    color: var(--accent-magenta);
+    opacity: 0.9;
   }
 
   /* ---------- footer social icons ---------- */
@@ -1836,7 +1846,7 @@
     <!-- Hero CTAs — sit just above the footer line so they're findable without dominating the cube. -->
     <div class="hero-cta" id="heroCta">
       <button type="button" class="hero-cta-link hero-cta-link--primary" data-open-contact aria-label="Request a pilot">Request a pilot</button>
-      <button type="button" class="hero-cta-link" data-section-by-title="The Guide Mark II" aria-label="The Guide Mark II">The Guide Mark II</button>
+      <button type="button" class="hero-cta-link" data-section-by-title="The Guide Mark II" aria-label="The Guide: Mark II">The Guide<span class="hero-cta-colon">:</span> Mark II</button>
     </div>
 
     <footer class="bottom">
@@ -2168,6 +2178,6 @@
       if (!c || !c.classList.contains("ready")) document.documentElement.classList.add("no-webgl");
     }, 10000);
   </script>
-  <script type="module" src="./holon.js?v=40"></script>
+  <script type="module" src="./holon.js?v=41"></script>
 </body>
 </html>

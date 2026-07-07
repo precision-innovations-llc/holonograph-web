@@ -58,7 +58,7 @@
         <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~9 min read</p>
 
         <p class="guide-lede">
-          A capability surface is what you say your agent can do — the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is <em>derive → approve → check</em>.
+          A capability surface is what you say your agent can do: the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is <em>derive → approve → check</em>.
         </p>
 
         <h2>What it is</h2>
@@ -68,7 +68,7 @@
         </p>
 
         <ul>
-          <li><strong>The derive step</strong> reads a capability surface (its tool declarations and prose rules) and proposes candidate fixtures — one per rule, each with the strongest assertion the rule allows.</li>
+          <li><strong>The derive step</strong> reads a capability surface (its tool declarations and prose rules) and proposes candidate fixtures, one per rule, each with the strongest assertion the rule allows.</li>
           <li><strong>The fixtures step</strong> is the human-in-the-loop approval gate. A named approver reviews the candidates, edits or discards, and commits the ones they trust. Nothing runs as a check until it's approved.</li>
           <li><strong>The check step</strong> runs the approved fixtures against real events over a window and returns a verdict per fixture plus a summary.</li>
         </ul>
@@ -83,8 +83,8 @@
           <table class="guide-table">
             <thead><tr><th>Label</th><th>Meaning</th></tr></thead>
             <tbody>
-              <tr><td><code>trace-enforceable</code></td><td>The rule maps to a deterministic check on the captured trace — tool invocation, marker presence, output field.</td></tr>
-              <tr><td><code>judge-required</code></td><td>The rule can only be evaluated by a graded judgment call — an LLM judge running against the event.</td></tr>
+              <tr><td><code>trace-enforceable</code></td><td>The rule maps to a deterministic check on the captured trace: tool invocation, marker presence, output field.</td></tr>
+              <tr><td><code>judge-required</code></td><td>The rule can only be evaluated by a graded judgment call: an LLM judge running against the event.</td></tr>
               <tr><td><code>unenforceable</code></td><td>The rule is worth stating but can't be mechanically checked at all (e.g. "be polite"). Recorded for completeness; produces no assertion.</td></tr>
             </tbody>
           </table>
@@ -93,7 +93,7 @@
         <h2>Why it matters</h2>
 
         <p>
-          A prose rule that can't be checked is a rule the system will drift on. Conformance moves rules from "our team believes this" to "the last check confirmed this at 06:00 Tuesday" — the coverage report tells you exactly how many of the surface's rules you have mechanical accountability for, and the needs-repair panel tells you which ones the derive step couldn't formalize on its own.
+          A prose rule that can't be checked is a rule the system will drift on. Conformance moves rules from "our team believes this" to "the last check confirmed this at 06:00 Tuesday". The coverage report tells you exactly how many of the surface's rules you have mechanical accountability for, and the needs-repair panel tells you which ones the derive step couldn't formalize on its own.
         </p>
 
         <h2>How to use it</h2>
@@ -101,7 +101,7 @@
         <h3>1. Derive candidates from the surface</h3>
 
         <p>
-          Send the capability surface — its tools and its rules — and get back a set of candidate fixtures with per-rule enforceability labels.
+          Send the capability surface (its tools and its rules) and get back a set of candidate fixtures with per-rule enforceability labels.
         </p>
 
         <pre><code>POST /lens/conformance/derive
@@ -206,23 +206,23 @@ Content-Type: application/json
         </p>
 
         <ol>
-          <li><code>fail</code> — one assertion definitively failed.</li>
-          <li><code>pass</code> — at least one assertion passed and none failed.</li>
-          <li><code>requires-judge</code> — a <code>judge</code> assertion needs to be run before the verdict is complete.</li>
-          <li><code>unevaluable</code> — the event was missing the shape needed to run the assertion at all.</li>
-          <li><code>not-applicable</code> — the <code>when</code> guard filtered this event out.</li>
+          <li><code>fail</code>: one assertion definitively failed.</li>
+          <li><code>pass</code>: at least one assertion passed and none failed.</li>
+          <li><code>requires-judge</code>: a <code>judge</code> assertion needs to be run before the verdict is complete.</li>
+          <li><code>unevaluable</code>: the event was missing the shape needed to run the assertion at all.</li>
+          <li><code>not-applicable</code>: the <code>when</code> guard filtered this event out.</li>
         </ol>
 
         <p>The check's top-level verdict is the strongest across events, using the same precedence.</p>
 
         <h3>Coverage report</h3>
 
-        <p>The derive response's coverage summary is the honest headline: <em>K of N rules are mechanically enforceable</em>. It's the number to track over time — as your rules mature and the derive step's classifier improves, the ratio should climb. What it can't yet cover ends up in the needs-repair panel.</p>
+        <p>The derive response's coverage summary is the honest headline: <em>K of N rules are mechanically enforceable</em>. It's the number to track over time. As your rules mature and the derive step's classifier improves, the ratio should climb. What it can't yet cover ends up in the needs-repair panel.</p>
 
         <h3>Needs-repair panel</h3>
 
         <p>
-          A rule ends up in <code>needsRepair</code> when the derive step couldn't turn it into a check on its own — usually because the rule is ambiguous, or references a system state the fixture format doesn't reach yet. Two ways to clear the entry: rephrase the rule so the derive step can formalize it, or hand-author a fixture and approve it directly.
+          A rule ends up in <code>needsRepair</code> when the derive step couldn't turn it into a check on its own, usually because the rule is ambiguous, or references a system state the fixture format doesn't reach yet. Two ways to clear the entry: rephrase the rule so the derive step can formalize it, or hand-author a fixture and approve it directly.
         </p>
 
         <h2>Reference</h2>
@@ -240,7 +240,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/conformance/derive</code> — response fields</h3>
+        <h3><code>POST /lens/conformance/derive</code>: response fields</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -257,7 +257,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/conformance/check</code> — request &amp; response</h3>
+        <h3><code>POST /lens/conformance/check</code>: request &amp; response</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">

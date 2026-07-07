@@ -59,13 +59,13 @@
         <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~7 min read</p>
 
         <p class="guide-lede">
-          When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a <strong>cleaned</strong> reading: how much of the spread reflects your system versus measurement noise — plus a verdict that tells you whether to trust the reading yet.
+          When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a <strong>cleaned</strong> reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
         </p>
 
         <h2>What it is</h2>
 
         <p>
-          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the load-bearing output — it tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
+          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
         </p>
 
         <h2>What you get</h2>
@@ -85,7 +85,7 @@
         </div>
 
         <p>
-          The verdict is what decides whether the number is worth acting on. A <code>viable</code> reading is the one you use; the other three are diagnostic — each names <em>why</em> the reading isn't ready and <em>what</em> would fix it.
+          The verdict is what decides whether the number is worth acting on. A <code>viable</code> reading is the one you use; the other three are diagnostic. Each names <em>why</em> the reading isn't ready and <em>what</em> would fix it.
         </p>
 
         <h2>How to run it</h2>
@@ -149,7 +149,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <p>The lifecycle response returns the persisted status alongside the original <code>targetEventId</code>. Governance decisions are themselves substrate events — they become part of the record, attributable in future drift readings like any other change.</p>
+        <p>The lifecycle response returns the persisted status alongside the original <code>targetEventId</code>. Governance decisions are themselves substrate events. They become part of the record, attributable in future drift readings like any other change.</p>
 
         <h2>What to do with each verdict</h2>
 
@@ -167,7 +167,7 @@ Content-Type: application/json
               </tr>
               <tr>
                 <td><code>contaminated</code></td>
-                <td>The inputs weren't held constant enough to trust the reading. Re-run under controlled conditions — a replay through the surface at a fixed input panel is the usual fix.</td>
+                <td>The inputs weren't held constant enough to trust the reading. Re-run under controlled conditions. A replay through the surface at a fixed input panel is the usual fix.</td>
               </tr>
               <tr>
                 <td><code>instrument-limited</code></td>
@@ -192,7 +192,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/decomposeVariance</code> — request</h3>
+        <h3><code>POST /lens/decomposeVariance</code>: request</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -206,7 +206,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/decomposition/lifecycle</code> — request</h3>
+        <h3><code>POST /lens/decomposition/lifecycle</code>: request</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">

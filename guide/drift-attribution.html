@@ -71,16 +71,16 @@
         <p>The four source labels are the same four sources of drift the four-layer snapshot separates at capture time:</p>
 
         <ul>
-          <li><strong>substrate</strong> — your own deployment</li>
-          <li><strong>light source</strong> — the vendor moved under you</li>
-          <li><strong>lens</strong> — your evaluation configuration changed</li>
-          <li><strong>noise</strong> — the model's irreducible non-determinism</li>
+          <li><strong>substrate</strong>: your own deployment</li>
+          <li><strong>light source</strong>: the vendor moved under you</li>
+          <li><strong>lens</strong>: your evaluation configuration changed</li>
+          <li><strong>noise</strong>: the model's irreducible non-determinism</li>
         </ul>
 
         <h2>Why it matters</h2>
 
         <p>
-          Without attribution, a score move is a mystery — the operator has to guess at the cause, and every guess pulls the team in a different direction. With attribution, the same score move is a labeled event with a first suggestion for what to do next. The whole point is to route the response to the layer that can act on it.
+          Without attribution, a score move is a mystery. The operator has to guess at the cause, and every guess pulls the team in a different direction. With attribution, the same score move is a labeled event with a first suggestion for what to do next. The whole point is to route the response to the layer that can act on it.
         </p>
 
         <h2>How to use it</h2>
@@ -132,7 +132,7 @@ Content-Type: application/json
               </tr>
               <tr>
                 <td><code>light source</code></td>
-                <td>The vendor moved under you — a model was silently re-routed, updated, or its behavior shifted.</td>
+                <td>The vendor moved under you: a model was silently re-routed, updated, or its behavior shifted.</td>
                 <td>Check <code>light_source_identifier</code> across the window. If it's stable and the behavior still moved, the vendor changed the model behind an unchanged name.</td>
               </tr>
               <tr>
@@ -150,12 +150,12 @@ Content-Type: application/json
         </div>
 
         <p>
-          The <code>bracketedWindows</code> array holds companion windows the analysis wants you to see before acting on a source label — periods where the timeline is less confident than usual. Read those first when a change point lands adjacent to one.
+          The <code>bracketedWindows</code> array holds companion windows the analysis wants you to see before acting on a source label: periods where the timeline is less confident than usual. Read those first when a change point lands adjacent to one.
         </p>
 
         <h3>Working through a report</h3>
 
-        <p>The usual cadence: run the analysis over a window that ends at "yesterday," then walk the change points in order. Each label sends you to a different place — your deploy log, the vendor's changelog, your lens history — and the labeled window tells you where to look. Once every point has an action (or a decision not to act), the report is done.</p>
+        <p>The usual cadence: run the analysis over a window that ends at "yesterday," then walk the change points in order. Each label sends you to a different place (your deploy log, the vendor's changelog, your lens history), and the labeled window tells you where to look. Once every point has an action (or a decision not to act), the report is done.</p>
 
         <h2>Reference</h2>
 

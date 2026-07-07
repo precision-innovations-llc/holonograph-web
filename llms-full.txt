@@ -172,14 +172,49 @@ Holonograph itself is a patent-pending commercial product of Precision Innovatio
 
 ### Where can I read more?
 
-Full documentation is in *The Guide Mark II* (coming soon). The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
+Full operator documentation lives at https://holonograph.ai/guide/ — fourteen chapters across three arcs (integration, workflow, attribution), capability-only by design. The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
 
 ---
+
+## The Guide
+
+The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface — how to call the lens, declare surfaces, populate substrate columns, and read attribution. Fourteen chapters across three arcs: integration (how to wire the lens in), workflow (day-to-day operation), and attribution (the analyses that answer *which layer changed?* and *how much of this movement is real?*).
+
+- Overview & first principles: https://holonograph.ai/guide/overview.html
+- Surface contracts: https://holonograph.ai/guide/surface-contracts.html
+- The four-layer snapshot: https://holonograph.ai/guide/snapshot.html
+- Substrate columns: https://holonograph.ai/guide/substrate-columns.html
+- SDK reference: https://holonograph.ai/guide/sdk-reference.html
+- The mediating lens — placement & call flow: https://holonograph.ai/guide/mediating-lens.html
+- Run modes: https://holonograph.ai/guide/run-modes.html
+- Sidecar / OTel integration: https://holonograph.ai/guide/sidecar.html
+- Surface topology scanner: https://holonograph.ai/guide/topology-scanner.html
+- Conformance & fixtures: https://holonograph.ai/guide/conformance.html
+- The multiplexer: https://holonograph.ai/guide/multiplexer.html
+- The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline.html
+- Drift attribution: https://holonograph.ai/guide/drift-attribution.html
+- Variance isolation: https://holonograph.ai/guide/variance-isolation.html
+
+The Guide is capability-only by design. It documents *what* the operator does with each feature — the endpoints, the SDK methods, the labels the analyses return — and stops at the SDK boundary. Deeper technical validation of the underlying methodology (the variance model, the confidence-interval math, the calibration mechanism) is deliberately absent from the public pages; that layer is available under NDA.
+
+## Client SDK
+
+The TypeScript HTTP client for a running Holonograph lens is published on npm as `@holonograph/client`. It is a single self-contained ES module with no runtime dependencies. It targets Node 18+ and any runtime with a global `fetch`. Fully typed; ships its own type declarations.
+
+- Install: `npm install @holonograph/client`
+- Import: `import { HolonographClient } from '@holonograph/client'`
+- npm: https://www.npmjs.com/package/@holonograph/client
+- Source: https://github.com/holonograph/client
+- Full reference: https://holonograph.ai/guide/sdk-reference.html
+
+The client speaks to a lens over plain HTTP under the `/holonograph/*` path space (plus `/lens/*` event and availability endpoints) and carries `x-holonograph-*` headers for correlation and run mode. Errors surface as `HolonographHttpError` with typed subclasses for grading and availability flows. The everyday call loop is `client.messages.create()` → score the result → `handle.reportOutcome()`; the lens assembles and stores the evaluation event, and over time those events become the longitudinal record queried and visualized.
 
 ## Links
 
 - Website: https://holonograph.ai
 - Short index: https://holonograph.ai/llms.txt
+- The Guide: https://holonograph.ai/guide/
+- Client SDK on npm: https://www.npmjs.com/package/@holonograph/client
 - GitHub: https://github.com/holonograph
 - Web source: https://github.com/precision-innovations-llc/holonograph-web
 - X: https://x.com/holonograph

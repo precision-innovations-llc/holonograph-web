@@ -58,7 +58,7 @@
         <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
 
         <p class="guide-lede">
-          Every evaluation Holonograph observes is written as one record — an <code>EvaluationEvent</code> — that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
+          Every evaluation Holonograph observes is written as one record (an <code>EvaluationEvent</code>) that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
         </p>
 
         <h2>What it is</h2>
@@ -70,10 +70,10 @@
         <p>The four layers of one event:</p>
 
         <ul>
-          <li><strong>Substrate</strong> — the state of your deployment at call time. Populated from the columns declared on the contract (<a href="./substrate-columns.html">Substrate columns</a>). This is where <code>prompt_hash</code>, <code>tool_schema_version</code>, and any operator-declared columns land.</li>
-          <li><strong>Light source</strong> — which model produced the output. Captured as <code>vendor/model/version</code>, so a silent vendor re-route behind a stable alias is visible in the record.</li>
-          <li><strong>Lens</strong> — which evaluation configuration was in effect. Captured as <code>lens_version</code>. Downstream analyses use this to tell a change in your evaluation apparatus from a change in the thing being evaluated.</li>
-          <li><strong>Outcome</strong> — what the evaluation reported: dimension scores, cohort tags, side effects, and (if relevant) a fixture identifier.</li>
+          <li><strong>Substrate</strong>: the state of your deployment at call time. Populated from the columns declared on the contract (<a href="./substrate-columns.html">Substrate columns</a>). This is where <code>prompt_hash</code>, <code>tool_schema_version</code>, and any operator-declared columns land.</li>
+          <li><strong>Light source</strong>: which model produced the output. Captured as <code>vendor/model/version</code>, so a silent vendor re-route behind a stable alias is visible in the record.</li>
+          <li><strong>Lens</strong>: which evaluation configuration was in effect. Captured as <code>lens_version</code>. Downstream analyses use this to tell a change in your evaluation apparatus from a change in the thing being evaluated.</li>
+          <li><strong>Outcome</strong>: what the evaluation reported. Dimension scores, cohort tags, side effects, and (if relevant) a fixture identifier.</li>
         </ul>
 
         <p>
@@ -92,7 +92,7 @@
         </p>
 
         <ul>
-          <li><strong>Every reading can be traced to the exact deployment, model, and evaluation config that produced it.</strong> When you look at last week's numbers, you're not looking at a lossy summary — you're looking at the substrate that was in effect for each specific call.</li>
+          <li><strong>Every reading can be traced to the exact deployment, model, and evaluation config that produced it.</strong> When you look at last week's numbers, you're not looking at a lossy summary. You're looking at the substrate that was in effect for each specific call.</li>
           <li><strong>Changes at any layer are attributable independently.</strong> Because each layer is captured on its own and versioned on its own schedule, downstream analyses (Chapter 13, Chapter 14) can talk about <em>which layer changed</em>, not just <em>that the number moved</em>.</li>
         </ul>
 
@@ -101,7 +101,7 @@
         <h3>Ingest an event</h3>
 
         <p>
-          Most integrations never call <code>POST /lens/events</code> directly — the SDK's <code>reportOutcome()</code> writes the event for you at the end of a call. It's documented here because a small number of ingest-only integrations (backfills, custom collectors) need the raw endpoint.
+          Most integrations never call <code>POST /lens/events</code> directly; the SDK's <code>reportOutcome()</code> writes the event for you at the end of a call. It's documented here because a small number of ingest-only integrations (backfills, custom collectors) need the raw endpoint.
         </p>
 
         <pre><code>POST /lens/events
@@ -157,8 +157,8 @@ x-holonograph-run-mode: production</code></pre>
         </p>
 
         <ul>
-          <li><strong>Filter on cohort tags at read time</strong>, not at write time. Cohort tags are the query keys — write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.</li>
-          <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code> — but the default filter is what keeps replay traffic and local-dev noise out of dashboards.</li>
+          <li><strong>Filter on cohort tags at read time</strong>, not at write time. Cohort tags are the query keys; write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.</li>
+          <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code>. But the default filter is what keeps replay traffic and local-dev noise out of dashboards.</li>
         </ul>
 
         <h2>Reference</h2>
@@ -196,8 +196,8 @@ x-holonograph-run-mode: production</code></pre>
         <h3>Headers</h3>
 
         <ul>
-          <li><code>Authorization: Bearer &lt;token&gt;</code> — when the deployment enables bearer auth.</li>
-          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code> — required by fail-closed mode enforcement; see <a href="./run-modes.html">Run modes</a>.</li>
+          <li><code>Authorization: Bearer &lt;token&gt;</code>: when the deployment enables bearer auth.</li>
+          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code>: required by fail-closed mode enforcement; see <a href="./run-modes.html">Run modes</a>.</li>
         </ul>
 
         <nav class="guide-nav" aria-label="Chapter navigation">

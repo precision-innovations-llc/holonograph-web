@@ -58,7 +58,7 @@
         <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~7 min read</p>
 
         <p class="guide-lede">
-          Every call to the lens declares which run mode it belongs to. The mode gates side effects, decides which events count as production history, and — most importantly — keeps test and evaluation traffic from silently polluting your production substrate. Modes are enforced fail-closed: a missing or unknown mode is rejected at the door.
+          Every call to the lens declares which run mode it belongs to. The mode gates side effects, decides which events count as production history, and (most importantly) keeps test and evaluation traffic from silently polluting your production substrate. Modes are enforced fail-closed: a missing or unknown mode is rejected at the door.
         </p>
 
         <h2>What it is</h2>
@@ -73,7 +73,7 @@
             <tbody>
               <tr><td><code>production</code></td><td>A real user's request through the real system.</td><td>Full side effects. Persists to <code>production-state</code> provenance.</td></tr>
               <tr><td><code>test</code></td><td>An automated test exercising the agent.</td><td>Side effects are suppressed or replaced with fixtures. Persists to <code>exploratory-state</code>.</td></tr>
-              <tr><td><code>eval</code></td><td>A deliberate evaluation run — an operator asking "how is the system doing?"</td><td>Side effects suppressed. Persists to <code>exploratory-state</code>. Eligible for cohort-tag-driven grading pipelines.</td></tr>
+              <tr><td><code>eval</code></td><td>A deliberate evaluation run; an operator asking "how is the system doing?"</td><td>Side effects suppressed. Persists to <code>exploratory-state</code>. Eligible for cohort-tag-driven grading pipelines.</td></tr>
               <tr><td><code>replay</code></td><td>Replaying prior traffic against a specific lens version or model.</td><td>Side effects suppressed. Persists to <code>exploratory-state</code>. Tagged so replays don't co-mingle with live evaluation.</td></tr>
               <tr><td><code>local_dev</code></td><td>A developer poking the system on their laptop.</td><td>Side effects suppressed. Persists to <code>exploratory-state</code>. The permissive mode you use during integration work.</td></tr>
             </tbody>
@@ -82,7 +82,7 @@
 
         <div class="guide-callout">
           <span class="callout-label">There is no <code>debug</code> mode</span>
-          The canonical set is exactly the five above. If you see <code>debug</code> anywhere in code or a sample, treat it as an error to correct — not a sixth mode.
+          The canonical set is exactly the five above. If you see <code>debug</code> anywhere in code or a sample, treat it as an error to correct, not a sixth mode.
         </div>
 
         <h2>Why it matters</h2>
@@ -91,7 +91,7 @@
 
         <ul>
           <li><strong>Substrate integrity.</strong> Your production history stays production. A test that forgot its mode doesn't quietly become a production event when you read it back a month later.</li>
-          <li><strong>Side-effect discipline.</strong> An <code>eval</code> run that touches a downstream system by accident is a serious incident. Fail-closed makes that failure loud instead of silent — the daemon rejects a call with no mode, and modes other than <code>production</code> suppress the side-effect channel.</li>
+          <li><strong>Side-effect discipline.</strong> An <code>eval</code> run that touches a downstream system by accident is a serious incident. Fail-closed makes that failure loud instead of silent. The daemon rejects a call with no mode, and modes other than <code>production</code> suppress the side-effect channel.</li>
         </ul>
 
         <h2>How to use it</h2>
@@ -115,12 +115,12 @@
 
         <pre><code>x-holonograph-run-mode: production</code></pre>
 
-        <p>A missing header is rejected with a 400. This is by design — Holonograph does not guess.</p>
+        <p>A missing header is rejected with a 400. This is by design; Holonograph does not guess.</p>
 
         <h3>Resolve per-request in a web framework</h3>
 
         <p>
-          Web applications often need to resolve the mode from the incoming request — e.g. a header set by a shadow-traffic proxy, or a query flag distinguishing an internal QA session. Wire this at your framework's middleware layer, before any code path that constructs an <code>HolonographClient</code>:
+          Web applications often need to resolve the mode from the incoming request (e.g. a header set by a shadow-traffic proxy, or a query flag distinguishing an internal QA session). Wire this at your framework's middleware layer, before any code path that constructs an <code>HolonographClient</code>:
         </p>
 
         <pre><code>// Express example
@@ -143,7 +143,7 @@ app.post("/agent", async (req, res) =&gt; {
         <h3>Propagate across async and process boundaries</h3>
 
         <p>
-          When work crosses a boundary the client can't reach — a queue, a background job, a message bus — carry the mode as W3C Baggage so the receiver can reconstruct it. Two keys:
+          When work crosses a boundary the client can't reach (a queue, a background job, a message bus), carry the mode as W3C Baggage so the receiver can reconstruct it. Two keys:
         </p>
 
         <div class="guide-table-wrap">
@@ -163,7 +163,7 @@ app.post("/agent", async (req, res) =&gt; {
         <h2>Reading the output</h2>
 
         <p>
-          <code>run_mode</code> is one of the mandatory substrate columns on every event (see <a href="./substrate-columns.html">Substrate columns</a>) — so every reading you do downstream is already sliceable by mode without any extra work.
+          <code>run_mode</code> is one of the mandatory substrate columns on every event (see <a href="./substrate-columns.html">Substrate columns</a>), so every reading you do downstream is already sliceable by mode without any extra work.
         </p>
 
         <p>
@@ -199,8 +199,8 @@ app.post("/agent", async (req, res) =&gt; {
         <h3>Baggage keys</h3>
 
         <ul>
-          <li><code>holonograph.runmode</code> — the run mode.</li>
-          <li><code>holonograph.correlation-id</code> — the correlation id binding calls across the boundary.</li>
+          <li><code>holonograph.runmode</code>: the run mode.</li>
+          <li><code>holonograph.correlation-id</code>: the correlation id binding calls across the boundary.</li>
         </ul>
 
         <nav class="guide-nav" aria-label="Chapter navigation">

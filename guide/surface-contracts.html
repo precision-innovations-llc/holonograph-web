@@ -58,13 +58,13 @@
         <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
 
         <p class="guide-lede">
-          A surface contract is the JSON document that tells Holonograph what an evaluation surface <em>should</em> look like — its dimensions, cohort tags, substrate columns, and vendor routings — before any real traffic hits it. Everything downstream (event ingest, snapshot queries, topology gap-finding) reads from the contract you registered here.
+          A surface contract is the JSON document that tells Holonograph what an evaluation surface <em>should</em> look like (its dimensions, cohort tags, substrate columns, and vendor routings) before any real traffic hits it. Everything downstream (event ingest, snapshot queries, topology gap-finding) reads from the contract you registered here.
         </p>
 
         <h2>What it is</h2>
 
         <p>
-          A <strong>surface</strong> is the operator's unit of evaluation — one addressable thing your agent calls, with a stable id and a shape you expect it to satisfy. A <strong>contract</strong> is the versioned declaration of that shape.
+          A <strong>surface</strong> is the operator's unit of evaluation: one addressable thing your agent calls, with a stable id and a shape you expect it to satisfy. A <strong>contract</strong> is the versioned declaration of that shape.
         </p>
 
         <p>
@@ -72,10 +72,10 @@
         </p>
 
         <ul>
-          <li><strong>Dimensions</strong> — the scoring axes an evaluation returns (e.g. <code>correctness</code>, <code>tone</code>, <code>schema-conformance</code>).</li>
-          <li><strong>Cohort tags</strong> — the discrete labels you use to slice results (e.g. <code>customer-tier=enterprise</code>, <code>fix_tier=tool-input-schema</code>).</li>
-          <li><strong>Substrate columns</strong> — the named columns Holonograph captures with every call, so a later reading can be attributed to <em>what changed about your deployment</em>. See <a href="./substrate-columns.html">Substrate columns</a>.</li>
-          <li><strong>Routings</strong> — which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See <a href="./multiplexer.html">The multiplexer</a>.</li>
+          <li><strong>Dimensions</strong>: the scoring axes an evaluation returns (e.g. <code>correctness</code>, <code>tone</code>, <code>schema-conformance</code>).</li>
+          <li><strong>Cohort tags</strong>: the discrete labels you use to slice results (e.g. <code>customer-tier=enterprise</code>, <code>fix_tier=tool-input-schema</code>).</li>
+          <li><strong>Substrate columns</strong>: the named columns Holonograph captures with every call, so a later reading can be attributed to <em>what changed about your deployment</em>. See <a href="./substrate-columns.html">Substrate columns</a>.</li>
+          <li><strong>Routings</strong>: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See <a href="./multiplexer.html">The multiplexer</a>.</li>
         </ul>
 
         <p>
@@ -90,12 +90,12 @@
 
         <ul>
           <li><strong>The lens knows what to expect.</strong> Ingested events are validated against the contract's declared dimensions and columns; anything that doesn't match is flagged, not silently accepted.</li>
-          <li><strong>Coverage becomes measurable.</strong> The topology scanner (Chapter 09) compares what you <em>declared</em> against what the lens <em>observed</em> and surfaces the gaps — declared-but-never-observed dimensions, observed-but-never-declared ones, retirement candidates. That whole comparison exists because there is a contract to compare against.</li>
+          <li><strong>Coverage becomes measurable.</strong> The topology scanner (Chapter 09) compares what you <em>declared</em> against what the lens <em>observed</em> and surfaces the gaps: declared-but-never-observed dimensions, observed-but-never-declared ones, retirement candidates. That whole comparison exists because there is a contract to compare against.</li>
         </ul>
 
         <div class="guide-callout">
           <span class="callout-label">When to re-version</span>
-          Adding a dimension, removing a cohort tag, splitting one surface into two, changing routings — any of these should ship as a new contract version, not an in-place edit. The prior version's events remain queryable and attributable against the shape they were captured under.
+          Adding a dimension, removing a cohort tag, splitting one surface into two, changing routings: any of these should ship as a new contract version, not an in-place edit. The prior version's events remain queryable and attributable against the shape they were captured under.
         </div>
 
         <h2>How to use it</h2>
@@ -140,7 +140,7 @@ Content-Type: application/json
 
         <h3>Read back the active contract</h3>
         <p>
-          <code>GET /holonograph/contract</code> returns the same <code>ContractSummary</code> shape as the register response — useful for reconciliation in CI or a startup check.
+          <code>GET /holonograph/contract</code> returns the same <code>ContractSummary</code> shape as the register response. Useful for reconciliation in CI or a startup check.
         </p>
 
         <h2>Reading the output</h2>
@@ -173,7 +173,7 @@ Content-Type: application/json
         </div>
 
         <p>
-          The <code>supersededBy</code> reference on removed dimensions and cohort tags carries the altitude of the change (surface, dimension, tag) and, where applicable, the id of the replacement — so a later readback of history can tell a promotion from a retirement without ambiguity.
+          The <code>supersededBy</code> reference on removed dimensions and cohort tags carries the altitude of the change (surface, dimension, tag) and, where applicable, the id of the replacement, so a later readback of history can tell a promotion from a retirement without ambiguity.
         </p>
 
         <h2>Reference</h2>
@@ -193,8 +193,8 @@ Content-Type: application/json
         <h3>Headers</h3>
 
         <ul>
-          <li><code>Authorization: Bearer &lt;token&gt;</code> — when the deployment enables bearer auth.</li>
-          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code> — the run mode this call belongs to; see <a href="./run-modes.html">Run modes</a>.</li>
+          <li><code>Authorization: Bearer &lt;token&gt;</code>: when the deployment enables bearer auth.</li>
+          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code>: the run mode this call belongs to; see <a href="./run-modes.html">Run modes</a>.</li>
         </ul>
 
         <h3>Error envelope</h3>
