@@ -142,10 +142,15 @@ Content-Type: application/json
     "description": "If the user asks for a refund, refund_lookup must be invoked before responding.",
     "enforceability": "trace-enforceable",
     "appliesTo": { "surfaceId": "classify-intent" },
-    "when": [{ "kind": "marker-contains", "value": "refund" }],
-    "assertion": { "kind": "tool-invoked", "tool": "refund_lookup" }
+    "when": [{ "kind": "marker-contains", "column": "user_message", "value": "refund" }],
+    "assertion": { "kind": "marker-contains", "column": "tool_invocations", "value": "refund_lookup" }
   }
 }</code></pre>
+
+        <div class="guide-callout">
+          <span class="callout-label">The tool-discipline recipe</span>
+          The cleanest trace-enforceable realization of "tool X was invoked" is <code>marker-contains</code> on a consumer-emitted column. Your agent emits a delimited-list substrate column (here <code>tool_invocations</code>) recording every tool it actually called; the fixture checks that column with <code>marker-contains</code>. Deterministic, cheap, and consumer-neutral. It catches missed tool calls without an LLM judge.
+        </div>
 
         <p>Response: an <code>eventId</code> for the approval event. The fixture is now live in the store and will be picked up by subsequent checks.</p>
 
@@ -172,15 +177,15 @@ Content-Type: application/json
 
         <div class="guide-table-wrap">
           <table class="guide-table">
-            <thead><tr><th>Kind</th><th>Passes when</th></tr></thead>
+            <thead><tr><th>Kind</th><th>Shape</th><th>Passes when</th></tr></thead>
             <tbody>
-              <tr><td><code>marker-contains</code></td><td>The captured output contains the given value.</td></tr>
-              <tr><td><code>marker-not-contains</code></td><td>The captured output does not contain the given value.</td></tr>
-              <tr><td><code>marker-present</code></td><td>A named marker field is present on the event.</td></tr>
-              <tr><td><code>marker-absent</code></td><td>A named marker field is absent from the event.</td></tr>
-              <tr><td><code>tool-invoked</code></td><td>The named tool was invoked during the call.</td></tr>
-              <tr><td><code>tool-not-invoked</code></td><td>The named tool was NOT invoked during the call.</td></tr>
-              <tr><td><code>judge</code></td><td>An LLM judge is invoked and returns a pass/fail verdict against the event.</td></tr>
+              <tr><td><code>marker-contains</code></td><td><code>{ column, value }</code></td><td>A delimited-list substrate column contains <code>value</code> as one of its comma-separated members. The consumer-neutral, trace-enforceable realization of "tool X was invoked" when the consumer captures invocations in a column.</td></tr>
+              <tr><td><code>marker-not-contains</code></td><td><code>{ column, value }</code></td><td>The delimited-list column does NOT contain <code>value</code>. Used for forbidden members.</td></tr>
+              <tr><td><code>marker-present</code></td><td><code>{ column, equals? }</code></td><td>A named substrate column is present on the event. Optionally, its value equals a fixed string.</td></tr>
+              <tr><td><code>marker-absent</code></td><td><code>{ column }</code></td><td>A named substrate column is absent from the event.</td></tr>
+              <tr><td><code>tool-invoked</code></td><td><code>{ toolName }</code></td><td>The named tool appears in the call trace. See the callout above: prefer <code>marker-contains</code> on a consumer-emitted column for tool-discipline enforcement.</td></tr>
+              <tr><td><code>tool-not-invoked</code></td><td><code>{ toolName }</code></td><td>The named tool does NOT appear in the call trace. A forbidden path.</td></tr>
+              <tr><td><code>judge</code></td><td><code>{ prompt }</code></td><td>An LLM judge is invoked with the given prompt and returns a pass/fail verdict against the event.</td></tr>
             </tbody>
           </table>
         </div>
@@ -193,8 +198,8 @@ Content-Type: application/json
 
         <pre><code>{
   "fixtureId": "no-dollar-figures-without-lookup",
-  "when": [{ "kind": "marker-not-contains", "value": "refund_lookup" }],
-  "assertion": { "kind": "marker-not-contains", "value": "$" }
+  "when": [{ "kind": "marker-not-contains", "column": "tool_invocations", "value": "refund_lookup" }],
+  "assertion": { "kind": "marker-not-contains", "column": "response_text", "value": "$" }
 }</code></pre>
 
         <p>An event that fails the <code>when</code> predicate returns <code>not-applicable</code> for this fixture instead of pass/fail.</p>
