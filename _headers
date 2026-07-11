@@ -32,3 +32,8 @@
 
 /index.html
   Cache-Control: public, max-age=300, must-revalidate
+
+# Short cache: versions.json is the source of truth for the binary version
+# and the SDK-version fallback; the badge JS and llms.txt Functions read it.
+/versions.json
+  Cache-Control: public, max-age=60, must-revalidate

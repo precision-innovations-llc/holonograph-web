@@ -1831,7 +1831,7 @@
 
   <div class="frame">
     <header class="top">
-      <span><span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v0.17.2</span>
+      <span id="version-badge"><span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v0.26.0&nbsp;·&nbsp;CLIENT&nbsp;0.3.0</span>
       <span class="right">EST.&nbsp;2026<span class="top-sep">·</span>PATENT&nbsp;PENDING</span>
     </header>
 
@@ -2184,5 +2184,29 @@
     }, 10000);
   </script>
   <script type="module" src="./holon.js?v=41"></script>
+  <script>
+    // Dynamic version badge — binary from versions.json, CLIENT live from npm.
+    // Falls back silently to the SSR'd numbers on any error.
+    (function () {
+      var badge = document.getElementById('version-badge');
+      if (!badge) return;
+      var paint = function (binary, client) {
+        badge.innerHTML =
+          '<span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v' + binary +
+          '&nbsp;·&nbsp;CLIENT&nbsp;' + client;
+      };
+      var jsonOrNull = function (r) { return r && r.ok ? r.json() : null; };
+      Promise.all([
+        fetch('/versions.json').then(jsonOrNull).catch(function () { return null; }),
+        fetch('https://registry.npmjs.org/@holonograph/client/latest').then(jsonOrNull).catch(function () { return null; })
+      ]).then(function (results) {
+        var v = results[0];
+        var npmMeta = results[1];
+        if (!v) return;
+        var client = (npmMeta && npmMeta.version) || v.client;
+        paint(v.binary, client);
+      });
+    })();
+  </script>
 </body>
 </html>
