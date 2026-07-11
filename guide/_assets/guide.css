@@ -475,6 +475,20 @@ html, body {
   padding: 4px 0 4px 16px;
   margin: 4px 0 22px;
 }
+.guide-index-onepage {
+  margin-top: 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.guide-index-onepage a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: border-color 200ms ease, color 200ms ease;
+}
+.guide-index-onepage a:hover { color: var(--accent-hover); border-bottom-color: var(--accent-hover); }
 
 .guide-main .guide-toc-full {
   max-width: 900px;

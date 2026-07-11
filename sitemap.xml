@@ -2,109 +2,115 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://holonograph.ai/</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://holonograph.ai/guide/all.html</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://holonograph.ai/guide/overview.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/surface-contracts.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/snapshot.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/substrate-columns.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/sdk-reference.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/mediating-lens.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/run-modes.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/sidecar.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/topology-scanner.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/conformance.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/multiplexer.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/lessons-pipeline.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/drift-attribution.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/guide/variance-isolation.html</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/llms.txt</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://holonograph.ai/llms-full.txt</loc>
-    <lastmod>2026-07-06</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
