@@ -389,6 +389,20 @@
     margin: 0 8px;
   }
 
+  /* CLIENT badge link — inherits the mono-uppercase HUD look, subtle hover cue. */
+  .version-badge-link {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+    transition: border-color 200ms ease, color 200ms ease;
+  }
+  .version-badge-link:hover,
+  .version-badge-link:focus-visible {
+    color: var(--accent-cyan);
+    border-bottom-color: var(--accent-cyan);
+    outline: none;
+  }
+
   .top .dot, .bottom .dot {
     display: inline-block;
     width: 6px;
@@ -1831,7 +1845,7 @@
 
   <div class="frame">
     <header class="top">
-      <span id="version-badge"><span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v0.26.0&nbsp;·&nbsp;CLIENT&nbsp;0.3.0</span>
+      <span id="version-badge"><span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v0.26.0&nbsp;·&nbsp;<a href="https://www.npmjs.com/package/@holonograph/client" rel="noopener" class="version-badge-link">CLIENT&nbsp;0.3.0</a></span>
       <span class="right">EST.&nbsp;2026<span class="top-sep">·</span>PATENT&nbsp;PENDING</span>
     </header>
 
@@ -2193,7 +2207,7 @@
       var paint = function (binary, client) {
         badge.innerHTML =
           '<span class="dot"></span>HOLONOGRAPH&nbsp;//&nbsp;v' + binary +
-          '&nbsp;·&nbsp;CLIENT&nbsp;' + client;
+          '&nbsp;·&nbsp;<a href="https://www.npmjs.com/package/@holonograph/client" rel="noopener" class="version-badge-link">CLIENT&nbsp;' + client + '</a>';
       };
       var jsonOrNull = function (r) { return r && r.ok ? r.json() : null; };
       Promise.all([

@@ -9,20 +9,21 @@
    ----------------------------------------------------------------------------- */
 
 :root {
-  --bg: #f7f5f0;                             /* warm off-white, slight cream */
-  --bg-elev: #ffffff;                        /* elevated cards / code */
-  --bg-sunk: #f0ecf5;                        /* subtle purple wash for pull-quotes */
-  --fg: #1a1524;                             /* near-black, slight indigo cast */
-  --fg-dim: #4b4560;                         /* body de-emphasis */
-  --fg-faint: #8a839c;                       /* captions, meta */
-  --fg-ghost: #c4bfd0;                       /* rules, dividers */
-  --accent: #6d28d9;                         /* deep iris — passes AA on the light bg */
-  --accent-hover: #5b21b6;
-  --accent-soft: #ede9fe;                    /* accent-tinted surface */
-  --rule: #e8e2ee;                           /* light lavender rule */
-  --code-bg: #f4f0f8;
+  --bg: #ffffff;                             /* paper white */
+  --bg-elev: #f7f6f9;                        /* soft panel — elevated cards / code */
+  --bg-sunk: #f7f6f9;                        /* pull-quote surface (same neutral panel) */
+  --fg: #17161d;                             /* near-black */
+  --fg-dim: #4b4a55;                         /* body de-emphasis */
+  --fg-faint: #8a8894;                       /* captions, meta */
+  --fg-ghost: #c9c6d4;                       /* stronger rule / divider */
+  --accent: #5f3ddc;                         /* Holonograph iris — passes AA on the light bg */
+  --accent-hover: #4c2fc0;
+  --accent-soft: #efeafd;                    /* accent-tinted surface */
+  --rule: #e6e4ec;                           /* light rule */
+  --code-bg: #f7f6f9;
   --code-fg: #2a1f4a;
   --danger: #b91c1c;                         /* wall-warning red, used sparingly */
+  --orange: #d97747;                         /* wordmark H only — Holonograph brand */
   --font-ui: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-display: "Kodchasan", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -54,7 +55,7 @@ html, body {
   align-items: center;
   gap: 16px;
   padding: 14px clamp(20px, 3vw, 40px);
-  background: rgba(247, 245, 240, 0.88);
+  background: rgba(255, 255, 255, 0.92);
   -webkit-backdrop-filter: blur(10px) saturate(140%);
   backdrop-filter: blur(10px) saturate(140%);
   border-bottom: 1px solid var(--rule);
@@ -67,15 +68,11 @@ html, body {
   text-transform: uppercase;
   color: var(--fg);
   text-decoration: none;
-  background: linear-gradient(100deg, #1a1524 0%, var(--accent) 40%, #1a1524 70%);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  transition: background-position 300ms ease;
+  transition: color 200ms ease;
 }
-.guide-brand:hover { background-position: 100% 50%; }
+.guide-brand::first-letter { color: var(--orange); }
+.guide-brand:hover { color: var(--accent); }
+.guide-brand:hover::first-letter { color: var(--orange); }
 .guide-topbar-sep {
   color: var(--fg-ghost);
   font-family: var(--font-mono);
@@ -231,7 +228,7 @@ html, body {
   line-height: 1.2;
   margin: 0 0 6px;
   padding-bottom: 0.14em;              /* room for descenders (g, y, p) — background-clip: text clips them otherwise */
-  background: linear-gradient(100deg, #1a1524 0%, var(--accent) 30%, #6b21a8 55%, #1a1524 80%);
+  background: linear-gradient(100deg, var(--fg) 0%, var(--accent) 30%, var(--accent-hover) 55%, var(--fg) 80%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
