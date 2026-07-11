@@ -224,6 +224,2565 @@ On the OTLP wire, each evaluation becomes one span (`holonograph.evaluation`) wi
 
 Under `dual` mode, OTLP spans carry only the event index; the bulk payload lives in the HTTP body, and the collector reconciles by `eventId`. This is what makes the OTel export path additive to any existing collector without duplicating storage.
 
+<!-- BEGIN-GENERATED-GUIDE-COMPLETE -->
+## The Guide — Complete text
+
+The full text of every guide chapter, in reading order. Individual chapter permalinks live at https://holonograph.ai/guide/{slug}.html and a single-URL HTML consolidation at https://holonograph.ai/guide/all.html. Auto-generated from the chapter sources by scripts/build-guide-all.mjs.
+
+### Chapter 01 — Overview & first principles
+
+_Permalink: https://holonograph.ai/guide/overview.html_
+
+Chapter 01
+
+# Overview & first principles™
+
+        Reflects Holonograph v0.23.0 · ~7 min read
+
+        Holonograph is the observation layer for agentic AI systems. It sits in the call path between your agent and the language models that drive it, and it captures a structured record of every evaluation your system produces. From that record it tells you two things existing tools cannot: *which layer* of your system a change came from, and *how much* of an observed spread is real change versus measurement noise.
+
+## What it is
+
+        A signed, notarized native binary that runs as a localhost daemon inside your own infrastructure. It ships as a bidirectional gateway at the wire-format boundary between your agent and the model. Every request out and every response back passes through the lens.
+
+        Because it owns that boundary, Holonograph can do things a library bolted onto your agent structurally cannot:
+
+          - **Record the whole call**, in a shape that stays consistent across vendors and model versions.
+
+          - **Multiplex**: run one call against several vendors at once and compare them head-to-head on speed, price, and accuracy, while the agent sees only the primary's reply.
+
+          - **Attribute a change** to the layer that produced it: your deployment, the vendor's model, your evaluation configuration, or the model's irreducible noise.
+
+          - **Isolate variance**: separate real movement from measurement noise, so you know whether a change is worth acting on.
+
+          - **Close the loop**: captured overrides and approvals cluster into drafted corrective artifacts (skills, lessons, fixtures) that ship through a human-approval gate.
+
+        Every one of those is a capability the operator uses. This Guide teaches you how to use them.
+
+## Why position, not instrumentation
+
+        Observability tools for LLM systems have converged on a pattern: sprinkle logging calls through the agent's code, ship traces to a dashboard. That pattern works when the thing you're observing is deterministic. Modern agentic systems built on foundation LLMs are not. The model can be silently re-routed by the vendor behind a stable alias, and the evaluation apparatus is itself an LLM that drifts on its own schedule. Instrumentation inside the agent's code can only see what the agent chose to log, and the log format ages the day the SDK changes.
+
+        Holonograph takes a different premise: **observation is a property of architectural position**. Because the lens sits at the wire boundary, no logging call is required, no SDK version is coupled to the record, and nothing the agent does at the model boundary is structurally invisible. An OpenTelemetry sidecar covers anything that *doesn't* pass through the lens (async work, message queues), so the practical guarantee is *observational completeness*: every call is either graded by the lens or captured by the sidecar.
+
+          The bet, restated
+          Modern agentic systems are non-deterministic by construction. The instrument that measures them has to be independent of them, and it has to sit somewhere the agent's code cannot silently break.
+
+## What comes back
+
+        Holonograph exposes four operator-facing surfaces. Each is documented in its own chapter, but knowing they exist is what makes the rest of the Guide make sense.
+
+### 1. The four-layer snapshot
+
+        The atomic unit Holonograph writes for every evaluation. One record binds the layers of that evaluation (the surface that was called, the model that answered, the outcome you reported, the state of your deployment) into a shape you can query as history.
+
+### 2. Drift attribution
+
+        When a score changes over time, drift attribution names one of four sources as the likely cause: **substrate** (your own deployment), **light source** (the vendor moved under you), **lens** (your evaluation configuration changed), or **noise** (the model's irreducible non-determinism). What you do about a change depends on which label it wears; that's the Drift attribution chapter's job to walk through.
+
+### 3. Variance isolation
+
+        When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a cleaned reading and a trust signal that tells you whether to act on it. The specifics (how to read it, how to hold one still) are the Variance isolation chapter's job.
+
+### 4. The lessons pipeline
+
+        Captured overrides (a human edited a draft) and approvals (a human sent it as-is) cluster together. The system drafts a concrete corrective artifact for each cluster (a new skill, lesson, fixture, or code-change recommendation), and nothing ships without a named approver at the gate. Once published, the artifact becomes substrate: versioned, captured, and attributable in future drift readings like any other change.
+
+## What Holonograph is not
+
+        Holonograph is frequently confused with adjacent tools. It is none of these:
+
+          - **Not concept-drift detection.** That field assumes a deterministic model and a measurable shift in input data. Holonograph addresses non-deterministic foundation LLMs where the model itself can be silently re-routed by the vendor.
+
+          - **Not feature attribution.** SHAP, LIME, and integrated gradients attribute a single output to its input features. Holonograph attributes *pass-rate changes over time* to one of four sources of change.
+
+          - **Not an MLOps dashboard.** Not a tracing system, not a model registry, not a metrics platform. Holonograph composes on top of OpenTelemetry; the novel layer is the versioned lens and the attribution it enables.
+
+          - **Not LLM-as-judge.** Conventional LLM-as-judge treats the judge as a fixed measuring stick. Holonograph treats the judge itself as a first-class versioned instrument whose drift is independently attributable.
+
+          - **Not a fine-tuning pipeline.** The lessons pipeline produces operator-curated artifacts that ship through a human-approval gate. It does not adjust model weights.
+
+          - **Not SaaS.** A signed, notarized native binary that runs as a localhost daemon. Data never leaves your infrastructure.
+
+## How to read this Guide
+
+        One spine of pages, four depths. Every chapter follows the same internal shape (*What it is*, *Why it matters*, *How to use it*, *Reading the output*, *Reference*) so a CTO can read only the first two sections of a chapter and leave informed, while a developer working from the same page can jump straight to *How to use it* and go.
+
+        The audience router on the [index page](./) points each role at its entry point. If in doubt, follow the developer path; every other role can skim from there.
+
+## Where the wall is
+
+        The Guide teaches you to **operate the instrument**. It does not teach you to **rebuild it**. The line already exists in the software: the SDK exposes a contract (call this, get that back) and hides the mechanism behind it. This Guide documents the contract.
+
+        Concretely: the underlying method is deliberately absent from these pages. If you are a researcher trying to evaluate the method rather than the product, the shortest path is [to talk to us](../#request-a-pilot). Deeper technical validation is available under NDA, and the product itself is designed to run in your own environment against your own workload, so nothing about the evaluation happens on our infrastructure.
+
+          If you notice something missing
+          Some capabilities the Guide describes will name a return field, a verdict label, or a workflow, and stop there. That's intentional. When the honest answer is "operate this, don't reconstruct it," the Guide gives you the handle and leaves the rest inside the binary.
+
+---
+
+### Chapter 02 — Surface contracts
+
+_Permalink: https://holonograph.ai/guide/surface-contracts.html_
+
+Chapter 02
+
+# Surface contracts
+
+        Reflects Holonograph v0.23.0 · ~6 min read
+
+        A surface contract is the JSON document that tells Holonograph what an evaluation surface *should* look like (its dimensions, cohort tags, substrate columns, and vendor routings) before any real traffic hits it. Everything downstream (event ingest, snapshot queries, topology gap-finding) reads from the contract you registered here.
+
+## What it is
+
+        A **surface** is the operator's unit of evaluation: one addressable thing your agent calls, with a stable id and a shape you expect it to satisfy. A **contract** is the versioned declaration of that shape.
+
+        Contracts declare four things per surface:
+
+          - **Dimensions**: the scoring axes an evaluation returns (e.g. `correctness`, `tone`, `schema-conformance`).
+
+          - **Cohort tags**: the discrete labels you use to slice results (e.g. `customer-tier=enterprise`, `fix_tier=tool-input-schema`).
+
+          - **Substrate columns**: the named columns Holonograph captures with every call, so a later reading can be attributed to *what changed about your deployment*. See [Substrate columns](./substrate-columns.html).
+
+          - **Routings**: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See [The multiplexer](./multiplexer.html).
+
+        Contracts are versioned by replacement, not mutation: you register a new contract, the agent identifier stays, and Holonograph records a `versionId` so past events remain readable against the shape they were captured under.
+
+## Why it matters
+
+        Two things become possible once a contract exists:
+
+          - **The lens knows what to expect.** Ingested events are validated against the contract's declared dimensions and columns; anything that doesn't match is flagged, not silently accepted.
+
+          - **Coverage becomes measurable.** The topology scanner (Chapter 09) compares what you *declared* against what the lens *observed* and surfaces the gaps: declared-but-never-observed dimensions, observed-but-never-declared ones, retirement candidates. That whole comparison exists because there is a contract to compare against.
+
+          When to re-version
+          Adding a dimension, removing a cohort tag, splitting one surface into two, changing routings: any of these should ship as a new contract version, not an in-place edit. The prior version's events remain queryable and attributable against the shape they were captured under.
+
+## How to use it
+
+### Register or replace
+
+        Send the contract JSON via the SDK or directly to the endpoint. Registration replaces the previous version for the same `agentId`; the response returns a `ContractSummary` reflecting the newly-active shape.
+
+```
+// SDK
+const summary = await client.contract.register({
+  agentId: "billing-triage",
+  surfaces: [
+    {
+      id: "classify-intent",
+      dimensions: [
+        { id: "correctness", type: "score" },
+        { id: "schema-conformance", type: "boolean" }
+      ],
+      cohortTags: ["customer-tier", "fix_tier"],
+      substrateColumns: [
+        { id: "prompt_hash", control: "operator", visibility: "transparent", semantic: "deployment-state" },
+        { id: "tool_schema_version", control: "operator", visibility: "transparent", semantic: "deployment-state" }
+      ],
+      routings: [
+        { surfaceId: "classify-intent", lightSourceId: "anthropic/claude-sonnet-5" }
+      ]
+    }
+  ]
+});
+```
+
+        Or over HTTP:
+
+```
+POST /holonograph/contract
+Authorization: Bearer
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{ "agentId": "billing-triage", "surfaces": [ ... ] }
+```
+
+### Read back the active contract
+
+        `GET /holonograph/contract` returns the same `ContractSummary` shape as the register response. Useful for reconciliation in CI or a startup check.
+
+## Reading the output
+
+        A `ContractSummary` is the compact readback of what's actually in effect. It's the shape you'd diff in a code review of a contract change.
+
+Field	Shape	What it tells you
+
+`agentId`	string	The registered agent identifier.
+
+`versionId`	string (opt)	The version this summary reflects. Absent on first registration.
+
+`surfaces[]`	array	One entry per surface in the contract.
+
+`surfaces[].id`	string	The surface identifier.
+
+`surfaces[].status`	enum	Whether the surface is active, forward-declared, or retired.
+
+`surfaces[].dimensionCount`	number	Count of declared dimensions.
+
+`surfaces[].cohortTagCount`	number	Count of declared cohort tags.
+
+`surfaces[].substrateColumnCount`	number	Count of substrate columns declared for this surface.
+
+`surfaces[].gatedDimensionIds[]`	string[]	Dimensions currently under a governance hold.
+
+`surfaces[].removedDimensions[]`	array	Dimensions removed in this or a prior version, each with a `supersededBy` reference.
+
+`surfaces[].removedCohortTags[]`	array	Cohort tags removed, each with a `supersededBy` reference.
+
+`pricing`	object (opt)	Per-surface pricing declarations, if configured.
+
+`systemSurfaces`	object (opt)	System-managed surfaces the contract enables (e.g. drafter, judge).
+
+        The `supersededBy` reference on removed dimensions and cohort tags carries the altitude of the change (surface, dimension, tag) and, where applicable, the id of the replacement, so a later readback of history can tell a promotion from a retirement without ambiguity.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /holonograph/contract`	Register or replace the active surface contract for an agent.
+
+`GET /holonograph/contract`	Read back the active `ContractSummary`.
+
+### Headers
+
+          - `Authorization: Bearer `: when the deployment enables bearer auth.
+
+          - `x-holonograph-run-mode: `: the run mode this call belongs to; see [Run modes](./run-modes.html).
+
+### Error envelope
+
+        Every error response follows the same shape:
+
+```
+{
+  "error": "human message",
+  "code": "error_code",
+  "details": { }
+}
+```
+
+        `4xx` covers validation, auth, and not-found. `5xx` is internal. `501` means the feature isn't wired on this deployment.
+
+---
+
+### Chapter 03 — The four-layer snapshot
+
+_Permalink: https://holonograph.ai/guide/snapshot.html_
+
+Chapter 03
+
+# The four-layer snapshot
+
+        Reflects Holonograph v0.23.0 · ~6 min read
+
+        Every evaluation Holonograph observes is written as one record (an `EvaluationEvent`) that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
+
+## What it is
+
+        An event is the atomic unit. It's what *reportOutcome* writes when you finish an evaluation, and it's what *GET /lens/events* pages back to you when you're reading history. One event = one call to one surface at one moment.
+
+        The four layers of one event:
+
+          - **Substrate**: the state of your deployment at call time. Populated from the columns declared on the contract ([Substrate columns](./substrate-columns.html)). This is where `prompt_hash`, `tool_schema_version`, and any operator-declared columns land.
+
+          - **Light source**: which model produced the output. Captured as `vendor/model/version`, so a silent vendor re-route behind a stable alias is visible in the record.
+
+          - **Lens**: which evaluation configuration was in effect. Captured as `lens_version`. Downstream analyses use this to tell a change in your evaluation apparatus from a change in the thing being evaluated.
+
+          - **Outcome**: what the evaluation reported. Dimension scores, cohort tags, side effects, and (if relevant) a fixture identifier.
+
+        Alongside those four layers, every event carries the metadata that binds them together for query and correlation: `eventId`, `surfaceId`, `correlationId`, `run_mode`, `provenance`, and a `timestamp`.
+
+          Provenance vs run mode
+          `run_mode` is *who is calling* (production, test, eval, replay, local_dev). `provenance` is *what kind of run this is from Holonograph's point of view* (`production-state` versus `exploratory-state`). Read queries default to `production-state`; pass `provenance=all` when you want the full stream.
+
+## Why it matters
+
+        Two properties fall out of binding these four layers per event:
+
+          - **Every reading can be traced to the exact deployment, model, and evaluation config that produced it.** When you look at last week's numbers, you're not looking at a lossy summary. You're looking at the substrate that was in effect for each specific call.
+
+          - **Changes at any layer are attributable independently.** Because each layer is captured on its own and versioned on its own schedule, downstream analyses (Chapter 13, Chapter 14) can talk about *which layer changed*, not just *that the number moved*.
+
+## How to use it
+
+### Ingest an event
+
+        Most integrations never call `POST /lens/events` directly; the SDK's `reportOutcome()` writes the event for you at the end of a call. It's documented here because a small number of ingest-only integrations (backfills, custom collectors) need the raw endpoint.
+
+```
+POST /lens/events
+Authorization: Bearer
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "correlationId": "corr_01H...",
+  "dimensions": [{
+    "dimensionId": "correctness",
+    "passed": true,
+    "expected": "a correct answer to the user's question",
+    "actual": "offered to open a replacement order"
+  }],
+  "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
+  "substrate": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" },
+  "lightSourceId": "anthropic/claude-sonnet-5",
+  "timestamp": "2026-07-05T18:22:14.812Z"
+}
+```
+
+        Response:
+
+```
+{ "eventId": "evt_01H..." }
+```
+
+### Read history
+
+        `GET /lens/events` pages events back to you. It supports the query parameters you'd expect from a time-ordered log with cohorts.
+
+```
+GET /lens/events?surfaceId=classify-intent&since=2026-06-01&limit=200&direction=desc
+Authorization: Bearer
+x-holonograph-run-mode: production
+```
+
+        Response:
+
+```
+{
+  "events": [ { "eventId": "evt_...", "surfaceId": "classify-intent", ... }, ... ],
+  "count": 200,
+  "nextCursor": "cur_01H..."
+}
+```
+
+        Follow the `nextCursor` to page forward. When there is no more history in the window, `nextCursor` is absent.
+
+## Reading the output
+
+        One event is a snapshot; a query is a slice through them. Two habits keep the slice honest:
+
+          - **Filter on cohort tags at read time**, not at write time. Cohort tags are the query keys; write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.
+
+          - **Default reads to `production-state`**. When you're diagnosing something unusual, pass `provenance=all`. But the default filter is what keeps replay traffic and local-dev noise out of dashboards.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/events`	Ingest one `EvaluationEvent`. Response: `{ eventId }`.
+
+`GET /lens/events`	Query events. Response: `{ events[], count, nextCursor? }`.
+
+### GET /lens/events query parameters
+
+Param	Shape	Notes
+
+`surfaceId`	string (opt)	Restrict to one surface.
+
+`fixtureId`	string (opt)	Restrict to events produced by one fixture (Conformance, Chapter 10).
+
+`provenance`	enum (opt)	`production-state` (default), `exploratory-state`, or `all`.
+
+`since`	ISO 8601 (opt)	Inclusive lower bound on `timestamp`.
+
+`until`	ISO 8601 (opt)	Exclusive upper bound on `timestamp`.
+
+`limit`	number (opt)	1–10000; default reasonable.
+
+`direction`	enum (opt)	`asc` or `desc`; default `desc`. `order` is accepted as an alias.
+
+`cursor`	string (opt)	Continue from a prior page's `nextCursor`.
+
+### Headers
+
+          - `Authorization: Bearer `: when the deployment enables bearer auth.
+
+          - `x-holonograph-run-mode: `: required by fail-closed mode enforcement; see [Run modes](./run-modes.html).
+
+---
+
+### Chapter 04 — Substrate columns
+
+_Permalink: https://holonograph.ai/guide/substrate-columns.html_
+
+Chapter 04
+
+# Substrate columns
+
+        Reflects Holonograph v0.23.0 · ~5 min read
+
+        Substrate columns are the named fields Holonograph captures alongside every call so a later reading can be attributed to *what changed about your deployment*. Six are mandatory and captured automatically. The rest you declare on the contract and populate yourself, in one of two ways.
+
+## What it is
+
+        A substrate column is a stable, named slot in the four-layer snapshot's substrate layer. Two categories:
+
+          - **Mandatory columns**: always present, always captured by Holonograph. You don't declare them; they're part of the shape.
+
+          - **Operator-declared columns**: you declare them in the surface contract and populate them either at call time (`deployment-state`) or after the outcome is known (`diagnostic`).
+
+## Why it matters
+
+        A column you declared is a column Holonograph will hold you accountable for. When drift attribution or variance isolation runs later, they use those columns to distinguish *your deployment changed* from *the vendor moved* from *your evaluation config drifted*. Columns you didn't declare are columns those analyses can't use.
+
+          Practical guidance
+          Declare a column for every knob in your system that could plausibly change a score: prompt, tool schemas, retrieval index revision, feature flags. It's cheaper to declare too many than to reconstruct a slice you didn't foresee.
+
+## How to use it
+
+### Mandatory columns
+
+        These six are captured on every event, no declaration required:
+
+Column	Type	Meaning
+
+`lens_version`	string	Which lens configuration was in effect.
+
+`light_source_identifier`	string	Which model produced the output, as `vendor/model/version`. Vendor-controlled.
+
+`run_mode`	enum	Which run mode the evaluation ran under. See [Run modes](./run-modes.html).
+
+`correlation_id`	string	Ties together the calls of one evaluation (e.g. across multiplex vendors).
+
+`provenance`	enum	Origin category of the run, typically `production-state` versus `exploratory-state`.
+
+`timestamp`	ISO 8601	When the evaluation occurred.
+
+### Operator-declared columns
+
+        Each declared column has this shape on the contract:
+
+```
+{
+  id: "prompt_hash",
+  control: "operator" | "vendor" | "platform" | "third-party",
+  visibility: "transparent" | "announced" | "opaque",
+  semantic: "deployment-state" | "diagnostic",
+  description?: string,
+  values?: string[]     // enum, when the column is discrete
+}
+```
+
+        The two fields that decide *how* you set the column are `semantic` and `values`. The rest describe who controls the value, how visible its changes are, and (optionally) a fixed enum you must stay within.
+
+### deployment-state: set at call time
+
+        These describe the state of your deployment at the moment of the call. Populate them via the `operatorColumns` map on the `SubstrateSnapshot` at client construction. The values then attach to every call the client makes until the client is reconstructed with new values.
+
+```
+const client = new HolonographClient({
+  endpoint: "http://127.0.0.1:8080",
+  runMode: "production",
+  lensVersion: "lv_2026_07_01",
+  substrate: {
+    lensVersion: "lv_2026_07_01",
+    lightSourceIdentifier: "anthropic/claude/4",
+    runMode: "production",
+    provenance: "production",
+    operatorColumns: {
+      prompt_hash: "v2-sha256-9d3f...",
+      tool_schema_version: "3.1.0",
+      retrieval_index_rev: "2026-07-01T00:00Z"
+    }
+  }
+});
+```
+
+        Set `prompt_hash` to a stable hash of your input. When your prompt changes, the hash changes; when it doesn't, the hash doesn't. Downstream analyses read the column expecting exactly that discipline.
+
+### diagnostic: set post-hoc via cohort tag
+
+        Diagnostic columns are set after the outcome is known, because the value is a category the evaluation itself decided. You set them by passing a cohort tag formatted as `=` to `reportOutcome()`.
+
+```
+await handle.reportOutcome({
+  dimensions: [{
+    dimensionId: "correctness",
+    passed: false,
+    expected: "a correct answer",
+    actual: "misidentified the intent"
+  }],
+  cohortTags: [
+    "customer-tier=enterprise",
+    "fix_tier=tool-input-schema",
+    "severity=high"
+  ]
+});
+```
+
+        If the column declares a `values[]` enum, the value you pass must be one of them. Anything else is rejected at ingest, not silently accepted.
+
+## Reading the output
+
+        Substrate columns come back on every event via `GET /lens/events`. Filter queries on them the same way you filter on cohort tags: a slice is a set of column-value pairs, and the values you didn't declare aren't queryable. That's the whole point of declaring them ahead of time.
+
+## Reference
+
+### Common diagnostic columns
+
+        The set below appears often enough in real deployments to document as convention. Declare them if they apply; declare your own if you have a better name.
+
+Column	Typical values	Notes
+
+`fix_tier`	`llm-judgment`, `tool-input-schema`, `tool-handler`, `code-architecture`	Where a corrective artifact would live if this event were part of a lesson cluster.
+
+`failure_category`	free-form	Short label for the failure mode, when the event represents one.
+
+`severity`	`low`, `medium`, `high`, `critical`	Operator-assigned severity of the event.
+
+`classification.mode`	free-form	Which classifier or mode assigned the outcome, when relevant.
+
+### Column shape
+
+Field	Values	What it says
+
+`id`	string	Stable identifier for the column.
+
+`control`	`operator`, `vendor`, `platform`, `third-party`	Who owns the value's changes.
+
+`visibility`	`transparent`, `announced`, `opaque`	How visible changes are to the operator.
+
+`semantic`	`deployment-state`, `diagnostic`	When and how the value gets set (call time vs post-hoc).
+
+`description`	string (opt)	Human-readable description.
+
+`values`	string[] (opt)	Enum of allowed values. Rejected at ingest if the reported value isn't in the list.
+
+---
+
+### Chapter 05 — SDK reference
+
+_Permalink: https://holonograph.ai/guide/sdk-reference.html_
+
+Chapter 05
+
+# SDK reference
+
+        Reflects Holonograph v0.26.0 · `@holonograph/client` 0.3.0 · ~12 min read
+
+        The `HolonographClient` is the operator-facing surface end-to-end: one class you construct, one call flow (`messages.create → handle → reportOutcome`), and two auxiliary namespaces (`contract`, `availability`) for shape and gap declarations. This chapter documents every method.
+
+## Install
+
+```
+npm install @holonograph/client
+# or
+pnpm add @holonograph/client
+# or
+yarn add @holonograph/client
+```
+
+        Single self-contained ES module, **no runtime dependencies**. Targets Node 18+ and any runtime with a global `fetch`. Fully typed; the package ships its own type declarations.
+
+## Construct a client
+
+```
+import { HolonographClient } from "@holonograph/client";
+
+const client = new HolonographClient({
+  endpoint: "http://127.0.0.1:8080",
+  token: process.env.HOLONOGRAPH_TOKEN,
+  runMode: "production",
+  lensVersion: "lv_2026_07_01",
+  substrate: {
+    lensVersion: "lv_2026_07_01",
+    lightSourceIdentifier: "anthropic/claude/4",
+    runMode: "production",
+    provenance: "production",
+    operatorColumns: {}
+  }
+});
+```
+
+### Constructor options
+
+Option	Shape	Notes
+
+`endpoint`	string	URL where your running Holonograph lens is reachable. The README ships with `http://127.0.0.1:8080` as its example host.
+
+`token`	string (opt)	Bearer token, when the lens requires one.
+
+`runMode`	enum (opt)	One of the canonical modes (`production`, `test`, `eval`, `replay`, `local_dev`). Sent as `x-holonograph-run-mode` on every request. Can be resolved per-call at request time; see [Run modes](./run-modes.html).
+
+`lensVersion`	string	Identifier of the lens configuration this client should call under. Pinned into every evaluation event this client produces.
+
+`substrate`	object	The `SubstrateSnapshot` attached to every event. Carries `lensVersion`, `lightSourceIdentifier`, `runMode`, `provenance`, and `operatorColumns`; see below.
+
+`emit`	object (opt)	Delivery mode + buffering configuration for evaluation events. Four modes (`sync`, `buffered`, `otlp`, `dual`) trade caller latency against throughput and export path. Defaults to `{ mode: "sync" }`. See [Delivery modes](#delivery-modes) below.
+
+### The substrate object
+
+Field	Shape	Notes
+
+`lensVersion`	string	Which lens configuration was in effect.
+
+`lightSourceIdentifier`	string	Which model produced the output, as `vendor/model/version`.
+
+`runMode`	enum	Which run mode the evaluation ran under.
+
+`provenance`	string	Origin category of the run; see [Substrate columns](./substrate-columns.html).
+
+`operatorColumns`	object	The operator-declared deployment-state columns, keyed by column id. For example: `{ prompt_hash: "v2-sha256-…", tool_schema_version: "3.1.0" }`.
+
+## Delivery modes: the emit option
+
+        The client defaults to **synchronous** delivery: every `reportOutcome` awaits the `POST /lens/events` round-trip and propagates errors to the call site. That is the safe default, and for many operators it is enough. When the evaluation call path becomes hot enough that caller latency starts to matter, or when events need to leave the process on an OpenTelemetry export path, three additional modes are available.
+
+Mode	What it does
+
+`sync`	Default. `reportOutcome` awaits the HTTP POST; errors throw at the call site.
+
+`buffered`	Bounded ring buffer, drop-on-overflow. `reportOutcome` resolves on enqueue; a background drain flushes to `/lens/events`. Fire-and-forget safe.
+
+`otlp`	Buffered, but the drain fans out as OpenTelemetry spans to an OTLP/HTTP traces endpoint (the sidecar or collector of your choice).
+
+`dual`	Buffered, and each drained batch fans out to *both* `/lens/events` and OTLP/HTTP, with per-channel delivery tracking. The spans on the OTLP side carry only the event index; the bulk payload lives in the HTTP body, and the collector reconciles by `eventId`.
+
+        All three buffered modes share the same bounded buffer and the same completeness accounting. What differs is the drain channel.
+
+### Configuration
+
+```
+const client = new HolonographClient({
+  endpoint: "http://127.0.0.1:8080",
+  runMode: "production",
+  lensVersion: "lv_2026_07_01",
+  substrate: { /* ... */ },
+  emit: {
+    mode: "dual",
+    bufferSize: 2048,
+    flushIntervalMs: 1000,
+    sentinelIntervalMs: 30000,
+    windowMs: 10000,
+    otlp: {
+      endpoint: "http://127.0.0.1:4318/v1/traces",
+      headers: { authorization: "Bearer …" },
+      maxQueueSize: 4096
+    },
+    onWindow: (w) => metrics.record(w),
+    onFlushError: (err, event) => log.warn("flush failed", { err, event }),
+    onExtremeSustainedLoad: (e) => alerts.page("holonograph drop rate elevated", e)
+  }
+});
+```
+
+Field	Shape	Notes
+
+`mode`	enum	One of `sync`, `buffered`, `otlp`, `dual`. Default `sync`.
+
+`bufferSize`	number (opt)	Max events held in the ring buffer at once. Default 2048. Once full, the oldest events are dropped and counted.
+
+`flushIntervalMs`	number (opt)	How often the buffer is drained to the wire. Default 1000ms.
+
+`sentinelIntervalMs`	number (opt)	How often a session-liveness sentinel span is emitted on span-carrying channels. Default 30000ms.
+
+`windowMs`	number (opt)	Length of one completeness-accounting window. Default 10000ms.
+
+`otlp`	object (opt)	OTLP/HTTP traces endpoint configuration. Required for `otlp` and `dual` modes; see below.
+
+`onWindow`	function (opt)	Called once per completed accounting window with the window's `CompletenessWindow` snapshot.
+
+`onFlushError`	function (opt)	Called on per-event flush failures under buffered modes. Default `console.warn`. Under `sync` mode, flush errors throw at the call site instead.
+
+`extremeSustainedLoad`	object (opt)	`{ dropRateThreshold?: number, sustainedForMs?: number }`. When drops exceed the rate for the sustained duration, `onExtremeSustainedLoad` fires. Default 1% for 60000ms.
+
+`onExtremeSustainedLoad`	function (opt)	Called when the extreme-load condition is met. Route to your alerting.
+
+### emit.otlp
+
+Field	Shape	Notes
+
+`endpoint`	string	OTLP/HTTP traces URL. For example, `http://127.0.0.1:4318/v1/traces`.
+
+`headers`	object (opt)	Extra request headers on the OTLP export (auth tokens, tenant hints, whatever your collector expects).
+
+`maxQueueSize`	number (opt)	OTLP processor queue size. Defaults to `2 × bufferSize`.
+
+### Reading delivery completeness
+
+        A bounded buffer with drop-on-overflow only produces trustworthy analysis if the drops are *counted*. The client publishes an accounting window every `emit.windowMs` and exposes the current window snapshot as a read.
+
+```
+const window = client.completenessWindow();
+if (window?.biasFlag) {
+  // drops occurred in this window; downstream analyses should treat
+  // the sample as potentially non-random over this interval
+}
+```
+
+#### client.completenessWindow(): CompletenessWindow | null
+
+        Returns the current window's snapshot. Returns `null` under `sync` mode (no buffer, nothing to account for).
+
+Field	Shape	Notes
+
+`lensVersion`	string	Which lens version this window is accounted under.
+
+`windowStartMs`, `windowEndMs`	number	Window boundaries, in wall-clock ms.
+
+`offered`	number	Events received from the caller during the window.
+
+`dropped`	number	Events dropped at the buffer boundary (ingress-time bound).
+
+`delivered`	number	Events successfully egressed across all drain channels.
+
+`failed`	number	Events that reached a drain channel but the wire rejected.
+
+`channels`	object	Per-channel breakdown (`http`, `otlp`), each with `{ attempted, delivered, failed }`. Distinguishes `/lens/events` loss from OTLP-export loss.
+
+`completenessLowerBound`	number	The ratio `(offered − dropped) / offered`. A window's floor coverage.
+
+`biasFlag`	boolean	`true` when drops occurred in the window. Signals the sample can no longer be treated as random over this interval.
+
+#### client.shutdown(): Promise<void>
+
+        Flushes any remaining buffered events and stops the background drain. Call before process exit under buffered modes so an in-flight window doesn't die with the process. No-op under `sync` mode.
+
+```
+process.on("SIGTERM", async () => {
+  await client.shutdown();
+  process.exit(0);
+});
+```
+
+          The guarantee
+          Buffered modes are **at-most-once**. There is no reordering, no retry, no hidden growth. Drop-on-overflow is the only bound; the drops are counted and surfaced as `biasFlag`. Fire-and-forget stays fire-and-forget.
+
+## The call flow
+
+        One evaluation is three calls: `messages.create`, then use `.result`, then `.reportOutcome(...)`.
+
+```
+const handle = await client.messages.create({
+  surfaceId: "classify-intent",
+  messages: [{ role: "user", content: "why was I charged twice?" }],
+  tools: [ /* ... */ ]
+});
+
+const answer = handle.result;             // read/act on the model's response
+const isCorrect = grade(answer);          // your evaluation logic
+
+await handle.reportOutcome({
+  dimensions: [{
+    dimensionId: "correctness",
+    passed: isCorrect,
+    expected: "a correct answer to the user's question",
+    actual: summarize(answer)
+  }],
+  cohortTags: ["customer-tier=enterprise"]
+});
+```
+
+        `messages.create()` mediates the model call and returns a handle. `handle.result` is the response you use in your agent. `handle.reportOutcome()` closes the loop; it persists the evaluation event that binds this call into your history.
+
+### messages.create(req)
+
+        Every field on the request is optional except `surfaceId` and `messages`. The rest are passed through to the model when relevant, or interpreted by the lens.
+
+Field	Shape	Notes
+
+`surfaceId`	string (req)	The surface this call belongs to. Must exist on the active contract.
+
+`messages[]`	array (req)	The conversation turns.
+
+`system`	string (opt)	System prompt.
+
+`systemOverride`	string (opt)	Overrides the system prompt for this call only.
+
+`additionalSkills`	string[] (opt)	Extra skills to inject for this call.
+
+`additionalContextTags`	string[] (opt)	Extra context tags this call should carry.
+
+`lightSourceIdOverride`	string (opt)	Overrides the surface's default routing to a specific vendor.
+
+`maxOutputTokens`	number (opt)	Cap on the model's output length.
+
+`temperature`	number (opt)	Model sampling temperature.
+
+`tools`	array (opt)	Tool declarations for the model to invoke.
+
+`toolChoice`	object (opt)	Which tool the model must invoke, if any.
+
+`cacheControl`	object (opt)	Caching hints for the model provider.
+
+`correlationId`	string (opt)	Pass one in to bind this call to a prior call's correlation. Otherwise generated.
+
+### The call handle
+
+        The object returned by `messages.create()`.
+
+Member	Shape	Notes
+
+`.result`	object	The primary model's response. Use this as the answer in your agent.
+
+`.observerRecords[]`	array	Under multiplex routing, the observer vendors' captured records. Empty when not multiplexing.
+
+`.reportOutcome(outcome)`	method	Persist the evaluation event that closes this call.
+
+`.gradeObserver(recordOrId, outcome)`	method	Attach grades to a cross-vendor observer call before reporting, when the lens returned observer records. Call this *before* `reportOutcome`.
+
+### reportOutcome(outcome)
+
+Field	Shape	Notes
+
+`dimensions[]`	array (req)	One entry per dimension declared on the surface. Each entry: `{ dimensionId, passed, expected, actual }`.
+
+`cohortTags[]`	string[] (opt)	Discrete labels to slice on later. For diagnostic substrate columns, use the `=` form.
+
+`sideEffects[]`	array (opt)	Any downstream actions this call triggered; useful for correlated fixtures and lessons later.
+
+`fixtureId`	string (opt)	The fixture this call satisfied, when the call was run as part of a conformance check.
+
+#### Dimension entry shape
+
+Field	Shape	Notes
+
+`dimensionId`	string	Must match a dimension declared on the surface's contract.
+
+`passed`	boolean	Whether the dimension passed the evaluation.
+
+`expected`	string	What good looked like: the expected shape of the response.
+
+`actual`	string	What the model actually produced (or a short summary).
+
+        Calling `reportOutcome` persists the evaluation event to Holonograph's substrate: one row, four layers bound (see [The four-layer snapshot](./snapshot.html)). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+
+### Multiplex: grade the observers
+
+        When the surface's contract routes to more than one vendor, the primary's response comes back as `handle.result` and the observers' captured records come back as `handle.observerRecords[]`. Grade the observers *before* `reportOutcome` so all vendors' outcomes land in the same evaluation.
+
+```
+for (const rec of handle.observerRecords) {
+  await handle.gradeObserver(rec, {
+    dimensions: [{
+      dimensionId: "correctness",
+      passed: isCorrect(rec.result),
+      expected: "a correct answer to the user's question",
+      actual: summarize(rec.result)
+    }]
+  });
+}
+await handle.reportOutcome({
+  dimensions: [{
+    dimensionId: "correctness",
+    passed: isCorrect(handle.result),
+    expected: "a correct answer to the user's question",
+    actual: summarize(handle.result)
+  }]
+});
+```
+
+        See [The multiplexer](./multiplexer.html) for how routings are declared.
+
+## Contract
+
+### contract.register(contract)
+
+        Registers or replaces the surface contract for this agent. Returns a `ContractSummary` reflecting the newly-active shape. See [Surface contracts](./surface-contracts.html) for the full contract shape and the summary fields.
+
+```
+const summary = await client.contract.register({
+  agentId: "billing-triage",
+  surfaces: [ /* ... */ ]
+});
+console.log(summary.surfaces[0].dimensionCount);
+```
+
+## Availability
+
+### availability.mark(req, opts?)
+
+        Records that a surface is (or is not) available for evaluation over a given interval. Two modes:
+
+          - **Single**: one transition event: "this surface just became unavailable" or "…just came back." Pass `mode: "single"` with a `transition`.
+
+          - **Paired**: bound an interval you already know the extent of. Pass `mode: "paired"` with `unreachableFrom` and `unreachableUntil`. The response includes a `pairing` reference so downstream analyses can bracket the interval cleanly.
+
+```
+await client.availability.mark({
+  mode: "single",
+  surfaceId: "classify-intent",
+  transition: "unavailable",
+  reason: "vendor-outage"
+});
+```
+
+        Response:
+
+```
+{ "eventIds": ["evt_..."], "pairing": null }
+```
+
+## Headers & run mode resolution
+
+        The client sends two headers on every request:
+
+          - `Authorization: Bearer `: when the client was constructed with a `token`.
+
+          - `x-holonograph-run-mode: `: from the client's `runMode`, unless resolved per-call. A missing mode is rejected by the daemon by design (fail-closed).
+
+        For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see [Run modes](./run-modes.html).
+
+## Escape hatch: callDirectly
+
+        For scenarios that need the full request shape (a bespoke bridge, a replay tool, or an integration test that wants to prod an edge of the wire), the client exposes a lower-level `callDirectly` method that skips the `messages.create` ergonomics and forwards the request as-authored.
+
+```
+const result = await client.callDirectly(rawRequest);
+```
+
+        Prefer `messages.create` for anything user-facing. `callDirectly` is an escape hatch, not the everyday path.
+
+## Errors
+
+        Errors from the lens surface as `HolonographHttpError`, which carries the HTTP status, an error code, and any details the lens returned. There are additional typed error classes for the grading and availability flows so a catch block can discriminate on class.
+
+```
+import { HolonographClient, HolonographHttpError } from "@holonograph/client";
+
+try {
+  await handle.reportOutcome(outcome);
+} catch (err) {
+  if (err instanceof HolonographHttpError) {
+    console.error(err.status, err.code, err.details);
+  } else {
+    throw err;
+  }
+}
+```
+
+        The underlying wire shape every error carries:
+
+```
+{
+  "error": "human message",
+  "code": "error_code",
+  "details": { }
+}
+```
+
+        `4xx` covers validation, auth, and not-found. `5xx` is internal. `501` means the feature isn't wired on the given deployment.
+
+## Advanced: HttpTransport
+
+        The client is built on an `HttpTransport` primitive that's exported for advanced use: swapping in a custom fetch, adding request interceptors, or running the transport under a different runtime harness. Most integrations never touch it. If yours does, the transport surface is fully typed; the tests in the package are the working reference.
+
+---
+
+### Chapter 06 — The mediating lens
+
+_Permalink: https://holonograph.ai/guide/mediating-lens.html_
+
+Chapter 06
+
+# The mediating lens: placement & call flow
+
+        Reflects Holonograph v0.23.0 · ~6 min read
+
+        Holonograph's central affordance, the lens, is *where it sits*. This chapter is about the physical placement of the lens in your call path and the shape of a single call as it moves through it.
+
+## What it is
+
+        The lens is a bidirectional in-process mediator between your agent and the model. Your agent doesn't call the vendor directly; it calls `POST /holonograph/messages` on the local Holonograph daemon, and Holonograph forwards to the vendor on your behalf. Both directions of the exchange (request out and response back) pass through the same code path.
+
+        Practically, that placement gives you three things:
+
+          - **One boundary, two directions.** Every call has a single owning process that sees the wire before and after. Nothing is reconstructed from logs after the fact.
+
+          - **Vendor-agnostic capture.** The daemon speaks each vendor's protocol at the outbound edge, then hands your agent back a consistent shape at the inbound edge.
+
+          - **No SDK version coupling in your code.** When a vendor changes their SDK, the change is absorbed at the lens, not in every consumer.
+
+## Why it matters
+
+        The alternative, instrumenting the agent's code with logging calls, has two structural weaknesses. Log lines can only record what the developer thought to log, and the log format is coupled to the agent's version of the vendor SDK. Placement side-steps both. Because the lens owns the boundary, capture is a property of the architecture, not a discipline the developer must remember.
+
+          A useful mental model
+          Treat `POST /holonograph/messages` as your model provider's endpoint from the agent's point of view. The vendor call still happens. It just happens on the daemon's side of a stable, local wire.
+
+## How to use it
+
+### Direct HTTP
+
+        The endpoint accepts a shape closely mirroring a vendor's messages call, plus a required `surfaceId` that ties the call to your contract.
+
+```
+POST /holonograph/messages
+Authorization: Bearer
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "messages": [
+    { "role": "user", "content": "why was I charged twice?" }
+  ],
+  "system": "You are a billing triage assistant.",
+  "temperature": 0.2,
+  "maxOutputTokens": 512,
+  "tools": [ /* ... */ ],
+  "correlationId": "corr_01H..."
+}
+```
+
+        Response:
+
+```
+{
+  "callId": "call_01H...",
+  "correlationId": "corr_01H...",
+  "surfaceId": "classify-intent",
+  "lightSourceId": "anthropic/claude-sonnet-5",
+  "result": { /* the primary model's response */ },
+  "observerRecords": [ /* multiplex observers, if any */ ],
+  "gateOutcome": null,
+  "substituted": false
+}
+```
+
+### Via the SDK
+
+        Most integrations use the SDK's `messages.create()`, which wraps the endpoint and returns a call handle documented in [SDK reference](./sdk-reference.html). The wire shape above is what the handle's `.result` is unpacked from.
+
+```
+const handle = await client.messages.create({
+  surfaceId: "classify-intent",
+  messages: [{ role: "user", content: "why was I charged twice?" }],
+  system: "You are a billing triage assistant.",
+  temperature: 0.2,
+  maxOutputTokens: 512
+});
+const answer = handle.result;
+```
+
+### Overrides that ride along
+
+        Two request fields let you override the surface's contract for a single call, when you know what you're doing:
+
+          - `systemOverride`: replaces the system prompt for this call only. Does not mutate the contract.
+
+          - `lightSourceIdOverride`: routes this call to a specific vendor instead of the surface's default routing. Useful for reproducing an issue against a known-good model.
+
+## Reading the output
+
+        The response carries five load-bearing fields:
+
+Field	Shape	What it tells you
+
+`callId`	string	The unique identifier of this call. Use it in a subsequent `reportOutcome` if you're not using the SDK handle.
+
+`correlationId`	string	Ties this call to the evaluation it belongs to. If you passed one in, it comes back unchanged; if not, one was generated.
+
+`surfaceId`	string	Echo of the surface this call was made against.
+
+`lightSourceId`	string	The vendor and model that actually produced the response (`vendor/model/version`). Reflects the effective routing after any override.
+
+`result`	object	The primary model's response, in a shape your agent uses.
+
+`observerRecords`	array	Under multiplex routing, the captured records from the observer vendors. Empty when not multiplexing.
+
+`gateOutcome`	object (opt)	Present when a gate fired (e.g. content-policy gate, cost cap). Null otherwise.
+
+`substituted`	boolean	True when the response was substituted (e.g. a cached hit, a canned refusal). Downstream analyses use this to distinguish substitute from live-generated.
+
+## Reference
+
+### Request fields
+
+Field	Shape	Notes
+
+`surfaceId`	string (req)	Must exist on the active contract.
+
+`messages[]`	array (req)	The conversation turns.
+
+`system`	string (opt)	System prompt.
+
+`systemOverride`	string (opt)	Per-call system prompt override.
+
+`additionalSkills`	string[] (opt)	Extra skills to inject for this call.
+
+`additionalContextTags`	string[] (opt)	Extra context tags this call carries.
+
+`lightSourceIdOverride`	string (opt)	Overrides the surface's default routing.
+
+`maxOutputTokens`	number (opt)	Cap on the model's output length.
+
+`temperature`	number (opt)	Model sampling temperature.
+
+`tools`	array (opt)	Tool declarations.
+
+`toolChoice`	object (opt)	Which tool the model must invoke.
+
+`cacheControl`	object (opt)	Provider caching hints.
+
+`correlationId`	string (opt)	Pre-existing correlation id to bind this call to a prior evaluation.
+
+---
+
+### Chapter 07 — Run modes
+
+_Permalink: https://holonograph.ai/guide/run-modes.html_
+
+Chapter 07
+
+# Run modes
+
+        Reflects Holonograph v0.23.0 · ~7 min read
+
+        Every call to the lens declares which run mode it belongs to. The mode gates side effects, decides which events count as production history, and (most importantly) keeps test and evaluation traffic from silently polluting your production substrate. Modes are enforced fail-closed: a missing or unknown mode is rejected at the door.
+
+## What it is
+
+        A run mode is a single-string label attached to every call. Holonograph's canonical set has five values:
+
+Mode	Meaning	Side-effect behavior
+
+`production`	A real user's request through the real system.	Full side effects. Persists to `production-state` provenance.
+
+`test`	An automated test exercising the agent.	Side effects are suppressed or replaced with fixtures. Persists to `exploratory-state`.
+
+`eval`	A deliberate evaluation run; an operator asking "how is the system doing?"	Side effects suppressed. Persists to `exploratory-state`. Eligible for cohort-tag-driven grading pipelines.
+
+`replay`	Replaying prior traffic against a specific lens version or model.	Side effects suppressed. Persists to `exploratory-state`. Tagged so replays don't co-mingle with live evaluation.
+
+`local_dev`	A developer poking the system on their laptop.	Side effects suppressed. Persists to `exploratory-state`. The permissive mode you use during integration work.
+
+          There is no `debug` mode
+          The canonical set is exactly the five above. If you see `debug` anywhere in code or a sample, treat it as an error to correct, not a sixth mode.
+
+## Why it matters
+
+        Two properties fall out of enforcing modes at the wire:
+
+          - **Substrate integrity.** Your production history stays production. A test that forgot its mode doesn't quietly become a production event when you read it back a month later.
+
+          - **Side-effect discipline.** An `eval` run that touches a downstream system by accident is a serious incident. Fail-closed makes that failure loud instead of silent. The daemon rejects a call with no mode, and modes other than `production` suppress the side-effect channel.
+
+## How to use it
+
+### Set once, on the client
+
+        The simplest wiring: pass `runMode` once at client construction. Every call the client makes carries it.
+
+```
+const client = new HolonographClient({
+  endpoint: "http://127.0.0.1:8080",
+  runMode: process.env.NODE_ENV === "production" ? "production" : "local_dev",
+  lensVersion: "billing-lens/v14",
+  substrate: { /* ... */ }
+});
+```
+
+### Set at the wire
+
+        If you're calling `POST /holonograph/messages` directly, send the mode as a header on every request:
+
+```
+x-holonograph-run-mode: production
+```
+
+        A missing header is rejected with a 400. This is by design; Holonograph does not guess.
+
+### Resolve per-request in a web framework
+
+        Web applications often need to resolve the mode from the incoming request (e.g. a header set by a shadow-traffic proxy, or a query flag distinguishing an internal QA session). Wire this at your framework's middleware layer, before any code path that constructs an `HolonographClient`:
+
+```
+// Express example
+app.use((req, _res, next) => {
+  const shadow = req.header("x-shadow-traffic") === "1";
+  req.holonographRunMode = shadow ? "test" : "production";
+  next();
+});
+
+app.post("/agent", async (req, res) => {
+  const client = new HolonographClient({
+    endpoint: "http://127.0.0.1:8080",
+    runMode: req.holonographRunMode,
+    lensVersion: "billing-lens/v14",
+    substrate: { /* ... */ }
+  });
+  // …
+});
+```
+
+### Propagate across async and process boundaries
+
+        When work crosses a boundary the client can't reach (a queue, a background job, a message bus), carry the mode as W3C Baggage so the receiver can reconstruct it. Two keys:
+
+Baggage key	Carries
+
+`holonograph.runmode`	The run mode of the originating request.
+
+`holonograph.correlation-id`	The correlation id, so calls on the other side of the boundary bind into the same evaluation.
+
+        The receiver extracts both keys from Baggage and constructs its `HolonographClient` with the run mode it inherited, then passes the correlation id through to `messages.create()`. See [Sidecar / OTel integration](./sidecar.html) for the propagation mechanism.
+
+## Reading the output
+
+        `run_mode` is one of the mandatory substrate columns on every event (see [Substrate columns](./substrate-columns.html)), so every reading you do downstream is already sliceable by mode without any extra work.
+
+        Two default habits keep your reads honest:
+
+          - **`provenance` defaults to `production-state`.** That's what filters non-production modes out of dashboards. If you need them, pass `provenance=exploratory-state` or `provenance=all`.
+
+          - **Never rely on `run_mode` as a substitute for side-effect gating.** Modes shape which channel side effects go through, but the guarantee is Holonograph-side. Your agent code should still respect the mode when it exists in scope.
+
+## Reference
+
+### Fail-closed behavior
+
+        The daemon rejects any request that arrives without a valid mode. Concretely:
+
+          - Missing `x-holonograph-run-mode` header → `400` with an `error` message indicating the run mode is required.
+
+          - Unknown value (anything outside the five canonical modes) → `400` with an `error` message indicating the value is not one of the accepted modes.
+
+        This is not something you can turn off. It's a property of the daemon, not a policy on top of it.
+
+### Header
+
+          - `x-holonograph-run-mode: production | test | eval | replay | local_dev`
+
+### Baggage keys
+
+          - `holonograph.runmode`: the run mode.
+
+          - `holonograph.correlation-id`: the correlation id binding calls across the boundary.
+
+---
+
+### Chapter 08 — Sidecar / OTel integration
+
+_Permalink: https://holonograph.ai/guide/sidecar.html_
+
+Chapter 08
+
+# Sidecar / OTel integration
+
+        Reflects Holonograph v0.26.0 · `@holonograph/client` 0.3.0 · ~9 min read
+
+        The lens sees every call that goes through it. Real systems have work that *doesn't* go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry — and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
+
+## What it is
+
+        Holonograph composes on top of OpenTelemetry rather than replacing it. Two pieces of the OTel spec do the work:
+
+          - **Baggage** carries key-value context alongside a trace. Holonograph reads and writes two Baggage keys (`holonograph.runmode`, `holonograph.correlation-id`) so the run mode and correlation id survive async boundaries automatically.
+
+          - **Auto-instrumentation** covers your framework's normal request/response cycle, so HTTP calls, queue publishes, and pub-sub messages carry the OTel context without you writing propagation code by hand.
+
+        Where auto-instrumentation doesn't reach, there's a manual fallback: encode the same values as message attributes on the payload and reconstruct them on the receiving side.
+
+## Why it matters
+
+        The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening quietly.
+
+          The rule of thumb
+          If work happens outside the request that made it, propagate. If work happens inside the same request (same process, same call stack), the SDK's `correlationId` is enough. You don't need Baggage.
+
+## How to use it
+
+### Enable OTel in your service
+
+        Use any OTel SDK for your language. Enable auto-instrumentation for the transports you use (HTTP, gRPC, your queue library, your pub-sub client). Nothing Holonograph-specific here; the standard OTel setup is enough.
+
+### Set Baggage on the originating side
+
+        At the top of the request that started the work, put the run mode and correlation id into Baggage:
+
+```
+import { propagation, context } from "@opentelemetry/api";
+
+const baggage = propagation.getBaggage(context.active())
+  ?? propagation.createBaggage();
+
+const withHolonograph = baggage
+  .setEntry("holonograph.runmode",       { value: "production" })
+  .setEntry("holonograph.correlation-id",{ value: correlationId });
+
+const ctx = propagation.setBaggage(context.active(), withHolonograph);
+
+// run the rest of the request under `ctx`
+context.with(ctx, async () => {
+  await enqueueBillingReview({ userId });
+});
+```
+
+        Auto-instrumentation on the queue publish serializes Baggage into the message; no message-body changes required.
+
+### Read Baggage on the receiving side
+
+        The worker or subscriber picks up the Baggage after auto-instrumentation extracts it. Use it to construct the `HolonographClient`:
+
+```
+import { propagation, context } from "@opentelemetry/api";
+
+async function handleJob(job) {
+  const baggage = propagation.getBaggage(context.active());
+  const runMode = baggage?.getEntry("holonograph.runmode")?.value ?? "local_dev";
+  const correlationId = baggage?.getEntry("holonograph.correlation-id")?.value;
+
+  const client = new HolonographClient({
+    endpoint: "http://127.0.0.1:8080",
+    runMode,
+    lensVersion: "billing-lens/v14",
+    substrate: { /* ... */ }
+  });
+
+  const handle = await client.messages.create({
+    surfaceId: "review-flagged-charge",
+    messages: [ /* ... */ ],
+    correlationId
+  });
+  // ...
+}
+```
+
+        The call in the worker now shares a `correlationId` with the request that produced the job, and it inherits the originator's run mode, so a `test` request that enqueued a job doesn't turn into a `production` call on the worker.
+
+### Message-attribute fallback
+
+        For transports where Baggage propagation isn't automatic (some managed queues, some pub-sub platforms), encode the two values as explicit message attributes on the payload, and reconstruct them on the receiving side before setting Baggage manually.
+
+```
+await queue.publish({
+  body: { userId },
+  attributes: {
+    "holonograph.runmode": "production",
+    "holonograph.correlation-id": correlationId
+  }
+});
+```
+
+        On the receiver, read the attributes and set them into Baggage the same way you would in a fully-instrumented setup. The rest of your code doesn't need to know which path they took.
+
+## Reading the output
+
+        Nothing changes at read time. Events written from the worker come back through `GET /lens/events` with the same `correlationId` as the originating request, and their `run_mode` column matches the originator's. That's what makes them queryable as one evaluation across the async boundary.
+
+## Bounded emit buffer and OTLP export
+
+        Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The `@holonograph/client` 0.3.0 release adds a bounded emit buffer with three drain modes — direct HTTP, OpenTelemetry OTLP spans, or both — so operators can move evaluation events off the request path when synchronous `POST /lens/events` is too expensive to await.
+
+        The buffer is **bounded**, drops the oldest events when full, and **counts every drop**. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full [`emit` option shape](./sdk-reference.html#delivery-modes); this section is about the wire.
+
+### The four delivery modes
+
+Mode	Drain channel	Caller latency
+
+`sync`	`POST /lens/events`, awaited	One HTTP round-trip per `reportOutcome`.
+
+`buffered`	`POST /lens/events`, background drain	Enqueue-only; caller resolves immediately.
+
+`otlp`	OTLP/HTTP traces endpoint	Enqueue-only.
+
+`dual`	Both, in parallel, per-channel accounting	Enqueue-only.
+
+        `sync` is the default. The three buffered modes share the same ring buffer, the same accounting window, and the same drop semantics; only the drain differs.
+
+### What lands on the OTLP wire
+
+        Under `otlp` and `dual`, each evaluation becomes one span. Its dimensions become span events. Every attribute is namespaced under `holonograph.*`, so nothing collides with the rest of your OTel signal.
+
+Span	Name
+
+Evaluation	`holonograph.evaluation`
+
+Session liveness sentinel	`holonograph.session.sentinel`
+
+Per-dimension span event	`holonograph.dimension`
+
+#### Attributes on the evaluation span
+
+Attribute	Notes
+
+`holonograph.event.id`	The event's canonical id. Under `dual`, this is the join key back to the HTTP payload.
+
+`holonograph.correlation_id`	Binds calls into one evaluation across async hops.
+
+`holonograph.surface.id`	The surface this evaluation belongs to.
+
+`holonograph.surface.fixture_id`	Present when the call satisfied a fixture.
+
+`holonograph.surface.passed`	Overall pass/fail after all dimensions.
+
+`holonograph.surface.cohort_tags`	Cohort tags attached at `reportOutcome`.
+
+`holonograph.lens.version`	Which lens version graded this event.
+
+`holonograph.light_source.id`	Canonical light-source identifier.
+
+`holonograph.run_mode`	Which run mode the call was made under.
+
+`holonograph.provenance`	Origin category of the run.
+
+`holonograph.light.latency_ms`	Model call latency.
+
+`holonograph.light.tokens.input`, `holonograph.light.tokens.output`	Token counts from the model call.
+
+`holonograph.light.ok`	Whether the model call itself succeeded.
+
+`holonograph.raw_response.location`	Where the bulk payload lives: `store` or `http-channel`. Under `dual`, spans are the index; the body lives in the HTTP channel.
+
+`holonograph.emission.stream`	Stream identifier for this client instance.
+
+`holonograph.emission.seq`	Monotonic ordinal within the stream. Gaps signal drops; consumers detect all loss (including crash loss) from the ordinal alone.
+
+`holonograph.emission.final`	`true` on graceful `shutdown()`. Distinguishes clean stop from connection death.
+
+`holonograph.substrate.*`	Substrate columns, namespaced under this prefix.
+
+#### Per-dimension span events
+
+        Each graded dimension is a span event named `holonograph.dimension` with:
+
+Attribute	Notes
+
+`holonograph.dimension.id`	Must match a dimension on the surface's contract.
+
+`holonograph.dimension.passed`	Pass/fail for this dimension.
+
+`holonograph.dimension.score`	Optional numeric score, when the dimension is scored.
+
+### Session sentinels: gap detection
+
+        Every `emit.sentinelIntervalMs` (default 30s), the client emits a `holonograph.session.sentinel` span on span-carrying channels. Sentinels carry `emission.stream` and `emission.seq` just like evaluation spans. Their purpose is *gap detection*: a consumer that sees an ordinal jump knows an event was dropped, even if the client crashed before it could tell anyone. The `emission.final` attribute goes `true` on the last event emitted by a graceful `shutdown()`, so a consumer can distinguish "the client stopped cleanly" from "the connection went dead."
+
+### Delivery completeness: the read
+
+        A bounded buffer with drop-on-overflow only produces trustworthy analysis if the drops are visible. The client publishes an accounting window every `emit.windowMs` (default 10s), and exposes it two ways:
+
+          - **Pull**: `client.completenessWindow()` returns the current window snapshot.
+
+          - **Push**: `emit.onWindow(window)` fires once per completed window.
+
+        The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so `http` loss and `otlp` loss are distinguishable), a `completenessLowerBound` ratio, and a `biasFlag` that goes `true` whenever drops occurred. Downstream analyses read `biasFlag` and treat the affected interval as potentially non-random. See [SDK reference § Delivery modes](./sdk-reference.html#delivery-modes) for the full `CompletenessWindow` shape.
+
+### Extreme sustained load
+
+        The buffer is designed for occasional overflow, not sustained overrun. When the drop rate exceeds `emit.extremeSustainedLoad.dropRateThreshold` (default 1%) for longer than `emit.extremeSustainedLoad.sustainedForMs` (default 60s), the client fires `onExtremeSustainedLoad` with a summary event. Route it to your alerting; that is the signal to raise the `bufferSize`, add drain workers, or step down evaluation coverage rather than let the sample bias grow silently.
+
+### Graceful shutdown
+
+        Under buffered modes, call `client.shutdown()` before the process exits. It flushes any remaining buffered events, stops the drain, and marks the last-emitted span as `emission.final = true` so downstream consumers know the stream ended cleanly. No-op under `sync`.
+
+```
+process.on("SIGTERM", async () => {
+  await client.shutdown();
+  process.exit(0);
+});
+```
+
+          The guarantee
+          Buffered delivery is **at-most-once**. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as `biasFlag`. What leaves the buffer either lands or is failed — nothing gets duplicated to make up for loss.
+
+## Reference
+
+### Baggage keys
+
+Key	Value
+
+`holonograph.runmode`	One of the canonical five run modes (see [Run modes](./run-modes.html)).
+
+`holonograph.correlation-id`	The correlation id binding calls into one evaluation.
+
+### Message-attribute keys
+
+        Same keys as above, used verbatim as message attributes when Baggage propagation isn't available on the transport.
+
+---
+
+### Chapter 09 — Surface topology scanner
+
+_Permalink: https://holonograph.ai/guide/topology-scanner.html_
+
+Chapter 09
+
+# Surface topology scanner
+
+        Reflects Holonograph v0.23.0 · ~8 min read
+
+        The scanner compares what you *declared* in your surface contract against what the lens actually *observed* in traffic, and returns the gaps: dimensions you promised the lens would see and it never did, dimensions the lens has been seeing that you never declared, and surfaces that look like they've gone quiet. There's also a bootstrap mode that reads recent traffic and proposes candidate dimensions to add to a new contract.
+
+## What it is
+
+        Three endpoints, each doing one job:
+
+          - **Structural inventory**: you tell the scanner what your codebase says exists (surface ids you can enumerate, or a dispatch map). This becomes the third leg (alongside "declared on the contract" and "observed in traffic") that the scan can reason about.
+
+          - **Scan**: the scanner reads events over a window, joins them against the active contract and any recent structural inventory, and returns the coverage gaps as a set-difference across the three sources.
+
+          - **Bootstrap**: when you have traffic against a surface but no contract entry yet, bootstrap reads the traffic and proposes dimensions to declare.
+
+## Why it matters
+
+        A contract that drifts away from reality is a contract that stops helping. Two ways it drifts:
+
+          - A dimension gets added in code and the contract never gets updated. The lens sees it, the contract doesn't; downstream analyses skip it.
+
+          - A dimension gets removed in code and the contract still declares it. Downstream analyses keep looking for it and quietly report it as always-null.
+
+        The scanner surfaces both directions at read time, so contract maintenance becomes a scheduled operator task with a concrete work-list, not an ad-hoc audit.
+
+          Three inputs, not two
+          The scan is honest when it can compare against three inputs: *declared* (contract), *observed* (events), and *enumerated* (structural inventory). With two you can still find gaps; with three you can also tell a genuinely retired surface from a surface that just went quiet for a week.
+
+## How to use it
+
+### 1. Declare a structural inventory
+
+        At startup, or on each deploy, tell the scanner what your codebase currently knows about. Two shapes are accepted:
+
+          - `surface-ids`: a flat list of the surface ids your code can enumerate.
+
+          - `dispatch-map`: a dispatch table mapping keys (intents, tools, or any other routing key) to surface ids.
+
+```
+POST /lens/topology/structural-inventory
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "agentId": "billing-triage",
+  "consumerId": "billing-triage-agent",
+  "inventoryKind": "surface-ids",
+  "surfaceIds": ["classify-intent", "review-flagged-charge", "escalate-to-human"],
+  "capturedAt": "2026-07-05T18:00:00Z"
+}
+```
+
+        Response:
+
+```
+{
+  "inventoryId": "inv_01H...",
+  "consumerId": "billing-triage-agent",
+  "capturedAt": "2026-07-05T18:00:00Z",
+  "created": true
+}
+```
+
+### 2. Run a scan
+
+        A scan reads events over a window and returns a coverage report. Run it on a schedule (nightly, per deploy) or on-demand.
+
+```
+POST /lens/topology/scan
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "agentId": "billing-triage",
+  "since": "2026-06-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z",
+  "record": true
+}
+```
+
+        Set `record: true` to persist the scan result as an event of its own. Useful for tracking how coverage changes over time.
+
+### 3. Bootstrap a new surface's dimensions
+
+        When you're onboarding a new surface (traffic is flowing, but the contract entry is bare), bootstrap reads the traffic and proposes dimensions.
+
+```
+POST /lens/topology/bootstrap
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "review-flagged-charge",
+  "since": "2026-06-15T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z"
+}
+```
+
+        Each candidate comes back with an `inference` label:
+
+          - `deterministic`: the dimension appeared consistently and with a stable shape across the window. Safe to declare.
+
+          - `lowConfidence`: the dimension appeared, but sparsely or with an unstable shape. Worth reviewing before adding to the contract.
+
+## Reading the output
+
+        The scan report is a set-difference across three sources: the contract's *declared*, the events' *observed*, and (if you captured one) the code's *structural* inventory. The scanner returns per-surface lattices with these fields:
+
+Field	What it tells you
+
+`declaredUnobserved`	Dimensions on the contract that the lens has not seen in the window. Either they're broken in code, or the contract is stale.
+
+`observedUndeclared`	Dimensions the lens has seen that the contract does not declare. Add them to the contract or stop emitting them.
+
+`declaredUnstructural`	Declared on the contract but not present in the structural inventory. Strong retirement candidate: the code no longer references it.
+
+`structuralUnfired`	Present in the structural inventory but never observed. Wired but not exercised: possibly dead paths.
+
+`forwardDeclaredAbsent`	Declared in the contract for a future rollout, not yet observed. Expected empty until the feature ships.
+
+`deprecatedAbsent`	Marked deprecated on the contract and no longer observed: a clean retirement completed.
+
+### Acting on the report
+
+        The usual cadence: a scan runs nightly, its report gets read by an operator, undeclared dimensions get added to the contract, retirement candidates get retired (see the `supersededBy` mechanism in [Surface contracts](./surface-contracts.html)). Over time, "clean scan" becomes the deploy readiness signal for contract changes.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/topology/structural-inventory`	Declare what your codebase enumerates.
+
+`POST /lens/topology/scan`	Compare declared vs observed vs enumerated, return the coverage report.
+
+`POST /lens/topology/bootstrap`	Propose candidate dimensions for a surface based on recent traffic.
+
+### POST /lens/topology/structural-inventory: request
+
+Field	Shape	Notes
+
+`agentId`	string (req)	The agent this inventory belongs to.
+
+`consumerId`	string (opt)	Identifier of the code that's declaring the inventory (useful when multiple deployments feed one contract).
+
+`capturedAt`	ISO 8601 (opt)	When the inventory was taken. Defaults to now.
+
+`inventoryKind`	enum (req)	`surface-ids` or `dispatch-map`.
+
+`surfaceIds`	string[] (opt)	Required when `inventoryKind = "surface-ids"`.
+
+`dispatchMap`	object (opt)	Required when `inventoryKind = "dispatch-map"`.
+
+`artifactKind`	string (opt)	Freeform label for the source artifact (e.g. `codegen`, `handwritten`).
+
+### POST /lens/topology/scan: request
+
+Field	Shape	Notes
+
+`agentId`	string (opt)	Restrict the scan to one agent. Omit to scan all.
+
+`since`	ISO 8601 (opt)	Inclusive lower bound on events considered.
+
+`until`	ISO 8601 (opt)	Exclusive upper bound on events considered.
+
+`asOf`	ISO 8601 (opt)	Contract and inventory versions to compare against (defaults to latest).
+
+`record`	boolean (opt)	Persist the scan as an event.
+
+`artifactKind`	string (opt)	Restrict to inventories with this kind label.
+
+### POST /lens/topology/bootstrap: request
+
+Field	Shape	Notes
+
+`surfaceId`	string (req)	The surface to propose candidates for.
+
+`since`	ISO 8601 (opt)	Inclusive lower bound on the traffic window.
+
+`until`	ISO 8601 (opt)	Exclusive upper bound.
+
+---
+
+### Chapter 10 — Conformance & fixtures
+
+_Permalink: https://holonograph.ai/guide/conformance.html_
+
+Chapter 10
+
+# Conformance & fixtures
+
+        Reflects Holonograph v0.23.0 · ~9 min read
+
+        A capability surface is what you say your agent can do: the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is *derive → approve → check*.
+
+## What it is
+
+        Three moving pieces:
+
+          - **The derive step** reads a capability surface (its tool declarations and prose rules) and proposes candidate fixtures, one per rule, each with the strongest assertion the rule allows.
+
+          - **The fixtures step** is the human-in-the-loop approval gate. A named approver reviews the candidates, edits or discards, and commits the ones they trust. Nothing runs as a check until it's approved.
+
+          - **The check step** runs the approved fixtures against real events over a window and returns a verdict per fixture plus a summary.
+
+### Enforceability taxonomy
+
+        Not every rule can be checked mechanically. The derive step labels each candidate with one of three enforceability categories, so the coverage report is honest about which rules the machine can actually hold you to:
+
+Label	Meaning
+
+`trace-enforceable`	The rule maps to a deterministic check on the captured trace: tool invocation, marker presence, output field.
+
+`judge-required`	The rule can only be evaluated by a graded judgment call: an LLM judge running against the event.
+
+`unenforceable`	The rule is worth stating but can't be mechanically checked at all (e.g. "be polite"). Recorded for completeness; produces no assertion.
+
+## Why it matters
+
+        A prose rule that can't be checked is a rule the system will drift on. Conformance moves rules from "our team believes this" to "the last check confirmed this at 06:00 Tuesday". The coverage report tells you exactly how many of the surface's rules you have mechanical accountability for, and the needs-repair panel tells you which ones the derive step couldn't formalize on its own.
+
+## How to use it
+
+### 1. Derive candidates from the surface
+
+        Send the capability surface (its tools and its rules) and get back a set of candidate fixtures with per-rule enforceability labels.
+
+```
+POST /lens/conformance/derive
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "tools": [ /* tool declarations */ ],
+  "rules": [
+    "If the user asks for a refund, invoke the refund_lookup tool before responding.",
+    "Never quote a specific dollar amount unless refund_lookup returned one.",
+    "Be polite."
+  ]
+}
+```
+
+        The response gives you the candidates, a coverage summary (e.g. "2 of 3 rules mechanically enforceable"), and a needs-repair list for rules the derive step could not fully formalize.
+
+### 2. Review and approve
+
+        Each candidate is a JSON fixture describing an assertion (or a set of assertions, guarded by a `when` predicate). Review the derived shape, edit if needed, and submit each approved fixture with an `approverId`.
+
+```
+POST /lens/conformance/fixtures
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "approverId": "brian",
+  "sourceSurfaceId": "classify-intent",
+  "fixture": {
+    "fixtureId": "refund-requires-lookup",
+    "ruleId": "billing-triage-refund-flow-01",
+    "ruleSource": "Refund rules v3",
+    "description": "If the user asks for a refund, refund_lookup must be invoked before responding.",
+    "enforceability": "trace-enforceable",
+    "appliesTo": { "surfaceId": "classify-intent" },
+    "when": [{ "kind": "marker-contains", "column": "user_message", "value": "refund" }],
+    "assertion": { "kind": "marker-contains", "column": "tool_invocations", "value": "refund_lookup" }
+  }
+}
+```
+
+          The tool-discipline recipe
+          The cleanest trace-enforceable realization of "tool X was invoked" is `marker-contains` on a consumer-emitted column. Your agent emits a delimited-list substrate column (here `tool_invocations`) recording every tool it actually called; the fixture checks that column with `marker-contains`. Deterministic, cheap, and consumer-neutral. It catches missed tool calls without an LLM judge.
+
+        Response: an `eventId` for the approval event. The fixture is now live in the store and will be picked up by subsequent checks.
+
+### 3. Run a check
+
+        Point the checker at either an inline fixture or a stored one, plus a window and a surface filter.
+
+```
+POST /lens/conformance/check
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "fixtureId": "refund-requires-lookup",
+  "surfaceId": "classify-intent",
+  "since": "2026-07-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z"
+}
+```
+
+        The response includes a top-level `verdict`, a per-event breakdown, the count of events checked, and the window actually used.
+
+## Reading the output
+
+### Assertion kinds
+
+Kind	Shape	Passes when
+
+`marker-contains`	`{ column, value }`	A delimited-list substrate column contains `value` as one of its comma-separated members. The consumer-neutral, trace-enforceable realization of "tool X was invoked" when the consumer captures invocations in a column.
+
+`marker-not-contains`	`{ column, value }`	The delimited-list column does NOT contain `value`. Used for forbidden members.
+
+`marker-present`	`{ column, equals? }`	A named substrate column is present on the event. Optionally, its value equals a fixed string.
+
+`marker-absent`	`{ column }`	A named substrate column is absent from the event.
+
+`tool-invoked`	`{ toolName }`	The named tool appears in the call trace. See the callout above: prefer `marker-contains` on a consumer-emitted column for tool-discipline enforcement.
+
+`tool-not-invoked`	`{ toolName }`	The named tool does NOT appear in the call trace. A forbidden path.
+
+`judge`	`{ prompt }`	An LLM judge is invoked with the given prompt and returns a pass/fail verdict against the event.
+
+### Guarded assertions
+
+        A fixture can carry a `when` predicate that decides whether the assertions apply to a given event. The predicate uses the same assertion kinds as the assertions themselves. If `when` is absent, the assertions apply to every event in the window.
+
+```
+{
+  "fixtureId": "no-dollar-figures-without-lookup",
+  "when": [{ "kind": "marker-not-contains", "column": "tool_invocations", "value": "refund_lookup" }],
+  "assertion": { "kind": "marker-not-contains", "column": "response_text", "value": "$" }
+}
+```
+
+        An event that fails the `when` predicate returns `not-applicable` for this fixture instead of pass/fail.
+
+### Verdict precedence
+
+        When multiple assertions run against one event, the overall event verdict is the strongest of the individual assertion verdicts, in this order:
+
+          - `fail`: one assertion definitively failed.
+
+          - `pass`: at least one assertion passed and none failed.
+
+          - `requires-judge`: a `judge` assertion needs to be run before the verdict is complete.
+
+          - `unevaluable`: the event was missing the shape needed to run the assertion at all.
+
+          - `not-applicable`: the `when` guard filtered this event out.
+
+        The check's top-level verdict is the strongest across events, using the same precedence.
+
+### Coverage report
+
+        The derive response's coverage summary is the honest headline: *K of N rules are mechanically enforceable*. It's the number to track over time. As your rules mature and the derive step's classifier improves, the ratio should climb. What it can't yet cover ends up in the needs-repair panel.
+
+### Needs-repair panel
+
+        A rule ends up in `needsRepair` when the derive step couldn't turn it into a check on its own, usually because the rule is ambiguous, or references a system state the fixture format doesn't reach yet. Two ways to clear the entry: rephrase the rule so the derive step can formalize it, or hand-author a fixture and approve it directly.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/conformance/derive`	Propose candidate fixtures from a capability surface.
+
+`POST /lens/conformance/fixtures`	Approve a fixture (name an `approverId`).
+
+`POST /lens/conformance/check`	Run one or more fixtures against events in a window.
+
+### POST /lens/conformance/derive: response fields
+
+Field	Shape	Notes
+
+`surfaceId`	string	Echo of the surface.
+
+`candidates[]`	array	Proposed fixtures, one per rule that could be formalized.
+
+`coverage`	object	"K of N rules mechanically enforceable" summary.
+
+`needsRepair[]`	array	Rules the derive step could not formalize.
+
+`droppedCount`	number	Count of rules discarded outright (empty, duplicate, or unenforceable in a way the format can't record).
+
+`readBy`	string	The identifier of the derive-step version that produced this output.
+
+`clerkResponseIssue`	object (opt)	Present when the derive step's own output had a shape problem worth surfacing.
+
+### POST /lens/conformance/check: request & response
+
+Field	Shape	Notes
+
+`fixture`	object (opt)	Inline fixture. One of `fixture` or `fixtureId` is required.
+
+`fixtureId`	string (opt)	Stored fixture to run.
+
+`surfaceId`	string (opt)	Restrict the check to one surface.
+
+`provenance`	enum (opt)	Default `all`. Same values as [GET /lens/events](./snapshot.html).
+
+`since`, `until`	ISO 8601 (opt)	Window bounds.
+
+`limit`	number (opt)	Cap on events considered. Default 1000.
+
+`verdict`	enum	Top-level: `pass`, `fail`, `requires-judge`, `unevaluable`, `not-applicable`.
+
+`verdictDetails[]`	array	Per-event breakdown.
+
+`checkedEventCount`	number	How many events were actually evaluated.
+
+`window`	object	The actual window used (may differ from request when bounds were open).
+
+---
+
+### Chapter 11 — The multiplexer
+
+_Permalink: https://holonograph.ai/guide/multiplexer.html_
+
+Chapter 11
+
+# The multiplexer
+
+        Reflects Holonograph v0.23.0 · ~6 min read
+
+        The multiplexer lets one call to a surface land on several vendors at once: a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
+
+## What it is
+
+        Multiplexing is declared in the surface contract, in the `routings` block. A single routing entry with an array-valued `lightSourceId` is a multiplex: the first entry is the primary, and every subsequent entry is an observer. Each vendor's call goes through the lens as its own event, and all events for the one call share a `correlationId` so they group cleanly at read time.
+
+        The agent sees only the primary's response. The observers happen alongside it.
+
+## Why it matters
+
+        Comparing vendors in production is normally either destructive (you swap and observe production traffic without a control) or duplicative (you build a second call path). Multiplexing makes the comparison a property of your contract instead of your agent code. Swap the routing, redeploy the contract, and every subsequent call captures a per-vendor record. Because both sides of every observed call flow through the same lens, you can compare vendors on any dimension your evaluations already record: cost, latency, correctness, tool-invocation shape.
+
+          Guarantee
+          The calling agent never learns that multiplexing is happening. It sees the primary's response and returns. Observer results flow into the substrate on their own. The agent's call path is unchanged.
+
+## How to use it
+
+### Declare a multiplex in the contract
+
+        Register a contract whose routing for the surface uses an array for `lightSourceId`:
+
+```
+await client.contract.register({
+  agentId: "billing-triage",
+  surfaces: [
+    {
+      id: "classify-intent",
+      dimensions: [ /* ... */ ],
+      routings: [
+        {
+          surfaceId: "classify-intent",
+          lightSourceId: [
+            "anthropic/claude-sonnet-5",
+            "openai/gpt-5",
+            "google/gemini-2-pro"
+          ],
+          activeRunModes: ["eval", "production"]
+        }
+      ]
+    }
+  ]
+});
+```
+
+        Three vendors, listed in priority order. Claude Sonnet 5 is the primary; GPT-5 and Gemini 2 Pro are observers. The `activeRunModes` field restricts multiplexing to the modes where you want it, typically `eval` and `production`, keeping `test` and `local_dev` single-vendor for reproducibility and cost.
+
+### Fallback in array order
+
+        If the primary vendor is unavailable, the lens falls back through the array in order. The *role* tag reflects what actually happened on this call, so a fallback shows up in the data as its own vendor answering as primary, not as the primary's declared identity attributed to a call it did not answer.
+
+### Grade every vendor's result
+
+        On the SDK side, the primary's response is `handle.result`. Observer captures come back on `handle.observerRecords[]`. Grade the observers *before* `reportOutcome` so all vendors' outcomes land in the same evaluation.
+
+```
+const handle = await client.messages.create({
+  surfaceId: "classify-intent",
+  messages: [ /* ... */ ]
+});
+
+const primaryAnswer = handle.result;
+
+for (const rec of handle.observerRecords) {
+  await handle.gradeObserver(rec, {
+    dimensions: [{
+      dimensionId: "correctness",
+      passed: isCorrect(rec.result),
+      expected: "a correct answer to the user's question",
+      actual: summarize(rec.result)
+    }]
+  });
+}
+await handle.reportOutcome({
+  dimensions: [{
+    dimensionId: "correctness",
+    passed: isCorrect(primaryAnswer),
+    expected: "a correct answer to the user's question",
+    actual: summarize(primaryAnswer)
+  }]
+});
+```
+
+## Reading the output
+
+        Each vendor's call is captured as a separate event. The events share a `correlationId` (the call's) and each carries a `multiplex.role` cohort tag with one of two values:
+
+Tag value	Meaning
+
+`multiplex.role=primary`	The vendor whose reply the agent used.
+
+`multiplex.role=observer`	A vendor running the same input in parallel; the agent never saw this reply.
+
+        To pull one multiplex call back as a group, query events by `correlationId`:
+
+```
+GET /lens/events?correlationId=corr_01H...&provenance=all
+```
+
+        You'll get one event per vendor, each with its own `light_source_identifier`, its own timings, and its own reported outcome.
+
+### Comparing vendors
+
+        The compare-heads-up view is a simple group-by-and-difference on those events. Pick your dimensions (correctness, latency, cost), group by `light_source_identifier`, and read the deltas straight from the substrate. There's no separate multiplex report. The events already carry everything you need.
+
+### Cost and latency
+
+        Per-vendor cost and latency are captured on each event without any operator work. When you multiplex three vendors, you get three vendors' cost and latency for the same input. That's the piece of the head-to-head that's normally hardest to compare fairly.
+
+## Reference
+
+### Routing shape
+
+        Each routing entry on the contract has this shape:
+
+Field	Shape	Notes
+
+`surfaceId`	string	Which surface this routing applies to.
+
+`lightSourceId`	string \| string[]	Single string = single-vendor. Array = multiplex (first primary, rest observers). Fallback follows array order.
+
+`activeRunModes`	enum[] (opt)	Which run modes the multiplex is active in. Absent = active in all modes. Restrict to `eval`/`production` to keep `test` and `local_dev` cheap.
+
+### Per-event cohort tag
+
+          - `multiplex.role=primary`: the vendor whose response was returned to the agent.
+
+          - `multiplex.role=observer`: a vendor whose response was captured but not returned.
+
+### Grouping key
+
+          - `correlationId`: shared across all vendors' events for one call.
+
+---
+
+### Chapter 12 — The lessons pipeline
+
+_Permalink: https://holonograph.ai/guide/lessons-pipeline.html_
+
+Chapter 12
+
+# The lessons pipeline
+
+        Reflects Holonograph v0.23.0 · ~10 min read
+
+        A system's interactions contain the information that should make it better. This chapter is how Holonograph turns that information into shipped improvements: captured human overrides cluster, the drafter proposes concrete corrective artifacts for each cluster, a named human approves or rejects at the gate, and only then does anything get published. Nothing bypasses the gate.
+
+## What it is
+
+        A five-step pipeline, one endpoint per step:
+
+          - **Override**: a human corrects the system's output. Recorded as first-class ground truth: *what the system produced* next to *what good looks like*.
+
+          - **Cluster**: similar overrides group together, so one fix can address a pattern instead of a single instance.
+
+          - **Draft**: the drafter proposes a concrete corrective artifact for a cluster. Four kinds: `skill`, `lesson`, `fixture`, `code-change-recommendation`.
+
+          - **Approve or reject**: a named approver reads the draft, edits or rejects. This is the gate.
+
+          - **Publish**: an approved draft becomes substrate. Versioned, captured, and attributable in future readings like any other change.
+
+## Why it matters
+
+        Feedback in most agentic systems is either noted-and-forgotten or wired into a slow fine-tuning loop. Neither is a good fit for the operator running a real product on a real timeline. The lessons pipeline gives that operator a third path: *capture the correction, cluster the pattern, ship a concrete artifact through a named gate*. The artifact (a new skill, a lesson, a fixture, a code change) is the smallest unit of "the system got better," and every one of them is attributable in future drift readings.
+
+          The gate is the point
+          Nothing published in this pipeline ships without a named approver on record. A rejected draft leaves an audit trail; an approved one does too. The gate is what makes this pipeline safe to run against production behavior.
+
+## How to use it
+
+### 1. Record an override
+
+        When a human corrects the system, capture both sides:
+
+```
+POST /hil/override
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "agentId": "billing-triage",
+  "surfaceId": "classify-intent",
+  "correlationId": "corr_01H...",
+  "originalOutput": { /* what the system produced */ },
+  "correctedOutput": { /* what the human sent instead */ },
+  "rationale": "Refund lookup wasn't invoked; agent guessed.",
+  "tags": ["fix_tier=tool-input-schema"]
+}
+```
+
+        Response: an `eventId`. The override is now in the substrate, tagged and correlated with the original call.
+
+### 2. Cluster overrides over a window
+
+        Run the clustering endpoint to group similar overrides, usually on a schedule (nightly), sometimes on-demand when an operator wants to see what's been building up.
+
+```
+POST /lessons/cluster
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "since": "2026-07-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z"
+}
+```
+
+        Response: `clusters[]` plus a total `eventCount`. Each cluster carries its member override ids and a summary shape the drafter can consume.
+
+### 3. Draft a corrective artifact
+
+        Ask the drafter to propose an artifact for a cluster. Pick the kind that fits:
+
+Kind	When it fits
+
+`skill`	The agent needs a new capability it doesn't currently have.
+
+`lesson`	The agent has the capability but keeps using it wrong. A prompt-level correction is enough.
+
+`fixture`	The correction should be a reproducible check, so future regressions get caught before shipping.
+
+`code-change-recommendation`	The problem lives in code (tool schema, dispatch logic) and needs a developer to fix.
+
+```
+POST /lessons/draft
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "kind": "fixture",
+  "cluster": { /* cluster payload from the previous step */ },
+  "parentSurfaceId": "classify-intent",
+  "seedEventId": "evt_01H..."
+}
+```
+
+        For `fixture` drafts, provide either a `seedEventId` (a real event to base the fixture on) or a `seedRawRequest` (a hand-authored request shape). Optionally supply a `parentFixtureId` if this fixture should stack on an existing one.
+
+        Response: a `draft` object, an optional `classification` label the drafter applied, and an `enqueued` flag reflecting whether the draft was queued for the gate.
+
+### 4. Approve or reject at the gate
+
+        Approve:
+
+```
+POST /hil/approve
+Content-Type: application/json
+
+{
+  "draftId": "draft_01H...",
+  "approverId": "brian",
+  "comment": "Correction verified against the surface's rules. Approving."
+}
+```
+
+        Reject (a comment is required; the record of why matters):
+
+```
+POST /hil/reject
+Content-Type: application/json
+
+{
+  "draftId": "draft_01H...",
+  "approverId": "brian",
+  "comment": "This one's not a pattern — the customer was testing us. Discarding."
+}
+```
+
+        Both endpoints return the current `status` and a `history[]` of the actions taken on this draft so far.
+
+### 5. Publish
+
+        Once approved, publish the draft to make it live. Provide any existing lessons the publisher should consider superseding; the publisher will merge/replace/link as appropriate.
+
+```
+POST /lessons/publish
+Content-Type: application/json
+
+{
+  "draftId": "draft_01H...",
+  "candidateExistingLessonIds": ["lesson_01G..."]
+}
+```
+
+        Response: a publish `report` naming the new artifact id, any superseded artifacts, and the substrate event the publish itself produced.
+
+### Re-run a published fixture
+
+        Once a fixture is live, you can re-run it any time against its parent surface:
+
+```
+POST /fixtures/rerun
+Content-Type: application/json
+
+{ "fixtureId": "fx_01H..." }
+```
+
+        Response includes the actual `result` the run produced and the `expected[]` assertions the fixture carries. The diff between the two is your regression signal.
+
+## Reading the output
+
+        Published artifacts become substrate. That means they show up as their own events, they get versioned, and, crucially, future drift readings can point at "this artifact was published on Tuesday" as a candidate explanation for a movement in the numbers.
+
+        The pipeline is *recursive by construction*. The drafter's own model call passes through the lens, so the act of proposing a correction is itself observed. Getting better is a measured event.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /hil/override`	Record a human override on a captured event.
+
+`POST /lessons/cluster`	Cluster overrides in a window.
+
+`POST /lessons/draft`	Ask the drafter to propose a corrective artifact for a cluster.
+
+`POST /hil/approve`	Approve a draft at the gate.
+
+`POST /hil/reject`	Reject a draft at the gate (comment required).
+
+`POST /lessons/publish`	Publish an approved draft as substrate.
+
+`POST /fixtures/rerun`	Re-run a published fixture against its parent surface.
+
+### POST /hil/override: request
+
+Field	Shape	Notes
+
+`agentId`	string (req)	The agent this override applies to.
+
+`surfaceId`	string (opt)	The surface, when known.
+
+`correlationId`	string (opt)	Ties the override to the original call.
+
+`tags`	string[] (opt)	Cohort tags like `fix_tier=…`, `severity=…`, and any other identifiers that will help clustering later.
+
+`originalOutput`	object (req)	What the system produced.
+
+`correctedOutput`	object (req)	What the human sent instead.
+
+`rationale`	string (opt)	Human explanation of the correction.
+
+`activeArtifacts`	array (opt)	Which lessons / fixtures were active at the time of the original call.
+
+### POST /lessons/draft: request
+
+Field	Shape	Notes
+
+`kind`	enum (req)	`skill`, `lesson`, `fixture`, or `code-change-recommendation`.
+
+`cluster`	object (req)	Payload from `/lessons/cluster`.
+
+`enqueue`	boolean (opt)	Queue the draft for the gate immediately. Default true.
+
+`parentSurfaceId`	string	Required for `fixture` drafts.
+
+`seedEventId`	string (opt)	For `fixture`: base the fixture on a real event.
+
+`seedRawRequest`	object (opt)	For `fixture`: hand-authored request shape when there's no seed event.
+
+`parentFixtureId`	string (opt)	For `fixture`: stack this fixture on an existing one.
+
+---
+
+### Chapter 13 — Drift attribution
+
+_Permalink: https://holonograph.ai/guide/drift-attribution.html_
+
+Chapter 13
+
+# Drift attribution
+
+        Reflects Holonograph v0.23.0 · ~6 min read
+
+        When a score changes over time, drift attribution tells you *which layer* of your system the change came from. It answers the question every operator asks after a moved number: *is this us, or is this the vendor, or is this our evaluation, or is this just noise?*
+
+## What it is
+
+        A per-surface analysis over a window that returns a **timeline of change points**. Each change point carries three things: the timestamp of the shift, one of four **source labels**, and the window over which the analysis is confident about that label.
+
+        The four source labels are the same four sources of drift the four-layer snapshot separates at capture time:
+
+          - **substrate**: your own deployment
+
+          - **light source**: the vendor moved under you
+
+          - **lens**: your evaluation configuration changed
+
+          - **noise**: the model's irreducible non-determinism
+
+## Why it matters
+
+        Without attribution, a score move is a mystery. The operator has to guess at the cause, and every guess pulls the team in a different direction. With attribution, the same score move is a labeled event with a first suggestion for what to do next. The whole point is to route the response to the layer that can act on it.
+
+## How to use it
+
+        Point the analysis at a surface and a window:
+
+```
+POST /lens/attribute
+Authorization: Bearer
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "since": "2026-06-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z",
+  "bucket": "day",
+  "changePointDeltaThreshold": 0.15
+}
+```
+
+        The response is the timeline plus a couple of companion arrays:
+
+```
+{
+  "surfaceId": "classify-intent",
+  "eventCount": 12483,
+  "changePoints": [
+    {
+      "timestamp": "2026-06-14T09:20:00Z",
+      "source": "light source",
+      "window": { "from": "2026-06-12T00:00:00Z", "to": "2026-06-15T00:00:00Z" }
+    }
+  ],
+  "bracketedWindows": [ /* companion windows the analysis wants you to know about before acting */ ]
+}
+```
+
+        `bucket` controls the temporal resolution of the timeline. `changePointDeltaThreshold` is a sensitivity knob: *higher = fewer points*. Both are optional; the defaults are usually what you want.
+
+## Reading the output
+
+        Every change point comes with one of the four source labels. Do this with each:
+
+Label	What it means	What to do
+
+                `substrate`
+                The change tracks something you changed about your deployment.
+                Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your substrate columns (Chapter 04) are where you look first.
+
+                `light source`
+                The vendor moved under you: a model was silently re-routed, updated, or its behavior shifted.
+                Check `light_source_identifier` across the window. If it's stable and the behavior still moved, the vendor changed the model behind an unchanged name.
+
+                `lens`
+                Your evaluation configuration changed.
+                Check the lens version history. A new lens version around the change point means you're seeing the apparatus move, not the system.
+
+                `noise`
+                The model's irreducible non-determinism dominates this window.
+                Gather more data before acting. A noise-labeled change point is a signal to widen the window, not a signal to ship a fix.
+
+        The `bracketedWindows` array holds companion windows the analysis wants you to see before acting on a source label: periods where the timeline is less confident than usual. Read those first when a change point lands adjacent to one.
+
+### Working through a report
+
+        The usual cadence: run the analysis over a window that ends at "yesterday," then walk the change points in order. Each label sends you to a different place (your deploy log, the vendor's changelog, your lens history), and the labeled window tells you where to look. Once every point has an action (or a decision not to act), the report is done.
+
+## Reference
+
+### Endpoint
+
+Method & path	Purpose
+
+`POST /lens/attribute`	Run drift attribution over a window.
+
+### Request
+
+Field	Shape	Notes
+
+`surfaceId`	string (req)	The surface to analyze.
+
+`since`	ISO 8601 (opt)	Inclusive lower bound on events considered.
+
+`until`	ISO 8601 (opt)	Exclusive upper bound.
+
+`bucket`	enum (opt)	`day`, `hour`, `minute`. Temporal resolution of the timeline.
+
+`changePointDeltaThreshold`	number 0–1 (opt)	Sensitivity. Higher = fewer change points.
+
+### Response
+
+Field	Shape	Notes
+
+`surfaceId`	string	Echo of the surface.
+
+`eventCount`	number	How many events were considered.
+
+`changePoints[]`	array	Timeline of change points; each has `timestamp`, `source` label, and `window`.
+
+`bracketedWindows[]`	array	Companion windows worth reading before acting on nearby change points.
+
+---
+
+### Chapter 14 — Variance isolation
+
+_Permalink: https://holonograph.ai/guide/variance-isolation.html_
+
+Chapter 14
+
+# Variance isolation
+
+        Reflects Holonograph v0.23.0 · ~7 min read
+
+        When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a **cleaned** reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
+
+## What it is
+
+        A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a **confidence verdict**. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
+
+## What you get
+
+        A cleaned variance figure and a **confidence verdict**. There are four:
+
+Verdict	Meaning
+
+`viable`	Trustworthy. Act on it.
+
+`degenerate`	Too few distinct conditions to separate signal from noise. Gather more data.
+
+`contaminated`	Inputs weren't held constant enough. Re-run under controlled conditions.
+
+`instrument-limited`	Measurement noise dominates. Don't trust the reading yet.
+
+        The verdict is what decides whether the number is worth acting on. A `viable` reading is the one you use; the other three are diagnostic. Each names *why* the reading isn't ready and *what* would fix it.
+
+## How to run it
+
+        Three endpoints, in order. The first produces the reading; the second gives it a verdict; the third governs what happens to it.
+
+### 1. Produce the reading
+
+```
+POST /lens/decomposeVariance
+Authorization: Bearer
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness",
+  "since": "2026-06-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z"
+}
+```
+
+        Response: an analysis record you'll reference by `eventId` in the next step.
+
+```
+{
+  "eventId": "evt_01H...",
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness"
+}
+```
+
+### 2. Get the verdict
+
+```
+POST /lens/decomposition/evaluate
+Content-Type: application/json
+
+{ "targetEventId": "evt_01H..." }
+```
+
+        Response: the confidence verdict and guidance for what to do next.
+
+### 3. Govern the result
+
+        Once you've seen the verdict, decide what to do with the reading. Governance is one of four actions:
+
+```
+POST /lens/decomposition/lifecycle
+Content-Type: application/json
+
+{
+  "targetEventId": "evt_01H...",
+  "status": "lock",
+  "approverId": "brian",
+  "pinnedLabel": "billing-triage-baseline-2026-Q3"
+}
+```
+
+Status	Effect
+
+`quarantine`	Hold the reading aside; don't use it in downstream comparisons until reviewed.
+
+`approve`	Accept the reading as trustworthy. Requires an `approverId`.
+
+`lock`	Freeze this reading as the reference against a `pinnedLabel`. Requires an `approverId` and the `pinnedLabel`.
+
+`reject`	Discard the reading. Requires an `approverId` and a comment.
+
+        The lifecycle response returns the persisted status alongside the original `targetEventId`. Governance decisions are themselves substrate events. They become part of the record, attributable in future drift readings like any other change.
+
+## What to do with each verdict
+
+Verdict	Next action
+
+                `viable`
+                Read the cleaned variance figure. If you want to hold this specific reading as a reference, `lock` it with a `pinnedLabel`. Otherwise `approve` and move on.
+
+                `degenerate`
+                The window doesn't have enough distinct conditions for the analysis to separate signal from noise. Widen the window, or drive more variety through the surface before re-running.
+
+                `contaminated`
+                The inputs weren't held constant enough to trust the reading. Re-run under controlled conditions. A replay through the surface at a fixed input panel is the usual fix.
+
+                `instrument-limited`
+                Measurement noise dominates whatever real movement is present. Don't trust the reading yet; if the reading matters, `quarantine` it while you widen the window or reduce input variability.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/decomposeVariance`	Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record `eventId`.
+
+`POST /lens/decomposition/evaluate`	Return the confidence verdict for the analysis record.
+
+`POST /lens/decomposition/lifecycle`	Govern the reading: `quarantine`, `approve`, `lock`, or `reject`.
+
+### POST /lens/decomposeVariance: request
+
+Field	Shape	Notes
+
+`surfaceId`	string (req)	The surface.
+
+`dimensionId`	string (req)	The dimension to isolate variance for.
+
+`since`	ISO 8601 (opt)	Inclusive lower bound on events considered.
+
+`until`	ISO 8601 (opt)	Exclusive upper bound.
+
+### POST /lens/decomposition/lifecycle: request
+
+Field	Shape	Notes
+
+`targetEventId`	string (req)	The analysis record from `decomposeVariance`.
+
+`status`	enum (req)	`quarantine`, `approve`, `lock`, or `reject`.
+
+`approverId`	string	Required for `approve`, `lock`, `reject`.
+
+`comment`	string (opt)	Free-form explanation. Required for `reject`.
+
+`pinnedLabel`	string	Required for `lock`. The label under which this reading is held as a reference.
+<!-- END-GENERATED-GUIDE-COMPLETE -->
+
 ## Links
 
 - Website: https://holonograph.ai
