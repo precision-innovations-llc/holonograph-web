@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f7f5f0" />
 <title>Sidecar / OTel integration — The Guide — Holonograph</title>
-<meta name="description" content="Capturing what doesn't pass through the lens, via OpenTelemetry — baggage propagation, auto-instrumentation, and message-attribute fallback for queues and pub-sub." />
+<meta name="description" content="Capturing what doesn't pass through the lens, via OpenTelemetry — baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
 <meta name="discloses" content="capability-only" />
-<meta name="reflects-version" content="v0.23.0" />
+<meta name="reflects-version" content="v0.26.0" />
+<meta name="reflects-client-version" content="0.3.0" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
 <link rel="canonical" href="https://holonograph.ai/guide/sidecar.html" />
@@ -23,7 +24,7 @@
     <span class="guide-topbar-sep">/</span>
     <span class="guide-crumb"><a href="./">The Guide</a> · Sidecar / OTel integration</span>
     <span class="guide-topbar-right">
-      <span class="guide-version">v0.23.0</span>
+      <span class="guide-version">v0.26.0 · client 0.3.0</span>
       <a href="./" class="guide-back-link">all chapters</a>
     </span>
   </header>
@@ -55,10 +56,10 @@
 
         <p class="guide-eyebrow">Chapter 08</p>
         <h1 class="guide-h1">Sidecar / OTel integration</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~5 min read</p>
+        <p class="guide-meta">Reflects Holonograph v0.26.0 <span class="dot">·</span> <code>@holonograph/client</code> 0.3.0 <span class="dot">·</span> ~9 min read</p>
 
         <p class="guide-lede">
-          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry, so the work on the other side rejoins the same evaluation.
+          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry — and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
         </p>
 
         <h2>What it is</h2>
@@ -177,6 +178,135 @@ async function handleJob(job) {
           Nothing changes at read time. Events written from the worker come back through <code>GET /lens/events</code> with the same <code>correlationId</code> as the originating request, and their <code>run_mode</code> column matches the originator's. That's what makes them queryable as one evaluation across the async boundary.
         </p>
 
+        <h2>Bounded emit buffer and OTLP export</h2>
+
+        <p>
+          Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The <code>@holonograph/client</code> 0.3.0 release adds a bounded emit buffer with three drain modes — direct HTTP, OpenTelemetry OTLP spans, or both — so operators can move evaluation events off the request path when synchronous <code>POST /lens/events</code> is too expensive to await.
+        </p>
+
+        <p>
+          The buffer is <strong>bounded</strong>, drops the oldest events when full, and <strong>counts every drop</strong>. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full <a href="./sdk-reference.html#delivery-modes"><code>emit</code> option shape</a>; this section is about the wire.
+        </p>
+
+        <h3>The four delivery modes</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Mode</th><th>Drain channel</th><th>Caller latency</th></tr></thead>
+            <tbody>
+              <tr><td><code>sync</code></td><td><code>POST /lens/events</code>, awaited</td><td>One HTTP round-trip per <code>reportOutcome</code>.</td></tr>
+              <tr><td><code>buffered</code></td><td><code>POST /lens/events</code>, background drain</td><td>Enqueue-only; caller resolves immediately.</td></tr>
+              <tr><td><code>otlp</code></td><td>OTLP/HTTP traces endpoint</td><td>Enqueue-only.</td></tr>
+              <tr><td><code>dual</code></td><td>Both, in parallel, per-channel accounting</td><td>Enqueue-only.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          <code>sync</code> is the default. The three buffered modes share the same ring buffer, the same accounting window, and the same drop semantics; only the drain differs.
+        </p>
+
+        <h3>What lands on the OTLP wire</h3>
+
+        <p>
+          Under <code>otlp</code> and <code>dual</code>, each evaluation becomes one span. Its dimensions become span events. Every attribute is namespaced under <code>holonograph.*</code>, so nothing collides with the rest of your OTel signal.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Span</th><th>Name</th></tr></thead>
+            <tbody>
+              <tr><td>Evaluation</td><td><code>holonograph.evaluation</code></td></tr>
+              <tr><td>Session liveness sentinel</td><td><code>holonograph.session.sentinel</code></td></tr>
+              <tr><td>Per-dimension span event</td><td><code>holonograph.dimension</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Attributes on the evaluation span</h4>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Attribute</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>holonograph.event.id</code></td><td>The event's canonical id. Under <code>dual</code>, this is the join key back to the HTTP payload.</td></tr>
+              <tr><td><code>holonograph.correlation_id</code></td><td>Binds calls into one evaluation across async hops.</td></tr>
+              <tr><td><code>holonograph.surface.id</code></td><td>The surface this evaluation belongs to.</td></tr>
+              <tr><td><code>holonograph.surface.fixture_id</code></td><td>Present when the call satisfied a fixture.</td></tr>
+              <tr><td><code>holonograph.surface.passed</code></td><td>Overall pass/fail after all dimensions.</td></tr>
+              <tr><td><code>holonograph.surface.cohort_tags</code></td><td>Cohort tags attached at <code>reportOutcome</code>.</td></tr>
+              <tr><td><code>holonograph.lens.version</code></td><td>Which lens version graded this event.</td></tr>
+              <tr><td><code>holonograph.light_source.id</code></td><td>Canonical light-source identifier.</td></tr>
+              <tr><td><code>holonograph.run_mode</code></td><td>Which run mode the call was made under.</td></tr>
+              <tr><td><code>holonograph.provenance</code></td><td>Origin category of the run.</td></tr>
+              <tr><td><code>holonograph.light.latency_ms</code></td><td>Model call latency.</td></tr>
+              <tr><td><code>holonograph.light.tokens.input</code>, <code>holonograph.light.tokens.output</code></td><td>Token counts from the model call.</td></tr>
+              <tr><td><code>holonograph.light.ok</code></td><td>Whether the model call itself succeeded.</td></tr>
+              <tr><td><code>holonograph.raw_response.location</code></td><td>Where the bulk payload lives: <code>store</code> or <code>http-channel</code>. Under <code>dual</code>, spans are the index; the body lives in the HTTP channel.</td></tr>
+              <tr><td><code>holonograph.emission.stream</code></td><td>Stream identifier for this client instance.</td></tr>
+              <tr><td><code>holonograph.emission.seq</code></td><td>Monotonic ordinal within the stream. Gaps signal drops; consumers detect all loss (including crash loss) from the ordinal alone.</td></tr>
+              <tr><td><code>holonograph.emission.final</code></td><td><code>true</code> on graceful <code>shutdown()</code>. Distinguishes clean stop from connection death.</td></tr>
+              <tr><td><code>holonograph.substrate.*</code></td><td>Substrate columns, namespaced under this prefix.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Per-dimension span events</h4>
+
+        <p>Each graded dimension is a span event named <code>holonograph.dimension</code> with:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Attribute</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>holonograph.dimension.id</code></td><td>Must match a dimension on the surface's contract.</td></tr>
+              <tr><td><code>holonograph.dimension.passed</code></td><td>Pass/fail for this dimension.</td></tr>
+              <tr><td><code>holonograph.dimension.score</code></td><td>Optional numeric score, when the dimension is scored.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Session sentinels: gap detection</h3>
+
+        <p>
+          Every <code>emit.sentinelIntervalMs</code> (default 30s), the client emits a <code>holonograph.session.sentinel</code> span on span-carrying channels. Sentinels carry <code>emission.stream</code> and <code>emission.seq</code> just like evaluation spans. Their purpose is <em>gap detection</em>: a consumer that sees an ordinal jump knows an event was dropped, even if the client crashed before it could tell anyone. The <code>emission.final</code> attribute goes <code>true</code> on the last event emitted by a graceful <code>shutdown()</code>, so a consumer can distinguish "the client stopped cleanly" from "the connection went dead."
+        </p>
+
+        <h3>Delivery completeness: the read</h3>
+
+        <p>
+          A bounded buffer with drop-on-overflow only produces trustworthy analysis if the drops are visible. The client publishes an accounting window every <code>emit.windowMs</code> (default 10s), and exposes it two ways:
+        </p>
+
+        <ul>
+          <li><strong>Pull</strong>: <code>client.completenessWindow()</code> returns the current window snapshot.</li>
+          <li><strong>Push</strong>: <code>emit.onWindow(window)</code> fires once per completed window.</li>
+        </ul>
+
+        <p>The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so <code>http</code> loss and <code>otlp</code> loss are distinguishable), a <code>completenessLowerBound</code> ratio, and a <code>biasFlag</code> that goes <code>true</code> whenever drops occurred. Downstream analyses read <code>biasFlag</code> and treat the affected interval as potentially non-random. See <a href="./sdk-reference.html#delivery-modes">SDK reference § Delivery modes</a> for the full <code>CompletenessWindow</code> shape.</p>
+
+        <h3>Extreme sustained load</h3>
+
+        <p>
+          The buffer is designed for occasional overflow, not sustained overrun. When the drop rate exceeds <code>emit.extremeSustainedLoad.dropRateThreshold</code> (default 1%) for longer than <code>emit.extremeSustainedLoad.sustainedForMs</code> (default 60s), the client fires <code>onExtremeSustainedLoad</code> with a summary event. Route it to your alerting; that is the signal to raise the <code>bufferSize</code>, add drain workers, or step down evaluation coverage rather than let the sample bias grow silently.
+        </p>
+
+        <h3>Graceful shutdown</h3>
+
+        <p>
+          Under buffered modes, call <code>client.shutdown()</code> before the process exits. It flushes any remaining buffered events, stops the drain, and marks the last-emitted span as <code>emission.final = true</code> so downstream consumers know the stream ended cleanly. No-op under <code>sync</code>.
+        </p>
+
+        <pre><code>process.on("SIGTERM", async () =&gt; {
+  await client.shutdown();
+  process.exit(0);
+});</code></pre>
+
+        <div class="guide-callout">
+          <span class="callout-label">The guarantee</span>
+          Buffered delivery is <strong>at-most-once</strong>. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as <code>biasFlag</code>. What leaves the buffer either lands or is failed — nothing gets duplicated to make up for loss.
+        </div>
+
         <h2>Reference</h2>
 
         <h3>Baggage keys</h3>
@@ -213,7 +343,7 @@ async function handleJob(job) {
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
     <span>Chapter 08 · Sidecar / OTel integration</span>
-    <span>Patent pending · v0.23.0</span>
+    <span>Patent pending · v0.26.0 · client 0.3.0</span>
   </footer>
 </body>
 </html>
