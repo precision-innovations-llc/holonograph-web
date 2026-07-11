@@ -453,11 +453,16 @@ html, body {
 .guide-footer a { color: var(--fg-dim); text-decoration: none; }
 .guide-footer a:hover { color: var(--accent); }
 
-/* ---------- index page: hero + card grid ---------- */
+/* ---------- index page: hero + card grid ----------
+   All three top-level sections (hero / router / TOC) share the same outer
+   bounds — max-width 900px, centered, 24px horizontal padding — so content
+   edges line up at the same x. The TOC selector is prefixed with .guide-main
+   because the generic `.guide-main ol` rule outranks a plain `.guide-toc-full`
+   on specificity and would otherwise override its centering + padding. */
 .guide-index-hero {
   max-width: 900px;
   margin: 0 auto 44px;
-  padding: 0 8px;
+  padding: 0 24px;
   text-align: left;
 }
 .guide-index-hero .guide-h1 { margin-bottom: 14px; }
@@ -471,11 +476,12 @@ html, body {
   margin: 4px 0 22px;
 }
 
-.guide-toc-full {
+.guide-main .guide-toc-full {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 8px;
+  padding: 0 24px;
   list-style: none;
+  color: var(--fg);
 }
 .guide-toc-full li {
   display: grid;
