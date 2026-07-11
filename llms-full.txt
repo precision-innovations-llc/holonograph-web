@@ -199,7 +199,7 @@ The Guide is capability-only by design. It documents *what* the operator does wi
 
 ## Client SDK
 
-The TypeScript HTTP client for a running Holonograph lens is published on npm as `@holonograph/client`. It is a single self-contained ES module with no runtime dependencies. It targets Node 18+ and any runtime with a global `fetch`. Fully typed; ships its own type declarations.
+The TypeScript HTTP client for a running Holonograph lens is published on npm as `@holonograph/client` (current version 0.3.0, tracking Holonograph server v0.26.0). It is a single self-contained ES module with no runtime dependencies. It targets Node 18+ and any runtime with a global `fetch`. Fully typed; ships its own type declarations. No CLI — the client is a library, and the Holonograph binary itself runs as a localhost daemon that the client speaks HTTP to.
 
 - Install: `npm install @holonograph/client`
 - Import: `import { HolonographClient } from '@holonograph/client'`
@@ -208,6 +208,21 @@ The TypeScript HTTP client for a running Holonograph lens is published on npm as
 - Full reference: https://holonograph.ai/guide/sdk-reference.html
 
 The client speaks to a lens over plain HTTP under the `/holonograph/*` path space (plus `/lens/*` event and availability endpoints) and carries `x-holonograph-*` headers for correlation and run mode. Errors surface as `HolonographHttpError` with typed subclasses for grading and availability flows. The everyday call loop is `client.messages.create()` → score the result → `handle.reportOutcome()`; the lens assembles and stores the evaluation event, and over time those events become the longitudinal record queried and visualized.
+
+### 0.3.0 additions: delivery modes and OTLP export
+
+The 0.3.0 release adds a bounded emit buffer to the client with four delivery modes, configured on the constructor's `emit` option:
+
+- `sync` (default) — `reportOutcome` awaits the `POST /lens/events` round-trip; errors throw at the call site.
+- `buffered` — bounded ring buffer with drop-on-overflow; `reportOutcome` resolves on enqueue; background drain flushes to `/lens/events`.
+- `otlp` — buffered; drain fans out as OpenTelemetry spans to an OTLP/HTTP traces endpoint.
+- `dual` — buffered; drain fans out to *both* `/lens/events` and OTLP/HTTP, with per-channel delivery tracking.
+
+Under buffered modes, delivery is **at-most-once**. Drops are counted at the buffer boundary and surfaced via a `CompletenessWindow` snapshot (`client.completenessWindow()` or `emit.onWindow` callback) carrying offered / dropped / delivered / failed counters, a per-channel breakdown (`http`, `otlp`), a `completenessLowerBound` ratio, and a `biasFlag` that goes `true` whenever drops occurred over the accounting window. Downstream analyses read `biasFlag` to treat the affected interval as potentially non-random. A separate `onExtremeSustainedLoad` callback fires when the drop rate exceeds an operator-configured threshold for an operator-configured duration (defaults 1% for 60s).
+
+On the OTLP wire, each evaluation becomes one span (`holonograph.evaluation`) with dimensions as span events (`holonograph.dimension`). Every attribute is namespaced under `holonograph.*` (event id, correlation id, surface + fixture + cohort tags, lens version, light-source id, run mode, provenance, latency, token counts, and the substrate columns). Session-liveness sentinels (`holonograph.session.sentinel`) fire every `sentinelIntervalMs` and carry monotonic emission ordinals (`emission.stream`, `emission.seq`) so consumers can detect drops from ordinal gaps alone — including crash loss. An `emission.final=true` attribute marks the last span from a graceful `client.shutdown()`, distinguishing clean stop from connection death.
+
+Under `dual` mode, OTLP spans carry only the event index; the bulk payload lives in the HTTP body, and the collector reconciles by `eventId`. This is what makes the OTel export path additive to any existing collector without duplicating storage.
 
 ## Links
 

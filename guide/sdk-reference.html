@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f7f5f0" />
 <title>SDK reference — The Guide — Holonograph</title>
-<meta name="description" content="The HolonographClient surface end-to-end — constructor options, the messages.create → handle → reportOutcome flow, contract.register, and availability.mark." />
+<meta name="description" content="The HolonographClient surface end-to-end — constructor options, the messages.create → handle → reportOutcome flow, contract.register, availability.mark, and the emit delivery modes." />
 <meta name="discloses" content="capability-only" />
-<meta name="reflects-version" content="v0.23.0" />
+<meta name="reflects-version" content="v0.26.0" />
+<meta name="reflects-client-version" content="0.3.0" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
 <link rel="canonical" href="https://holonograph.ai/guide/sdk-reference.html" />
@@ -23,7 +24,7 @@
     <span class="guide-topbar-sep">/</span>
     <span class="guide-crumb"><a href="./">The Guide</a> · SDK reference</span>
     <span class="guide-topbar-right">
-      <span class="guide-version">v0.23.0</span>
+      <span class="guide-version">v0.26.0 · client 0.3.0</span>
       <a href="./" class="guide-back-link">all chapters</a>
     </span>
   </header>
@@ -55,7 +56,7 @@
 
         <p class="guide-eyebrow">Chapter 05</p>
         <h1 class="guide-h1">SDK reference</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> <code>@holonograph/client</code> <span class="dot">·</span> ~10 min read</p>
+        <p class="guide-meta">Reflects Holonograph v0.26.0 <span class="dot">·</span> <code>@holonograph/client</code> 0.3.0 <span class="dot">·</span> ~12 min read</p>
 
         <p class="guide-lede">
           The <code>HolonographClient</code> is the operator-facing surface end-to-end: one class you construct, one call flow (<code>messages.create → handle → reportOutcome</code>), and two auxiliary namespaces (<code>contract</code>, <code>availability</code>) for shape and gap declarations. This chapter documents every method.
@@ -102,6 +103,7 @@ const client = new HolonographClient({
               <tr><td><code>runMode</code></td><td>enum (opt)</td><td>One of the canonical modes (<code>production</code>, <code>test</code>, <code>eval</code>, <code>replay</code>, <code>local_dev</code>). Sent as <code>x-holonograph-run-mode</code> on every request. Can be resolved per-call at request time; see <a href="./run-modes.html">Run modes</a>.</td></tr>
               <tr><td><code>lensVersion</code></td><td>string</td><td>Identifier of the lens configuration this client should call under. Pinned into every evaluation event this client produces.</td></tr>
               <tr><td><code>substrate</code></td><td>object</td><td>The <code>SubstrateSnapshot</code> attached to every event. Carries <code>lensVersion</code>, <code>lightSourceIdentifier</code>, <code>runMode</code>, <code>provenance</code>, and <code>operatorColumns</code>; see below.</td></tr>
+              <tr><td><code>emit</code></td><td>object (opt)</td><td>Delivery mode + buffering configuration for evaluation events. Four modes (<code>sync</code>, <code>buffered</code>, <code>otlp</code>, <code>dual</code>) trade caller latency against throughput and export path. Defaults to <code>{ mode: "sync" }</code>. See <a href="#delivery-modes">Delivery modes</a> below.</td></tr>
             </tbody>
           </table>
         </div>
@@ -119,6 +121,130 @@ const client = new HolonographClient({
               <tr><td><code>operatorColumns</code></td><td>object</td><td>The operator-declared deployment-state columns, keyed by column id. For example: <code>{ prompt_hash: "v2-sha256-…", tool_schema_version: "3.1.0" }</code>.</td></tr>
             </tbody>
           </table>
+        </div>
+
+        <h2 id="delivery-modes">Delivery modes: the <code>emit</code> option</h2>
+
+        <p>
+          The client defaults to <strong>synchronous</strong> delivery: every <code>reportOutcome</code> awaits the <code>POST /lens/events</code> round-trip and propagates errors to the call site. That is the safe default, and for many operators it is enough. When the evaluation call path becomes hot enough that caller latency starts to matter, or when events need to leave the process on an OpenTelemetry export path, three additional modes are available.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Mode</th><th>What it does</th></tr></thead>
+            <tbody>
+              <tr><td><code>sync</code></td><td>Default. <code>reportOutcome</code> awaits the HTTP POST; errors throw at the call site.</td></tr>
+              <tr><td><code>buffered</code></td><td>Bounded ring buffer, drop-on-overflow. <code>reportOutcome</code> resolves on enqueue; a background drain flushes to <code>/lens/events</code>. Fire-and-forget safe.</td></tr>
+              <tr><td><code>otlp</code></td><td>Buffered, but the drain fans out as OpenTelemetry spans to an OTLP/HTTP traces endpoint (the sidecar or collector of your choice).</td></tr>
+              <tr><td><code>dual</code></td><td>Buffered, and each drained batch fans out to <em>both</em> <code>/lens/events</code> and OTLP/HTTP, with per-channel delivery tracking. The spans on the OTLP side carry only the event index; the bulk payload lives in the HTTP body, and the collector reconciles by <code>eventId</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>All three buffered modes share the same bounded buffer and the same completeness accounting. What differs is the drain channel.</p>
+
+        <h3>Configuration</h3>
+
+        <pre><code>const client = new HolonographClient({
+  endpoint: "http://127.0.0.1:8080",
+  runMode: "production",
+  lensVersion: "lv_2026_07_01",
+  substrate: { /* ... */ },
+  emit: {
+    mode: "dual",
+    bufferSize: 2048,
+    flushIntervalMs: 1000,
+    sentinelIntervalMs: 30000,
+    windowMs: 10000,
+    otlp: {
+      endpoint: "http://127.0.0.1:4318/v1/traces",
+      headers: { authorization: "Bearer …" },
+      maxQueueSize: 4096
+    },
+    onWindow: (w) =&gt; metrics.record(w),
+    onFlushError: (err, event) =&gt; log.warn("flush failed", { err, event }),
+    onExtremeSustainedLoad: (e) =&gt; alerts.page("holonograph drop rate elevated", e)
+  }
+});</code></pre>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>mode</code></td><td>enum</td><td>One of <code>sync</code>, <code>buffered</code>, <code>otlp</code>, <code>dual</code>. Default <code>sync</code>.</td></tr>
+              <tr><td><code>bufferSize</code></td><td>number (opt)</td><td>Max events held in the ring buffer at once. Default 2048. Once full, the oldest events are dropped and counted.</td></tr>
+              <tr><td><code>flushIntervalMs</code></td><td>number (opt)</td><td>How often the buffer is drained to the wire. Default 1000ms.</td></tr>
+              <tr><td><code>sentinelIntervalMs</code></td><td>number (opt)</td><td>How often a session-liveness sentinel span is emitted on span-carrying channels. Default 30000ms.</td></tr>
+              <tr><td><code>windowMs</code></td><td>number (opt)</td><td>Length of one completeness-accounting window. Default 10000ms.</td></tr>
+              <tr><td><code>otlp</code></td><td>object (opt)</td><td>OTLP/HTTP traces endpoint configuration. Required for <code>otlp</code> and <code>dual</code> modes; see below.</td></tr>
+              <tr><td><code>onWindow</code></td><td>function (opt)</td><td>Called once per completed accounting window with the window's <code>CompletenessWindow</code> snapshot.</td></tr>
+              <tr><td><code>onFlushError</code></td><td>function (opt)</td><td>Called on per-event flush failures under buffered modes. Default <code>console.warn</code>. Under <code>sync</code> mode, flush errors throw at the call site instead.</td></tr>
+              <tr><td><code>extremeSustainedLoad</code></td><td>object (opt)</td><td><code>{ dropRateThreshold?: number, sustainedForMs?: number }</code>. When drops exceed the rate for the sustained duration, <code>onExtremeSustainedLoad</code> fires. Default 1% for 60000ms.</td></tr>
+              <tr><td><code>onExtremeSustainedLoad</code></td><td>function (opt)</td><td>Called when the extreme-load condition is met. Route to your alerting.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>emit.otlp</code></h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>endpoint</code></td><td>string</td><td>OTLP/HTTP traces URL. For example, <code>http://127.0.0.1:4318/v1/traces</code>.</td></tr>
+              <tr><td><code>headers</code></td><td>object (opt)</td><td>Extra request headers on the OTLP export (auth tokens, tenant hints, whatever your collector expects).</td></tr>
+              <tr><td><code>maxQueueSize</code></td><td>number (opt)</td><td>OTLP processor queue size. Defaults to <code>2 × bufferSize</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Reading delivery completeness</h3>
+
+        <p>
+          A bounded buffer with drop-on-overflow only produces trustworthy analysis if the drops are <em>counted</em>. The client publishes an accounting window every <code>emit.windowMs</code> and exposes the current window snapshot as a read.
+        </p>
+
+        <pre><code>const window = client.completenessWindow();
+if (window?.biasFlag) {
+  // drops occurred in this window; downstream analyses should treat
+  // the sample as potentially non-random over this interval
+}</code></pre>
+
+        <h4><code>client.completenessWindow(): CompletenessWindow | null</code></h4>
+
+        <p>Returns the current window's snapshot. Returns <code>null</code> under <code>sync</code> mode (no buffer, nothing to account for).</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>lensVersion</code></td><td>string</td><td>Which lens version this window is accounted under.</td></tr>
+              <tr><td><code>windowStartMs</code>, <code>windowEndMs</code></td><td>number</td><td>Window boundaries, in wall-clock ms.</td></tr>
+              <tr><td><code>offered</code></td><td>number</td><td>Events received from the caller during the window.</td></tr>
+              <tr><td><code>dropped</code></td><td>number</td><td>Events dropped at the buffer boundary (ingress-time bound).</td></tr>
+              <tr><td><code>delivered</code></td><td>number</td><td>Events successfully egressed across all drain channels.</td></tr>
+              <tr><td><code>failed</code></td><td>number</td><td>Events that reached a drain channel but the wire rejected.</td></tr>
+              <tr><td><code>channels</code></td><td>object</td><td>Per-channel breakdown (<code>http</code>, <code>otlp</code>), each with <code>{ attempted, delivered, failed }</code>. Distinguishes <code>/lens/events</code> loss from OTLP-export loss.</td></tr>
+              <tr><td><code>completenessLowerBound</code></td><td>number</td><td>The ratio <code>(offered − dropped) / offered</code>. A window's floor coverage.</td></tr>
+              <tr><td><code>biasFlag</code></td><td>boolean</td><td><code>true</code> when drops occurred in the window. Signals the sample can no longer be treated as random over this interval.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4><code>client.shutdown(): Promise&lt;void&gt;</code></h4>
+
+        <p>
+          Flushes any remaining buffered events and stops the background drain. Call before process exit under buffered modes so an in-flight window doesn't die with the process. No-op under <code>sync</code> mode.
+        </p>
+
+        <pre><code>process.on("SIGTERM", async () =&gt; {
+  await client.shutdown();
+  process.exit(0);
+});</code></pre>
+
+        <div class="guide-callout">
+          <span class="callout-label">The guarantee</span>
+          Buffered modes are <strong>at-most-once</strong>. There is no reordering, no retry, no hidden growth. Drop-on-overflow is the only bound; the drops are counted and surfaced as <code>biasFlag</code>. Fire-and-forget stays fire-and-forget.
         </div>
 
         <h2>The call flow</h2>
@@ -367,7 +493,7 @@ try {
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
     <span>Chapter 05 · SDK reference</span>
-    <span>Patent pending · v0.23.0</span>
+    <span>Patent pending · v0.26.0 · client 0.3.0</span>
   </footer>
 </body>
 </html>
