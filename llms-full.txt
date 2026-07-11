@@ -199,7 +199,7 @@ The Guide is capability-only by design. It documents *what* the operator does wi
 
 ## Client SDK
 
-The TypeScript HTTP client for a running Holonograph lens is published on npm as `@holonograph/client` (current version 0.3.0, tracking Holonograph server v0.26.0). It is a single self-contained ES module with no runtime dependencies. It targets Node 18+ and any runtime with a global `fetch`. Fully typed; ships its own type declarations. No CLI — the client is a library, and the Holonograph binary itself runs as a localhost daemon that the client speaks HTTP to.
+The TypeScript HTTP client for a running Holonograph lens is published on npm as `@holonograph/client` (current version {{client}}, tracking Holonograph server v{{binary}}). It is a single self-contained ES module with no runtime dependencies. It targets Node 18+ and any runtime with a global `fetch`. Fully typed; ships its own type declarations. No CLI — the client is a library, and the Holonograph binary itself runs as a localhost daemon that the client speaks HTTP to.
 
 - Install: `npm install @holonograph/client`
 - Import: `import { HolonographClient } from '@holonograph/client'`

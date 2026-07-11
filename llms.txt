@@ -107,7 +107,7 @@ The Guide is capability-only by design. Deeper technical validation of the under
 
 ## Client SDK
 
-The TypeScript HTTP client is published as `@holonograph/client` on npm. Install with `npm install @holonograph/client`. Import as `import { HolonographClient } from '@holonograph/client'`. Single self-contained ES module, no runtime dependencies, targets Node 18+ and any runtime with a global `fetch`. Package repository: https://github.com/holonograph/client.
+The TypeScript HTTP client is published as `@holonograph/client` on npm (current: {{client}}, tracking Holonograph v{{binary}}). Install with `npm install @holonograph/client`. Import as `import { HolonographClient } from '@holonograph/client'`. Single self-contained ES module, no runtime dependencies, targets Node 18+ and any runtime with a global `fetch`. Package repository: https://github.com/holonograph/client.
 
 ## Contact
 
