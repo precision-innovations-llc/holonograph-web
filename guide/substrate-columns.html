@@ -10,7 +10,7 @@
 <meta name="reflects-version" content="v0.23.0" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
-<link rel="canonical" href="https://holonograph.ai/guide/substrate-columns.html" />
+<link rel="canonical" href="https://holonograph.ai/guide/substrate-columns" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -33,20 +33,20 @@
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
       <ol>
-        <li><span class="s-num">01</span><a href="./overview.html" class="s-ttl">Overview &amp; first principles</a></li>
-        <li><span class="s-num">02</span><a href="./surface-contracts.html" class="s-ttl">Surface contracts</a></li>
-        <li><span class="s-num">03</span><a href="./snapshot.html" class="s-ttl">The four-layer snapshot</a></li>
-        <li class="current"><span class="s-num">04</span><a href="./substrate-columns.html" class="s-ttl">Substrate columns</a></li>
-        <li><span class="s-num">05</span><a href="./sdk-reference.html" class="s-ttl">SDK reference</a></li>
-        <li><span class="s-num">06</span><a href="./mediating-lens.html" class="s-ttl">The mediating lens</a></li>
-        <li><span class="s-num">07</span><a href="./run-modes.html" class="s-ttl">Run modes</a></li>
-        <li><span class="s-num">08</span><a href="./sidecar.html" class="s-ttl">Sidecar / OTel integration</a></li>
-        <li><span class="s-num">09</span><a href="./topology-scanner.html" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="./conformance.html" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li><span class="s-num">11</span><a href="./multiplexer.html" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">12</span><a href="./lessons-pipeline.html" class="s-ttl">The lessons pipeline</a></li>
-        <li><span class="s-num">13</span><a href="./drift-attribution.html" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">14</span><a href="./variance-isolation.html" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
+        <li class="current"><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
       </ol>
     </aside>
 
@@ -95,7 +95,7 @@
             <tbody>
               <tr><td><code>lens_version</code></td><td>string</td><td>Which lens configuration was in effect.</td></tr>
               <tr><td><code>light_source_identifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/model/version</code>. Vendor-controlled.</td></tr>
-              <tr><td><code>run_mode</code></td><td>enum</td><td>Which run mode the evaluation ran under. See <a href="./run-modes.html">Run modes</a>.</td></tr>
+              <tr><td><code>run_mode</code></td><td>enum</td><td>Which run mode the evaluation ran under. See <a href="./run-modes">Run modes</a>.</td></tr>
               <tr><td><code>correlation_id</code></td><td>string</td><td>Ties together the calls of one evaluation (e.g. across multiplex vendors).</td></tr>
               <tr><td><code>provenance</code></td><td>enum</td><td>Origin category of the run, typically <code>production-state</code> versus <code>exploratory-state</code>.</td></tr>
               <tr><td><code>timestamp</code></td><td>ISO 8601</td><td>When the evaluation occurred.</td></tr>
@@ -212,11 +212,11 @@
         </div>
 
         <nav class="guide-nav" aria-label="Chapter navigation">
-          <a href="./snapshot.html" class="nav-prev">
+          <a href="./snapshot" class="nav-prev">
             <span class="nav-label">Previous</span>
             <span class="nav-title">The four-layer snapshot</span>
           </a>
-          <a href="./sdk-reference.html" class="nav-next">
+          <a href="./sdk-reference" class="nav-next">
             <span class="nav-label">Next</span>
             <span class="nav-title">SDK reference</span>
           </a>

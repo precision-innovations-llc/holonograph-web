@@ -88,20 +88,20 @@ These terms have specific Holonograph meanings that may differ from generic LLM/
 
 The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, and read attribution. Fourteen chapters across three arcs — integration, workflow, and attribution.
 
-- Overview & first principles: https://holonograph.ai/guide/overview.html
-- Surface contracts: https://holonograph.ai/guide/surface-contracts.html
-- The four-layer snapshot: https://holonograph.ai/guide/snapshot.html
-- Substrate columns: https://holonograph.ai/guide/substrate-columns.html
-- SDK reference: https://holonograph.ai/guide/sdk-reference.html
-- The mediating lens — placement & call flow: https://holonograph.ai/guide/mediating-lens.html
-- Run modes: https://holonograph.ai/guide/run-modes.html
-- Sidecar / OTel integration: https://holonograph.ai/guide/sidecar.html
-- Surface topology scanner: https://holonograph.ai/guide/topology-scanner.html
-- Conformance & fixtures: https://holonograph.ai/guide/conformance.html
-- The multiplexer: https://holonograph.ai/guide/multiplexer.html
-- The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline.html
-- Drift attribution: https://holonograph.ai/guide/drift-attribution.html
-- Variance isolation: https://holonograph.ai/guide/variance-isolation.html
+- Overview & first principles: https://holonograph.ai/guide/overview
+- Surface contracts: https://holonograph.ai/guide/surface-contracts
+- The four-layer snapshot: https://holonograph.ai/guide/snapshot
+- Substrate columns: https://holonograph.ai/guide/substrate-columns
+- SDK reference: https://holonograph.ai/guide/sdk-reference
+- The mediating lens — placement & call flow: https://holonograph.ai/guide/mediating-lens
+- Run modes: https://holonograph.ai/guide/run-modes
+- Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
+- Surface topology scanner: https://holonograph.ai/guide/topology-scanner
+- Conformance & fixtures: https://holonograph.ai/guide/conformance
+- The multiplexer: https://holonograph.ai/guide/multiplexer
+- The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
+- Drift attribution: https://holonograph.ai/guide/drift-attribution
+- Variance isolation: https://holonograph.ai/guide/variance-isolation
 
 The Guide is capability-only by design. Deeper technical validation of the underlying methodology is available under NDA.
 
