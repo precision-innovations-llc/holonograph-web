@@ -180,20 +180,20 @@ Full operator documentation lives at https://holonograph.ai/guide/ — fourteen 
 
 The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface — how to call the lens, declare surfaces, populate substrate columns, and read attribution. Fourteen chapters across three arcs: integration (how to wire the lens in), workflow (day-to-day operation), and attribution (the analyses that answer *which layer changed?* and *how much of this movement is real?*).
 
-- Overview & first principles: https://holonograph.ai/guide/overview.html
-- Surface contracts: https://holonograph.ai/guide/surface-contracts.html
-- The four-layer snapshot: https://holonograph.ai/guide/snapshot.html
-- Substrate columns: https://holonograph.ai/guide/substrate-columns.html
-- SDK reference: https://holonograph.ai/guide/sdk-reference.html
-- The mediating lens — placement & call flow: https://holonograph.ai/guide/mediating-lens.html
-- Run modes: https://holonograph.ai/guide/run-modes.html
-- Sidecar / OTel integration: https://holonograph.ai/guide/sidecar.html
-- Surface topology scanner: https://holonograph.ai/guide/topology-scanner.html
-- Conformance & fixtures: https://holonograph.ai/guide/conformance.html
-- The multiplexer: https://holonograph.ai/guide/multiplexer.html
-- The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline.html
-- Drift attribution: https://holonograph.ai/guide/drift-attribution.html
-- Variance isolation: https://holonograph.ai/guide/variance-isolation.html
+- Overview & first principles: https://holonograph.ai/guide/overview
+- Surface contracts: https://holonograph.ai/guide/surface-contracts
+- The four-layer snapshot: https://holonograph.ai/guide/snapshot
+- Substrate columns: https://holonograph.ai/guide/substrate-columns
+- SDK reference: https://holonograph.ai/guide/sdk-reference
+- The mediating lens — placement & call flow: https://holonograph.ai/guide/mediating-lens
+- Run modes: https://holonograph.ai/guide/run-modes
+- Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
+- Surface topology scanner: https://holonograph.ai/guide/topology-scanner
+- Conformance & fixtures: https://holonograph.ai/guide/conformance
+- The multiplexer: https://holonograph.ai/guide/multiplexer
+- The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
+- Drift attribution: https://holonograph.ai/guide/drift-attribution
+- Variance isolation: https://holonograph.ai/guide/variance-isolation
 
 The Guide is capability-only by design. It documents *what* the operator does with each feature — the endpoints, the SDK methods, the labels the analyses return — and stops at the SDK boundary. Deeper technical validation of the underlying methodology (the variance model, the confidence-interval math, the calibration mechanism) is deliberately absent from the public pages; that layer is available under NDA.
 
@@ -205,7 +205,7 @@ The TypeScript HTTP client for a running Holonograph lens is published on npm as
 - Import: `import { HolonographClient } from '@holonograph/client'`
 - npm: https://www.npmjs.com/package/@holonograph/client
 - Source: https://github.com/holonograph/client
-- Full reference: https://holonograph.ai/guide/sdk-reference.html
+- Full reference: https://holonograph.ai/guide/sdk-reference
 
 The client speaks to a lens over plain HTTP under the `/holonograph/*` path space (plus `/lens/*` event and availability endpoints) and carries `x-holonograph-*` headers for correlation and run mode. Errors surface as `HolonographHttpError` with typed subclasses for grading and availability flows. The everyday call loop is `client.messages.create()` → score the result → `handle.reportOutcome()`; the lens assembles and stores the evaluation event, and over time those events become the longitudinal record queried and visualized.
 
@@ -227,11 +227,11 @@ Under `dual` mode, OTLP spans carry only the event index; the bulk payload lives
 <!-- BEGIN-GENERATED-GUIDE-COMPLETE -->
 ## The Guide — Complete text
 
-The full text of every guide chapter, in reading order. Individual chapter permalinks live at https://holonograph.ai/guide/{slug}.html and a single-URL HTML consolidation at https://holonograph.ai/guide/all.html. Auto-generated from the chapter sources by scripts/build-guide-all.mjs.
+The full text of every guide chapter, in reading order. Individual chapter permalinks live at https://holonograph.ai/guide/{slug} and a single-URL HTML consolidation at https://holonograph.ai/guide/all. Auto-generated from the chapter sources by scripts/build-guide-all.mjs.
 
 ### Chapter 01 — Overview & first principles
 
-_Permalink: https://holonograph.ai/guide/overview.html_
+_Permalink: https://holonograph.ai/guide/overview_
 
 Chapter 01
 
@@ -323,7 +323,7 @@ Chapter 01
 
 ### Chapter 02 — Surface contracts
 
-_Permalink: https://holonograph.ai/guide/surface-contracts.html_
+_Permalink: https://holonograph.ai/guide/surface-contracts_
 
 Chapter 02
 
@@ -343,9 +343,9 @@ Chapter 02
 
           - **Cohort tags**: the discrete labels you use to slice results (e.g. `customer-tier=enterprise`, `fix_tier=tool-input-schema`).
 
-          - **Substrate columns**: the named columns Holonograph captures with every call, so a later reading can be attributed to *what changed about your deployment*. See [Substrate columns](./substrate-columns.html).
+          - **Substrate columns**: the named columns Holonograph captures with every call, so a later reading can be attributed to *what changed about your deployment*. See [Substrate columns](./substrate-columns).
 
-          - **Routings**: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See [The multiplexer](./multiplexer.html).
+          - **Routings**: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See [The multiplexer](./multiplexer).
 
         Contracts are versioned by replacement, not mutation: you register a new contract, the agent identifier stays, and Holonograph records a `versionId` so past events remain readable against the shape they were captured under.
 
@@ -453,7 +453,7 @@ Method & path	Purpose
 
           - `Authorization: Bearer `: when the deployment enables bearer auth.
 
-          - `x-holonograph-run-mode: `: the run mode this call belongs to; see [Run modes](./run-modes.html).
+          - `x-holonograph-run-mode: `: the run mode this call belongs to; see [Run modes](./run-modes).
 
 ### Error envelope
 
@@ -473,7 +473,7 @@ Method & path	Purpose
 
 ### Chapter 03 — The four-layer snapshot
 
-_Permalink: https://holonograph.ai/guide/snapshot.html_
+_Permalink: https://holonograph.ai/guide/snapshot_
 
 Chapter 03
 
@@ -489,7 +489,7 @@ Chapter 03
 
         The four layers of one event:
 
-          - **Substrate**: the state of your deployment at call time. Populated from the columns declared on the contract ([Substrate columns](./substrate-columns.html)). This is where `prompt_hash`, `tool_schema_version`, and any operator-declared columns land.
+          - **Substrate**: the state of your deployment at call time. Populated from the columns declared on the contract ([Substrate columns](./substrate-columns)). This is where `prompt_hash`, `tool_schema_version`, and any operator-declared columns land.
 
           - **Light source**: which model produced the output. Captured as `vendor/model/version`, so a silent vendor re-route behind a stable alias is visible in the record.
 
@@ -608,13 +608,13 @@ Param	Shape	Notes
 
           - `Authorization: Bearer `: when the deployment enables bearer auth.
 
-          - `x-holonograph-run-mode: `: required by fail-closed mode enforcement; see [Run modes](./run-modes.html).
+          - `x-holonograph-run-mode: `: required by fail-closed mode enforcement; see [Run modes](./run-modes).
 
 ---
 
 ### Chapter 04 — Substrate columns
 
-_Permalink: https://holonograph.ai/guide/substrate-columns.html_
+_Permalink: https://holonograph.ai/guide/substrate-columns_
 
 Chapter 04
 
@@ -651,7 +651,7 @@ Column	Type	Meaning
 
 `light_source_identifier`	string	Which model produced the output, as `vendor/model/version`. Vendor-controlled.
 
-`run_mode`	enum	Which run mode the evaluation ran under. See [Run modes](./run-modes.html).
+`run_mode`	enum	Which run mode the evaluation ran under. See [Run modes](./run-modes).
 
 `correlation_id`	string	Ties together the calls of one evaluation (e.g. across multiplex vendors).
 
@@ -763,7 +763,7 @@ Field	Values	What it says
 
 ### Chapter 05 — SDK reference
 
-_Permalink: https://holonograph.ai/guide/sdk-reference.html_
+_Permalink: https://holonograph.ai/guide/sdk-reference_
 
 Chapter 05
 
@@ -813,7 +813,7 @@ Option	Shape	Notes
 
 `token`	string (opt)	Bearer token, when the lens requires one.
 
-`runMode`	enum (opt)	One of the canonical modes (`production`, `test`, `eval`, `replay`, `local_dev`). Sent as `x-holonograph-run-mode` on every request. Can be resolved per-call at request time; see [Run modes](./run-modes.html).
+`runMode`	enum (opt)	One of the canonical modes (`production`, `test`, `eval`, `replay`, `local_dev`). Sent as `x-holonograph-run-mode` on every request. Can be resolved per-call at request time; see [Run modes](./run-modes).
 
 `lensVersion`	string	Identifier of the lens configuration this client should call under. Pinned into every evaluation event this client produces.
 
@@ -831,7 +831,7 @@ Field	Shape	Notes
 
 `runMode`	enum	Which run mode the evaluation ran under.
 
-`provenance`	string	Origin category of the run; see [Substrate columns](./substrate-columns.html).
+`provenance`	string	Origin category of the run; see [Substrate columns](./substrate-columns).
 
 `operatorColumns`	object	The operator-declared deployment-state columns, keyed by column id. For example: `{ prompt_hash: "v2-sha256-…", tool_schema_version: "3.1.0" }`.
 
@@ -1056,7 +1056,7 @@ Field	Shape	Notes
 
 `actual`	string	What the model actually produced (or a short summary).
 
-        Calling `reportOutcome` persists the evaluation event to Holonograph's substrate: one row, four layers bound (see [The four-layer snapshot](./snapshot.html)). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+        Calling `reportOutcome` persists the evaluation event to Holonograph's substrate: one row, four layers bound (see [The four-layer snapshot](./snapshot)). What Holonograph does with that event afterwards is the subject of the analysis chapters.
 
 ### Multiplex: grade the observers
 
@@ -1083,13 +1083,13 @@ await handle.reportOutcome({
 });
 ```
 
-        See [The multiplexer](./multiplexer.html) for how routings are declared.
+        See [The multiplexer](./multiplexer) for how routings are declared.
 
 ## Contract
 
 ### contract.register(contract)
 
-        Registers or replaces the surface contract for this agent. Returns a `ContractSummary` reflecting the newly-active shape. See [Surface contracts](./surface-contracts.html) for the full contract shape and the summary fields.
+        Registers or replaces the surface contract for this agent. Returns a `ContractSummary` reflecting the newly-active shape. See [Surface contracts](./surface-contracts) for the full contract shape and the summary fields.
 
 ```
 const summary = await client.contract.register({
@@ -1132,7 +1132,7 @@ await client.availability.mark({
 
           - `x-holonograph-run-mode: `: from the client's `runMode`, unless resolved per-call. A missing mode is rejected by the daemon by design (fail-closed).
 
-        For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see [Run modes](./run-modes.html).
+        For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see [Run modes](./run-modes).
 
 ## Escape hatch: callDirectly
 
@@ -1182,7 +1182,7 @@ try {
 
 ### Chapter 06 — The mediating lens
 
-_Permalink: https://holonograph.ai/guide/mediating-lens.html_
+_Permalink: https://holonograph.ai/guide/mediating-lens_
 
 Chapter 06
 
@@ -1253,7 +1253,7 @@ Content-Type: application/json
 
 ### Via the SDK
 
-        Most integrations use the SDK's `messages.create()`, which wraps the endpoint and returns a call handle documented in [SDK reference](./sdk-reference.html). The wire shape above is what the handle's `.result` is unpacked from.
+        Most integrations use the SDK's `messages.create()`, which wraps the endpoint and returns a call handle documented in [SDK reference](./sdk-reference). The wire shape above is what the handle's `.result` is unpacked from.
 
 ```
 const handle = await client.messages.create({
@@ -1332,7 +1332,7 @@ Field	Shape	Notes
 
 ### Chapter 07 — Run modes
 
-_Permalink: https://holonograph.ai/guide/run-modes.html_
+_Permalink: https://holonograph.ai/guide/run-modes_
 
 Chapter 07
 
@@ -1427,11 +1427,11 @@ Baggage key	Carries
 
 `holonograph.correlation-id`	The correlation id, so calls on the other side of the boundary bind into the same evaluation.
 
-        The receiver extracts both keys from Baggage and constructs its `HolonographClient` with the run mode it inherited, then passes the correlation id through to `messages.create()`. See [Sidecar / OTel integration](./sidecar.html) for the propagation mechanism.
+        The receiver extracts both keys from Baggage and constructs its `HolonographClient` with the run mode it inherited, then passes the correlation id through to `messages.create()`. See [Sidecar / OTel integration](./sidecar) for the propagation mechanism.
 
 ## Reading the output
 
-        `run_mode` is one of the mandatory substrate columns on every event (see [Substrate columns](./substrate-columns.html)), so every reading you do downstream is already sliceable by mode without any extra work.
+        `run_mode` is one of the mandatory substrate columns on every event (see [Substrate columns](./substrate-columns)), so every reading you do downstream is already sliceable by mode without any extra work.
 
         Two default habits keep your reads honest:
 
@@ -1465,7 +1465,7 @@ Baggage key	Carries
 
 ### Chapter 08 — Sidecar / OTel integration
 
-_Permalink: https://holonograph.ai/guide/sidecar.html_
+_Permalink: https://holonograph.ai/guide/sidecar_
 
 Chapter 08
 
@@ -1694,7 +1694,7 @@ process.on("SIGTERM", async () => {
 
 Key	Value
 
-`holonograph.runmode`	One of the canonical five run modes (see [Run modes](./run-modes.html)).
+`holonograph.runmode`	One of the canonical five run modes (see [Run modes](./run-modes)).
 
 `holonograph.correlation-id`	The correlation id binding calls into one evaluation.
 
@@ -1706,7 +1706,7 @@ Key	Value
 
 ### Chapter 09 — Surface topology scanner
 
-_Permalink: https://holonograph.ai/guide/topology-scanner.html_
+_Permalink: https://holonograph.ai/guide/topology-scanner_
 
 Chapter 09
 
@@ -1835,7 +1835,7 @@ Field	What it tells you
 
 ### Acting on the report
 
-        The usual cadence: a scan runs nightly, its report gets read by an operator, undeclared dimensions get added to the contract, retirement candidates get retired (see the `supersededBy` mechanism in [Surface contracts](./surface-contracts.html)). Over time, "clean scan" becomes the deploy readiness signal for contract changes.
+        The usual cadence: a scan runs nightly, its report gets read by an operator, undeclared dimensions get added to the contract, retirement candidates get retired (see the `supersededBy` mechanism in [Surface contracts](./surface-contracts)). Over time, "clean scan" becomes the deploy readiness signal for contract changes.
 
 ## Reference
 
@@ -1897,7 +1897,7 @@ Field	Shape	Notes
 
 ### Chapter 10 — Conformance & fixtures
 
-_Permalink: https://holonograph.ai/guide/conformance.html_
+_Permalink: https://holonograph.ai/guide/conformance_
 
 Chapter 10
 
@@ -2104,7 +2104,7 @@ Field	Shape	Notes
 
 `surfaceId`	string (opt)	Restrict the check to one surface.
 
-`provenance`	enum (opt)	Default `all`. Same values as [GET /lens/events](./snapshot.html).
+`provenance`	enum (opt)	Default `all`. Same values as [GET /lens/events](./snapshot).
 
 `since`, `until`	ISO 8601 (opt)	Window bounds.
 
@@ -2122,7 +2122,7 @@ Field	Shape	Notes
 
 ### Chapter 11 — The multiplexer
 
-_Permalink: https://holonograph.ai/guide/multiplexer.html_
+_Permalink: https://holonograph.ai/guide/multiplexer_
 
 Chapter 11
 
@@ -2266,7 +2266,7 @@ Field	Shape	Notes
 
 ### Chapter 12 — The lessons pipeline
 
-_Permalink: https://holonograph.ai/guide/lessons-pipeline.html_
+_Permalink: https://holonograph.ai/guide/lessons-pipeline_
 
 Chapter 12
 
@@ -2497,7 +2497,7 @@ Field	Shape	Notes
 
 ### Chapter 13 — Drift attribution
 
-_Permalink: https://holonograph.ai/guide/drift-attribution.html_
+_Permalink: https://holonograph.ai/guide/drift-attribution_
 
 Chapter 13
 
@@ -2629,7 +2629,7 @@ Field	Shape	Notes
 
 ### Chapter 14 — Variance isolation
 
-_Permalink: https://holonograph.ai/guide/variance-isolation.html_
+_Permalink: https://holonograph.ai/guide/variance-isolation_
 
 Chapter 14
 

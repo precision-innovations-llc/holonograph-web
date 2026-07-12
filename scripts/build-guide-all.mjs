@@ -123,6 +123,9 @@ const sidebarItems = CHAPTERS.map(
     `        <li><span class="s-num">${num}</span><a href="#${slug}" class="s-ttl">${title}</a></li>`
 ).join("\n");
 
+// Note: all URL references in the generated page use the clean form (no .html)
+// to match sitemap.xml and per-chapter canonical tags.
+
 const chapterSections = chapterBodies
   .map(
     ({ num, slug, title, body }) => `
@@ -147,7 +150,7 @@ const allHtml = `<!DOCTYPE html>
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
 <meta name="generator" content="build-guide-all.mjs" />
-<link rel="canonical" href="https://holonograph.ai/guide/all.html" />
+<link rel="canonical" href="https://holonograph.ai/guide/all" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%235f3ddc' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%235f3ddc' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -215,7 +218,7 @@ const currentLlms = readFileSync(llmsPath, "utf8");
 const chapterPlain = chapterBodies
   .map(({ num, slug, title, body }) => {
     const prose = htmlToPlain(body);
-    return `### Chapter ${num} — ${title}\n\n_Permalink: https://holonograph.ai/guide/${slug}.html_\n\n${prose}`;
+    return `### Chapter ${num} — ${title}\n\n_Permalink: https://holonograph.ai/guide/${slug}_\n\n${prose}`;
   })
   .join("\n\n---\n\n");
 
@@ -225,7 +228,7 @@ const GUIDE_MARKER_END = "<!-- END-GENERATED-GUIDE-COMPLETE -->";
 const newSection = `${GUIDE_MARKER_START}
 ## The Guide — Complete text
 
-The full text of every guide chapter, in reading order. Individual chapter permalinks live at https://holonograph.ai/guide/{slug}.html and a single-URL HTML consolidation at https://holonograph.ai/guide/all.html. Auto-generated from the chapter sources by scripts/build-guide-all.mjs.
+The full text of every guide chapter, in reading order. Individual chapter permalinks live at https://holonograph.ai/guide/{slug} and a single-URL HTML consolidation at https://holonograph.ai/guide/all. Auto-generated from the chapter sources by scripts/build-guide-all.mjs.
 
 ${chapterPlain}
 ${GUIDE_MARKER_END}`;

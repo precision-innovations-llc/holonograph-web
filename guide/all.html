@@ -12,7 +12,7 @@
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
 <meta name="generator" content="build-guide-all.mjs" />
-<link rel="canonical" href="https://holonograph.ai/guide/all.html" />
+<link rel="canonical" href="https://holonograph.ai/guide/all" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%235f3ddc' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%235f3ddc' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -202,8 +202,8 @@
         <ul>
           <li><strong>Dimensions</strong>: the scoring axes an evaluation returns (e.g. <code>correctness</code>, <code>tone</code>, <code>schema-conformance</code>).</li>
           <li><strong>Cohort tags</strong>: the discrete labels you use to slice results (e.g. <code>customer-tier=enterprise</code>, <code>fix_tier=tool-input-schema</code>).</li>
-          <li><strong>Substrate columns</strong>: the named columns Holonograph captures with every call, so a later reading can be attributed to <em>what changed about your deployment</em>. See <a href="./substrate-columns.html">Substrate columns</a>.</li>
-          <li><strong>Routings</strong>: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See <a href="./multiplexer.html">The multiplexer</a>.</li>
+          <li><strong>Substrate columns</strong>: the named columns Holonograph captures with every call, so a later reading can be attributed to <em>what changed about your deployment</em>. See <a href="./substrate-columns">Substrate columns</a>.</li>
+          <li><strong>Routings</strong>: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See <a href="./multiplexer">The multiplexer</a>.</li>
         </ul>
 
         <p>
@@ -322,7 +322,7 @@ Content-Type: application/json
 
         <ul>
           <li><code>Authorization: Bearer &lt;token&gt;</code>: when the deployment enables bearer auth.</li>
-          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code>: the run mode this call belongs to; see <a href="./run-modes.html">Run modes</a>.</li>
+          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code>: the run mode this call belongs to; see <a href="./run-modes">Run modes</a>.</li>
         </ul>
 
         <h3>Error envelope</h3>
@@ -361,7 +361,7 @@ Content-Type: application/json
         <p>The four layers of one event:</p>
 
         <ul>
-          <li><strong>Substrate</strong>: the state of your deployment at call time. Populated from the columns declared on the contract (<a href="./substrate-columns.html">Substrate columns</a>). This is where <code>prompt_hash</code>, <code>tool_schema_version</code>, and any operator-declared columns land.</li>
+          <li><strong>Substrate</strong>: the state of your deployment at call time. Populated from the columns declared on the contract (<a href="./substrate-columns">Substrate columns</a>). This is where <code>prompt_hash</code>, <code>tool_schema_version</code>, and any operator-declared columns land.</li>
           <li><strong>Light source</strong>: which model produced the output. Captured as <code>vendor/model/version</code>, so a silent vendor re-route behind a stable alias is visible in the record.</li>
           <li><strong>Lens</strong>: which evaluation configuration was in effect. Captured as <code>lens_version</code>. Downstream analyses use this to tell a change in your evaluation apparatus from a change in the thing being evaluated.</li>
           <li><strong>Outcome</strong>: what the evaluation reported. Dimension scores, cohort tags, side effects, and (if relevant) a fixture identifier.</li>
@@ -488,7 +488,7 @@ x-holonograph-run-mode: production</code></pre>
 
         <ul>
           <li><code>Authorization: Bearer &lt;token&gt;</code>: when the deployment enables bearer auth.</li>
-          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code>: required by fail-closed mode enforcement; see <a href="./run-modes.html">Run modes</a>.</li>
+          <li><code>x-holonograph-run-mode: &lt;mode&gt;</code>: required by fail-closed mode enforcement; see <a href="./run-modes">Run modes</a>.</li>
         </ul>
         </section>
 
@@ -536,7 +536,7 @@ x-holonograph-run-mode: production</code></pre>
             <tbody>
               <tr><td><code>lens_version</code></td><td>string</td><td>Which lens configuration was in effect.</td></tr>
               <tr><td><code>light_source_identifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/model/version</code>. Vendor-controlled.</td></tr>
-              <tr><td><code>run_mode</code></td><td>enum</td><td>Which run mode the evaluation ran under. See <a href="./run-modes.html">Run modes</a>.</td></tr>
+              <tr><td><code>run_mode</code></td><td>enum</td><td>Which run mode the evaluation ran under. See <a href="./run-modes">Run modes</a>.</td></tr>
               <tr><td><code>correlation_id</code></td><td>string</td><td>Ties together the calls of one evaluation (e.g. across multiplex vendors).</td></tr>
               <tr><td><code>provenance</code></td><td>enum</td><td>Origin category of the run, typically <code>production-state</code> versus <code>exploratory-state</code>.</td></tr>
               <tr><td><code>timestamp</code></td><td>ISO 8601</td><td>When the evaluation occurred.</td></tr>
@@ -701,7 +701,7 @@ const client = new HolonographClient({
             <tbody>
               <tr><td><code>endpoint</code></td><td>string</td><td>URL where your running Holonograph lens is reachable. The README ships with <code>http://127.0.0.1:8080</code> as its example host.</td></tr>
               <tr><td><code>token</code></td><td>string (opt)</td><td>Bearer token, when the lens requires one.</td></tr>
-              <tr><td><code>runMode</code></td><td>enum (opt)</td><td>One of the canonical modes (<code>production</code>, <code>test</code>, <code>eval</code>, <code>replay</code>, <code>local_dev</code>). Sent as <code>x-holonograph-run-mode</code> on every request. Can be resolved per-call at request time; see <a href="./run-modes.html">Run modes</a>.</td></tr>
+              <tr><td><code>runMode</code></td><td>enum (opt)</td><td>One of the canonical modes (<code>production</code>, <code>test</code>, <code>eval</code>, <code>replay</code>, <code>local_dev</code>). Sent as <code>x-holonograph-run-mode</code> on every request. Can be resolved per-call at request time; see <a href="./run-modes">Run modes</a>.</td></tr>
               <tr><td><code>lensVersion</code></td><td>string</td><td>Identifier of the lens configuration this client should call under. Pinned into every evaluation event this client produces.</td></tr>
               <tr><td><code>substrate</code></td><td>object</td><td>The <code>SubstrateSnapshot</code> attached to every event. Carries <code>lensVersion</code>, <code>lightSourceIdentifier</code>, <code>runMode</code>, <code>provenance</code>, and <code>operatorColumns</code>; see below.</td></tr>
               <tr><td><code>emit</code></td><td>object (opt)</td><td>Delivery mode + buffering configuration for evaluation events. Four modes (<code>sync</code>, <code>buffered</code>, <code>otlp</code>, <code>dual</code>) trade caller latency against throughput and export path. Defaults to <code>{ mode: "sync" }</code>. See <a href="#delivery-modes">Delivery modes</a> below.</td></tr>
@@ -718,7 +718,7 @@ const client = new HolonographClient({
               <tr><td><code>lensVersion</code></td><td>string</td><td>Which lens configuration was in effect.</td></tr>
               <tr><td><code>lightSourceIdentifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/model/version</code>.</td></tr>
               <tr><td><code>runMode</code></td><td>enum</td><td>Which run mode the evaluation ran under.</td></tr>
-              <tr><td><code>provenance</code></td><td>string</td><td>Origin category of the run; see <a href="./substrate-columns.html">Substrate columns</a>.</td></tr>
+              <tr><td><code>provenance</code></td><td>string</td><td>Origin category of the run; see <a href="./substrate-columns">Substrate columns</a>.</td></tr>
               <tr><td><code>operatorColumns</code></td><td>object</td><td>The operator-declared deployment-state columns, keyed by column id. For example: <code>{ prompt_hash: "v2-sha256-…", tool_schema_version: "3.1.0" }</code>.</td></tr>
             </tbody>
           </table>
@@ -947,7 +947,7 @@ await handle.reportOutcome({
         </div>
 
         <p>
-          Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot.html">The four-layer snapshot</a>). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+          Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). What Holonograph does with that event afterwards is the subject of the analysis chapters.
         </p>
 
         <h3>Multiplex: grade the observers</h3>
@@ -975,14 +975,14 @@ await handle.reportOutcome({
   }]
 });</code></pre>
 
-        <p>See <a href="./multiplexer.html">The multiplexer</a> for how routings are declared.</p>
+        <p>See <a href="./multiplexer">The multiplexer</a> for how routings are declared.</p>
 
         <h2>Contract</h2>
 
         <h3><code>contract.register(contract)</code></h3>
 
         <p>
-          Registers or replaces the surface contract for this agent. Returns a <code>ContractSummary</code> reflecting the newly-active shape. See <a href="./surface-contracts.html">Surface contracts</a> for the full contract shape and the summary fields.
+          Registers or replaces the surface contract for this agent. Returns a <code>ContractSummary</code> reflecting the newly-active shape. See <a href="./surface-contracts">Surface contracts</a> for the full contract shape and the summary fields.
         </p>
 
         <pre><code>const summary = await client.contract.register({
@@ -1027,7 +1027,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
         </ul>
 
         <p>
-          For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see <a href="./run-modes.html">Run modes</a>.
+          For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see <a href="./run-modes">Run modes</a>.
         </p>
 
         <h2>Escape hatch: <code>callDirectly</code></h2>
@@ -1153,7 +1153,7 @@ Content-Type: application/json
         <h3>Via the SDK</h3>
 
         <p>
-          Most integrations use the SDK's <code>messages.create()</code>, which wraps the endpoint and returns a call handle documented in <a href="./sdk-reference.html">SDK reference</a>. The wire shape above is what the handle's <code>.result</code> is unpacked from.
+          Most integrations use the SDK's <code>messages.create()</code>, which wraps the endpoint and returns a call handle documented in <a href="./sdk-reference">SDK reference</a>. The wire shape above is what the handle's <code>.result</code> is unpacked from.
         </p>
 
         <pre><code>const handle = await client.messages.create({
@@ -1326,13 +1326,13 @@ app.post("/agent", async (req, res) =&gt; {
         </div>
 
         <p>
-          The receiver extracts both keys from Baggage and constructs its <code>HolonographClient</code> with the run mode it inherited, then passes the correlation id through to <code>messages.create()</code>. See <a href="./sidecar.html">Sidecar / OTel integration</a> for the propagation mechanism.
+          The receiver extracts both keys from Baggage and constructs its <code>HolonographClient</code> with the run mode it inherited, then passes the correlation id through to <code>messages.create()</code>. See <a href="./sidecar">Sidecar / OTel integration</a> for the propagation mechanism.
         </p>
 
         <h2>Reading the output</h2>
 
         <p>
-          <code>run_mode</code> is one of the mandatory substrate columns on every event (see <a href="./substrate-columns.html">Substrate columns</a>), so every reading you do downstream is already sliceable by mode without any extra work.
+          <code>run_mode</code> is one of the mandatory substrate columns on every event (see <a href="./substrate-columns">Substrate columns</a>), so every reading you do downstream is already sliceable by mode without any extra work.
         </p>
 
         <p>
@@ -1636,7 +1636,7 @@ async function handleJob(job) {
           <table class="guide-table">
             <thead><tr><th>Key</th><th>Value</th></tr></thead>
             <tbody>
-              <tr><td><code>holonograph.runmode</code></td><td>One of the canonical five run modes (see <a href="./run-modes.html">Run modes</a>).</td></tr>
+              <tr><td><code>holonograph.runmode</code></td><td>One of the canonical five run modes (see <a href="./run-modes">Run modes</a>).</td></tr>
               <tr><td><code>holonograph.correlation-id</code></td><td>The correlation id binding calls into one evaluation.</td></tr>
             </tbody>
           </table>
@@ -1786,7 +1786,7 @@ Content-Type: application/json
         <h3>Acting on the report</h3>
 
         <p>
-          The usual cadence: a scan runs nightly, its report gets read by an operator, undeclared dimensions get added to the contract, retirement candidates get retired (see the <code>supersededBy</code> mechanism in <a href="./surface-contracts.html">Surface contracts</a>). Over time, "clean scan" becomes the deploy readiness signal for contract changes.
+          The usual cadence: a scan runs nightly, its report gets read by an operator, undeclared dimensions get added to the contract, retirement candidates get retired (see the <code>supersededBy</code> mechanism in <a href="./surface-contracts">Surface contracts</a>). Over time, "clean scan" becomes the deploy readiness signal for contract changes.
         </p>
 
         <h2>Reference</h2>
@@ -2071,7 +2071,7 @@ Content-Type: application/json
               <tr><td><code>fixture</code></td><td>object (opt)</td><td>Inline fixture. One of <code>fixture</code> or <code>fixtureId</code> is required.</td></tr>
               <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>Stored fixture to run.</td></tr>
               <tr><td><code>surfaceId</code></td><td>string (opt)</td><td>Restrict the check to one surface.</td></tr>
-              <tr><td><code>provenance</code></td><td>enum (opt)</td><td>Default <code>all</code>. Same values as <a href="./snapshot.html">GET /lens/events</a>.</td></tr>
+              <tr><td><code>provenance</code></td><td>enum (opt)</td><td>Default <code>all</code>. Same values as <a href="./snapshot">GET /lens/events</a>.</td></tr>
               <tr><td><code>since</code>, <code>until</code></td><td>ISO 8601 (opt)</td><td>Window bounds.</td></tr>
               <tr><td><code>limit</code></td><td>number (opt)</td><td>Cap on events considered. Default 1000.</td></tr>
               <tr><td><code>verdict</code></td><td>enum</td><td>Top-level: <code>pass</code>, <code>fail</code>, <code>requires-judge</code>, <code>unevaluable</code>, <code>not-applicable</code>.</td></tr>
