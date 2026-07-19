@@ -79,6 +79,10 @@
         </ul>
 
         <p>
+          A handful of column ids are <strong>reserved</strong> to the apparatus; declaring one is a contract error. These are values Holonograph observes and stamps for you (see <a href="./substrate-columns">Substrate columns → apparatus-owned columns</a>) — you read them, you do not write them.
+        </p>
+
+        <p>
           Contracts are versioned by replacement, not mutation: you register a new contract, the agent identifier stays, and Holonograph records a <code>versionId</code> so past events remain readable against the shape they were captured under.
         </p>
 

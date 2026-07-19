@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f7f5f0" />
 <title>Substrate columns — The Guide — Holonograph</title>
-<meta name="description" content="The named columns you populate so drift can be attributed to what changed about your deployment. Mandatory and operator-declared." />
+<meta name="description" content="The named columns you populate so drift can be attributed to what changed about your deployment. Mandatory, operator-declared, and apparatus-owned." />
 <meta name="discloses" content="capability-only" />
 <meta name="reflects-version" content="v0.23.0" />
 <meta name="status" content="live" />
@@ -169,6 +169,16 @@
 
         <p>
           If the column declares a <code>values[]</code> enum, the value you pass must be one of them. Anything else is rejected at ingest, not silently accepted.
+        </p>
+
+        <h3>Apparatus-owned columns</h3>
+
+        <p>
+          A third category, peer to mandatory and operator-declared: a small reserved namespace the apparatus writes and you cannot declare. Some facts are things Holonograph <em>observes</em>, not things you <em>assert</em> — which model a vendor actually served behind your requested alias, or the judge's own identity. Their column ids are reserved: a contract that tries to declare one is rejected, and the apparatus stamps the observed value itself on every event.
+        </p>
+
+        <p>
+          This is deliberate, and it is the difference between discouraging an error and preventing one. An observed fact you were free to overwrite is a fact you could get wrong — silently, and in exactly the direction that flatters your own system. A column you cannot declare is a fact you cannot fake. The illegal state — an operator asserting an apparatus-observed value — is not merely warned against; it has no representation in a valid contract.
         </p>
 
         <h2>Reading the output</h2>
