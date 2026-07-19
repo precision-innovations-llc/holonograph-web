@@ -278,7 +278,7 @@ Chapter 01
 
 ### 2. Drift attribution
 
-        When a score changes over time, drift attribution names one of four sources as the likely cause: **substrate** (your own deployment), **light source** (the vendor moved under you), **lens** (your evaluation configuration changed), or **noise** (the model's irreducible non-determinism). What you do about a change depends on which label it wears; that's the Drift attribution chapter's job to walk through.
+        When a score changes over time, drift attribution names one of four sources as the likely cause: **substrate** (your own deployment), **light source** (the vendor moved under you), **lens** (your evaluation configuration changed), or **noise** (the model's irreducible non-determinism). The four sources are four kinds of *change*, not four parts of your system: a change is placed by who controlled it and whether you could see it, not by which component it touched. What you do about a change depends on which label it wears; that's the Drift attribution chapter's job to walk through.
 
 ### 3. Variance isolation
 
@@ -346,6 +346,8 @@ Chapter 02
           - **Substrate columns**: the named columns Holonograph captures with every call, so a later reading can be attributed to *what changed about your deployment*. See [Substrate columns](./substrate-columns).
 
           - **Routings**: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See [The multiplexer](./multiplexer).
+
+        A handful of column ids are **reserved** to the apparatus; declaring one is a contract error. These are values Holonograph observes and stamps for you (see [Substrate columns → apparatus-owned columns](./substrate-columns)) — you read them, you do not write them.
 
         Contracts are versioned by replacement, not mutation: you register a new contract, the agent identifier stays, and Holonograph records a `versionId` so past events remain readable against the shape they were captured under.
 
@@ -722,6 +724,12 @@ await handle.reportOutcome({
 ```
 
         If the column declares a `values[]` enum, the value you pass must be one of them. Anything else is rejected at ingest, not silently accepted.
+
+### Apparatus-owned columns
+
+        A third category, peer to mandatory and operator-declared: a small reserved namespace the apparatus writes and you cannot declare. Some facts are things Holonograph *observes*, not things you *assert* — which model a vendor actually served behind your requested alias, or the judge's own identity. Their column ids are reserved: a contract that tries to declare one is rejected, and the apparatus stamps the observed value itself on every event.
+
+        This is deliberate, and it is the difference between discouraging an error and preventing one. An observed fact you were free to overwrite is a fact you could get wrong — silently, and in exactly the direction that flatters your own system. A column you cannot declare is a fact you cannot fake. The illegal state — an operator asserting an apparatus-observed value — is not merely warned against; it has no representation in a valid contract.
 
 ## Reading the output
 
@@ -2520,6 +2528,9 @@ Chapter 13
           - **lens**: your evaluation configuration changed
 
           - **noise**: the model's irreducible non-determinism
+
+          How to read the four labels
+          Attribute the *change*, not the *component*. The same component can move for different reasons, and each reason is a different source. When your judge model changes, the source is not "the judge" — it is decided by who controlled the change and whether it was visible to you. A vendor silently rerouting the model behind a fixed alias is **light source** drift. You deliberately swapping the judge model, or revising its rubric, is **lens** drift. Same component, same moved number, read apart by control and visibility. Always attribute a change to the source that produced it, never to the part of the system it happened to touch.
 
 ## Why it matters
 
