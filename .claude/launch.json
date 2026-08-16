@@ -8,6 +8,12 @@
       "port": 8765
     },
     {
+      "name": "site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8642"],
+      "port": 8642
+    },
+    {
       "name": "lens-dashboard",
       "runtimeExecutable": "python3",
       "runtimeArgs": [

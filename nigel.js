@@ -11,7 +11,13 @@
  * limits on a public LLM endpoint are decoration; see NigelPR/docs/ABUSE-CONTROL.md.
  */
 (function () {
-  var ENDPOINT = window.NIGEL_ENDPOINT || 'https://nigelchat-XXXXX-uc.a.run.app';
+  /* Endpoint. Set window.NIGEL_ENDPOINT before this script to override.
+     On localhost we default to the local Nigel server (NigelPR: npm run serve:local)
+     so the widget can be driven for real while the lens is still being cut. */
+  var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  var ENDPOINT =
+    window.NIGEL_ENDPOINT ||
+    (LOCAL ? 'http://localhost:8787' : 'https://nigelchat-XXXXX-uc.a.run.app');
 
   var MARKUP =
     '<button class="nigel-fab" id="nigelFab" type="button" aria-label="Chat with Nigel" title="Chat with Nigel">N</button>' +
