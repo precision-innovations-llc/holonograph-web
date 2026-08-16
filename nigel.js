@@ -52,7 +52,14 @@
   var send = document.getElementById('nigelSend');
   var status = document.getElementById('nigelStatus');
 
-  var open = false, greeted = false, busy = false, spent = false;
+  var open = false, greeted = false, busy = false, spent = false, restored = false;
+
+  /* Panel state lives in sessionStorage so the widget survives a page change.
+     Nigel can navigate the visitor, and a chat that vanished the moment he did
+     would make the navigation feel like being shown the door. */
+  var OPEN_KEY = 'nigel.open';
+  function rememberOpen(v) { try { sessionStorage.setItem(OPEN_KEY, v ? '1' : '0'); } catch (e) {} }
+  function wasOpen() { try { return sessionStorage.getItem(OPEN_KEY) === '1'; } catch (e) { return false; } }
 
   /* The N is always there. It used to fade in once the hero scrolled away, which
      meant the one thing on the page inviting you to talk to him was missing at the
@@ -63,13 +70,20 @@
     if (open) return;
     open = true;
     panel.classList.add('open');
+    rememberOpen(true);
     updateFab();
     greetOnce();
     /* Don't steal focus on touch — it pops the keyboard over the page. */
-    if (!window.matchMedia('(max-width: 860px)').matches) setTimeout(function () { input.focus(); }, 260);
+    /* preventScroll: focusing the composer must never move the page. It fought the
+       cross-page scroll and won, which looked like the scroll simply not working. */
+    if (!window.matchMedia('(max-width: 860px)').matches) {
+      setTimeout(function () {
+        try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+      }, 260);
+    }
   }
 
-  function closePanel() { open = false; panel.classList.remove('open'); updateFab(); }
+  function closePanel() { open = false; panel.classList.remove('open'); rememberOpen(false); updateFab(); }
 
   [].forEach.call(document.querySelectorAll('[data-nigel-open]'), function (el) {
     el.addEventListener('click', function (e) { e.preventDefault(); openPanel(); });
@@ -79,6 +93,30 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) closePanel(); });
 
   updateFab();
+
+  /* Restore the conversation on every page load. The transcript is server-side and
+     keyed on the session cookie, so this is a read of what the visitor already said
+     rather than anything the page has to carry across. Costs no run. */
+  fetch(ENDPOINT, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'history' })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var msgs = (data && data.messages) || [];
+      if (!msgs.length) return;
+      restored = true;
+      greeted = true;                       /* do not greet over an existing conversation */
+      msgs.forEach(function (m) {
+        bubble(m.content, m.role === 'user' ? 'you' : 'them');
+      });
+      renderRunsLeft(data.runsLeft);
+      if (wasOpen()) openPanel();
+    })
+    .catch(function () { /* no server, no restore; the widget still works */ })
+    .then(runPendingScroll);
 
   function scrollDown() { body.scrollTop = body.scrollHeight; }
 
@@ -114,7 +152,7 @@
   }
 
   function greetOnce() {
-    if (greeted) return;
+    if (greeted || restored) return;
     greeted = true;
     var t = typing();
     setTimeout(function () {
@@ -145,6 +183,87 @@
     input.placeholder = 'Nigel is done for now';
   }
 
+  /* Carry out a navigation. The server has already validated the target against the
+     site map, so anything arriving here names a real page or a real selector; the
+     client's job is only to move.
+
+     The pause is deliberate. Navigating the instant the reply paints means the
+     visitor never reads it, and the page change reads as a glitch rather than as
+     Nigel taking them somewhere. */
+  function act(nav) {
+    if (nav.path) {
+      rememberOpen(true);                   /* reopen on the far side */
+      if (nav.selector) {
+        try { sessionStorage.setItem('nigel.scrollTo', nav.selector); } catch (e) {}
+      }
+      /* No fragment. An invented anchor like #nigel-target does nothing except make
+         the URL look broken, and a REAL one would race the selector scroll. */
+      setTimeout(function () { location.href = nav.path; }, 1100);
+      return;
+    }
+    if (nav.selector) setTimeout(function () { scrollTo_(nav.selector, true); }, 700);
+  }
+
+  /* `smooth` is right for a scroll on a page the visitor is already looking at, and
+     wrong immediately after a page load: the [data-reveal] entrance animations shift
+     layout underneath it and the browser abandons the scroll partway. On arrival we
+     jump, then let the reveals play. */
+  function scrollTo_(selector, smooth) {
+    var el;
+    try { el = document.querySelector(selector); } catch (e) { return; }
+    if (!el) return;
+    el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+  }
+
+  /* Settle the page BEFORE measuring where to scroll.
+     The site fades sections in on scroll, and a section that has not revealed yet
+     still shifts layout when it does. Scrolling first and revealing after meant
+     measuring against a page that then moved under us, which is how the target
+     ended up 900px off. Arriving by an instant jump makes the entrance
+     choreography moot anyway, so reveal the lot, then scroll on the next frame. */
+  function settlePage() {
+    [].forEach.call(document.querySelectorAll('[data-reveal]'), function (e) {
+      e.classList.add('is-in');
+    });
+  }
+
+  /* A scroll requested on the previous page, carried across the navigation.
+     Read here, applied only once the restore has settled: reopening the panel
+     focuses the composer, and a focus landing after the scroll undoes it. */
+  var pendingScroll = null;
+  try {
+    pendingScroll = sessionStorage.getItem('nigel.scrollTo');
+    if (pendingScroll) {
+      sessionStorage.removeItem('nigel.scrollTo');
+      /* Stop the browser reinstating whatever scroll position it remembers for this
+         URL. It was landing a thousand pixels past the target. */
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    }
+  } catch (e) {}
+
+  /* Land on the section, once, after everything that could move it has finished.
+     Three things fight a cross-page scroll and all of them had to be handled:
+       - the browser restoring its own previous scroll position for this URL
+       - the [data-reveal] entrance animations changing layout under the scroll
+       - the composer taking focus when the panel reopens
+     So: disable scroll restoration, wait for load, then one instant jump. */
+  function runPendingScroll() {
+    if (!pendingScroll) return;
+    var sel = pendingScroll;
+    pendingScroll = null;
+
+    function land() {
+      settlePage();
+      /* two frames: one for the class to apply, one for layout to settle */
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { scrollTo_(sel, false); });
+      });
+    }
+
+    if (document.readyState === 'complete') setTimeout(land, 300);
+    else window.addEventListener('load', function () { setTimeout(land, 300); }, { once: true });
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var message = input.value.trim();
@@ -166,6 +285,7 @@
         t.remove();
         bubble(data.reply || 'I seem to have lost my train of thought. Terribly sorry.');
         renderRunsLeft(data.runsLeft);
+        if (data.nav) act(data.nav);
       })
       .catch(function () {
         t.remove();
@@ -173,7 +293,9 @@
       })
       .then(function () {
         setBusy(false);
-        if (!spent && !window.matchMedia('(max-width: 860px)').matches) input.focus();
+        if (!spent && !window.matchMedia('(max-width: 860px)').matches) {
+          try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+        }
       });
   });
 })();
