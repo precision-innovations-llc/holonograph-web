@@ -51,11 +51,13 @@
   var input = document.getElementById('nigelInput');
   var send = document.getElementById('nigelSend');
   var status = document.getElementById('nigelStatus');
-  var hero = document.querySelector('[data-hero], .page-hero, .hero');
 
-  var open = false, pastHero = false, greeted = false, busy = false, spent = false;
+  var open = false, greeted = false, busy = false, spent = false;
 
-  function updateFab() { fab.classList.toggle('show', pastHero && !open); }
+  /* The N is always there. It used to fade in once the hero scrolled away, which
+     meant the one thing on the page inviting you to talk to him was missing at the
+     exact moment you landed. It hides only while the panel itself is open. */
+  function updateFab() { fab.classList.toggle('show', !open); }
 
   function openPanel() {
     if (open) return;
@@ -76,11 +78,7 @@
   if (closeBtn) closeBtn.addEventListener('click', closePanel);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) closePanel(); });
 
-  if (hero && 'IntersectionObserver' in window) {
-    new IntersectionObserver(function (es) {
-      es.forEach(function (e) { pastHero = !e.isIntersecting; updateFab(); });
-    }, { threshold: 0 }).observe(hero);
-  } else { pastHero = true; updateFab(); }
+  updateFab();
 
   function scrollDown() { body.scrollTop = body.scrollHeight; }
 
