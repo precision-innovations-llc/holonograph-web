@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary · Holonograph</title>
+<meta name="description" content="The vocabulary of the instrument: substrate, light source, lens, noise, drift, facet, rubric, conformance, and the terms behind four-source attribution.">
+<link rel="canonical" href="https://holonograph.ai/glossary">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="theme-color" content="#f6f5f9">
+<meta name="color-scheme" content="light">
+<meta name="author" content="Precision Innovations LLC">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Holonograph">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Holonograph Glossary">
+<meta property="og:description" content="The vocabulary of the instrument: substrate, light source, lens, noise, drift, facet, rubric, conformance, and four-source attribution.">
+<meta property="og:url" content="https://holonograph.ai/glossary">
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp">
+<meta property="og:image:width" content="2752">
+<meta property="og:image:height" content="626">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@holonograph">
+<meta name="twitter:creator" content="@holonograph">
+<meta name="twitter:title" content="Holonograph Glossary">
+<meta name="twitter:description" content="Substrate, light source, lens, noise, drift, facet, rubric, conformance, and the terms behind four-source attribution.">
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="mobilenav.css">
+<style>
+  .g-nav{display:flex;flex-wrap:wrap;gap:8px;padding:clamp(12px,2.5vh,24px) 0 clamp(16px,3vh,28px);position:sticky;top:70px;background:rgba(246,245,249,.9);backdrop-filter:blur(8px);z-index:10}
+  .g-nav a{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-2);text-decoration:none;border:1px solid var(--line);border-radius:20px;padding:6px 13px;background:#fff}
+  .g-nav a:hover{border-color:var(--iris);color:var(--iris)}
+
+  .g-group{padding:clamp(24px,4vh,44px) 0 0;scroll-margin-top:130px}
+  .g-group > h2{font-size:clamp(19px,2.2vw,24px);font-weight:600;letter-spacing:-.01em}
+  .g-group > .lede{margin-top:8px;font-size:14.5px;color:var(--ink-3);line-height:1.55;max-width:640px}
+  .g-list{margin-top:20px;border-top:1px solid var(--line)}
+  .term{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:18px 0;border-bottom:1px solid var(--line)}
+  .term dt{font-size:16px;font-weight:600;letter-spacing:-.005em}
+  .term dt .also{display:block;margin-top:4px;font-family:var(--mono);font-size:11px;font-weight:400;color:var(--ink-3);letter-spacing:.03em}
+  .term dd{font-size:14.5px;color:var(--ink-2);line-height:1.62}
+  .term dd b{color:var(--ink);font-weight:600}
+  @media (max-width:720px){ .term{grid-template-columns:1fr;gap:6px} .g-nav{position:static} }
+</style>
+</head>
+<body data-nav="docs">
+<header id="siteHeader"></header>
+
+<div class="wrap">
+  <section class="page-hero" data-hero data-reveal>
+    <p class="eyebrow"><span class="dot"></span>Glossary</p>
+    <h1>The vocabulary of the instrument.</h1>
+    <p class="sub">The terms Holonograph uses, grouped by where they sit in the measurement. Each says what it means and what it deliberately does not claim.</p>
+  </section>
+
+  <nav class="g-nav" data-reveal>
+    <a href="#sources">The four sources</a>
+    <a href="#reading">Reading the change</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#resolution">Resolution &amp; evidence</a>
+  </nav>
+
+  <section class="g-group" id="sources" data-reveal>
+    <h2>The four sources of drift</h2>
+    <p class="lede">Drift resolves to one of four sources. They are kinds of change, not parts of the system, and each is placed by two attributes the architecture already records: <b>control</b> (operator or vendor) and <b>visibility</b> (transparent or opaque).</p>
+    <dl class="g-list">
+      <div class="term"><dt>Substrate</dt><dd>An operator-controlled change to the agentic system: a prompt, a tool, a deliberate model swap. Transparent, and yours.</dd></div>
+      <div class="term"><dt>Light source<span class="also">the light the lens reads</span></dt><dd>A vendor-controlled change to a model, including a silent same-alias re-route. Opaque, and not yours.</dd></div>
+      <div class="term"><dt>Lens</dt><dd>An operator-controlled change to the evaluation configuration: rubric, fixtures, baselines, cohort scheme. Not the model.</dd></div>
+      <div class="term"><dt>Noise</dt><dd>Irreducible per-call non-determinism. The floor a real change has to clear before it counts as signal.</dd></div>
+    </dl>
+  </section>
+
+  <section class="g-group" id="reading" data-reveal>
+    <h2>Reading the change</h2>
+    <p class="lede">How a shift becomes a source you can act on, and how honestly the reading reports its own limits.</p>
+    <dl class="g-list">
+      <div class="term"><dt>Completeness</dt><dd>The account of what Holonograph could and could not resolve, with drops, unresolved surfaces, and call routes counted and typed rather than hidden.</dd></div>
+      <div class="term"><dt>Conformance</dt><dd>Whether a judge actually ran against its fixtures, or silently defaulted. A verdict without conformance is a number without a reliability.</dd></div>
+      <div class="term"><dt>Drift</dt><dd>Change in a reading over time. Every drift resolves to one of the four sources.</dd></div>
+      <div class="term"><dt>Facet</dt><dd>A within-lens configuration: the cross product of rubric, judge, and context scope. Only declared facets are resolved.</dd></div>
+      <div class="term"><dt>Floor</dt><dd>The calibration baseline of irreducible non-determinism. Conditional on the judge's light source, and recalibrated when it changes.</dd></div>
+      <div class="term"><dt>Judge<span class="also">LLM-as-a-judge</span></dt><dd>A model or rubric that scores an output. Subject to the same drift as any model call, so its reliability is measured too.</dd></div>
+      <div class="term"><dt>Rubric</dt><dd>The criteria a judge applies. An operator revision to a rubric is lens drift, not a model change.</dd></div>
+      <div class="term"><dt>Topology</dt><dd>The full map of declared surfaces and their call routes, scanned so coverage and blind spots can be counted.</dd></div>
+      <div class="term"><dt>Variance decomposition</dt><dd>Separating the real change in a score from the part explained by the floor, so a quiet release reads as quiet.</dd></div>
+    </dl>
+  </section>
+
+  <section class="g-group" id="architecture" data-reveal>
+    <h2>Architecture</h2>
+    <p class="lede">Where the instrument sits, and the structures the reading is built from.</p>
+    <dl class="g-list">
+      <div class="term"><dt>Lens architecture</dt><dd>The instrument sits above the agent at the call boundary and reads every model call in both directions. It is not part of what it measures.</dd></div>
+      <div class="term"><dt>Longitudinal store</dt><dd>The append-only record of readings over time. The substrate every trend and reconciliation is computed from.</dd></div>
+      <div class="term"><dt>Multiplexer</dt><dd>Cross-vendor comparison on identical terms. One lens reads across providers without resetting the baseline.</dd></div>
+      <div class="term"><dt>Run mode</dt><dd>Whether a call was production or evaluation. Declared, carried, and never inferred; unknown provenance is rejected.</dd></div>
+      <div class="term"><dt>Sidecar</dt><dd>A complement channel supplying correlation identifiers and substrate context. Context enrichment, never a second observer or a data-ingestion path.</dd></div>
+      <div class="term"><dt>Snapshot</dt><dd>A frozen moment of the system, held so a later reading can be compared against it.</dd></div>
+      <div class="term"><dt>Substrate column</dt><dd>The structured record a reading is computed from, carrying the control and visibility attributes that route each change to its source.</dd></div>
+      <div class="term"><dt>Surface</dt><dd>A named thing under measurement: a response type, a check, a segment. Surfaces are declared so coverage of them can be counted.</dd></div>
+      <div class="term"><dt>Surface contract</dt><dd>What a surface declares it will do, held against what it did, so a mismatch is a verdict rather than a surprise.</dd></div>
+    </dl>
+  </section>
+
+  <section class="g-group" id="resolution" data-reveal>
+    <h2>Resolution &amp; evidence</h2>
+    <p class="lede">What a license governs, and what the top tier can hand to an auditor.</p>
+    <dl class="g-list">
+      <div class="term"><dt>Active surface</dt><dd>One registered surface under observation during the license term. The primary meter.</dd></div>
+      <div class="term"><dt>Attestation</dt><dd>A SHA-stamped, tamper-evident evidence bundle suitable for a risk function, an examiner, or an auditor.</dd></div>
+      <div class="term"><dt>Declared facet</dt><dd>One facet configuration the license resolves. Only declared configurations are resolved and counted.</dd></div>
+      <div class="term"><dt>Resolution</dt><dd>How much of your system Holonograph resolves, and how finely it reports what it found. The unit of value, and the axis the tiers name.</dd></div>
+    </dl>
+  </section>
+</div>
+
+<footer id="siteFooter"></footer>
+<script src="site.js"></script>
+<script src="nigel.js"></script>
+<script src="mobilenav.js"></script>
+</body>
+</html>

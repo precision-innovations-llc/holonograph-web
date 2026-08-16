@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docs · Holonograph</title>
+<meta name="description" content="How Holonograph reads an agent end to end: the mediating lens, four-source attribution, variance isolation, coverage, conformance, run modes, and the SDK.">
+<link rel="canonical" href="https://holonograph.ai/docs">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="theme-color" content="#f6f5f9">
+<meta name="color-scheme" content="light">
+<meta name="author" content="Precision Innovations LLC">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Holonograph">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Holonograph Docs">
+<meta property="og:description" content="How Holonograph reads an agent end to end: the mediating lens, four-source attribution, variance isolation, coverage, conformance, and the SDK.">
+<meta property="og:url" content="https://holonograph.ai/docs">
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp">
+<meta property="og:image:width" content="2752">
+<meta property="og:image:height" content="626">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@holonograph">
+<meta name="twitter:creator" content="@holonograph">
+<meta name="twitter:title" content="Holonograph Docs">
+<meta name="twitter:description" content="How Holonograph reads an agent end to end: the lens, attribution, variance, coverage, conformance, and the SDK.">
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="mobilenav.css">
+<style>
+  .doc-start{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:clamp(16px,3vh,32px) 0 8px}
+  .start-card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:clamp(22px,3vw,30px);text-decoration:none;display:block;transition:border-color .18s ease, transform .18s ease}
+  .start-card:hover{border-color:var(--iris);transform:translateY(-2px)}
+  .start-card .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--sun-ink)}
+  .start-card h3{margin-top:10px;font-size:20px;font-weight:600;letter-spacing:-.01em}
+  .start-card p{margin-top:7px;font-size:14.5px;color:var(--ink-2);line-height:1.55}
+  .start-card .go{margin-top:14px;font-size:13.5px;color:var(--iris);font-weight:500}
+
+  .doc-group{padding:clamp(30px,5vh,52px) 0 0}
+  .doc-group > h2{font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:18px}
+  .doc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .doc-item{border:1px solid var(--line);border-radius:12px;background:#fff;padding:18px 18px 16px;text-decoration:none;display:block;transition:border-color .18s ease}
+  .doc-item:hover{border-color:var(--iris)}
+  .doc-item h4{font-size:15.5px;font-weight:600;letter-spacing:-.005em}
+  .doc-item p{margin-top:6px;font-size:13px;color:var(--ink-3);line-height:1.5}
+
+  .doc-tail{margin:clamp(40px,7vh,72px) 0;padding:clamp(24px,4vw,34px);border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#fff,var(--paper));display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+  .doc-tail .t{flex:1;min-width:240px}
+  .doc-tail h3{font-size:18px;font-weight:600}
+  .doc-tail p{margin-top:6px;font-size:14px;color:var(--ink-2);line-height:1.55}
+
+  @media (max-width:860px){ .doc-start,.doc-grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body data-nav="docs">
+<header id="siteHeader"></header>
+
+<div class="wrap">
+  <section class="page-hero" data-hero data-reveal>
+    <p class="eyebrow"><span class="dot"></span>Docs</p>
+    <h1>How the instrument reads an agent, end to end.</h1>
+    <p class="sub">Start with what Holonograph measures and why, then follow the method into attribution, variance, coverage, and the SDK that carries it.</p>
+  </section>
+
+  <section class="doc-start" data-reveal>
+    <a class="start-card" href="guide/overview.html">
+      <span class="k">Start here</span>
+      <h3>Overview</h3>
+      <p>What Holonograph is, the substrate it builds, and the reading it produces. The right first page.</p>
+      <span class="go">Read the overview &rarr;</span>
+    </a>
+    <a class="start-card" href="guide/all.html">
+      <span class="k">One page</span>
+      <h3>The full guide</h3>
+      <p>Every topic in a single document, for reading end to end or searching in one place.</p>
+      <span class="go">Open the full guide &rarr;</span>
+    </a>
+  </section>
+
+  <section class="doc-group" data-reveal>
+    <h2>Concepts</h2>
+    <div class="doc-grid">
+      <a class="doc-item" href="guide/mediating-lens.html"><h4>The mediating lens</h4><p>Where the lens sits, and why it captures every model call in both directions.</p></a>
+      <a class="doc-item" href="guide/substrate-columns.html"><h4>Substrate columns</h4><p>The structured record every reading is computed from.</p></a>
+      <a class="doc-item" href="guide/snapshot.html"><h4>Snapshots</h4><p>How a moment of the system is frozen for comparison over time.</p></a>
+      <a class="doc-item" href="guide/surface-contracts.html"><h4>Surface contracts</h4><p>What a surface declares it will do, checked against what it did.</p></a>
+    </div>
+  </section>
+
+  <section class="doc-group" data-reveal>
+    <h2>Method</h2>
+    <div class="doc-grid">
+      <a class="doc-item" href="guide/drift-attribution.html"><h4>Drift attribution</h4><p>Splitting a shifted score into agent, model, eval, and noise.</p></a>
+      <a class="doc-item" href="guide/variance-isolation.html"><h4>Variance isolation</h4><p>Telling real change apart from sampling and chance.</p></a>
+      <a class="doc-item" href="guide/topology-scanner.html"><h4>Surface topology</h4><p>Declared surfaces, observed coverage, and the size of the blind spot.</p></a>
+      <a class="doc-item" href="guide/conformance.html"><h4>Conformance &amp; fixtures</h4><p>Whether a judge actually ran, or silently defaulted.</p></a>
+      <a class="doc-item" href="guide/lessons-pipeline.html"><h4>Lessons pipeline</h4><p>How findings turn into tightened checks over releases.</p></a>
+    </div>
+  </section>
+
+  <section class="doc-group" data-reveal>
+    <h2>Run modes &amp; vendors</h2>
+    <div class="doc-grid">
+      <a class="doc-item" href="guide/run-modes.html"><h4>Run modes</h4><p>Production, evaluation, and the provenance every call is tagged with.</p></a>
+      <a class="doc-item" href="guide/multiplexer.html"><h4>The multiplexer</h4><p>Comparing vendors on identical terms, one lens across all.</p></a>
+    </div>
+  </section>
+
+  <section class="doc-group" data-reveal>
+    <h2>SDK &amp; operations</h2>
+    <div class="doc-grid">
+      <a class="doc-item" href="guide/sdk-reference.html"><h4>SDK reference</h4><p>The client contract: canonical types both directions across the boundary.</p></a>
+      <a class="doc-item" href="guide/sidecar.html"><h4>OTel sidecar</h4><p>Emitting to the lens without changing your request path.</p></a>
+    </div>
+  </section>
+
+  <section class="doc-tail" data-reveal>
+    <div class="t">
+      <h3>New to Holonograph?</h3>
+      <p>The overview walks the whole instrument in a single read, from substrate to reading.</p>
+    </div>
+    <a class="btn" href="guide/overview.html">Start with the overview &rarr;</a>
+  </section>
+</div>
+
+<footer id="siteFooter"></footer>
+<script src="site.js"></script>
+<script src="nigel.js"></script>
+<script src="mobilenav.js"></script>
+</body>
+</html>

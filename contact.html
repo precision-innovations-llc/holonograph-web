@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact · Holonograph</title>
+<meta name="description" content="Talk to the team building Holonograph: a trial, a deployment question, a security review, or an acquisition conversation.">
+<link rel="canonical" href="https://holonograph.ai/contact">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="theme-color" content="#f6f5f9">
+<meta name="color-scheme" content="light">
+<meta name="author" content="Precision Innovations LLC">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Holonograph">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Contact Holonograph">
+<meta property="og:description" content="Talk to the team building Holonograph: a trial, a deployment question, a security review, or an acquisition conversation.">
+<meta property="og:url" content="https://holonograph.ai/contact">
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp">
+<meta property="og:image:width" content="2752">
+<meta property="og:image:height" content="626">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@holonograph">
+<meta name="twitter:creator" content="@holonograph">
+<meta name="twitter:title" content="Contact Holonograph">
+<meta name="twitter:description" content="Talk to the team building Holonograph: a trial, a deployment question, or an acquisition conversation.">
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="mobilenav.css">
+<style>
+  .contact{display:grid;grid-template-columns:0.85fr 1.15fr;gap:clamp(30px,5vw,64px);padding:clamp(20px,4vh,40px) 0 clamp(40px,7vh,72px);align-items:start}
+  .contact .aside h2{font-size:19px;font-weight:600;letter-spacing:-.01em}
+  .contact .aside p{margin-top:10px;font-size:15px;color:var(--ink-2);line-height:1.62}
+  .contact .aside .direct{margin-top:24px;display:flex;flex-direction:column;gap:14px}
+  .contact .aside .direct a{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);font-size:14.5px}
+  .contact .aside .direct .ic{width:34px;height:34px;border-radius:9px;background:var(--iris-soft);color:var(--iris);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;flex:none}
+  .contact .aside .direct span.sub{display:block;font-size:12.5px;color:var(--ink-3)}
+
+  form.card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:clamp(22px,3vw,30px);display:flex;flex-direction:column;gap:16px}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:7px}
+  .field input,.field textarea{width:100%;font-family:var(--sans);font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:11px 13px;transition:border-color .15s ease, background .15s ease}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--iris);background:#fff}
+  .field textarea{min-height:130px;resize:vertical;line-height:1.55}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  form .actions{display:flex;align-items:center;gap:14px;margin-top:2px}
+  form .msg{font-size:13.5px}
+  form .msg.ok{color:var(--good)} form .msg.err{color:var(--sun-ink)}
+  .fine{font-size:12.5px;color:var(--ink-3);line-height:1.5}
+  @media (max-width:860px){ .contact{grid-template-columns:1fr} .row{grid-template-columns:1fr} }
+</style>
+</head>
+<body data-nav="">
+<header id="siteHeader"></header>
+
+<div class="wrap">
+  <section class="page-hero" data-hero data-reveal>
+    <p class="eyebrow"><span class="dot"></span>Contact</p>
+    <h1>Talk to the people building the instrument.</h1>
+    <p class="sub">A trial, a deployment question, a partnership. Send a note and it reaches the team directly.</p>
+  </section>
+
+  <section class="contact" data-reveal>
+    <div class="aside">
+      <h2>What to expect</h2>
+      <p>The form reaches the Holonograph team directly. For a technical deep-dive, a security review, or an acquisition conversation, say so in the message and we will route it to the right person.</p>
+      <div class="direct">
+        <a href="docs.html"><span class="ic">&rarr;</span><span>Read the docs first<span class="sub">Most questions are answered there</span></span></a>
+        <a href="glossary.html"><span class="ic">&#9633;</span><span>Skim the glossary<span class="sub">The vocabulary in one page</span></span></a>
+      </div>
+    </div>
+
+    <form class="card" id="contactForm" novalidate>
+      <div class="row">
+        <div class="field"><label for="cName">Name</label><input id="cName" name="name" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="cEmail">Work email</label><input id="cEmail" name="email" type="email" autocomplete="email" required></div>
+      </div>
+      <div class="field"><label for="cOrg">Company <span style="color:var(--ink-3);font-weight:400">(optional)</span></label><input id="cOrg" name="org" type="text" autocomplete="organization"></div>
+      <div class="field"><label for="cMsg">Message</label><textarea id="cMsg" name="message" required placeholder="What are you building, and what would you like to measure?"></textarea></div>
+      <div class="actions">
+        <button class="btn" type="submit" id="cSubmit">Send message</button>
+        <span class="msg" id="cResult" role="status" aria-live="polite"></span>
+      </div>
+      <p class="fine">Your message reaches the Holonograph team by email. We do not add you to a list.</p>
+    </form>
+  </section>
+</div>
+
+<footer id="siteFooter"></footer>
+<script src="site.js"></script>
+<script src="nigel.js"></script>
+<script src="mobilenav.js"></script>
+<script>
+(function(){
+  var form=document.getElementById('contactForm'), out=document.getElementById('cResult'), btn=document.getElementById('cSubmit');
+  if(!form) return;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    out.className='msg'; out.textContent='';
+    var name=form.name.value.trim(), email=form.email.value.trim(), org=form.org.value.trim(), msg=form.message.value.trim();
+    if(!name||!email||!msg){ out.className='msg err'; out.textContent='Name, email, and message are required.'; return; }
+    var message = org ? ('['+org+']\n\n'+msg) : msg;   // backend takes {name,email,message}; fold company in
+    btn.disabled=true; var label=btn.textContent; btn.textContent='Sending…';
+    fetch('/api/contact', {
+      method:'POST', headers:{'content-type':'application/json'},
+      body:JSON.stringify({name:name, email:email, message:message})
+    }).then(function(r){ return r.json().then(function(d){ return {ok:r.ok, d:d}; }); })
+      .then(function(res){
+        if(res.ok && res.d && res.d.ok){ out.className='msg ok'; out.textContent='Sent. We will get back to you.'; form.reset(); }
+        else { out.className='msg err'; out.textContent=(res.d && res.d.error) ? res.d.error : 'Something went wrong. Try again.'; }
+      })
+      .catch(function(){ out.className='msg err'; out.textContent='Could not reach the server. (The form works on the deployed site.)'; })
+      .then(function(){ btn.disabled=false; btn.textContent=label; });
+  });
+})();
+</script>
+</body>
+</html>

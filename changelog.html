@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Changelog · Holonograph</title>
+<meta name="description" content="A history of all Holonograph and SDK releases: the self-hosted lens and the @holonograph/client SDK.">
+<link rel="canonical" href="https://holonograph.ai/changelog">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="theme-color" content="#f6f5f9">
+<meta name="color-scheme" content="light">
+<meta name="author" content="Precision Innovations LLC">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Holonograph">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Holonograph Changelog">
+<meta property="og:description" content="A history of all Holonograph and SDK releases: the self-hosted lens and the @holonograph/client SDK.">
+<meta property="og:url" content="https://holonograph.ai/changelog">
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp">
+<meta property="og:image:width" content="2752">
+<meta property="og:image:height" content="626">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@holonograph">
+<meta name="twitter:creator" content="@holonograph">
+<meta name="twitter:title" content="Holonograph Changelog">
+<meta name="twitter:description" content="A history of all Holonograph and SDK releases: the self-hosted lens and the @holonograph/client SDK.">
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="mobilenav.css">
+<style>
+  .current{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:clamp(16px,3vh,32px) 0 clamp(24px,4vh,40px)}
+  .cur-card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:clamp(20px,3vw,28px);display:flex;align-items:baseline;gap:16px}
+  .cur-card .meta{flex:1}
+  .cur-card .track{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .cur-card .track b{color:var(--ink);font-weight:600}
+  .cur-card .sub{margin-top:3px;font-size:12.5px;color:var(--ink-3)}
+  .cur-card .ver{font-size:30px;font-weight:600;letter-spacing:-.02em;font-family:var(--mono)}
+  .cur-card .ver .v{color:var(--iris)}
+  .cur-card a.npm{font-size:12.5px;color:var(--iris);text-decoration:none}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6.5vw,88px);padding-bottom:clamp(40px,7vh,72px)}
+  .col > h2{display:flex;align-items:baseline;gap:10px;font-size:15px;font-weight:600;padding-bottom:14px;border-bottom:2px solid var(--line)}
+  .col > h2 .dot{width:9px;height:9px;border-radius:3px}
+  .col.lens > h2 .dot{background:var(--iris)} .col.sdk > h2 .dot{background:var(--sun)}
+  .col > h2 .sub{margin-left:auto;font-family:var(--mono);font-size:11.5px;font-weight:400;color:var(--ink-3);letter-spacing:.03em}
+  .rel{padding:22px 0;border-bottom:1px solid var(--line)}
+  .rel .top{display:flex;align-items:baseline;gap:12px}
+  .rel .ver{font-family:var(--mono);font-size:17px;font-weight:600}
+  .rel .date{font-size:12.5px;color:var(--ink-3);margin-left:auto}
+  .rel h3{margin-top:8px;font-size:16px;font-weight:600;letter-spacing:-.005em;display:flex;align-items:center;gap:9px}
+  .rel .draft{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--catch);border:1px solid var(--catch);border-radius:20px;padding:2px 8px}
+  .rel ul{list-style:none;margin-top:11px;display:flex;flex-direction:column;gap:8px}
+  .rel li{position:relative;padding-left:18px;font-size:14px;color:var(--ink-2);line-height:1.5}
+  .rel li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--ink-3)}
+  .empty{padding:30px 0;color:var(--ink-3);font-size:14px}
+  @media (max-width:860px){ .current,.cols{grid-template-columns:1fr} }
+</style>
+</head>
+<body data-nav="">
+<header id="siteHeader"></header>
+
+<div class="wrap">
+  <section class="page-hero" data-hero data-reveal>
+    <p class="eyebrow"><span class="dot"></span>Changelog</p>
+    <h1>Holonograph Changelog</h1>
+    <p class="sub">A history of all Holonograph and SDK updates.</p>
+  </section>
+
+  <section class="current" id="current" data-reveal></section>
+  <section class="cols" id="cols" data-reveal></section>
+</div>
+
+<footer id="siteFooter"></footer>
+<script src="site.js"></script>
+<script src="nigel.js"></script>
+<script src="mobilenav.js"></script>
+<script>
+(function(){
+  var curEl=document.getElementById('current'), colsEl=document.getElementById('cols');
+  function cmp(a,b){ var x=a.split('.').map(Number), y=b.split('.').map(Number); for(var i=0;i<3;i++){ if((x[i]||0)!==(y[i]||0)) return (x[i]||0)-(y[i]||0); } return 0; }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  fetch('changelog.json').then(function(r){ return r.json(); }).then(function(data){
+    var tracks=data.tracks||{}, rels=(data.releases||[]).slice();
+    var order=Object.keys(tracks);
+
+    // current per track = highest semver present
+    var current={};
+    rels.forEach(function(r){ if(!current[r.track] || cmp(r.version,current[r.track].version)>0) current[r.track]=r; });
+    curEl.innerHTML = order.map(function(key){
+      var t=tracks[key], c=current[key]; if(!c) return '';
+      var npm=t.npm ? '<a class="npm" href="'+t.npm+'" target="_blank" rel="noopener">npm &#8599;</a>' : '';
+      return '<div class="cur-card"><div class="meta">'+
+        '<div class="track">Current <b>'+esc(t.name)+'</b></div>'+
+        '<div class="sub">'+esc(t.sub||'')+'</div>'+
+        '<div class="ver">v<span class="v">'+esc(c.version)+'</span></div></div>'+npm+'</div>';
+    }).join('');
+
+    // one column per track, releases newest first
+    function relHtml(r){
+      var draft=r.draft ? '<span class="draft">draft</span>' : '';
+      var notes=(r.notes||[]).map(function(n){ return '<li>'+esc(n)+'</li>'; }).join('');
+      return '<article class="rel"><div class="top"><span class="ver">v'+esc(r.version)+'</span><span class="date">'+esc(r.date)+'</span></div>'+
+        '<h3>'+esc(r.title||'')+' '+draft+'</h3><ul>'+notes+'</ul></article>';
+    }
+    colsEl.innerHTML = order.map(function(key){
+      var t=tracks[key];
+      var mine=rels.filter(function(r){ return r.track===key; }).sort(function(a,b){ return cmp(b.version,a.version); });
+      var body=mine.length ? mine.map(relHtml).join('') : '<p class="empty">No releases yet.</p>';
+      return '<div class="col '+esc(key)+'"><h2><span class="dot"></span>'+esc(t.name)+'<span class="sub">'+esc(t.sub||'')+'</span></h2>'+body+'</div>';
+    }).join('');
+  }).catch(function(){ curEl.innerHTML='<p class="empty">Could not load changelog.json.</p>'; });
+})();
+</script>
+</body>
+</html>
