@@ -84,13 +84,26 @@
 
   function scrollDown() { body.scrollTop = body.scrollHeight; }
 
+  /* A turn is a labelled bubble. The label matters as much as the colour: a
+     transcript has to stay readable in a screenshot, in a narrow column, and to
+     someone who cannot tell iris from white. */
   function bubble(text, who) {
+    var turn = document.createElement('div');
+    turn.className = 'turn ' + (who === 'you' ? 'you' : 'them');
+
+    var label = document.createElement('span');
+    label.className = 'turn-who';
+    label.textContent = who === 'you' ? 'You' : 'Nigel';
+
     var m = document.createElement('div');
-    m.className = who === 'you' ? 'msg you' : 'msg';
+    m.className = 'msg';
     m.textContent = text;
-    body.appendChild(m);
+
+    turn.appendChild(label);
+    turn.appendChild(m);
+    body.appendChild(turn);
     scrollDown();
-    return m;
+    return turn;
   }
 
   function typing() {

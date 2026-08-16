@@ -23,27 +23,46 @@
 .nigel-status{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--good);font-family:var(--mono)}
 .nigel-status i{width:6px;height:6px;border-radius:50%;background:var(--good)}
 .nigel-x{background:none;border:none;cursor:pointer;color:var(--ink-3);font-size:20px;line-height:1;padding:0 2px}
-.nigel-body{padding:15px;display:flex;flex-direction:column;gap:10px;min-height:150px;max-height:300px;overflow-y:auto}
-.msg{max-width:88%;align-self:flex-start;background:var(--iris-soft);color:var(--ink);font-size:13.5px;line-height:1.42;padding:9px 13px;border-radius:13px 13px 13px 4px;animation:msgIn .34s var(--anim-ease)}
-@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.nigel-body{padding:16px 15px;display:flex;flex-direction:column;gap:14px;
+  min-height:170px;max-height:320px;overflow-y:auto}
+
+/* A turn: a small mono label, then the bubble. The label is what makes a
+   transcript readable at a glance; colour alone does not survive a screenshot,
+   a colour-blind reader, or a narrow column. */
+.turn{display:flex;flex-direction:column;gap:4px;max-width:86%}
+.turn.them{align-self:flex-start;align-items:flex-start}
+.turn.you{align-self:flex-end;align-items:flex-end}
+.turn-who{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:600;padding:0 3px}
+.turn.you .turn-who{color:var(--iris)}
+
+.msg{font-size:13.5px;line-height:1.5;padding:10px 13px;animation:msgIn .34s var(--anim-ease)}
+/* Nigel: soft iris, tail bottom-left. */
+.turn.them .msg{background:var(--iris-soft);color:var(--ink);border-radius:13px 13px 13px 4px}
+/* The visitor: white card with a rule, tail bottom-right. Deliberately the
+   quieter of the two, so the eye follows Nigel down the column. */
+.turn.you .msg{background:#fff;color:var(--ink);border:1px solid var(--line);
+  border-radius:13px 13px 4px 13px}
+
 .typing{align-self:flex-start;display:inline-flex;gap:4px;padding:11px 13px;background:var(--iris-soft);border-radius:13px}
 .typing i{width:6px;height:6px;border-radius:50%;background:var(--iris);opacity:.5;animation:typingDot 1s infinite}
 .typing i:nth-child(2){animation-delay:.15s}
 .typing i:nth-child(3){animation-delay:.3s}
 @keyframes typingDot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:.9;transform:translateY(-3px)}}
-.msg.you{align-self:flex-end;background:var(--paper);border:1px solid var(--line);color:var(--ink);border-radius:13px 13px 4px 13px}
-.nigel-status i.out{background:var(--ink-3)}
-.nigel-status:has(i.out){color:var(--ink-3)}
 
-/* Composer. A real input now; the mock's static .box is gone. */
-.nigel-foot{padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}
-.nigel-input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 11px;
-  font:inherit;font-size:13px;color:var(--ink);background:var(--paper);outline:none;
-  transition:border-color .18s ease, background .18s ease}
-.nigel-input:focus{border-color:var(--iris);background:#fff}
-.nigel-input:disabled{opacity:.55;cursor:not-allowed}
-.nigel-send{flex:none;width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;
-  background:var(--iris);color:#fff;font-size:15px;line-height:1;
-  display:flex;align-items:center;justify-content:center;transition:opacity .18s ease, transform .18s ease}
-.nigel-send:hover:not(:disabled){transform:translateY(-1px)}
-.nigel-send:disabled{opacity:.4;cursor:not-allowed}
+/* Composer */
+.nigel-foot{padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:8px;
+  align-items:center;background:var(--paper)}
+.nigel-input{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:9px 12px;
+  font-family:var(--sans);font-size:13px;color:var(--ink);background:#fff;
+  outline:none;-webkit-appearance:none;appearance:none;
+  transition:border-color .18s ease, box-shadow .18s ease}
+.nigel-input::placeholder{color:var(--ink-3)}
+.nigel-input:focus{border-color:var(--iris);box-shadow:0 0 0 3px rgba(95,61,220,.13)}
+.nigel-input:disabled{opacity:.55;cursor:not-allowed;background:var(--paper)}
+.nigel-send{flex:none;width:34px;height:34px;border-radius:9px;border:none;cursor:pointer;
+  background:var(--iris);color:#fff;font-size:15px;line-height:1;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .18s ease, transform .18s ease, opacity .18s ease}
+.nigel-send:hover:not(:disabled){background:#5636c9;transform:translateY(-1px)}
+.nigel-send:disabled{opacity:.38;cursor:not-allowed}
