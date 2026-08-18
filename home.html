@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Holonograph: the calibrated instrument for agentic behavioral attribution</title>
-<meta name="description" content="Holonograph attributes a shift in your agent's behavior to its source: your substrate, the model, your evaluation, or noise. Self-hosted, patent-pending, and honest about what it cannot resolve.">
+<title>Holonograph: calibrated instrument for agent attribution</title>
+<meta name="description" content="Holonograph attributes a shift in your agent's behavior to its source: substrate, model, evaluation, or noise. Self-hosted, honest about what it can't resolve.">
 <link rel="canonical" href="https://holonograph.ai/">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#f6f5f9">
@@ -28,6 +28,9 @@
 <meta name="twitter:description" content="Attributes a shift in your agent's behavior to its source: your substrate, the model, your evaluation, or noise.">
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MX42B47LTP');</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
 {"@type":"Organization","@id":"https://holonograph.ai/#org","name":"Precision Innovations LLC","url":"https://precision-innovations.us","brand":"Holonograph","logo":"https://holonograph.ai/holonograph.webp","sameAs":["https://x.com/holonograph","https://www.reddit.com/user/holonograph","https://www.instagram.com/holonograph","https://github.com/holonograph","https://www.npmjs.com/org/holonograph","https://crates.io/users/holonograph"]},
@@ -45,9 +48,9 @@
 </script>
 <style>
   :root{
-    --paper:#f6f5f9; --ink:#17161d; --ink-2:#4b4a57; --ink-3:#8a8796;
+    --paper:#f6f5f9; --ink:#17161d; --ink-2:#4b4a57; --ink-3:#6c6a78;
     --iris:#5f3ddc; --iris-soft:#ece8fb; --line:#e4e1ee;
-    --sun:#e9552b; --sun-ink:#b23a16; --good:#2f9e73; --catch:#e0964a;
+    --sun:#e9552b; --sun-ink:#b23a16; --good:#1f7d59; --catch:#e0964a; --catch-ink:#8a5a12;
     --sans:"Helvetica Neue",-apple-system,system-ui,Arial,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
     /* ONE animation standard. JS (window.HOLO_ANIM) overrides these on load; change it there to retune every module at once. */
@@ -162,14 +165,14 @@
   .rcard-surface{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
   .rcard-meta{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-left:auto}
   .tag-status{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
-    color:var(--catch);border:1px solid rgba(224,150,74,.4);background:rgba(224,150,74,.1);padding:4px 9px;border-radius:6px}
+    color:var(--catch-ink);border:1px solid rgba(224,150,74,.4);background:rgba(224,150,74,.1);padding:4px 9px;border-radius:6px}
   .tag-triage{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
     color:var(--ink-3);border:1px solid var(--line);padding:4px 9px;border-radius:6px}
   .rcard-body{padding:22px 24px 26px}
   .finding{font-size:clamp(19px,2vw,23px);line-height:1.24;font-weight:600;letter-spacing:-.01em}
   .finding-sub{margin-top:9px;color:var(--ink-2);font-size:13.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .rcard code{font-family:var(--mono);font-size:12px;background:var(--iris-soft);color:var(--iris);padding:1px 6px;border-radius:5px}
-  .tag-axis{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--catch);
+  .tag-axis{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--catch-ink);
     border:1px solid rgba(224,150,74,.4);padding:3px 8px;border-radius:6px}
   .bars{margin:22px 0 6px}
   .bars-cap{font-size:12.5px;color:var(--ink-3);margin-bottom:15px}
@@ -279,6 +282,7 @@
   .dw-chrome .live{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#46c08a}
   .dw-chrome .live .pulse{width:7px;height:7px;border-radius:50%;background:#46c08a;animation:livePulse 1.8s infinite}
   @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(70,192,138,.5)}70%{box-shadow:0 0 0 7px rgba(70,192,138,0)}100%{box-shadow:0 0 0 0 rgba(70,192,138,0)}}
+  @media (prefers-reduced-motion:reduce){ .dw-chrome .live .pulse{animation:none} }
   .dw-iframe{display:block;width:100%;height:580px;border:0;background:#0c0c12}
 
   /* Nigel chat panel (expands from the FAB; auto-opens over the live dashboard) */
@@ -346,6 +350,7 @@
 <link rel="stylesheet" href="nigel.css?v=7">
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <div class="stage" aria-hidden="true">
   <canvas id="holon-lite"></canvas>
   <div class="wash"></div>
@@ -353,7 +358,7 @@
 
 <header class="site-header" id="siteHeader">
   <div class="wrap nav-wrap">
-    <nav>
+    <nav aria-label="Primary">
       <span class="brand">
         <a class="mark" href="home.html"><b>H</b>OLONOGRAPH</a>
         <span class="pp">patent&nbsp;pending</span>
@@ -364,7 +369,7 @@
   </div>
 </header>
 
-<div class="wrap">
+<main class="wrap" id="main">
   <section class="hero">
     <div class="col-text">
       <p class="eyebrow"><span class="dot"></span>Agentic behavioral attribution</p>
@@ -551,8 +556,20 @@
         <span class="dots"><i></i><i></i><i></i></span>
         <span class="live"><span class="pulse"></span>LIVE</span>
       </div>
-      <!-- DEPLOY: swap src for the deployed dashboard URL (localhost only works in dev). -->
-      <iframe class="dw-iframe" src="http://localhost:8099/?mock=true#act" title="Holonograph Lens Dashboard — Act" loading="lazy"></iframe>
+      <!-- Nigel's OWN lens, live. Not ?mock=true: every finding here is derived from
+           real traffic against the agent in the corner of this page. Sparse early on,
+           and that is the honest state, the instrument reports what it has.
+
+           Points at the READ-ONLY proxy, never the lens directly. The lens API is
+           bearer-gated; the proxy holds the token server-side, serves GET only, and
+           405s every write. Exposing the lens itself would mean either leaking the
+           token to every visitor or running it with auth off, and an open ingest
+           endpoint would let a passer-by fabricate the findings this section exists
+           to prove are real. -->
+      <iframe class="dw-iframe"
+              src="https://nigel-lens-public-98022099798.us-central1.run.app/dashboard/#act"
+              title="Holonograph Lens Dashboard — Act"
+              loading="lazy"></iframe>
     </div>
     <div class="demo-mobile" data-reveal>
       <p>The live readout runs best on desktop.</p>
@@ -560,7 +577,7 @@
       <a class="btn ghost" href="#" data-nigel-open>Ask Nigel &rarr;</a>
     </div>
   </section>
-</div>
+</main>
 
 <footer class="site-footer">
   <div class="wrap">
