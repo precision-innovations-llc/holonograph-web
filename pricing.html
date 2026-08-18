@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pricing · Holonograph</title>
-<meta name="description" content="Priced by resolution, not telemetry volume. Three cumulative tiers, Surface, Facet, and Attested Resolution, metered on active surfaces and declared facets. Unlimited observations at every tier.">
+<meta name="description" content="Priced by resolution, not telemetry volume. Three cumulative tiers metered on active surfaces and declared facets. Unlimited observations at every tier.">
 <link rel="canonical" href="https://holonograph.ai/pricing">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#f6f5f9">
@@ -30,18 +30,18 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="site.css">
 <link rel="stylesheet" href="mobilenav.css">
-<link rel="stylesheet" href="nigel.css?v=7">
+<link rel="stylesheet" href="nigel.css?v=8">
 <style>
   .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:clamp(16px,3.5vh,36px) 0 8px;align-items:stretch}
   .tier{border:1px solid var(--line);border-radius:16px;background:#fff;padding:clamp(24px,3vw,32px);display:flex;flex-direction:column}
   .tier.feature{border-color:var(--iris);box-shadow:0 24px 60px -34px rgba(95,61,220,.5)}
-  .tier h3{font-size:21px;font-weight:600;letter-spacing:-.01em}
+  .tier h2{font-size:21px;font-weight:600;letter-spacing:-.01em}
   .tier .who{margin-top:12px;font-size:14.5px;color:var(--ink-2);line-height:1.55;min-height:96px}
   .tier .who b{color:var(--ink);font-weight:600}
   .tier .price{margin:6px 0 3px;font-size:31px;font-weight:600;letter-spacing:-.02em;display:flex;align-items:baseline;gap:7px}
   .tier .price .unit{font-size:14px;font-weight:500;color:var(--ink-3)}
   .tier .price.custom{font-size:27px}
-  .tier .meter{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--catch)}
+  .tier .meter{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--catch-ink)}
   .tier ul{list-style:none;margin:20px 0 26px;display:flex;flex-direction:column;gap:11px}
   .tier li{position:relative;padding-left:20px;font-size:14px;color:var(--ink-2);line-height:1.45}
   .tier li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--sun)}
@@ -61,9 +61,10 @@
 </style>
 </head>
 <body data-nav="pricing">
+<a class="skip" href="#main">Skip to content</a>
 <header id="siteHeader"></header>
 
-<div class="wrap">
+<main class="wrap" id="main">
   <section class="page-hero" data-hero data-reveal>
     <p class="eyebrow"><span class="dot"></span>Pricing</p>
     <h1>Priced by resolution.</h1>
@@ -72,7 +73,7 @@
 
   <section class="tiers" data-reveal>
     <div class="tier">
-      <h3>Surface Resolution</h3>
+      <h2>Surface Resolution</h2>
       <p class="who">Resolves <b>what changed</b>, across the four attribution axes: substrate, light source, lens, and floor.</p>
       <div class="price"><span>$995</span><span class="unit">/ month</span></div>
       <div class="meter">metered on active surfaces</div>
@@ -86,7 +87,7 @@
     </div>
 
     <div class="tier feature">
-      <h3>Facet Resolution</h3>
+      <h2>Facet Resolution</h2>
       <p class="who">Resolves <b>what within the lens changed</b>, across declared facets of rubric by judge by context scope. Includes Surface Resolution.</p>
       <div class="price"><span>$5k</span><span class="unit">/ month</span></div>
       <div class="meter">active surfaces plus declared facets</div>
@@ -100,7 +101,7 @@
     </div>
 
     <div class="tier">
-      <h3>Attested Resolution</h3>
+      <h2>Attested Resolution</h2>
       <p class="who">Proves <b>what changed</b>, with governed and attested attribution for a risk function, an examiner, or an auditor. Includes Facet Resolution.</p>
       <div class="price custom">Custom</div>
       <div class="meter">negotiated estate plus attestations</div>
@@ -123,11 +124,11 @@
   </section>
 
   <p class="note" data-reveal>The auditor cannot be the auditee: Holonograph measures your agents without becoming part of what it measures.</p>
-</div>
+</main>
 
 <footer id="siteFooter"></footer>
 <script src="site.js"></script>
-<script src="nigel.js?v=7"></script>
+<script src="nigel.js?v=8"></script>
 <script src="mobilenav.js"></script>
 </body>
 </html>

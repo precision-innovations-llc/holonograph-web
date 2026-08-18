@@ -53,6 +53,7 @@
   var status = document.getElementById('nigelStatus');
 
   var open = false, greeted = false, busy = false, spent = false, restored = false;
+  panel.inert = true;   // closed on load: keep its controls out of the tab order + a11y tree
 
   /* Panel state lives in sessionStorage so the widget survives a page change.
      Nigel can navigate the visitor, and a chat that vanished the moment he did
@@ -70,6 +71,7 @@
     if (open) return;
     open = true;
     panel.classList.add('open');
+    panel.inert = false;
     rememberOpen(true);
     updateFab();
     greetOnce();
@@ -83,7 +85,7 @@
     }
   }
 
-  function closePanel() { open = false; panel.classList.remove('open'); rememberOpen(false); updateFab(); }
+  function closePanel() { open = false; panel.classList.remove('open'); panel.inert = true; rememberOpen(false); updateFab(); if (fab && panel.contains(document.activeElement)) fab.focus(); }
 
   [].forEach.call(document.querySelectorAll('[data-nigel-open]'), function (el) {
     el.addEventListener('click', function (e) { e.preventDefault(); openPanel(); });
@@ -109,6 +111,9 @@
       if (!msgs.length) return;
       restored = true;
       greeted = true;                       /* do not greet over an existing conversation */
+      /* If the greeting won the race and is already on screen, take it back out.
+         A restored transcript is the real conversation; the greeting is furniture. */
+      body.innerHTML = '';
       msgs.forEach(function (m) {
         bubble(m.content, m.role === 'user' ? 'you' : 'them');
       });
@@ -151,12 +156,18 @@
     return t;
   }
 
+  /* The greeting is deferred, which means it can land AFTER a restore that arrives
+     while it was waiting — producing "Hello, I look after this site" underneath a
+     conversation already in progress. Setting `greeted` at schedule time is not
+     enough; the queued callback has to re-check on the way out, because the thing
+     that invalidates it happens during the wait. */
   function greetOnce() {
     if (greeted || restored) return;
     greeted = true;
     var t = typing();
     setTimeout(function () {
       t.remove();
+      if (restored || body.querySelector('.turn')) return;   // a real turn arrived first
       bubble('Hello. I look after this site. What would you like to know about Holonograph?');
     }, 700);
   }

@@ -30,9 +30,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
   :root{
-    --paper:#f6f5f9; --ink:#17161d; --ink-2:#4b4a57; --ink-3:#8a8796;
+    --paper:#f6f5f9; --ink:#17161d; --ink-2:#4b4a57; --ink-3:#6c6a78;
     --iris:#5f3ddc; --iris-soft:#ece8fb; --line:#e4e1ee;
-    --sun:#e9552b; --sun-ink:#b23a16; --good:#2f9e73; --catch:#e0964a;
+    --sun:#e9552b; --sun-ink:#b23a16; --good:#1f7d59; --catch:#e0964a; --catch-ink:#8a5a12;
     --sans:"Helvetica Neue",-apple-system,system-ui,Arial,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
     --anim-dur:.42s; --anim-ease:cubic-bezier(.2,.8,.2,1);
@@ -142,12 +142,22 @@
   }
 </style>
 <link rel="stylesheet" href="mobilenav.css">
-<link rel="stylesheet" href="nigel.css?v=7">
+<link rel="stylesheet" href="nigel.css?v=8">
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MX42B47LTP');</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Organization","@id":"https://holonograph.ai/#org","name":"Precision Innovations LLC","url":"https://precision-innovations.us","brand":"Holonograph","logo":"https://holonograph.ai/holonograph.webp","sameAs":["https://x.com/holonograph","https://www.reddit.com/user/holonograph","https://www.instagram.com/holonograph","https://github.com/holonograph","https://www.npmjs.com/org/holonograph","https://crates.io/users/holonograph"]},
+{"@type":"WebSite","@id":"https://holonograph.ai/#website","url":"https://holonograph.ai/","name":"Holonograph","publisher":{"@id":"https://holonograph.ai/#org"}}
+]}
+</script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap">
-    <nav>
+    <nav aria-label="Primary">
       <span class="brand"><a class="mark" href="home.html"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
       <span class="nav-links"><a href="home.html">Product</a><a href="value.html" class="on">Value</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a></span>
       <a class="pill" href="pricing.html">Get started</a>
@@ -155,7 +165,7 @@
   </div>
 </header>
 
-<div class="wrap">
+<main class="wrap" id="main">
   <section class="v-hero" data-hero data-reveal>
     <p class="eyebrow"><span class="dot"></span>The value</p>
     <h1>Complex agents introduce variance, challenging the role of observability alone.</h1>
@@ -298,7 +308,7 @@
   </div>
 
   <p class="full-guide">Prefer it end to end? Read the <a href="guide/index.html">full guide</a>.</p>
-</div>
+</main>
 
 <footer class="site-footer">
   <div class="wrap">
@@ -322,7 +332,7 @@
 <!-- Nigel's markup and behaviour live in nigel.js (loaded at the foot of this page). -->
 
 <div class="drawer-scrim" id="scrim"></div>
-<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Guide">
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Guide">
   <div class="drawer-head">
     <span class="drawer-eyebrow">From the guide</span>
     <span class="drawer-title" id="drawerTitle"></span>
@@ -346,6 +356,8 @@ window.HOLO_ANIM={ dur:420, ease:'cubic-bezier(.2,.8,.2,1)' };
   var scrim=document.getElementById('scrim'), drawer=document.getElementById('drawer'),
       frame=document.getElementById('drawerFrame'), titleEl=document.getElementById('drawerTitle'),
       openEl=document.getElementById('drawerOpen'), xBtn=document.getElementById('drawerX');
+  var lastTrigger=null;
+  drawer.inert=true;   // closed on load: keep its controls out of the tab order + a11y tree
   function open(url,title){
     titleEl.textContent=title; openEl.href=url;
     frame.style.opacity='0';
@@ -365,21 +377,23 @@ window.HOLO_ANIM={ dur:420, ease:'cubic-bezier(.2,.8,.2,1)' };
     };
     frame.src=url;
     scrim.classList.add('open'); drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
+    drawer.inert=false; document.body.style.overflow='hidden';
+    try{ xBtn.focus(); }catch(e){}
   }
   function close(){
     scrim.classList.remove('open'); drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true');
-    document.body.style.overflow='';
+    drawer.inert=true; document.body.style.overflow='';
+    if(lastTrigger){ try{ lastTrigger.focus(); }catch(e){} lastTrigger=null; }
     setTimeout(function(){ if(!drawer.classList.contains('open')) frame.src='about:blank'; }, 500);
   }
   [].forEach.call(document.querySelectorAll('[data-guide]'), function(b){
-    b.addEventListener('click', function(){ open(b.getAttribute('data-guide'), b.getAttribute('data-title')||'Guide'); });
+    b.addEventListener('click', function(){ lastTrigger=b; open(b.getAttribute('data-guide'), b.getAttribute('data-title')||'Guide'); });
   });
   scrim.addEventListener('click', close); xBtn.addEventListener('click', close);
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
 })();
 </script>
-<script src="nigel.js?v=7"></script>
+<script src="nigel.js?v=8"></script>
 <script src="mobilenav.js"></script>
 </body>
 </html>

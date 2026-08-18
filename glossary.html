@@ -30,7 +30,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="site.css">
 <link rel="stylesheet" href="mobilenav.css">
-<link rel="stylesheet" href="nigel.css?v=7">
+<link rel="stylesheet" href="nigel.css?v=8">
 <style>
   .g-nav{display:flex;flex-wrap:wrap;gap:8px;padding:clamp(12px,2.5vh,24px) 0 clamp(16px,3vh,28px);position:sticky;top:70px;background:rgba(246,245,249,.9);backdrop-filter:blur(8px);z-index:10}
   .g-nav a{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-2);text-decoration:none;border:1px solid var(--line);border-radius:20px;padding:6px 13px;background:#fff}
@@ -49,16 +49,17 @@
 </style>
 </head>
 <body data-nav="docs">
+<a class="skip" href="#main">Skip to content</a>
 <header id="siteHeader"></header>
 
-<div class="wrap">
+<main class="wrap" id="main">
   <section class="page-hero" data-hero data-reveal>
     <p class="eyebrow"><span class="dot"></span>Glossary</p>
     <h1>The vocabulary of the instrument.</h1>
     <p class="sub">The terms Holonograph uses, grouped by where they sit in the measurement. Each says what it means and what it deliberately does not claim.</p>
   </section>
 
-  <nav class="g-nav" data-reveal>
+  <nav class="g-nav" data-reveal aria-label="On this page">
     <a href="#sources">The four sources</a>
     <a href="#reading">Reading the change</a>
     <a href="#architecture">Architecture</a>
@@ -118,11 +119,11 @@
       <div class="term"><dt>Resolution</dt><dd>How much of your system Holonograph resolves, and how finely it reports what it found. The unit of value, and the axis the tiers name.</dd></div>
     </dl>
   </section>
-</div>
+</main>
 
 <footer id="siteFooter"></footer>
 <script src="site.js"></script>
-<script src="nigel.js?v=7"></script>
+<script src="nigel.js?v=8"></script>
 <script src="mobilenav.js"></script>
 </body>
 </html>
