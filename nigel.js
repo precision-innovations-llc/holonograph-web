@@ -17,7 +17,9 @@
   var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   var ENDPOINT =
     window.NIGEL_ENDPOINT ||
-    (LOCAL ? 'http://localhost:8787' : 'https://nigelchat-XXXXX-uc.a.run.app');
+    (LOCAL
+      ? 'http://localhost:8787'
+      : 'https://nigel-chat-98022099798.us-central1.run.app');
 
   var MARKUP =
     '<button class="nigel-fab" id="nigelFab" type="button" aria-label="Chat with Nigel" title="Chat with Nigel">N</button>' +
@@ -29,6 +31,7 @@
         '<button class="nigel-x" id="nigelClose" type="button" aria-label="Close">&times;</button>' +
       '</div>' +
       '<div class="nigel-body" id="nigelBody" role="log" aria-live="polite"></div>' +
+      '<p class="nigel-note">Do not share anything private. These messages may be made public in the lens.</p>' +
       '<form class="nigel-foot" id="nigelForm">' +
         '<input class="nigel-input" id="nigelInput" type="text" autocomplete="off" ' +
           'maxlength="1200" placeholder="Ask Nigel anything…" aria-label="Message Nigel">' +

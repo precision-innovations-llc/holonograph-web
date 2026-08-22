@@ -30,7 +30,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="site.css">
 <link rel="stylesheet" href="mobilenav.css">
-<link rel="stylesheet" href="nigel.css?v=8">
+<link rel="stylesheet" href="nigel.css?v=9">
 <style>
   .doc-start{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:clamp(16px,3vh,32px) 0 8px}
   .start-card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:clamp(22px,3vw,30px);text-decoration:none;display:block;transition:border-color .18s ease, transform .18s ease}
@@ -114,8 +114,9 @@
   <section class="doc-group" data-reveal>
     <h2>SDK &amp; operations</h2>
     <div class="doc-grid">
-      <a class="doc-item" href="guide/sdk-reference.html"><h3>SDK reference</h3><p>The client contract: canonical types both directions across the boundary.</p></a>
+      <a class="doc-item" href="guide/sdk-reference.html"><h3>SDK reference</h3><p>The client contract, and the reliability loop: attach a claim, and the lens checks your judge.</p></a>
       <a class="doc-item" href="guide/sidecar.html"><h3>OTel sidecar</h3><p>Emitting to the lens without changing your request path.</p></a>
+      <a class="doc-item" href="guide/subscriptions.html"><h3>Route a verdict to a human</h3><p>Fire a signed webhook when a predicate over the lens's own verdicts crosses a line.</p></a>
     </div>
   </section>
 
@@ -130,7 +131,7 @@
 
 <footer id="siteFooter"></footer>
 <script src="site.js"></script>
-<script src="nigel.js?v=8"></script>
+<script src="nigel.js?v=9"></script>
 <script src="mobilenav.js"></script>
 </body>
 </html>

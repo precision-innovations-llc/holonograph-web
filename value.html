@@ -95,9 +95,11 @@
   .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
   .btn-guide{font-family:var(--sans);font-size:14px;font-weight:500;padding:11px 18px;border-radius:9px;background:var(--iris);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
   .btn-guide:hover{background:#5636c9}
-  .btn-study{font-size:14px;font-weight:500;padding:11px 18px;border-radius:9px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:rgba(251,250,253,.7);display:inline-flex;align-items:center;gap:8px}
-  .btn-study:hover{border-color:var(--iris)}
-  .full-guide{max-width:720px;margin-top:8px;font-size:14px;color:var(--ink-3)}
+  .btn-study{font-family:inherit;font-size:14px;font-weight:500;padding:11px 18px;border-radius:9px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:rgba(251,250,253,.7);display:inline-flex;align-items:center;gap:8px}
+  .btn-study:not([disabled]):hover{border-color:var(--iris)}
+  .btn-study[disabled]{opacity:.5;cursor:not-allowed}
+  .close-note{max-width:820px;margin-top:clamp(40px,7vh,72px);font-size:clamp(17px,1.8vw,21px);color:var(--ink);line-height:1.45;letter-spacing:-.01em;font-weight:500}
+  .full-guide{max-width:720px;margin-top:18px;font-size:14px;color:var(--ink-3)}
   .full-guide a{color:var(--iris);text-decoration:none;font-weight:500}
 
   .nigel-fab.show:hover{transform:translateY(-3px);box-shadow:0 18px 40px -12px rgba(95,61,220,.7)}
@@ -142,10 +144,10 @@
   }
 </style>
 <link rel="stylesheet" href="mobilenav.css">
-<link rel="stylesheet" href="nigel.css?v=8">
+<link rel="stylesheet" href="nigel.css?v=9">
 <!-- Google Analytics (GA4) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MX42B47LTP');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MX42B47LTP', { client_storage: 'none' });</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
 {"@type":"Organization","@id":"https://holonograph.ai/#org","name":"Precision Innovations LLC","url":"https://precision-innovations.us","brand":"Holonograph","logo":"https://holonograph.ai/holonograph.webp","sameAs":["https://x.com/holonograph","https://www.reddit.com/user/holonograph","https://www.instagram.com/holonograph","https://github.com/holonograph","https://www.npmjs.com/org/holonograph","https://crates.io/users/holonograph"]},
@@ -158,9 +160,9 @@
 <header class="site-header">
   <div class="wrap">
     <nav aria-label="Primary">
-      <span class="brand"><a class="mark" href="home.html"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
-      <span class="nav-links"><a href="home.html">Product</a><a href="value.html" class="on">Value</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a></span>
-      <a class="pill" href="pricing.html">Get started</a>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="value.html" class="on">Value</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a></span>
+      <a class="pill" href="contact.html">Request a demo</a>
     </nav>
   </div>
 </header>
@@ -169,7 +171,7 @@
   <section class="v-hero" data-hero data-reveal>
     <p class="eyebrow"><span class="dot"></span>The value</p>
     <h1>Complex agents introduce variance, challenging the role of observability alone.</h1>
-    <p class="sub">A well-structured substrate and compulsive versioning allow statistical analysis of every agentic and LLM-as-a-judge call: honest adjudication, and triage aimed at the real cause.</p>
+    <p class="sub">A well-structured substrate and compulsive versioning allow statistical analysis of every agentic and LLM-as-a-judge call, generating honest adjudication and truth-grounded triage.</p>
   </section>
 
   <div class="units">
@@ -181,7 +183,7 @@
         <p class="biz">When a score shifts, the movement is split into how much came from your agent, the model, your eval, and noise. What resists attribution is reported as noise, not dressed up as a cause. <b>The decomposition is the reading,</b> not a second pass you run afterward.</p>
         <div class="cta-row">
           <button class="btn-guide" data-guide="guide/drift-attribution.html" data-title="Drift attribution" type="button">View the implementation <span aria-hidden="true">&rarr;</span></button>
-          <a class="btn-study" href="#">Read the study</a>
+          <button class="btn-study" type="button" disabled>Study coming soon</button>
         </div>
       </div>
       <div class="unit-viz">
@@ -210,7 +212,7 @@
         <p class="biz">A movement that falls within noise is reported as noise, so a null result reads as null instead of opening an investigation. <b>The checks that raise the most false alarms surface for tightening,</b> and the noise floor falls release over release.</p>
         <div class="cta-row">
           <button class="btn-guide" data-guide="guide/variance-isolation.html" data-title="Variance isolation" type="button">View the implementation <span aria-hidden="true">&rarr;</span></button>
-          <a class="btn-study" href="#">Read the study</a>
+          <button class="btn-study" type="button" disabled>Study coming soon</button>
         </div>
       </div>
       <div class="unit-viz">
@@ -235,7 +237,7 @@
         <p class="biz">Declared surfaces that have never been observed are listed as unobserved, and the coverage you do not have is estimated statistically. <b>The size of the blind spot is a number on the page,</b> not a surprise in production.</p>
         <div class="cta-row">
           <button class="btn-guide" data-guide="guide/topology-scanner.html" data-title="Surface topology scanner" type="button">View the implementation <span aria-hidden="true">&rarr;</span></button>
-          <a class="btn-study" href="#">Read the study</a>
+          <button class="btn-study" type="button" disabled>Study coming soon</button>
         </div>
       </div>
       <div class="unit-viz">
@@ -257,7 +259,7 @@
         <p class="biz">Holonograph reports whether the judge actually ran or silently defaulted, how the corpus is passing, and which results carry a warning. <b>A green number has earned the color,</b> and an unreliable one says so before you act on it.</p>
         <div class="cta-row">
           <button class="btn-guide" data-guide="guide/conformance.html" data-title="Conformance &amp; fixtures" type="button">View the implementation <span aria-hidden="true">&rarr;</span></button>
-          <a class="btn-study" href="#">Read the study</a>
+          <button class="btn-study" type="button" disabled>Study coming soon</button>
         </div>
       </div>
       <div class="unit-viz">
@@ -282,7 +284,7 @@
         <p class="biz">The lens sits above the agent, at the call boundary, capturing every model call in both directions. The measurement is identical whether you run Anthropic, OpenAI, or a custom model, so <b>a change of vendor becomes a comparison on the same terms,</b> not a migration that resets your baseline.</p>
         <div class="cta-row">
           <button class="btn-guide" data-guide="guide/multiplexer.html" data-title="The multiplexer" type="button">View the implementation <span aria-hidden="true">&rarr;</span></button>
-          <a class="btn-study" href="#">Read the study</a>
+          <button class="btn-study" type="button" disabled>Study coming soon</button>
         </div>
       </div>
       <div class="unit-viz">
@@ -307,6 +309,7 @@
 
   </div>
 
+  <p class="close-note">The auditor cannot be the auditee: Holonograph measures your agents without becoming part of what it measures.</p>
   <p class="full-guide">Prefer it end to end? Read the <a href="guide/index.html">full guide</a>.</p>
 </main>
 
@@ -318,9 +321,9 @@
         <p class="f-tag">The calibrated instrument for agentic behavioral attribution.</p>
         <p class="f-pp">Patent pending</p>
       </div>
-      <div class="f-col"><h4>Product</h4><a href="value.html">Value</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a><a href="changelog.html">Changelog</a></div>
+      <div class="f-col"><h4>Product</h4><a href="value.html">Value</a><a href="lens-facets.html">Lens facets</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a><a href="changelog.html">Changelog</a></div>
       <div class="f-col"><h4>Resources</h4><a href="docs.html">Guide</a><a href="glossary.html">Glossary</a><a href="#">Papers</a></div>
-      <div class="f-col"><h4>Company</h4><a href="about.html">About</a><a href="contact.html">Contact</a></div>
+      <div class="f-col"><h4>Company</h4><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div>
     </div>
     <div class="footer-bar">
       <span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span>
@@ -393,7 +396,7 @@ window.HOLO_ANIM={ dur:420, ease:'cubic-bezier(.2,.8,.2,1)' };
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
 })();
 </script>
-<script src="nigel.js?v=8"></script>
+<script src="nigel.js?v=9"></script>
 <script src="mobilenav.js"></script>
 </body>
 </html>
