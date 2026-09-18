@@ -7,33 +7,47 @@
 <title>The four-layer snapshot — The Guide — Holonograph</title>
 <meta name="description" content="The atomic record Holonograph captures per evaluation — how the four layers of one evaluation are bound into a single record you can query." />
 <meta name="discloses" content="capability-only" />
-<meta name="reflects-version" content="v0.23.0" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
 <link rel="canonical" href="https://holonograph.ai/guide/snapshot" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="The four-layer snapshot · Holonograph Guide" />
+<meta property="og:description" content="The atomic record Holonograph captures per evaluation — how the four layers of one evaluation are bound into a single record you can query." />
+<meta property="og:url" content="https://holonograph.ai/guide/snapshot" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="The four-layer snapshot · Holonograph Guide" />
+<meta name="twitter:description" content="The atomic record Holonograph captures per evaluation — how the four layers of one evaluation are bound into a single record you can query." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./_assets/guide.css" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-MX42B47LTP');
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
 </script>
 </head>
 <body>
-  <header class="guide-topbar">
-    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
-    <span class="guide-topbar-sep">/</span>
-    <span class="guide-crumb"><a href="./">The Guide</a> · The four-layer snapshot</span>
-    <span class="guide-topbar-right">
-      <span class="guide-version">v0.23.0</span>
-      <a href="./" class="guide-back-link">all chapters</a>
-    </span>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
+      <a class="pill" href="../pricing.html">Get started</a>
+    </nav></div>
   </header>
 
   <div class="guide-shell">
@@ -55,6 +69,7 @@
         <li><span class="s-num">12</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
         <li><span class="s-num">13</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
         <li><span class="s-num">14</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">15</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
       </ol>
     </aside>
 
@@ -63,7 +78,7 @@
 
         <p class="guide-eyebrow">Chapter 03</p>
         <h1 class="guide-h1">The four-layer snapshot</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           Every evaluation Holonograph observes is written as one record (an <code>EvaluationEvent</code>) that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
@@ -91,7 +106,7 @@
         <div class="guide-callout">
           <span class="callout-label">Provenance vs run mode</span>
           <code>run_mode</code> is <em>who is calling</em> (production, test, eval, replay, local_dev). <code>provenance</code> is <em>what kind of run this is from Holonograph's point of view</em> (<code>production-state</code> versus <code>exploratory-state</code>). Read queries default to <code>production-state</code>; pass <code>provenance=all</code> when you want the full stream.
-        </p>
+        </div>
 
         <h2>Why it matters</h2>
 
@@ -166,7 +181,7 @@ x-holonograph-run-mode: production</code></pre>
 
         <ul>
           <li><strong>Filter on cohort tags at read time</strong>, not at write time. Cohort tags are the query keys; write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.</li>
-          <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code>. But the default filter is what keeps replay traffic and local-dev noise out of dashboards.</li>
+          <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code>. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports <code>hiddenByProvenanceScope</code> &mdash; how many events the current scope filtered out &mdash; so a <code>count: 0</code> with a non-zero hidden count reads as &ldquo;wrong scope, add <code>?provenance=all</code>&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.</li>
         </ul>
 
         <h2>Reference</h2>
@@ -178,7 +193,7 @@ x-holonograph-run-mode: production</code></pre>
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>POST /lens/events</code></td><td>Ingest one <code>EvaluationEvent</code>. Response: <code>{ eventId }</code>.</td></tr>
-              <tr><td><code>GET /lens/events</code></td><td>Query events. Response: <code>{ events[], count, nextCursor? }</code>.</td></tr>
+              <tr><td><code>GET /lens/events</code></td><td>Query events. Response: <code>{ events[], count, hiddenByProvenanceScope, nextCursor? }</code>.</td></tr>
             </tbody>
           </table>
         </div>
@@ -226,7 +241,9 @@ x-holonograph-run-mode: production</code></pre>
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
     <span>Chapter 03 · The four-layer snapshot</span>
-    <span>Patent pending · v0.23.0</span>
+    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
 </body>
 </html>

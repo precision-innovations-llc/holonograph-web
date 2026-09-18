@@ -4,11 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#ffffff" />
-<title>The Guide — Complete — Holonograph</title>
-<meta name="description" content="The complete Holonograph guide, all fourteen chapters in a single scrolling page. One URL for offline reading, LLM ingestion, and full-text search across the whole methodology." />
+<title>The Guide Mark II · Holonograph</title>
+<meta name="description" content="The complete Holonograph guide, all fifteen chapters in a single scrolling page. One URL for offline reading, LLM ingestion, and full-text search across the whole methodology." />
 <meta name="discloses" content="capability-only" />
-<meta name="reflects-version" content="v0.26.0" />
-<meta name="reflects-client-version" content="0.3.0" />
+<meta name="reflects-version" content="v0.41.9" />
+<meta name="reflects-client-version" content="0.12.0" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
 <meta name="generator" content="build-guide-all.mjs" />
@@ -24,16 +24,16 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-MX42B47LTP');
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
 </script>
 </head>
 <body>
   <header class="guide-topbar">
     <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
     <span class="guide-topbar-sep">/</span>
-    <span class="guide-crumb"><a href="./">The Guide</a> · complete</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · Mark II</span>
     <span class="guide-topbar-right">
-      <span class="guide-version">v0.26.0 · client 0.3.0</span>
+      <span class="guide-version">v0.41.9 · client 0.12.0</span>
       <a href="./" class="guide-back-link">chapter view</a>
     </span>
   </header>
@@ -57,6 +57,7 @@
         <li><span class="s-num">12</span><a href="#lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
         <li><span class="s-num">13</span><a href="#drift-attribution" class="s-ttl">Drift attribution</a></li>
         <li><span class="s-num">14</span><a href="#variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">15</span><a href="#subscriptions" class="s-ttl">Route a verdict to a human</a></li>
       </ol>
     </aside>
 
@@ -64,8 +65,8 @@
       <article>
 
         <p class="guide-eyebrow">The Guide · one-page view</p>
-        <h1 class="guide-h1">The complete Guide</h1>
-        <p class="guide-meta">Reflects Holonograph v0.26.0 <span class="dot">·</span> <code>@holonograph/client</code> 0.3.0 <span class="dot">·</span> all 14 chapters, one URL</p>
+        <h1 class="guide-h1">The Guide Mark II</h1>
+        <p class="guide-meta">Reflects Holonograph v0.41.9 <span class="dot">·</span> <code>@holonograph/client</code> 0.12.0 <span class="dot">·</span> all 15 chapters, one URL</p>
 
         <p class="guide-lede">
           This page is the entire Holonograph guide in a single scrolling document. Every chapter that lives at its own permalink is included here in full, in reading order, without the per-page prev/next chrome. Use the sidebar to jump to a chapter, or read straight through.
@@ -78,8 +79,8 @@
 
         <section id="overview" class="guide-chapter-block" aria-label="Chapter 01">
 <p class="guide-eyebrow">Chapter 01</p>
-        <h1 class="guide-h1">Overview &amp; first principles<span class="guide-h1-tm" aria-hidden="true">™</span></h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~7 min read</p>
+        <h2 class="guide-h1">Overview &amp; first principles<span class="guide-h1-tm" aria-hidden="true">™</span></h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           Holonograph is the observation layer for agentic AI systems. It sits in the call path between your agent and the language models that drive it, and it captures a structured record of every evaluation your system produces. From that record it tells you two things existing tools cannot: <em>which layer</em> of your system a change came from, and <em>how much</em> of an observed spread is real change versus measurement noise.
@@ -106,6 +107,11 @@
         <p>
           Every one of those is a capability the operator uses. This Guide teaches you how to use them.
         </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Reading this as an agent</span>
+          Increasingly the reader here is not a person browsing a dashboard but a coding agent, asked to fix a bug or to find one nobody reported. Before it changes anything, it consults the lens: what actually moved, whether that movement is real, and which verdicts can be trusted. Every read in this Guide is exposed over plain HTTP for exactly that &mdash; the pre-action check that decides the next step. The dashboard is one surface over the same reads.
+        </div>
 
         <h2>Why position, not instrumentation</h2>
 
@@ -178,7 +184,7 @@
         </p>
 
         <p>
-          Concretely: the underlying method is deliberately absent from these pages. If you are a researcher trying to evaluate the method rather than the product, the shortest path is <a href="../#request-a-pilot">to talk to us</a>. Deeper technical validation is available under NDA, and the product itself is designed to run in your own environment against your own workload, so nothing about the evaluation happens on our infrastructure.
+          Concretely: the underlying method is deliberately absent from these pages. If you are a researcher trying to evaluate the method rather than the product, the shortest path is <a href="../contact.html">to talk to us</a>. Deeper technical validation is available under NDA, and the product itself is designed to run in your own environment against your own workload, so nothing about the evaluation happens on our infrastructure.
         </p>
 
         <div class="guide-callout">
@@ -190,8 +196,8 @@
 
         <section id="surface-contracts" class="guide-chapter-block" aria-label="Chapter 02">
 <p class="guide-eyebrow">Chapter 02</p>
-        <h1 class="guide-h1">Surface contracts</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+        <h2 class="guide-h1">Surface contracts</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           A surface contract is the JSON document that tells Holonograph what an evaluation surface <em>should</em> look like (its dimensions, cohort tags, substrate columns, and vendor routings) before any real traffic hits it. Everything downstream (event ingest, snapshot queries, topology gap-finding) reads from the contract you registered here.
@@ -357,8 +363,8 @@ Content-Type: application/json
 
         <section id="snapshot" class="guide-chapter-block" aria-label="Chapter 03">
 <p class="guide-eyebrow">Chapter 03</p>
-        <h1 class="guide-h1">The four-layer snapshot</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+        <h2 class="guide-h1">The four-layer snapshot</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           Every evaluation Holonograph observes is written as one record (an <code>EvaluationEvent</code>) that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
@@ -386,7 +392,7 @@ Content-Type: application/json
         <div class="guide-callout">
           <span class="callout-label">Provenance vs run mode</span>
           <code>run_mode</code> is <em>who is calling</em> (production, test, eval, replay, local_dev). <code>provenance</code> is <em>what kind of run this is from Holonograph's point of view</em> (<code>production-state</code> versus <code>exploratory-state</code>). Read queries default to <code>production-state</code>; pass <code>provenance=all</code> when you want the full stream.
-        </p>
+        </div>
 
         <h2>Why it matters</h2>
 
@@ -461,7 +467,7 @@ x-holonograph-run-mode: production</code></pre>
 
         <ul>
           <li><strong>Filter on cohort tags at read time</strong>, not at write time. Cohort tags are the query keys; write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.</li>
-          <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code>. But the default filter is what keeps replay traffic and local-dev noise out of dashboards.</li>
+          <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code>. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports <code>hiddenByProvenanceScope</code> &mdash; how many events the current scope filtered out &mdash; so a <code>count: 0</code> with a non-zero hidden count reads as &ldquo;wrong scope, add <code>?provenance=all</code>&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.</li>
         </ul>
 
         <h2>Reference</h2>
@@ -473,7 +479,7 @@ x-holonograph-run-mode: production</code></pre>
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>POST /lens/events</code></td><td>Ingest one <code>EvaluationEvent</code>. Response: <code>{ eventId }</code>.</td></tr>
-              <tr><td><code>GET /lens/events</code></td><td>Query events. Response: <code>{ events[], count, nextCursor? }</code>.</td></tr>
+              <tr><td><code>GET /lens/events</code></td><td>Query events. Response: <code>{ events[], count, hiddenByProvenanceScope, nextCursor? }</code>.</td></tr>
             </tbody>
           </table>
         </div>
@@ -507,8 +513,8 @@ x-holonograph-run-mode: production</code></pre>
 
         <section id="substrate-columns" class="guide-chapter-block" aria-label="Chapter 04">
 <p class="guide-eyebrow">Chapter 04</p>
-        <h1 class="guide-h1">Substrate columns</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~5 min read</p>
+        <h2 class="guide-h1">Substrate columns</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           Substrate columns are the named fields Holonograph captures alongside every call so a later reading can be attributed to <em>what changed about your deployment</em>. Six are mandatory and captured automatically. The rest you declare on the contract and populate yourself, in one of two ways.
@@ -678,11 +684,11 @@ x-holonograph-run-mode: production</code></pre>
 
         <section id="sdk-reference" class="guide-chapter-block" aria-label="Chapter 05">
 <p class="guide-eyebrow">Chapter 05</p>
-        <h1 class="guide-h1">SDK reference</h1>
-        <p class="guide-meta">Reflects Holonograph v0.26.0 <span class="dot">·</span> <code>@holonograph/client</code> 0.3.0 <span class="dot">·</span> ~12 min read</p>
+        <h2 class="guide-h1">SDK reference</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The <code>HolonographClient</code> is the operator-facing surface end-to-end: one class you construct, one call flow (<code>messages.create → handle → reportOutcome</code>), and two auxiliary namespaces (<code>contract</code>, <code>availability</code>) for shape and gap declarations. This chapter documents every method.
+          The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method.
         </p>
 
         <h2>Install</h2>
@@ -964,6 +970,7 @@ await handle.reportOutcome({
               <tr><td><code>passed</code></td><td>boolean</td><td>Whether the dimension passed the evaluation.</td></tr>
               <tr><td><code>expected</code></td><td>string</td><td>What good looked like: the expected shape of the response.</td></tr>
               <tr><td><code>actual</code></td><td>string</td><td>What the model actually produced (or a short summary).</td></tr>
+              <tr><td><code>claim</code></td><td>object (opt)</td><td>What the judge <em>asserted</em>, as fields the lens can verify — for the verdict-reliability layer to check (see below). A <code>JudgeClaimReport</code>; omit it and the dimension is simply not claim-instrumented.</td></tr>
             </tbody>
           </table>
         </div>
@@ -971,6 +978,83 @@ await handle.reportOutcome({
         <p>
           Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). What Holonograph does with that event afterwards is the subject of the analysis chapters.
         </p>
+
+        <h2>Verdict reliability — let the lens check your judge</h2>
+
+        <p>
+          A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong> — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
+        </p>
+
+        <pre><code>await handle.reportOutcome({
+  dimensions: [
+    {
+      dimensionId: "grounded",
+      passed: false,
+      expected: "only facts present in the tool results",
+      actual: "claimed a refund was issued and cited a total of $84.20",
+      // What the judge ASSERTED, as fields the lens can verify — not prose.
+      claim: {
+        status: "emitted",
+        assertions: [
+          // "the model cited a value that is not in what it read"
+          { kind: "datum-absent", datum: "$84.20", reference: "the lookup total was $48.20" },
+          // "the model claimed an action without calling the tool that performs it"
+          { kind: "tool-not-invoked", tool: "issue_refund" }
+        ]
+      }
+    }
+  ]
+});</code></pre>
+
+        <p>
+          The lens checks each assertion <strong>against the captured call</strong> — is the accused value actually absent from everything the model read? was that tool really never invoked, anywhere across the whole conversation? — and reports, per assertion, whether the record <strong>corroborates</strong> or <strong>contradicts</strong> the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Assertion kind</th><th>Shape</th><th>What the lens verifies</th></tr></thead>
+            <tbody>
+              <tr><td><code>datum-absent</code></td><td><code>{ datum, reference? }</code></td><td>A value the judge says was fabricated. It splits the accused <code>datum</code> from the optional <code>reference</code> the judge measured against, so the lens verifies the accusation, never the yardstick.</td></tr>
+              <tr><td><code>tool-not-invoked</code></td><td><code>{ tool }</code></td><td>A tool the judge says was never called. The check reads the whole captured conversation, so a call made in an earlier turn still counts.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          A dimension with no <code>claim</code> is simply not claim-instrumented — the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is <em>meant</em> to emit a claim but its output is malformed, report <code>{ status: "malformed", reflectionAttempted: &lt;boolean&gt; }</code> — the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The <code>JudgeClaimReport</code>, <code>JudgeAssertion</code>, and <code>JudgeAssertionKind</code> types are exported so you can build and validate the claim before you send it.
+        </p>
+
+        <h3>Reading it back — the pre-action check</h3>
+
+        <p>
+          This is the read to run <em>before</em> you act on a verdict — before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use <code>client.callDirectly</code> or a plain <code>fetch</code> against your lens <code>endpoint</code>.
+        </p>
+
+        <pre><code>GET /holonograph/verdict-reliability?surfaceId=&lt;id&gt;&amp;since=&lt;iso&gt;&amp;until=&lt;iso&gt;</code></pre>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>eventCount</code></td><td>number</td><td>Evaluation events in the window.</td></tr>
+              <tr><td><code>tierTally</code></td><td>object</td><td>How many verdicts fell into each reliability tier.</td></tr>
+              <tr><td><code>flagged[]</code></td><td>array</td><td>The verdicts the layer flagged as not safe to act on at face value — a judge the record <em>contradicted</em> is the loud case.</td></tr>
+              <tr><td><code>trustDrivers</code></td><td>object</td><td>What most moved reliability over the window.</td></tr>
+              <tr><td><code>corpusRates</code></td><td>object</td><td>Per-predicate firing rates from the reliability corpus (see below).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Has the scale stopped discriminating? The saturation read</h3>
+
+        <p>
+          One entry in that corpus is worth an agent's attention before it trusts a numeric score: <code>saturating-anchor-regime</code>. It reports a <strong>candidate</strong> when a reading has come to rest at an anchor, so distinct inputs stop being told apart. It is a candidate, not a settled verdict: the read names the measurement that would confirm or discharge it. An agent reading a graded score should check this first: when the candidate is present, rank by the reliability tier, not the score magnitude.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">What this read gives you</span>
+          The read reports the condition on the event as a candidate, not a settled verdict, and does not pass the number through as an ordinary score. Where a surface is declared as separate facets, each is attributed on its own, and where two co-transition the read names the aliasing rather than guessing between them.
+        </div>
 
         <h3>Multiplex: grade the observers</h3>
 
@@ -1102,8 +1186,8 @@ try {
 
         <section id="mediating-lens" class="guide-chapter-block" aria-label="Chapter 06">
 <p class="guide-eyebrow">Chapter 06</p>
-        <h1 class="guide-h1">The mediating lens: placement &amp; call flow</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+        <h2 class="guide-h1">The mediating lens: placement &amp; call flow</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           Holonograph's central affordance, the lens, is <em>where it sits</em>. This chapter is about the physical placement of the lens in your call path and the shape of a single call as it moves through it.
@@ -1245,8 +1329,8 @@ const answer = handle.result;</code></pre>
 
         <section id="run-modes" class="guide-chapter-block" aria-label="Chapter 07">
 <p class="guide-eyebrow">Chapter 07</p>
-        <h1 class="guide-h1">Run modes</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~7 min read</p>
+        <h2 class="guide-h1">Run modes</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           Every call to the lens declares which run mode it belongs to. The mode gates side effects, decides which events count as production history, and (most importantly) keeps test and evaluation traffic from silently polluting your production substrate. Modes are enforced fail-closed: a missing or unknown mode is rejected at the door.
@@ -1398,8 +1482,8 @@ app.post("/agent", async (req, res) =&gt; {
 
         <section id="sidecar" class="guide-chapter-block" aria-label="Chapter 08">
 <p class="guide-eyebrow">Chapter 08</p>
-        <h1 class="guide-h1">Sidecar / OTel integration</h1>
-        <p class="guide-meta">Reflects Holonograph v0.26.0 <span class="dot">·</span> <code>@holonograph/client</code> 0.3.0 <span class="dot">·</span> ~9 min read</p>
+        <h2 class="guide-h1">Sidecar / OTel integration</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry — and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
@@ -1672,8 +1756,8 @@ async function handleJob(job) {
 
         <section id="topology-scanner" class="guide-chapter-block" aria-label="Chapter 09">
 <p class="guide-eyebrow">Chapter 09</p>
-        <h1 class="guide-h1">Surface topology scanner</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~8 min read</p>
+        <h2 class="guide-h1">Surface topology scanner</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           The scanner compares what you <em>declared</em> in your surface contract against what the lens actually <em>observed</em> in traffic, and returns the gaps: dimensions you promised the lens would see and it never did, dimensions the lens has been seeing that you never declared, and surfaces that look like they've gone quiet. There's also a bootstrap mode that reads recent traffic and proposes candidate dimensions to add to a new contract.
@@ -1876,8 +1960,8 @@ Content-Type: application/json
 
         <section id="conformance" class="guide-chapter-block" aria-label="Chapter 10">
 <p class="guide-eyebrow">Chapter 10</p>
-        <h1 class="guide-h1">Conformance &amp; fixtures</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~9 min read</p>
+        <h2 class="guide-h1">Conformance &amp; fixtures</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           A capability surface is what you say your agent can do: the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is <em>derive → approve → check</em>.
@@ -2108,8 +2192,8 @@ Content-Type: application/json
 
         <section id="multiplexer" class="guide-chapter-block" aria-label="Chapter 11">
 <p class="guide-eyebrow">Chapter 11</p>
-        <h1 class="guide-h1">The multiplexer</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+        <h2 class="guide-h1">The multiplexer</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           The multiplexer lets one call to a surface land on several vendors at once: a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
@@ -2273,8 +2357,8 @@ await handle.reportOutcome({
 
         <section id="lessons-pipeline" class="guide-chapter-block" aria-label="Chapter 12">
 <p class="guide-eyebrow">Chapter 12</p>
-        <h1 class="guide-h1">The lessons pipeline</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~10 min read</p>
+        <h2 class="guide-h1">The lessons pipeline</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           A system's interactions contain the information that should make it better. This chapter is how Holonograph turns that information into shipped improvements: captured human overrides cluster, the drafter proposes concrete corrective artifacts for each cluster, a named human approves or rejects at the gate, and only then does anything get published. Nothing bypasses the gate.
@@ -2497,8 +2581,8 @@ Content-Type: application/json
 
         <section id="drift-attribution" class="guide-chapter-block" aria-label="Chapter 13">
 <p class="guide-eyebrow">Chapter 13</p>
-        <h1 class="guide-h1">Drift attribution</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~6 min read</p>
+        <h2 class="guide-h1">Drift attribution</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           When a score changes over time, drift attribution tells you <em>which layer</em> of your system the change came from. It answers the question every operator asks after a moved number: <em>is this us, or is this the vendor, or is this our evaluation, or is this just noise?</em>
@@ -2650,8 +2734,8 @@ Content-Type: application/json
 
         <section id="variance-isolation" class="guide-chapter-block" aria-label="Chapter 14">
 <p class="guide-eyebrow">Chapter 14</p>
-        <h1 class="guide-h1">Variance isolation</h1>
-        <p class="guide-meta">Reflects Holonograph v0.23.0 <span class="dot">·</span> ~7 min read</p>
+        <h2 class="guide-h1">Variance isolation</h2>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
           When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a <strong>cleaned</strong> reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
@@ -2818,6 +2902,204 @@ Content-Type: application/json
         </section>
 
 
+        <section id="subscriptions" class="guide-chapter-block" aria-label="Chapter 15">
+<p class="guide-eyebrow">Chapter 15</p>
+        <h2 class="guide-h1">Route a verdict to a human</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          The analysis chapters are <strong>detection</strong>: the lens reads what happened and forms a verdict. This chapter is the layer after it — <strong>defense</strong>. When a deterministic predicate over the lens's own verdicts fires, the lens POSTs an <strong>HMAC-signed webhook</strong> to a consumer you control: a pager, a chat channel, or an agent that picks up the work. It speaks only when something crosses a line — no "all quiet" pings.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Where this sits</span>
+          The webhook is a <em>trigger</em>, not a conclusion. The usual path is: a predicate fires → a human is alerted → the human asks a coding agent to act → and the agent, before it changes anything, <strong>consults the reliability and drift reads</strong> (see <a href="./sdk-reference">Verdict reliability</a> and <a href="./drift-attribution">Drift attribution</a>) to decide whether the alert reflects real, trustworthy movement. The alert says <em>what</em> crossed a line; the reads say whether it is safe to act on.
+        </div>
+
+        <h2>The shape of it</h2>
+
+        <p>
+          You register a <strong>subscription</strong>: a predicate to watch, a window, and a webhook to call. On a schedule you own (Cloud Scheduler is the intended trigger), the lens evaluates every subscription against recent verdicts, fires the ones whose predicate matched, and <strong>dedupes</strong> a repeat of the same finding inside the window. The webhook secret proves the call came from your lens and nobody else.
+        </p>
+
+        <h2>Create a subscription</h2>
+
+        <p>Writes are approver-gated. The webhook <code>url</code> must be <code>https</code>, and the <code>secret</code> is 16–512 characters. The body is strict — an unknown field is rejected.</p>
+
+        <pre><code>POST /lens/subscriptions
+Authorization: Bearer &lt;token&gt;
+Content-Type: application/json
+
+{
+  "predicate": { "kind": "conformance-fail", "surfaceId": "support.triage" },
+  "windowMs": 300000,
+  "webhook": {
+    "url": "https://alerts.example.com/holonograph",
+    "secret": "&lt;16-512 random chars, kept secret&gt;"
+  },
+  "approverId": "brian"
+}</code></pre>
+
+        <p>
+          Success returns <code>201</code> with a <strong>redacted</strong> view of the subscription: <code>id</code>, <code>agentId</code>, the predicate and window, <code>createdAt</code>/<code>createdBy</code>, and <code>webhook: { url }</code> — <strong>the secret is write-only and is never read back</strong>. Set it once at create; if you lose it, delete and recreate.
+        </p>
+
+        <h2>Predicates — what fires an alert</h2>
+
+        <p>A predicate is a discriminated union on <code>kind</code>. Each names a <em>meaning</em>, never an opaque number. Three ship today:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>kind</th><th>Shape</th><th>Fires when</th></tr></thead>
+            <tbody>
+              <tr><td><code>conformance-fail</code></td><td><code>{ surfaceId, fixtureId? }</code></td><td>A conformance fixture FAILs on the surface (e.g. a required tool was never called). Omit <code>fixtureId</code> to fire on any fixture failure.</td></tr>
+              <tr><td><code>emission-breach</code></td><td><code>{ surfaceId, columnId? }</code></td><td>A substrate column declared <em>always-emitted</em> went silent in the window — a deployment is broken, not just underperforming.</td></tr>
+              <tr><td><code>dimension-below</code></td><td><code>{ surfaceId, dimensionId, threshold }</code></td><td>A judge dimension scored strictly below <code>threshold</code> in the window. The one predicate that reads a graded score.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Read and delete</h2>
+
+        <p>Reads are also served under the <code>/holonograph</code> alias. Every read redacts the webhook secret.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Returns</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/subscriptions</code></td><td>All subscriptions (optional <code>?surfaceId=</code> filter), each with <code>webhook: { url }</code> only.</td></tr>
+              <tr><td><code>GET /lens/subscriptions/:id</code></td><td>One subscription, or <code>404</code>.</td></tr>
+              <tr><td><code>DELETE /lens/subscriptions/:id?approverId=&lt;id&gt;</code></td><td>Deletes it. <code>approverId</code> is a required query param. Returns <code>{ deleted: true, id }</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">There is no update</span>
+          Subscriptions are create / read / delete. To change a predicate, window, or webhook, <strong>delete and recreate</strong>. There is no edit or pause endpoint on this release.
+        </div>
+
+        <h2>The webhook a consumer receives</h2>
+
+        <p>When a subscription fires, the lens POSTs this body to your <code>url</code>:</p>
+
+        <pre><code>POST https://alerts.example.com/holonograph
+x-holonograph-signature: sha256=&lt;hex&gt;
+Content-Type: application/json
+
+{
+  "subscriptionId": "sub_01H...",
+  "agentId": "rupert-swarm",
+  "predicate": { "kind": "conformance-fail", "surfaceId": "support.triage" },
+  "verdict": { /* structured, per predicate kind — the deterministic detail */ },
+  "summary": "save_report was never called on support.triage",
+  "fingerprint": "conformance:support.triage:...",
+  "firedAt": "2026-08-22T14:03:11Z"
+}</code></pre>
+
+        <p>
+          <code>verdict</code> is a structured object, not a string — it carries the per-kind detail (the failing fixture and violating event ids, the silent column ids, or the dimension, threshold, and below-threshold event ids). <code>summary</code> is the one-line human sentence. <code>fingerprint</code> is the dedupe key.
+        </p>
+
+        <h3>Verify the signature — first, always</h3>
+
+        <p>
+          The <code>x-holonograph-signature</code> header is <code>sha256=</code> followed by the <strong>HMAC-SHA256 of the raw request body</strong>, keyed by the subscription's secret. Verify it over the <em>raw bytes you received</em> — before parsing JSON — and reject anything that does not match. This is the whole reason the secret exists.
+        </p>
+
+        <pre><code>import { createHmac, timingSafeEqual } from "node:crypto";
+
+function verifyHolonographWebhook(rawBody, signatureHeader, secret) {
+  const expected = "sha256=" + createHmac("sha256", secret).update(rawBody).digest("hex");
+  const got = Buffer.from(signatureHeader ?? "");
+  const want = Buffer.from(expected);
+  // constant-time compare; length-guard first so timingSafeEqual never throws
+  return got.length === want.length &amp;&amp; timingSafeEqual(got, want);
+}</code></pre>
+
+        <h2>Required setup: the allow-list</h2>
+
+        <p>
+          Delivery is <strong>deny-by-default</strong>. A webhook fires only to a host on the operator's allow-list; with no allow-list, <strong>nothing fires</strong>. Point the lens at the file with <code>APERTURE_WEBHOOK_ALLOWLIST_PATH</code> — keep it alongside your judge rubrics. It is a JSON array of hostnames:
+        </p>
+
+        <pre><code>// $APERTURE_WEBHOOK_ALLOWLIST_PATH
+[
+  "alerts.example.com",
+  "localhost"
+]</code></pre>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Rule</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td>Deny-by-default</td><td>No allow-list (absent, empty, or malformed) ⇒ every host is denied and nothing fires.</td></tr>
+              <tr><td>Exact hostname</td><td>Case-insensitive exact match. <strong>No wildcards or suffixes</strong> — <code>*.example.com</code> is not a thing; list each host.</td></tr>
+              <tr><td>https required</td><td><code>https</code> for every remote host. <code>http</code> is tolerated only for loopback (<code>localhost</code>, <code>127.0.0.1</code>, <code>::1</code>) for local development.</td></tr>
+              <tr><td>No internal targets</td><td>At fire time the lens pins the resolved address and refuses private, loopback, link-local (incl. the cloud metadata address), and CGNAT ranges. It does not follow redirects.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>A demo or local bundle ships an allow-list with <code>localhost</code> in it so webhooks fire against a dev consumer.</p>
+
+        <h2>Firing: the evaluate cycle</h2>
+
+        <p>
+          Nothing fires on its own. Point <strong>Cloud Scheduler</strong> (bearer-gated) at the evaluate endpoint on the cadence you want; each call is one evaluation cycle across all subscriptions.
+        </p>
+
+        <pre><code>POST /lens/subscriptions/evaluate
+Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
+
+        <p>The response is <strong>counts only</strong> — the silence discipline again; there is no per-subscription "all quiet":</p>
+
+        <pre><code>{
+  "evaluated": 12,
+  "matched": 3,
+  "fired": 2,
+  "deduped": 1,
+  "blocked": 0,
+  "skipped": 0,
+  "capped": 0,
+  "allowlistConfigured": true,
+  "errors": []
+}</code></pre>
+
+        <p>
+          A match whose <code>fingerprint</code> already fired within its <code>windowMs</code> is suppressed (<code>deduped</code>), so one broken deployment is one alert, not a storm. Dedupe state is stamped only on a <em>successful</em> delivery, so a blocked or failed send re-attempts next cycle. Each cycle fires at most 100 webhooks; matches past that are <code>capped</code> and re-attempted next cycle.
+        </p>
+
+        <h2>Reference</h2>
+
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/subscriptions</code></td><td>Create a subscription (approver-gated).</td></tr>
+              <tr><td><code>GET /lens/subscriptions</code> <span class="s-num">·</span> <code>GET /holonograph/subscriptions</code></td><td>List (secret redacted). Optional <code>?surfaceId=</code>.</td></tr>
+              <tr><td><code>GET /lens/subscriptions/:id</code> <span class="s-num">·</span> <code>GET /holonograph/subscriptions/:id</code></td><td>Read one (secret redacted).</td></tr>
+              <tr><td><code>DELETE /lens/subscriptions/:id?approverId=</code></td><td>Delete (approver-gated).</td></tr>
+              <tr><td><code>POST /lens/subscriptions/evaluate</code></td><td>Run one evaluation cycle (Cloud Scheduler; bearer-gated).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Types</h3>
+
+        <p>
+          The wire types live in <code>@holonograph/types-public</code> — <code>CreateSubscriptionRequest</code>, <code>SubscriptionView</code>, <code>SubscriptionPredicate</code>, <code>SubscriptionWebhookPayload</code>, and <code>EvaluateSubscriptionsResponse</code>. There is no subscriptions helper in <code>@holonograph/client</code>; build the requests against the types and call the endpoints over HTTP.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Honest-null when unwired</span>
+          On a pure-collector lens with no subscription store configured, every route above answers <code>501</code> rather than pretending. The Defense layer is present only where an operator has wired it.
+        </div>
+        </section>
+
+
       </article>
     </main>
 
@@ -2825,8 +3107,8 @@ Content-Type: application/json
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>The Guide · complete</span>
-    <span>Patent pending · v0.26.0 · client 0.3.0</span>
+    <span>The Guide · Mark II</span>
+    <span>Patent pending · v0.41.9 · client 0.12.0</span>
   </footer>
 </body>
 </html>

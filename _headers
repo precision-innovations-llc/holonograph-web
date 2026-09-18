@@ -22,18 +22,83 @@
   Cache-Control: public, max-age=31536000, immutable
 
 /*
+  # NOTE: do NOT put Cache-Control here. Cloudflare Pages _headers STACKS the
+  # Cache-Control of every matching rule (it does not "most-specific-wins"), so a
+  # value on /* would append onto the immutable assets above and defeat their long
+  # cache (e.g. `immutable, no-cache`). Cache-Control is set per-path below instead.
   X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: interest-cohort=()
+  Permissions-Policy: interest-cohort=(), camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  # Report-Only first — watch the CSP report endpoint / DevTools for violations, then
+  # promote to `Content-Security-Policy` once clean. Nigel's two origins are now named
+  # explicitly rather than covered by a broad https://*.run.app: nigel-chat for the
+  # chat fetch (connect-src) and nigel-lens-public for the embedded dashboard
+  # (frame-src). The lens iframe was violating frame-src the whole time — harmless
+  # while this is report-only, fatal the moment it is enforced.
+  Content-Security-Policy-Report-Only: default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://challenges.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://nigel-chat-98022099798.us-central1.run.app; frame-src 'self' https://challenges.cloudflare.com https://nigel-lens-public-98022099798.us-central1.run.app; upgrade-insecure-requests
 
+# Mutable, unversioned content — always revalidate so an edit shows immediately
+# instead of sitting behind Cloudflare's 4h default (which caused /value to serve
+# a stale, ™-less wordmark). Clean URLs are the served paths (/value, not
+# /value.html — .html redirects to the clean URL). ADD ANY NEW PAGE HERE, and add
+# any new unversioned shared asset (site.*/mobilenav.*). Versioned assets
+# (nigel.*?v=, holon.js) and immutable assets above don't belong here.
 /
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: no-cache
 
 /index.html
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: no-cache
+
+/value
+  Cache-Control: no-cache
+
+/pricing
+  Cache-Control: no-cache
+
+/docs
+  Cache-Control: no-cache
+
+/glossary
+  Cache-Control: no-cache
+
+/about
+  Cache-Control: no-cache
+
+/contact
+  Cache-Control: no-cache
+
+/changelog
+  Cache-Control: no-cache
+
+/lens-facets
+  Cache-Control: no-cache
+
+/terms
+  Cache-Control: no-cache
+
+/privacy
+  Cache-Control: no-cache
+
+/site.js
+  Cache-Control: no-cache
+
+/site.css
+  Cache-Control: no-cache
+
+/mobilenav.js
+  Cache-Control: no-cache
+
+/mobilenav.css
+  Cache-Control: no-cache
 
 # Short cache: versions.json is the source of truth for the binary version
 # and the SDK-version fallback; the badge JS and llms.txt Functions read it.
 /versions.json
+  Cache-Control: public, max-age=60, must-revalidate
+
+# changelog.json is fetched client-side by the changelog page AND by guidenav.js
+# (guide-footer versions). Short/revalidate so a release shows without a stale window.
+/changelog.json
   Cache-Control: public, max-age=60, must-revalidate

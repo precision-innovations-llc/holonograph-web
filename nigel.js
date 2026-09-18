@@ -55,7 +55,7 @@
   var send = document.getElementById('nigelSend');
   var status = document.getElementById('nigelStatus');
 
-  var open = false, greeted = false, busy = false, spent = false, restored = false;
+  var open = false, greeted = false, busy = false, spent = false, restored = false, userClosed = false;
   panel.inert = true;   // closed on load: keep its controls out of the tab order + a11y tree
 
   /* Panel state lives in sessionStorage so the widget survives a page change.
@@ -88,7 +88,7 @@
     }
   }
 
-  function closePanel() { open = false; panel.classList.remove('open'); panel.inert = true; rememberOpen(false); updateFab(); if (fab && panel.contains(document.activeElement)) fab.focus(); }
+  function closePanel() { open = false; userClosed = true; panel.classList.remove('open'); panel.inert = true; rememberOpen(false); updateFab(); if (fab && panel.contains(document.activeElement)) fab.focus(); }
 
   [].forEach.call(document.querySelectorAll('[data-nigel-open]'), function (el) {
     el.addEventListener('click', function (e) { e.preventDefault(); openPanel(); });
@@ -98,6 +98,29 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) closePanel(); });
 
   updateFab();
+
+  /* Auto-open once when a [data-nigel-autoopen] section (the live lens on the homepage) is scrolled
+     into view. Respects a manual close: once the visitor closes Nigel, scrolling back in will not
+     reopen him. */
+  var autoTarget = document.querySelector('[data-nigel-autoopen]');
+  if (autoTarget) {
+    var autoDone = false;
+    var maybeAutoOpen = function () {
+      if (autoDone || open || userClosed) return;
+      var r = autoTarget.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) return;   // target not rendered (the lens iframe is hidden < 860px)
+      var vh = window.innerHeight || document.documentElement.clientHeight || 800;
+      if (r.top <= vh * 0.85) {   // the TOP of the iframe has entered the viewport — fires even on short windows that can't scroll it fully up
+        autoDone = true;
+        window.removeEventListener('scroll', maybeAutoOpen);
+        window.removeEventListener('resize', maybeAutoOpen);
+        openPanel();
+      }
+    };
+    window.addEventListener('scroll', maybeAutoOpen, { passive: true });
+    window.addEventListener('resize', maybeAutoOpen, { passive: true });
+    maybeAutoOpen();
+  }
 
   /* Restore the conversation on every page load. The transcript is server-side and
      keyed on the session cookie, so this is a read of what the visitor already said

@@ -237,8 +237,6 @@ Chapter 01
 
 # Overview & first principles™
 
-        Reflects Holonograph v0.23.0 · ~7 min read
-
         Holonograph is the observation layer for agentic AI systems. It sits in the call path between your agent and the language models that drive it, and it captures a structured record of every evaluation your system produces. From that record it tells you two things existing tools cannot: *which layer* of your system a change came from, and *how much* of an observed spread is real change versus measurement noise.
 
 ## What it is
@@ -258,6 +256,9 @@ Chapter 01
           - **Close the loop**: captured overrides and approvals cluster into drafted corrective artifacts (skills, lessons, fixtures) that ship through a human-approval gate.
 
         Every one of those is a capability the operator uses. This Guide teaches you how to use them.
+
+          Reading this as an agent
+          Increasingly the reader here is not a person browsing a dashboard but a coding agent, asked to fix a bug or to find one nobody reported. Before it changes anything, it consults the lens: what actually moved, whether that movement is real, and which verdicts can be trusted. Every read in this Guide is exposed over plain HTTP for exactly that — the pre-action check that decides the next step. The dashboard is one surface over the same reads.
 
 ## Why position, not instrumentation
 
@@ -314,7 +315,7 @@ Chapter 01
 
         The Guide teaches you to **operate the instrument**. It does not teach you to **rebuild it**. The line already exists in the software: the SDK exposes a contract (call this, get that back) and hides the mechanism behind it. This Guide documents the contract.
 
-        Concretely: the underlying method is deliberately absent from these pages. If you are a researcher trying to evaluate the method rather than the product, the shortest path is [to talk to us](../#request-a-pilot). Deeper technical validation is available under NDA, and the product itself is designed to run in your own environment against your own workload, so nothing about the evaluation happens on our infrastructure.
+        Concretely: the underlying method is deliberately absent from these pages. If you are a researcher trying to evaluate the method rather than the product, the shortest path is [to talk to us](../contact.html). Deeper technical validation is available under NDA, and the product itself is designed to run in your own environment against your own workload, so nothing about the evaluation happens on our infrastructure.
 
           If you notice something missing
           Some capabilities the Guide describes will name a return field, a verdict label, or a workflow, and stop there. That's intentional. When the honest answer is "operate this, don't reconstruct it," the Guide gives you the handle and leaves the rest inside the binary.
@@ -328,8 +329,6 @@ _Permalink: https://holonograph.ai/guide/surface-contracts_
 Chapter 02
 
 # Surface contracts
-
-        Reflects Holonograph v0.23.0 · ~6 min read
 
         A surface contract is the JSON document that tells Holonograph what an evaluation surface *should* look like (its dimensions, cohort tags, substrate columns, and vendor routings) before any real traffic hits it. Everything downstream (event ingest, snapshot queries, topology gap-finding) reads from the contract you registered here.
 
@@ -481,8 +480,6 @@ Chapter 03
 
 # The four-layer snapshot
 
-        Reflects Holonograph v0.23.0 · ~6 min read
-
         Every evaluation Holonograph observes is written as one record (an `EvaluationEvent`) that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
 
 ## What it is
@@ -574,7 +571,7 @@ x-holonograph-run-mode: production
 
           - **Filter on cohort tags at read time**, not at write time. Cohort tags are the query keys; write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.
 
-          - **Default reads to `production-state`**. When you're diagnosing something unusual, pass `provenance=all`. But the default filter is what keeps replay traffic and local-dev noise out of dashboards.
+          - **Default reads to `production-state`**. When you're diagnosing something unusual, pass `provenance=all`. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports `hiddenByProvenanceScope` — how many events the current scope filtered out — so a `count: 0` with a non-zero hidden count reads as &ldquo;wrong scope, add `?provenance=all`&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.
 
 ## Reference
 
@@ -584,7 +581,7 @@ Method & path	Purpose
 
 `POST /lens/events`	Ingest one `EvaluationEvent`. Response: `{ eventId }`.
 
-`GET /lens/events`	Query events. Response: `{ events[], count, nextCursor? }`.
+`GET /lens/events`	Query events. Response: `{ events[], count, hiddenByProvenanceScope, nextCursor? }`.
 
 ### GET /lens/events query parameters
 
@@ -621,8 +618,6 @@ _Permalink: https://holonograph.ai/guide/substrate-columns_
 Chapter 04
 
 # Substrate columns
-
-        Reflects Holonograph v0.23.0 · ~5 min read
 
         Substrate columns are the named fields Holonograph captures alongside every call so a later reading can be attributed to *what changed about your deployment*. Six are mandatory and captured automatically. The rest you declare on the contract and populate yourself, in one of two ways.
 
@@ -777,9 +772,7 @@ Chapter 05
 
 # SDK reference
 
-        Reflects Holonograph v0.26.0 · `@holonograph/client` 0.3.0 · ~12 min read
-
-        The `HolonographClient` is the operator-facing surface end-to-end: one class you construct, one call flow (`messages.create → handle → reportOutcome`), and two auxiliary namespaces (`contract`, `availability`) for shape and gap declarations. This chapter documents every method.
+        The `HolonographClient` is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (`messages.create → handle → reportOutcome`), and, when you want the lens to check the judge for you, attach a structured `claim` to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (`contract`, `availability`) declare shape and gaps. This chapter documents every method.
 
 ## Install
 
@@ -1064,7 +1057,73 @@ Field	Shape	Notes
 
 `actual`	string	What the model actually produced (or a short summary).
 
+`claim`	object (opt)	What the judge *asserted*, as fields the lens can verify — for the verdict-reliability layer to check (see below). A `JudgeClaimReport`; omit it and the dimension is simply not claim-instrumented.
+
         Calling `reportOutcome` persists the evaluation event to Holonograph's substrate: one row, four layers bound (see [The four-layer snapshot](./snapshot)). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+
+## Verdict reliability — let the lens check your judge
+
+        A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that **deterministically** — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a `claim` to any judged dimension:
+
+```
+await handle.reportOutcome({
+  dimensions: [
+    {
+      dimensionId: "grounded",
+      passed: false,
+      expected: "only facts present in the tool results",
+      actual: "claimed a refund was issued and cited a total of $84.20",
+      // What the judge ASSERTED, as fields the lens can verify — not prose.
+      claim: {
+        status: "emitted",
+        assertions: [
+          // "the model cited a value that is not in what it read"
+          { kind: "datum-absent", datum: "$84.20", reference: "the lookup total was $48.20" },
+          // "the model claimed an action without calling the tool that performs it"
+          { kind: "tool-not-invoked", tool: "issue_refund" }
+        ]
+      }
+    }
+  ]
+});
+```
+
+        The lens checks each assertion **against the captured call** — is the accused value actually absent from everything the model read? was that tool really never invoked, anywhere across the whole conversation? — and reports, per assertion, whether the record **corroborates** or **contradicts** the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
+
+Assertion kind	Shape	What the lens verifies
+
+`datum-absent`	`{ datum, reference? }`	A value the judge says was fabricated. It splits the accused `datum` from the optional `reference` the judge measured against, so the lens verifies the accusation, never the yardstick.
+
+`tool-not-invoked`	`{ tool }`	A tool the judge says was never called. The check reads the whole captured conversation, so a call made in an earlier turn still counts.
+
+        A dimension with no `claim` is simply not claim-instrumented — the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is *meant* to emit a claim but its output is malformed, report `{ status: "malformed", reflectionAttempted:  }` — the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The `JudgeClaimReport`, `JudgeAssertion`, and `JudgeAssertionKind` types are exported so you can build and validate the claim before you send it.
+
+### Reading it back — the pre-action check
+
+        This is the read to run *before* you act on a verdict — before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use `client.callDirectly` or a plain `fetch` against your lens `endpoint`.
+
+```
+GET /holonograph/verdict-reliability?surfaceId=&since=&until=
+```
+
+Field	Shape	Notes
+
+`eventCount`	number	Evaluation events in the window.
+
+`tierTally`	object	How many verdicts fell into each reliability tier.
+
+`flagged[]`	array	The verdicts the layer flagged as not safe to act on at face value — a judge the record *contradicted* is the loud case.
+
+`trustDrivers`	object	What most moved reliability over the window.
+
+`corpusRates`	object	Per-predicate firing rates from the reliability corpus (see below).
+
+### Has the scale stopped discriminating? The saturation read
+
+        One entry in that corpus is worth an agent's attention before it trusts a numeric score: `saturating-anchor-regime`. It reports a **candidate** when a reading has come to rest at an anchor, so distinct inputs stop being told apart. It is a candidate, not a settled verdict: the read names the measurement that would confirm or discharge it. An agent reading a graded score should check this first: when the candidate is present, rank by the reliability tier, not the score magnitude.
+
+          What this read gives you
+          The read reports the condition on the event as a candidate, not a settled verdict, and does not pass the number through as an ordinary score. Where a surface is declared as separate facets, each is attributed on its own, and where two co-transition the read names the aliasing rather than guessing between them.
 
 ### Multiplex: grade the observers
 
@@ -1195,8 +1254,6 @@ _Permalink: https://holonograph.ai/guide/mediating-lens_
 Chapter 06
 
 # The mediating lens: placement & call flow
-
-        Reflects Holonograph v0.23.0 · ~6 min read
 
         Holonograph's central affordance, the lens, is *where it sits*. This chapter is about the physical placement of the lens in your call path and the shape of a single call as it moves through it.
 
@@ -1346,8 +1403,6 @@ Chapter 07
 
 # Run modes
 
-        Reflects Holonograph v0.23.0 · ~7 min read
-
         Every call to the lens declares which run mode it belongs to. The mode gates side effects, decides which events count as production history, and (most importantly) keeps test and evaluation traffic from silently polluting your production substrate. Modes are enforced fail-closed: a missing or unknown mode is rejected at the door.
 
 ## What it is
@@ -1478,8 +1533,6 @@ _Permalink: https://holonograph.ai/guide/sidecar_
 Chapter 08
 
 # Sidecar / OTel integration
-
-        Reflects Holonograph v0.26.0 · `@holonograph/client` 0.3.0 · ~9 min read
 
         The lens sees every call that goes through it. Real systems have work that *doesn't* go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry — and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
 
@@ -1720,8 +1773,6 @@ Chapter 09
 
 # Surface topology scanner
 
-        Reflects Holonograph v0.23.0 · ~8 min read
-
         The scanner compares what you *declared* in your surface contract against what the lens actually *observed* in traffic, and returns the gaps: dimensions you promised the lens would see and it never did, dimensions the lens has been seeing that you never declared, and surfaces that look like they've gone quiet. There's also a bootstrap mode that reads recent traffic and proposes candidate dimensions to add to a new contract.
 
 ## What it is
@@ -1910,8 +1961,6 @@ _Permalink: https://holonograph.ai/guide/conformance_
 Chapter 10
 
 # Conformance & fixtures
-
-        Reflects Holonograph v0.23.0 · ~9 min read
 
         A capability surface is what you say your agent can do: the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is *derive → approve → check*.
 
@@ -2136,8 +2185,6 @@ Chapter 11
 
 # The multiplexer
 
-        Reflects Holonograph v0.23.0 · ~6 min read
-
         The multiplexer lets one call to a surface land on several vendors at once: a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
 
 ## What it is
@@ -2279,8 +2326,6 @@ _Permalink: https://holonograph.ai/guide/lessons-pipeline_
 Chapter 12
 
 # The lessons pipeline
-
-        Reflects Holonograph v0.23.0 · ~10 min read
 
         A system's interactions contain the information that should make it better. This chapter is how Holonograph turns that information into shipped improvements: captured human overrides cluster, the drafter proposes concrete corrective artifacts for each cluster, a named human approves or rejects at the gate, and only then does anything get published. Nothing bypasses the gate.
 
@@ -2511,8 +2556,6 @@ Chapter 13
 
 # Drift attribution
 
-        Reflects Holonograph v0.23.0 · ~6 min read
-
         When a score changes over time, drift attribution tells you *which layer* of your system the change came from. It answers the question every operator asks after a moved number: *is this us, or is this the vendor, or is this our evaluation, or is this just noise?*
 
 ## What it is
@@ -2645,8 +2688,6 @@ _Permalink: https://holonograph.ai/guide/variance-isolation_
 Chapter 14
 
 # Variance isolation
-
-        Reflects Holonograph v0.23.0 · ~7 min read
 
         When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a **cleaned** reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
 
@@ -2792,6 +2833,186 @@ Field	Shape	Notes
 `comment`	string (opt)	Free-form explanation. Required for `reject`.
 
 `pinnedLabel`	string	Required for `lock`. The label under which this reading is held as a reference.
+
+---
+
+### Chapter 15 — Route a verdict to a human
+
+_Permalink: https://holonograph.ai/guide/subscriptions_
+
+Chapter 15
+
+# Route a verdict to a human
+
+        The analysis chapters are **detection**: the lens reads what happened and forms a verdict. This chapter is the layer after it — **defense**. When a deterministic predicate over the lens's own verdicts fires, the lens POSTs an **HMAC-signed webhook** to a consumer you control: a pager, a chat channel, or an agent that picks up the work. It speaks only when something crosses a line — no "all quiet" pings.
+
+          Where this sits
+          The webhook is a *trigger*, not a conclusion. The usual path is: a predicate fires → a human is alerted → the human asks a coding agent to act → and the agent, before it changes anything, **consults the reliability and drift reads** (see [Verdict reliability](./sdk-reference) and [Drift attribution](./drift-attribution)) to decide whether the alert reflects real, trustworthy movement. The alert says *what* crossed a line; the reads say whether it is safe to act on.
+
+## The shape of it
+
+        You register a **subscription**: a predicate to watch, a window, and a webhook to call. On a schedule you own (Cloud Scheduler is the intended trigger), the lens evaluates every subscription against recent verdicts, fires the ones whose predicate matched, and **dedupes** a repeat of the same finding inside the window. The webhook secret proves the call came from your lens and nobody else.
+
+## Create a subscription
+
+        Writes are approver-gated. The webhook `url` must be `https`, and the `secret` is 16–512 characters. The body is strict — an unknown field is rejected.
+
+```
+POST /lens/subscriptions
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "predicate": { "kind": "conformance-fail", "surfaceId": "support.triage" },
+  "windowMs": 300000,
+  "webhook": {
+    "url": "https://alerts.example.com/holonograph",
+    "secret": ""
+  },
+  "approverId": "brian"
+}
+```
+
+        Success returns `201` with a **redacted** view of the subscription: `id`, `agentId`, the predicate and window, `createdAt`/`createdBy`, and `webhook: { url }` — **the secret is write-only and is never read back**. Set it once at create; if you lose it, delete and recreate.
+
+## Predicates — what fires an alert
+
+        A predicate is a discriminated union on `kind`. Each names a *meaning*, never an opaque number. Three ship today:
+
+kind	Shape	Fires when
+
+`conformance-fail`	`{ surfaceId, fixtureId? }`	A conformance fixture FAILs on the surface (e.g. a required tool was never called). Omit `fixtureId` to fire on any fixture failure.
+
+`emission-breach`	`{ surfaceId, columnId? }`	A substrate column declared *always-emitted* went silent in the window — a deployment is broken, not just underperforming.
+
+`dimension-below`	`{ surfaceId, dimensionId, threshold }`	A judge dimension scored strictly below `threshold` in the window. The one predicate that reads a graded score.
+
+## Read and delete
+
+        Reads are also served under the `/holonograph` alias. Every read redacts the webhook secret.
+
+Method & path	Returns
+
+`GET /lens/subscriptions`	All subscriptions (optional `?surfaceId=` filter), each with `webhook: { url }` only.
+
+`GET /lens/subscriptions/:id`	One subscription, or `404`.
+
+`DELETE /lens/subscriptions/:id?approverId=`	Deletes it. `approverId` is a required query param. Returns `{ deleted: true, id }`.
+
+          There is no update
+          Subscriptions are create / read / delete. To change a predicate, window, or webhook, **delete and recreate**. There is no edit or pause endpoint on this release.
+
+## The webhook a consumer receives
+
+        When a subscription fires, the lens POSTs this body to your `url`:
+
+```
+POST https://alerts.example.com/holonograph
+x-holonograph-signature: sha256=
+Content-Type: application/json
+
+{
+  "subscriptionId": "sub_01H...",
+  "agentId": "rupert-swarm",
+  "predicate": { "kind": "conformance-fail", "surfaceId": "support.triage" },
+  "verdict": { /* structured, per predicate kind — the deterministic detail */ },
+  "summary": "save_report was never called on support.triage",
+  "fingerprint": "conformance:support.triage:...",
+  "firedAt": "2026-08-22T14:03:11Z"
+}
+```
+
+        `verdict` is a structured object, not a string — it carries the per-kind detail (the failing fixture and violating event ids, the silent column ids, or the dimension, threshold, and below-threshold event ids). `summary` is the one-line human sentence. `fingerprint` is the dedupe key.
+
+### Verify the signature — first, always
+
+        The `x-holonograph-signature` header is `sha256=` followed by the **HMAC-SHA256 of the raw request body**, keyed by the subscription's secret. Verify it over the *raw bytes you received* — before parsing JSON — and reject anything that does not match. This is the whole reason the secret exists.
+
+```
+import { createHmac, timingSafeEqual } from "node:crypto";
+
+function verifyHolonographWebhook(rawBody, signatureHeader, secret) {
+  const expected = "sha256=" + createHmac("sha256", secret).update(rawBody).digest("hex");
+  const got = Buffer.from(signatureHeader ?? "");
+  const want = Buffer.from(expected);
+  // constant-time compare; length-guard first so timingSafeEqual never throws
+  return got.length === want.length && timingSafeEqual(got, want);
+}
+```
+
+## Required setup: the allow-list
+
+        Delivery is **deny-by-default**. A webhook fires only to a host on the operator's allow-list; with no allow-list, **nothing fires**. Point the lens at the file with `APERTURE_WEBHOOK_ALLOWLIST_PATH` — keep it alongside your judge rubrics. It is a JSON array of hostnames:
+
+```
+// $APERTURE_WEBHOOK_ALLOWLIST_PATH
+[
+  "alerts.example.com",
+  "localhost"
+]
+```
+
+Rule	Behavior
+
+Deny-by-default	No allow-list (absent, empty, or malformed) ⇒ every host is denied and nothing fires.
+
+Exact hostname	Case-insensitive exact match. **No wildcards or suffixes** — `*.example.com` is not a thing; list each host.
+
+https required	`https` for every remote host. `http` is tolerated only for loopback (`localhost`, `127.0.0.1`, `::1`) for local development.
+
+No internal targets	At fire time the lens pins the resolved address and refuses private, loopback, link-local (incl. the cloud metadata address), and CGNAT ranges. It does not follow redirects.
+
+        A demo or local bundle ships an allow-list with `localhost` in it so webhooks fire against a dev consumer.
+
+## Firing: the evaluate cycle
+
+        Nothing fires on its own. Point **Cloud Scheduler** (bearer-gated) at the evaluate endpoint on the cadence you want; each call is one evaluation cycle across all subscriptions.
+
+```
+POST /lens/subscriptions/evaluate
+Authorization: Bearer
+```
+
+        The response is **counts only** — the silence discipline again; there is no per-subscription "all quiet":
+
+```
+{
+  "evaluated": 12,
+  "matched": 3,
+  "fired": 2,
+  "deduped": 1,
+  "blocked": 0,
+  "skipped": 0,
+  "capped": 0,
+  "allowlistConfigured": true,
+  "errors": []
+}
+```
+
+        A match whose `fingerprint` already fired within its `windowMs` is suppressed (`deduped`), so one broken deployment is one alert, not a storm. Dedupe state is stamped only on a *successful* delivery, so a blocked or failed send re-attempts next cycle. Each cycle fires at most 100 webhooks; matches past that are `capped` and re-attempted next cycle.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/subscriptions`	Create a subscription (approver-gated).
+
+`GET /lens/subscriptions` · `GET /holonograph/subscriptions`	List (secret redacted). Optional `?surfaceId=`.
+
+`GET /lens/subscriptions/:id` · `GET /holonograph/subscriptions/:id`	Read one (secret redacted).
+
+`DELETE /lens/subscriptions/:id?approverId=`	Delete (approver-gated).
+
+`POST /lens/subscriptions/evaluate`	Run one evaluation cycle (Cloud Scheduler; bearer-gated).
+
+### Types
+
+        The wire types live in `@holonograph/types-public` — `CreateSubscriptionRequest`, `SubscriptionView`, `SubscriptionPredicate`, `SubscriptionWebhookPayload`, and `EvaluateSubscriptionsResponse`. There is no subscriptions helper in `@holonograph/client`; build the requests against the types and call the endpoints over HTTP.
+
+          Honest-null when unwired
+          On a pure-collector lens with no subscription store configured, every route above answers `501` rather than pretending. The Defense layer is present only where an operator has wired it.
 <!-- END-GENERATED-GUIDE-COMPLETE -->
 
 ## Links

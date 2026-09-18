@@ -93,11 +93,37 @@ html, body {
   transition: color 180ms, border-color 180ms;
 }
 .guide-crumb a:hover { color: var(--accent); border-bottom-color: var(--accent); }
-.guide-topbar-right {
+.guide-sitenav {
   margin-left: auto;
   display: flex;
+  gap: 24px;
   align-items: center;
-  gap: 12px;
+}
+.guide-sitenav a {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg-dim);
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+.guide-sitenav a:hover,
+.guide-sitenav a.on { color: var(--accent); }
+.guide-cta {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: filter 160ms ease;
+}
+.guide-cta:hover { filter: brightness(1.08); }
+@media (max-width: 900px) {
+  .guide-sitenav, .guide-cta { display: none; }
 }
 .guide-version {
   font-family: var(--font-mono);
@@ -131,11 +157,44 @@ html, body {
   margin: 0 auto;
   padding: clamp(32px, 5vw, 56px) clamp(20px, 3vw, 40px) 80px;
 }
+/* mobile/tablet chapter sub-nav — built by guidenav.js from the sidebar; shown only when the sidebar is hidden */
+.guide-subnav { display: none; }
+
 @media (max-width: 900px) {
   .guide-shell {
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;
     padding-top: 24px;
+  }
+  /* fix: sidebar was hidden only <=720, so 721-900 pinned the sticky sidebar over the scrolling article */
+  .guide-sidebar { display: none; }
+  .guide-subnav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 70px;
+    z-index: 19;
+    margin: 0;
+    padding: 8px clamp(14px, 4vw, 22px);
+    background: rgba(255, 255, 255, 0.94);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    border-bottom: 1px solid var(--rule);
+  }
+  .guide-subnav .gs-select {
+    flex: 0 1 auto; min-width: 0; max-width: min(58vw, 340px);
+    font-family: var(--font-ui); font-size: 14px; color: var(--fg);
+    background-color: transparent; border: 1px solid var(--rule); border-radius: 8px;
+    padding: 7px 28px 7px 11px;
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%235f3ddc' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center; background-size: 11px 11px;
+  }
+  .guide-subnav .gs-ver {
+    margin-left: auto;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--fg-faint); white-space: nowrap;
   }
 }
 

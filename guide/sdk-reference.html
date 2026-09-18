@@ -5,36 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f7f5f0" />
 <title>SDK reference — The Guide — Holonograph</title>
-<meta name="description" content="The HolonographClient surface end-to-end — constructor options, the messages.create → handle → reportOutcome flow, contract.register, availability.mark, and the emit delivery modes." />
+<meta name="description" content="The HolonographClient end-to-end: the messages.create → reportOutcome flow, attaching a structured claim so the lens checks your judge deterministically (verdict reliability), plus contract, availability, and the emit modes." />
 <meta name="discloses" content="capability-only" />
-<meta name="reflects-version" content="v0.26.0" />
-<meta name="reflects-client-version" content="0.3.0" />
+<meta name="reflects-version" content="v0.41.8" />
+<meta name="reflects-client-version" content="0.11.0" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
 <link rel="canonical" href="https://holonograph.ai/guide/sdk-reference" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="SDK reference · Holonograph Guide" />
+<meta property="og:description" content="The HolonographClient end-to-end: the messages.create → reportOutcome flow, attaching a structured claim so the lens checks your judge deterministically (verdict reliability), plus contract, availability, and the emit modes." />
+<meta property="og:url" content="https://holonograph.ai/guide/sdk-reference" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="SDK reference · Holonograph Guide" />
+<meta name="twitter:description" content="The HolonographClient end-to-end: the messages.create → reportOutcome flow, attaching a structured claim so the lens checks your judge deterministically (verdict reliability), plus contract, availability, and the emit modes." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./_assets/guide.css" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-MX42B47LTP');
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
 </script>
 </head>
 <body>
-  <header class="guide-topbar">
-    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
-    <span class="guide-topbar-sep">/</span>
-    <span class="guide-crumb"><a href="./">The Guide</a> · SDK reference</span>
-    <span class="guide-topbar-right">
-      <span class="guide-version">v0.26.0 · client 0.3.0</span>
-      <a href="./" class="guide-back-link">all chapters</a>
-    </span>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
+      <a class="pill" href="../pricing.html">Get started</a>
+    </nav></div>
   </header>
 
   <div class="guide-shell">
@@ -56,6 +71,7 @@
         <li><span class="s-num">12</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
         <li><span class="s-num">13</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
         <li><span class="s-num">14</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">15</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
       </ol>
     </aside>
 
@@ -64,10 +80,10 @@
 
         <p class="guide-eyebrow">Chapter 05</p>
         <h1 class="guide-h1">SDK reference</h1>
-        <p class="guide-meta">Reflects Holonograph v0.26.0 <span class="dot">·</span> <code>@holonograph/client</code> 0.3.0 <span class="dot">·</span> ~12 min read</p>
+        <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The <code>HolonographClient</code> is the operator-facing surface end-to-end: one class you construct, one call flow (<code>messages.create → handle → reportOutcome</code>), and two auxiliary namespaces (<code>contract</code>, <code>availability</code>) for shape and gap declarations. This chapter documents every method.
+          The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method.
         </p>
 
         <h2>Install</h2>
@@ -349,6 +365,7 @@ await handle.reportOutcome({
               <tr><td><code>passed</code></td><td>boolean</td><td>Whether the dimension passed the evaluation.</td></tr>
               <tr><td><code>expected</code></td><td>string</td><td>What good looked like: the expected shape of the response.</td></tr>
               <tr><td><code>actual</code></td><td>string</td><td>What the model actually produced (or a short summary).</td></tr>
+              <tr><td><code>claim</code></td><td>object (opt)</td><td>What the judge <em>asserted</em>, as fields the lens can verify — for the verdict-reliability layer to check (see below). A <code>JudgeClaimReport</code>; omit it and the dimension is simply not claim-instrumented.</td></tr>
             </tbody>
           </table>
         </div>
@@ -356,6 +373,83 @@ await handle.reportOutcome({
         <p>
           Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). What Holonograph does with that event afterwards is the subject of the analysis chapters.
         </p>
+
+        <h2>Verdict reliability — let the lens check your judge</h2>
+
+        <p>
+          A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong> — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
+        </p>
+
+        <pre><code>await handle.reportOutcome({
+  dimensions: [
+    {
+      dimensionId: "grounded",
+      passed: false,
+      expected: "only facts present in the tool results",
+      actual: "claimed a refund was issued and cited a total of $84.20",
+      // What the judge ASSERTED, as fields the lens can verify — not prose.
+      claim: {
+        status: "emitted",
+        assertions: [
+          // "the model cited a value that is not in what it read"
+          { kind: "datum-absent", datum: "$84.20", reference: "the lookup total was $48.20" },
+          // "the model claimed an action without calling the tool that performs it"
+          { kind: "tool-not-invoked", tool: "issue_refund" }
+        ]
+      }
+    }
+  ]
+});</code></pre>
+
+        <p>
+          The lens checks each assertion <strong>against the captured call</strong> — is the accused value actually absent from everything the model read? was that tool really never invoked, anywhere across the whole conversation? — and reports, per assertion, whether the record <strong>corroborates</strong> or <strong>contradicts</strong> the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Assertion kind</th><th>Shape</th><th>What the lens verifies</th></tr></thead>
+            <tbody>
+              <tr><td><code>datum-absent</code></td><td><code>{ datum, reference? }</code></td><td>A value the judge says was fabricated. It splits the accused <code>datum</code> from the optional <code>reference</code> the judge measured against, so the lens verifies the accusation, never the yardstick.</td></tr>
+              <tr><td><code>tool-not-invoked</code></td><td><code>{ tool }</code></td><td>A tool the judge says was never called. The check reads the whole captured conversation, so a call made in an earlier turn still counts.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          A dimension with no <code>claim</code> is simply not claim-instrumented — the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is <em>meant</em> to emit a claim but its output is malformed, report <code>{ status: "malformed", reflectionAttempted: &lt;boolean&gt; }</code> — the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The <code>JudgeClaimReport</code>, <code>JudgeAssertion</code>, and <code>JudgeAssertionKind</code> types are exported so you can build and validate the claim before you send it.
+        </p>
+
+        <h3>Reading it back — the pre-action check</h3>
+
+        <p>
+          This is the read to run <em>before</em> you act on a verdict — before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use <code>client.callDirectly</code> or a plain <code>fetch</code> against your lens <code>endpoint</code>.
+        </p>
+
+        <pre><code>GET /holonograph/verdict-reliability?surfaceId=&lt;id&gt;&amp;since=&lt;iso&gt;&amp;until=&lt;iso&gt;</code></pre>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>eventCount</code></td><td>number</td><td>Evaluation events in the window.</td></tr>
+              <tr><td><code>tierTally</code></td><td>object</td><td>How many verdicts fell into each reliability tier.</td></tr>
+              <tr><td><code>flagged[]</code></td><td>array</td><td>The verdicts the layer flagged as not safe to act on at face value — a judge the record <em>contradicted</em> is the loud case.</td></tr>
+              <tr><td><code>trustDrivers</code></td><td>object</td><td>What most moved reliability over the window.</td></tr>
+              <tr><td><code>corpusRates</code></td><td>object</td><td>Per-predicate firing rates from the reliability corpus (see below).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Has the scale stopped discriminating? The saturation read</h3>
+
+        <p>
+          One entry in that corpus is worth an agent's attention before it trusts a numeric score: <code>saturating-anchor-regime</code>. It reports a <strong>candidate</strong> when a reading has come to rest at an anchor, so distinct inputs stop being told apart. It is a candidate, not a settled verdict: the read names the measurement that would confirm or discharge it. An agent reading a graded score should check this first: when the candidate is present, rank by the reliability tier, not the score magnitude.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">What this read gives you</span>
+          The read reports the condition on the event as a candidate, not a settled verdict, and does not pass the number through as an ordinary score. Where a surface is declared as separate facets, each is attributed on its own, and where two co-transition the read names the aliasing rather than guessing between them.
+        </div>
 
         <h3>Multiplex: grade the observers</h3>
 
@@ -503,5 +597,7 @@ try {
     <span>Chapter 05 · SDK reference</span>
     <span>Patent pending · v0.26.0 · client 0.3.0</span>
   </footer>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
 </body>
 </html>

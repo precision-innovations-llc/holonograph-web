@@ -1,0 +1,23 @@
+/* Holonograph — shared mobile nav (hamburger + slide-down menu). Linked on every page.
+   mobilenav.js builds the button + menu from whatever header exists (inline or injected). */
+.nav-toggle{display:none;background:none;border:0;cursor:pointer;padding:9px 6px;margin-left:auto;color:var(--ink);line-height:0}
+.nav-toggle span{display:block;width:22px;height:2px;background:currentColor;border-radius:2px;transition:transform .22s ease,opacity .18s ease}
+.nav-toggle span + span{margin-top:5px}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+.mobile-menu{position:fixed;left:0;right:0;top:70px;z-index:48;background:var(--paper);border-bottom:1px solid var(--line);
+  box-shadow:0 20px 40px -28px rgba(23,22,29,.4);padding:8px clamp(20px,5vw,32px) 20px;
+  opacity:0;transform:translateY(-10px);pointer-events:none;visibility:hidden;transition:opacity .2s ease,transform .2s ease}
+.mobile-menu.open{opacity:1;transform:none;pointer-events:auto;visibility:visible}
+.mobile-menu a{display:block;padding:14px 2px;font-size:16px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+.mobile-menu a.cta{margin-top:16px;background:var(--iris);color:#fff;text-align:center;border-radius:10px;font-weight:500;padding:14px;border-bottom:0}
+
+@media (max-width:860px){
+  .nav-toggle{display:block}
+  nav .pill{display:none}
+}
+@media (min-width:861px){
+  .mobile-menu{display:none}
+}
