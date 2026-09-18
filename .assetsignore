@@ -1,0 +1,17 @@
+# Files excluded from the Cloudflare Pages deploy (wrangler honors .assetsignore,
+# NOT .gitignore). Keep dev/internal/unused files out of the public bundle.
+
+# Internal working docs + unused source assets (nothing shipping references assets/)
+assets/
+
+# Dev tooling — not served
+scripts/
+
+# Stale + internal (leaks wrangler/KV/Resend/Turnstile/branch-protection details)
+README.md
+
+# macOS junk
+**/.DS_Store
+.DS_Store
+
+# Search-engine verification token stays (BingSiteAuth.xml) — do not add it here.

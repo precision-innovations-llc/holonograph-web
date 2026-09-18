@@ -1,0 +1,447 @@
+{
+  "_note": "Source of truth for the changelog page + guide footers; versions.json is re-derived from it. ADD RELEASES WITH: node scripts/add-release.mjs <track> <version> \"Title\" \"note\" [more notes] (--date=YYYY-MM-DD to backfill, --dry to preview). It prepends the entry and re-derives versions.json. Hand-edit only to fix an existing entry. Rules the script does not enforce, keep them yourself: ONLY add a version once it has actually deployed / published (not built-but-undeployed); one row per minor, fold same-day patch hotfixes into the minor's notes; notes stay capability-level (no formulas, estimator names, internal milestone codes, or PR numbers). Current per track = highest semver present, so a new release moves the prior current into history automatically. History reconciled 2026-08-16 against docs/team-rupert-signals + docs/compaction-reports; dates before 0.24.0 are approximate and cluster on sprint-close days.",
+  "tracks": {
+    "lens": { "name": "Lens", "sub": "server · signed binary", "npm": null },
+    "sdk": { "name": "SDK", "sub": "@holonograph/client", "npm": "https://www.npmjs.com/package/@holonograph/client" }
+  },
+  "releases": [
+    {
+      "track": "sdk", "version": "0.12.0", "date": "2026-08-22",
+      "title": "Screen webhook targets before sending",
+      "notes": [
+        "Check a webhook target for private or disguised network addresses in the client before you register it, using the same rule the lens enforces."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.9", "date": "2026-08-22",
+      "title": "Safer webhooks and steadier service",
+      "notes": [
+        "Notification webhooks now refuse private or disguised network addresses, both when you set one up and each time it fires.",
+        "Encrypt a webhook's signing secret at rest with a single setup key.",
+        "Requests are rate limited so the service stays responsive under heavy load."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.11.0", "date": "2026-08-22",
+      "title": "Verdict-routing types",
+      "notes": [
+        "Adds the wire types for verdict subscriptions and signed webhook payloads, and for the refined coverage and events reads."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.10.0", "date": "2026-08-22",
+      "title": "The reliability loop, front and center",
+      "notes": [
+        "The README now leads with the verdict-reliability loop: attach a structured claim and the lens checks your judge for you.",
+        "Adds direction to a fabricated-datum claim and the judge-claim-coverage types."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.9.0", "date": "2026-08-21",
+      "title": "Structured judge claims",
+      "notes": [
+        "reportOutcome forwards a structured judge claim, a value the judge says was fabricated or a tool it says was never called, for the lens to verify.",
+        "Exports the judge-claim and assertion types."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.8", "date": "2026-08-22",
+      "title": "Route a verdict to a human",
+      "notes": [
+        "Route a lens verdict to an HMAC-signed webhook when a predicate over your own verdicts fires: a conformance fixture fails, a column that should always emit goes silent, or a dimension scores below a threshold.",
+        "Coverage now separates pre-instrumentation history from real gaps, so turning it on no longer reads as breakage.",
+        "The events read reports how many events the current provenance scope hid, so an empty result is never mistaken for a failed emit."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.7", "date": "2026-08-21",
+      "title": "See which verdicts you can trust",
+      "notes": [
+        "A new read shows, per dimension, whether a judge claim was declared and emitted, so you can see how much of an evaluation is reliability-checked.",
+        "Rubric coverage in Lens Health now reflects the rubrics actually observed instead of a misleading zero."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.6", "date": "2026-08-21",
+      "title": "The honest instrument",
+      "notes": [
+        "The reliability layer reads a structured claim from your judge instead of parsing prose, and checks it deterministically against the captured call.",
+        "Uninstrumented data stays honest-null rather than manufacturing a finding.",
+        "A new signal when a judge output is malformed, instead of silently trusting it."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.8.0", "date": "2026-08-20",
+      "title": "Report a judge for each dimension",
+      "notes": [
+        "Attach a distinct judge identity to each dimension of an outcome, so an evaluation split across several focused judges records each one on its own rather than collapsing to a single judge."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.5", "date": "2026-08-20",
+      "title": "Faceted evaluation, tracked per judge",
+      "notes": [
+        "Split one response across several focused judges and the lens groups and attributes each facet on its own, reporting where two move together rather than guessing which to credit.",
+        "Grounding checks respect the exact amount of context each judge saw, so a judge given a larger view is not flagged for reading something it was actually shown."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.2", "date": "2026-08-18",
+      "title": "Trace any event to its run",
+      "notes": [
+        "Every event id across the dashboard is now readable and traceable: it shows the surface it belongs to, reveals the full id on hover, copies with a click, and links straight to that exact run in Explore.",
+        "Lens Health opens instantly: the panel, your surface list, and drift readout appear right away while the topology map fills in behind a progress indicator, instead of a long blank wait.",
+        "The topology map stays readable on large contracts: only the busiest surfaces are labelled, and you can hover any peak to reveal its full name."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.1", "date": "2026-08-18",
+      "title": "Live Lens Health at a glance",
+      "notes": [
+        "The Lens Health summary in the header now shows your real numbers instead of placeholder values: pass rate, delivery reach, rubric coverage, and judge status.",
+        "Opening a missing-signal finding's evidence from the attention queue no longer errors.",
+        "The dashboard can now run embedded elsewhere in a clean, chrome-free dark view."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.0", "date": "2026-08-18",
+      "title": "A native math core",
+      "notes": [
+        "The statistical core now runs on a native, accelerated engine. Every estimate is verified identical to the previous version, down to the last digit.",
+        "Entirely under the hood: the same numbers, computed faster and with the method better protected."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.40.4", "date": "2026-08-17",
+      "title": "Deeper drill evidence",
+      "notes": [
+        "See which judge scored each cohort behind a hidden-factor finding, so a real difference is told apart from a judge that simply changed.",
+        "A signal you declared but whose surface has not run yet now reads 'cannot assess' instead of looking healthy.",
+        "When a declared column and the value you are actually sending are the same signal under two names, the lens suggests a rename rather than leaving a silent gap.",
+        "Every finding now tells you up front whether its evidence can be replayed or is too old to re-run."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.40.3", "date": "2026-08-17",
+      "title": "Sharper hidden-factor findings",
+      "notes": [
+        "Hidden-factor findings now flag when the split really tracks calendar dates or a change of judge, not the factor itself.",
+        "The evidence drill shows examples from every group, so a lopsided comparison is obvious at a glance.",
+        "Resolving a finding now tells you when it no longer matches anything in the current queue."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.40.2", "date": "2026-08-17",
+      "title": "A clearer attention queue",
+      "notes": [
+        "Resolving a flagged item now says plainly when there is no lens-side change to propose, instead of leaving it blank.",
+        "Noisy, low-signal flags no longer crowd the top of the attention queue.",
+        "Drill a finding's evidence straight from its row, deep-link to lens health, and a topology map that stays readable on wide screens."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.40.1", "date": "2026-08-17",
+      "title": "Triage decisions persist",
+      "notes": [
+        "Confirm, false-alarm, and acknowledge on a flagged item now persist and survive restarts.",
+        "A rebuilt conformance review desk that leads with each rule in plain language."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.40.0", "date": "2026-08-16",
+      "title": "One dashboard, every vendor",
+      "notes": [
+        "A single consolidated dashboard across all workspaces.",
+        "Run one prompt across multiple vendors and read them side by side.",
+        "A coverage map showing what stayed dark."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.39.0", "date": "2026-07-31",
+      "title": "Judge-integrity hardening",
+      "notes": [
+        "The dashboard now shows whether the judge actually ran on each verdict.",
+        "Scoring-gate integrity tightened end to end."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.38.0", "date": "2026-07-31",
+      "title": "Conversation-trajectory tracking",
+      "notes": [
+        "Reads an agent across turns, not only single calls.",
+        "Flags wrongful refusals along a trajectory."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.37.0", "date": "2026-07-28",
+      "title": "Live judge scoring",
+      "notes": [
+        "Model-judge scoring wired directly into the conformance gate.",
+        "Stricter contract validation."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.36.0", "date": "2026-07-26",
+      "title": "Verdict reliability",
+      "notes": [
+        "Every verdict now carries whether its score can be trusted.",
+        "A score without a reliability is flagged as such."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.35.0", "date": "2026-07-21",
+      "title": "Honest comparisons",
+      "notes": [
+        "Degenerate comparisons are reported as such rather than scored anyway.",
+        "Per-facet level counts."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.34.0", "date": "2026-07-21",
+      "title": "Judge-identity bracketing",
+      "notes": [
+        "Composite judge identity bracketed and canonicalized by lens version.",
+        "Staleness tracked across readings."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.33.0", "date": "2026-07-18",
+      "title": "Served-model capture",
+      "notes": [
+        "Records which model actually served each response.",
+        "Judged failures captured automatically."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.32.0", "date": "2026-07-12",
+      "title": "Confound triage",
+      "notes": [
+        "A compare endpoint for isolating confounds.",
+        "Cleaner lens-record cards on the dashboard."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.31.0", "date": "2026-07-12",
+      "title": "Independence audit hardened",
+      "notes": [
+        "Hardened auditing of declared dimension independence."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.30.0", "date": "2026-07-11",
+      "title": "Lifecycle independence audit",
+      "notes": [
+        "Audits declared dimension independence across the full lifecycle."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.29.0", "date": "2026-07-11",
+      "title": "Replay through a candidate lens",
+      "notes": [
+        "Replay recorded inputs through a candidate lens before adopting it.",
+        "Correlation-scoped windows."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.28.0", "date": "2026-07-11",
+      "title": "Surface registry",
+      "notes": [
+        "A registry of lens surfaces, with clearer visibility into what is emitted."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.27.0", "date": "2026-07-11",
+      "title": "Dual-channel reconciliation",
+      "notes": [
+        "Two channels read against each other to decide what is complete, what is degraded, and where a region stays dark.",
+        "Windowed reconciliation for serverless emitters."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.26.0", "date": "2026-07-10",
+      "title": "OpenTelemetry sidecar",
+      "notes": [
+        "Emit to the lens without changing your request path.",
+        "A measure of how complete your captured data is."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.25.0", "date": "2026-07-07",
+      "title": "Substrate-emission observability",
+      "notes": [
+        "Observability into substrate emission.",
+        "The client validates substrate keys."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.24.0", "date": "2026-07-05",
+      "title": "New API namespace",
+      "notes": [
+        "A dedicated /holonograph API namespace.",
+        "A zero-downtime migration to the new wire format."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.23.0", "date": "2026-07-01",
+      "title": "Conformance authoring",
+      "notes": [
+        "Author conformance fixtures: accumulate, derive-all, and marker-contains."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.22.0", "date": "2026-07-01",
+      "title": "Deterministic conformance checks",
+      "notes": [
+        "Deterministic conformance checks with guarded assertions."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.20.0", "date": "2026-07-01",
+      "title": "Contract-validation completeness",
+      "notes": [
+        "Contract validation reports completeness instead of silently dropping results."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.19.0", "date": "2026-07-01",
+      "title": "Judge and conformance surfaces",
+      "notes": [
+        "The judge and conformance surfaces go live on the dashboard."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.18.0", "date": "2026-07-01",
+      "title": "Fixture derivation",
+      "notes": [
+        "The conformance layer derives fixtures from rules.",
+        "Partial data is caveated as instrument-limited rather than presented as whole."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.17.0", "date": "2026-06-23",
+      "title": "Eval workbench",
+      "notes": [
+        "An evaluation workbench.",
+        "Newest-first event ordering."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.16.0", "date": "2026-06-23",
+      "title": "Operator-surface refinements",
+      "notes": [
+        "Operator-surface refinements following variance decomposition."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.15.0", "date": "2026-06-23",
+      "title": "Variance decomposition",
+      "notes": [
+        "A five-term decomposition separating real change from the floor.",
+        "Each term persisted per window for longitudinal reading."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.14.0", "date": "2026-06-22",
+      "title": "Stale versus current",
+      "notes": [
+        "Distinguishes stale dimensions and cohorts from current ones."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.13.0", "date": "2026-06-22",
+      "title": "Blast-radius judge",
+      "notes": [
+        "A judge for how far a failure reaches.",
+        "A durable approval gate."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.12.0", "date": "2026-06-21",
+      "title": "Surface lifecycle",
+      "notes": [
+        "Surface lifecycle, a marker client, and a publish pipeline.",
+        "Drafter health."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.11.0", "date": "2026-06-21",
+      "title": "Topology scanner",
+      "notes": [
+        "A scanner that maps your contract's structure."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.10.0", "date": "2026-06-17",
+      "title": "Fixture drafter",
+      "notes": [
+        "Capture real failures as reusable fixtures.",
+        "Dashboard filters."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.9.0", "date": "2026-06-16",
+      "title": "Drift-attribution closure",
+      "notes": [
+        "Drift-attribution closure, with routing and vocabulary fixes."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.8.0", "date": "2026-06-15",
+      "title": "Drift attribution",
+      "notes": [
+        "Click a change-point and see the substrate correlations behind it."
+      ]
+    },
+
+    {
+      "track": "sdk", "version": "0.7.0", "date": "2026-07-26",
+      "title": "Hardened validation",
+      "notes": [
+        "Reserve-by-meaning, coverage-divergence surfacing, and an unknown-column guard."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.6.0", "date": "2026-07-18",
+      "title": "Served-model capture",
+      "notes": [
+        "Captures which model served each response."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.5.0", "date": "2026-07-11",
+      "title": "Pull-side watchers",
+      "notes": [
+        "Typed poll-and-diff watchers on the pull side."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.4.0", "date": "2026-07-11",
+      "title": "Serverless emit",
+      "notes": [
+        "Serverless emit mode with per-emitter stream attribution."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.3.0", "date": "2026-07-10",
+      "title": "OpenTelemetry client",
+      "notes": [
+        "Dual-mode OpenTelemetry emission alignment."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.2.0", "date": "2026-07-07",
+      "title": "Substrate-key validation",
+      "notes": [
+        "Client-side substrate-key validation."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.1.0", "date": "2026-07-05",
+      "title": "First public client",
+      "notes": [
+        "Send through the lens and report scored outcomes.",
+        "Wire-format types and contract registration on npm."
+      ]
+    }
+  ]
+}

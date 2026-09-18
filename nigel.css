@@ -53,6 +53,8 @@
 
 /* Composer */
 .nigel-note{margin:0;padding:7px 14px;font-size:10.5px;line-height:1.4;color:var(--ink-3);text-align:center;border-top:1px solid var(--line);background:var(--paper)}
+.nigel-note a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.nigel-note a:hover{color:var(--ink-2)}
 .nigel-foot{padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:8px;
   align-items:center;background:var(--paper)}
 .nigel-input{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:9px 12px;

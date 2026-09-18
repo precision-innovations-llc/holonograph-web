@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // build-guide-all.mjs
 //
-// Generates /guide/all.html — a single-URL consolidation of all 14 chapters —
+// Generates /guide/all.html — a single-URL consolidation of all 15 chapters —
 // and updates the "## The Guide — Complete text" section of /llms-full.txt with
 // full chapter prose. Run before wrangler deploy whenever chapter content changes.
 //
@@ -33,6 +33,7 @@ const CHAPTERS = [
   ["12", "lessons-pipeline", "The lessons pipeline"],
   ["13", "drift-attribution", "Drift attribution"],
   ["14", "variance-isolation", "Variance isolation"],
+  ["15", "subscriptions", "Route a verdict to a human"],
 ];
 
 // ------- extract <article> body from a chapter file, strip prev/next nav -------
@@ -130,7 +131,7 @@ const chapterSections = chapterBodies
   .map(
     ({ num, slug, title, body }) => `
         <section id="${slug}" class="guide-chapter-block" aria-label="Chapter ${num}">
-${body}
+${body.replace(/<h1([^>]*)>([\s\S]*?)<\/h1>/, "<h2$1>$2</h2>")}
         </section>
 `
   )
@@ -142,8 +143,8 @@ const allHtml = `<!DOCTYPE html>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#ffffff" />
-<title>The Guide — Complete — Holonograph</title>
-<meta name="description" content="The complete Holonograph guide, all fourteen chapters in a single scrolling page. One URL for offline reading, LLM ingestion, and full-text search across the whole methodology." />
+<title>The Guide Mark II · Holonograph</title>
+<meta name="description" content="The complete Holonograph guide, all fifteen chapters in a single scrolling page. One URL for offline reading, LLM ingestion, and full-text search across the whole methodology." />
 <meta name="discloses" content="capability-only" />
 <meta name="reflects-version" content="v${BIN}" />
 <meta name="reflects-client-version" content="${CLI}" />
@@ -162,14 +163,14 @@ const allHtml = `<!DOCTYPE html>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-MX42B47LTP');
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
 </script>
 </head>
 <body>
   <header class="guide-topbar">
     <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
     <span class="guide-topbar-sep">/</span>
-    <span class="guide-crumb"><a href="./">The Guide</a> · complete</span>
+    <span class="guide-crumb"><a href="./">The Guide</a> · Mark II</span>
     <span class="guide-topbar-right">
       <span class="guide-version">v${BIN} · client ${CLI}</span>
       <a href="./" class="guide-back-link">chapter view</a>
@@ -189,8 +190,8 @@ ${sidebarItems}
       <article>
 
         <p class="guide-eyebrow">The Guide · one-page view</p>
-        <h1 class="guide-h1">The complete Guide</h1>
-        <p class="guide-meta">Reflects Holonograph v${BIN} <span class="dot">·</span> <code>@holonograph/client</code> ${CLI} <span class="dot">·</span> all 14 chapters, one URL</p>
+        <h1 class="guide-h1">The Guide Mark II</h1>
+        <p class="guide-meta">Reflects Holonograph v${BIN} <span class="dot">·</span> <code>@holonograph/client</code> ${CLI} <span class="dot">·</span> all 15 chapters, one URL</p>
 
         <p class="guide-lede">
           This page is the entire Holonograph guide in a single scrolling document. Every chapter that lives at its own permalink is included here in full, in reading order, without the per-page prev/next chrome. Use the sidebar to jump to a chapter, or read straight through.
@@ -209,7 +210,7 @@ ${chapterSections}
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>The Guide · complete</span>
+    <span>The Guide · Mark II</span>
     <span>Patent pending · v${BIN} · client ${CLI}</span>
   </footer>
 </body>

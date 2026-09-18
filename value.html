@@ -41,12 +41,15 @@
   body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,44px);position:relative}
   a{color:inherit}
+  .skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--iris);color:#fff;padding:10px 16px;border-radius:0 0 8px 0;text-decoration:none;font-size:14px}
+  .skip:focus{left:0}
 
   .site-header{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line);background:rgba(246,245,249,.82);backdrop-filter:saturate(1.1) blur(10px);-webkit-backdrop-filter:saturate(1.1) blur(10px)}
   nav{display:flex;align-items:center;gap:28px;height:70px}
   .brand{display:flex;align-items:baseline;gap:12px}
   .mark{font-family:var(--mono);font-size:15px;letter-spacing:.34em;font-weight:500;text-decoration:none;color:inherit}
   .mark b{color:var(--sun);font-weight:500}
+  .mark .tm{font-size:.52em;letter-spacing:0;vertical-align:super;margin-left:-.24em;font-weight:500;color:var(--ink-3)}
   .pp{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
   .nav-links{display:flex;gap:26px;margin-left:auto;font-size:14px;color:var(--ink-2)}
   .nav-links a{color:inherit;text-decoration:none}
@@ -144,7 +147,7 @@
   }
 </style>
 <link rel="stylesheet" href="mobilenav.css">
-<link rel="stylesheet" href="nigel.css?v=9">
+<link rel="stylesheet" href="nigel.css?v=10">
 <!-- Google Analytics (GA4) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MX42B47LTP', { client_storage: 'none' });</script>
@@ -160,7 +163,7 @@
 <header class="site-header">
   <div class="wrap">
     <nav aria-label="Primary">
-      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a><span class="pp">patent&nbsp;pending</span></span>
       <span class="nav-links"><a href="/">Product</a><a href="value.html" class="on">Value</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a></span>
       <a class="pill" href="contact.html">Request a demo</a>
     </nav>
@@ -171,7 +174,7 @@
   <section class="v-hero" data-hero data-reveal>
     <p class="eyebrow"><span class="dot"></span>The value</p>
     <h1>Complex agents introduce variance, challenging the role of observability alone.</h1>
-    <p class="sub">A well-structured substrate and compulsive versioning allow statistical analysis of every agentic and LLM-as-a-judge call, generating honest adjudication and truth-grounded triage.</p>
+    <p class="sub">A well-structured substrate and compulsive versioning allow statistical analysis of every agentic and LLM-as-a-judge call, generating honest adjudication and evidence-backed triage.</p>
   </section>
 
   <div class="units">
@@ -234,7 +237,7 @@
       <div class="unit-copy">
         <p class="unit-k">Coverage</p>
         <h2>The blind spot has a size.</h2>
-        <p class="biz">Declared surfaces that have never been observed are listed as unobserved, and the coverage you do not have is estimated statistically. <b>The size of the blind spot is a number on the page,</b> not a surprise in production.</p>
+        <p class="biz">Declared surfaces that have never been observed are listed as unobserved, and surfaces observed but never declared are flagged in return. <b>The size of the blind spot is a number on the page,</b> not a surprise in production.</p>
         <div class="cta-row">
           <button class="btn-guide" data-guide="guide/topology-scanner.html" data-title="Surface topology scanner" type="button">View the implementation <span aria-hidden="true">&rarr;</span></button>
           <button class="btn-study" type="button" disabled>Study coming soon</button>
@@ -317,7 +320,7 @@
   <div class="wrap">
     <div class="footer-grid">
       <div class="f-brand">
-        <span class="mark"><b>H</b>OLONOGRAPH</span>
+        <span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span>
         <p class="f-tag">The calibrated instrument for agentic behavioral attribution.</p>
         <p class="f-pp">Patent pending</p>
       </div>
@@ -396,7 +399,7 @@ window.HOLO_ANIM={ dur:420, ease:'cubic-bezier(.2,.8,.2,1)' };
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
 })();
 </script>
-<script src="nigel.js?v=9"></script>
+<script src="nigel.js?v=15"></script>
 <script src="mobilenav.js"></script>
 </body>
 </html>

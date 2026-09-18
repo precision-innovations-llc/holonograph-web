@@ -13,13 +13,16 @@
 (function () {
   /* Endpoint. Set window.NIGEL_ENDPOINT before this script to override.
      On localhost we default to the local Nigel server (NigelPR: npm run serve:local)
-     so the widget can be driven for real while the lens is still being cut. */
+     so the widget can be driven for real while the lens is still being cut.
+     Everywhere else it is same-origin: /api/nigel is a Pages Function relaying to
+     Cloud Run, so Nigel's session cookie is first-party. Called on *.run.app it was
+     third-party, and Safari and Firefox dropped it between messages. */
   var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   var ENDPOINT =
     window.NIGEL_ENDPOINT ||
     (LOCAL
       ? 'http://localhost:8787'
-      : 'https://nigel-chat-98022099798.us-central1.run.app');
+      : '/api/nigel');
 
   var MARKUP =
     '<button class="nigel-fab" id="nigelFab" type="button" aria-label="Chat with Nigel" title="Chat with Nigel">N</button>' +
@@ -31,7 +34,7 @@
         '<button class="nigel-x" id="nigelClose" type="button" aria-label="Close">&times;</button>' +
       '</div>' +
       '<div class="nigel-body" id="nigelBody" role="log" aria-live="polite"></div>' +
-      '<p class="nigel-note">Do not share anything private. These messages may be made public in the lens.</p>' +
+      '<p class="nigel-note">Messages may appear in the public lens. <a href="/terms.html">Terms</a> &middot; <a href="/privacy.html">Privacy</a></p>' +
       '<form class="nigel-foot" id="nigelForm">' +
         '<input class="nigel-input" id="nigelInput" type="text" autocomplete="off" ' +
           'maxlength="1200" placeholder="Ask Nigel anything…" aria-label="Message Nigel">' +
@@ -55,7 +58,7 @@
   var send = document.getElementById('nigelSend');
   var status = document.getElementById('nigelStatus');
 
-  var open = false, greeted = false, busy = false, spent = false, restored = false;
+  var open = false, greeted = false, busy = false, spent = false, restored = false, userClosed = false;
   panel.inert = true;   // closed on load: keep its controls out of the tab order + a11y tree
 
   /* Panel state lives in sessionStorage so the widget survives a page change.
@@ -88,7 +91,7 @@
     }
   }
 
-  function closePanel() { open = false; panel.classList.remove('open'); panel.inert = true; rememberOpen(false); updateFab(); if (fab && panel.contains(document.activeElement)) fab.focus(); }
+  function closePanel() { open = false; userClosed = true; panel.classList.remove('open'); panel.inert = true; rememberOpen(false); updateFab(); if (fab && panel.contains(document.activeElement)) fab.focus(); }
 
   [].forEach.call(document.querySelectorAll('[data-nigel-open]'), function (el) {
     el.addEventListener('click', function (e) { e.preventDefault(); openPanel(); });
@@ -98,6 +101,29 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) closePanel(); });
 
   updateFab();
+
+  /* Auto-open once when a [data-nigel-autoopen] section (the live lens on the homepage) is scrolled
+     into view. Respects a manual close: once the visitor closes Nigel, scrolling back in will not
+     reopen him. */
+  var autoTarget = document.querySelector('[data-nigel-autoopen]');
+  if (autoTarget) {
+    var autoDone = false;
+    var maybeAutoOpen = function () {
+      if (autoDone || open || userClosed) return;
+      var r = autoTarget.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) return;   // target not rendered (the lens iframe is hidden < 860px)
+      var vh = window.innerHeight || document.documentElement.clientHeight || 800;
+      if (r.top <= vh * 0.85) {   // the TOP of the iframe has entered the viewport — fires even on short windows that can't scroll it fully up
+        autoDone = true;
+        window.removeEventListener('scroll', maybeAutoOpen);
+        window.removeEventListener('resize', maybeAutoOpen);
+        openPanel();
+      }
+    };
+    window.addEventListener('scroll', maybeAutoOpen, { passive: true });
+    window.addEventListener('resize', maybeAutoOpen, { passive: true });
+    maybeAutoOpen();
+  }
 
   /* Restore the conversation on every page load. The transcript is server-side and
      keyed on the session cookie, so this is a read of what the visitor already said

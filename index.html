@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Holonograph: calibrated instrument for agent attribution</title>
+<title>Holonograph: agentic behavioral attribution</title>
 <meta name="description" content="Holonograph attributes a shift in your agent's behavior to its source: substrate, model, evaluation, or noise. Self-hosted, honest about what it can't resolve.">
 <link rel="canonical" href="https://holonograph.ai/">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
@@ -60,6 +60,8 @@
   body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;
     -webkit-font-smoothing:antialiased;overflow-x:hidden}
   .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,44px);position:relative;z-index:2}
+  .skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--iris);color:#fff;padding:10px 16px;border-radius:0 0 8px 0;text-decoration:none;font-size:14px}
+  .skip:focus{left:0}
 
   /* full-bleed holon: transparent, part of the page background, no frame, no clip */
   .stage{position:absolute;top:0;left:0;width:100%;height:100vh;z-index:0;
@@ -82,6 +84,7 @@
   .brand{display:flex;align-items:baseline;gap:12px}
   .mark{font-family:var(--mono);font-size:15px;letter-spacing:.34em;font-weight:500;text-decoration:none;color:inherit}
   .mark b{color:var(--sun);font-weight:500}
+  .mark .tm{font-size:.52em;letter-spacing:0;vertical-align:super;margin-left:-.24em;font-weight:500;color:var(--ink-3)}
   .pp{font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;
     color:var(--ink-3);white-space:nowrap;font-weight:400}
   .nav-links{display:flex;gap:26px;margin-left:auto;font-size:14px;color:var(--ink-2)}
@@ -146,6 +149,8 @@
   .readout-intro .sec-eyebrow{justify-content:center}
   .readout-intro h2{font-size:clamp(28px,3.8vw,46px);line-height:1.06;letter-spacing:-.02em;font-weight:500}
   .readout-lead{margin-top:16px;font-size:clamp(16px,1.5vw,19px);color:var(--ink-2);line-height:1.45}
+  .readout-fn{max-width:900px;margin:clamp(20px,3.5vh,34px) auto 0;font-size:12.5px;color:var(--ink-3);line-height:1.55;font-style:italic}
+  .readout-fn sup{font-style:normal}
 
   .readout-stage{position:relative}
   .anno-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:visible}
@@ -274,7 +279,7 @@
   .demo-mobile p{font-size:17px;color:var(--ink);font-weight:500;line-height:1.4}
   .demo-mobile p.sub{margin-top:10px;font-size:14.5px;color:var(--ink-2);font-weight:400;line-height:1.55}
   .demo-mobile .btn{margin-top:20px}
-  .dw-frame{max-width:1000px;margin:0 auto;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0c0c12;
+  .dw-frame{max-width:1100px;margin:0 auto;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0c0c12;
     box-shadow:0 50px 120px -50px rgba(23,22,29,.55),0 8px 30px -18px rgba(23,22,29,.32)}
   .dw-chrome{display:flex;align-items:center;gap:10px;padding:11px 15px;background:#0e0e15;border-bottom:1px solid #201f2b}
   .dw-chrome .dots{display:flex;gap:7px}
@@ -283,7 +288,7 @@
   .dw-chrome .live .pulse{width:7px;height:7px;border-radius:50%;background:#46c08a;animation:livePulse 1.8s infinite}
   @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(70,192,138,.5)}70%{box-shadow:0 0 0 7px rgba(70,192,138,0)}100%{box-shadow:0 0 0 0 rgba(70,192,138,0)}}
   @media (prefers-reduced-motion:reduce){ .dw-chrome .live .pulse{animation:none} }
-  .dw-iframe{display:block;width:100%;height:580px;border:0;background:#0c0c12}
+  .dw-iframe{display:block;width:100%;height:800px;border:0;background:#0c0c12}
 
   /* Nigel chat panel (expands from the FAB; auto-opens over the live dashboard) */
   .nigel-id b{font-size:14px;display:block;line-height:1.1}
@@ -362,7 +367,7 @@
   @media (max-width:820px){.facets{grid-template-columns:1fr;gap:32px}.facet-viz{order:-1}.facet-cube{max-width:280px}}
 </style>
 <link rel="stylesheet" href="mobilenav.css">
-<link rel="stylesheet" href="nigel.css?v=9">
+<link rel="stylesheet" href="nigel.css?v=10">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -375,7 +380,7 @@
   <div class="wrap nav-wrap">
     <nav aria-label="Primary">
       <span class="brand">
-        <a class="mark" href="/"><b>H</b>OLONOGRAPH</a>
+        <a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>
         <span class="pp">patent&nbsp;pending</span>
       </span>
       <span class="nav-links"><a href="/">Product</a><a href="value.html">Value</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a></span>
@@ -392,8 +397,8 @@
       <p class="sub">Holonograph attributes agentic behavior to the underlying source.</p>
       <p class="instr"><span>Runs Local</span><i>&middot;</i><span>Statistical Algorithms</span><i>&middot;</i><span>Honest Attribution</span></p>
       <div class="cta" id="heroCta">
-        <a class="btn solid" href="#" data-nigel-open>Chat with Nigel <span aria-hidden="true">&rarr;</span></a>
-        <a class="btn ghost" href="#">Read the papers</a>
+        <a class="btn solid" href="#lens-view" data-see-lens>See the Lens <span aria-hidden="true">&rarr;</span></a>
+        <a class="btn ghost" href="docs.html">Read the Docs</a>
       </div>
     </div>
   </section>
@@ -414,7 +419,7 @@
     <div class="method-intro">
       <p class="sec-eyebrow"><span class="dot"></span>The method</p>
       <h2>Identifying the source of the shift.</h2>
-      <p class="method-lead"><b class="lead-in">A value changing is not yet an answer.</b> Holonograph decomposes a score by attributing each part to your agent, the model, or custom evaluation system, and separates real change from noise; quantifying how much each source moved with that number. This decomposition is the patented method. It turns the changed score into an actionable report. Substrate labeling further identifies which component of your agent&rsquo;s substrate contributed to the agent&rsquo;s part: lessons, skills, code, and prompt are each separated and attributed.</p>
+      <p class="method-lead"><b class="lead-in">A value changing is not yet an answer.</b> Holonograph decomposes a score by attributing each part to your agent, the model, or custom evaluation system, and separates real change from noise; quantifying how much each source moved with that number. This decomposition is the method under patent application. It turns the changed score into an actionable report. Substrate labeling further identifies which component of your agent&rsquo;s substrate contributed to the agent&rsquo;s part: lessons, skills, code, and prompt are each separated and attributed.</p>
     </div>
 
     <div class="method-flow">
@@ -443,7 +448,7 @@
       </div>
     </div>
 
-    <p class="method-callout">In sufficiently complex systems, <b>honest attribution</b> becomes necessary for continuous improvements.</p>
+    <p class="method-callout">Past a certain scale, a metric that moves is not an answer. <b>Attribution is.</b></p>
   </section>
 
   <section class="facets">
@@ -504,10 +509,10 @@
     </div>
 
     <div class="readout-control">
-      <span class="rc-lead">Example readings</span>
+      <span class="rc-lead">Example readings<sup>*</sup></span>
       <div class="rc-toggle" role="group" aria-label="Choose a reading">
         <button class="rc-seg on" data-card="0" type="button">Orthogonality</button>
-        <button class="rc-seg" data-card="1" type="button">Grounding</button>
+        <button class="rc-seg" data-card="1" type="button">Citations</button>
       </div>
     </div>
 
@@ -555,7 +560,7 @@
           <article class="rcard" data-card="1">
             <div class="rcard-head">
               <span class="tag-status ok">Attributed</span>
-              <span class="rcard-title">Grounding</span>
+              <span class="rcard-title">Citation check</span>
               <span class="rcard-surface">life.chat-response-v1 &middot; faithfulness</span>
               <span class="rcard-meta">&times;180 &middot; 10d</span>
               <span class="tag-triage">Root&nbsp;cause: agent</span>
@@ -566,8 +571,8 @@
 
               <div class="bars bars2">
                 <p class="bars-cap"><b>Answers citing a source, by whether the trace backs it</b> &middot; 180 total</p>
-                <div class="bar-row"><span class="bar-label">grounded</span><span class="bar-track"><span class="bar-fill mute" style="--w:83%"></span></span><span class="bar-val">149</span><span class="bar-n">83%</span></div>
-                <div class="bar-row"><span class="bar-label">ungrounded</span><span class="bar-track"><span class="bar-fill warn" style="--w:17%"></span></span><span class="bar-val">31</span><span class="bar-n">17%</span></div>
+                <div class="bar-row"><span class="bar-label">backed</span><span class="bar-track"><span class="bar-fill mute" style="--w:83%"></span></span><span class="bar-val">149</span><span class="bar-n">83%</span></div>
+                <div class="bar-row"><span class="bar-label">unbacked</span><span class="bar-track"><span class="bar-fill warn" style="--w:17%"></span></span><span class="bar-val">31</span><span class="bar-n">17%</span></div>
               </div>
 
               <p class="sig" data-anchor="chance"><span class="ok">&checkmark;</span><span>The trace shows no <code>hn_search</code> call on those 31 turns. This is a record of what ran, not an estimate.</span></p>
@@ -608,17 +613,18 @@
         </div>
       </div>
     </div>
+    <p class="readout-fn"><sup>*</sup> The example readings above are illustrative, showing the format of a reading in the instrument&rsquo;s own layout rather than measurements from a specific deployment.</p>
   </section>
 
 
 
-  <section class="demo" data-anim>
+  <section class="demo" id="lens" data-anim>
     <div class="demo-intro" data-reveal>
       <p class="sec-eyebrow"><span class="dot"></span>See it live</p>
       <h2>The instrument, running.</h2>
       <p class="demo-lead">This is the Act queue against a live agent: every finding it surfaces, the moment it fires. Nigel will show you around.</p>
     </div>
-    <div class="dw-frame" data-reveal>
+    <div class="dw-frame" id="lens-view" data-nigel-autoopen data-reveal>
       <div class="dw-chrome">
         <span class="dots"><i></i><i></i><i></i></span>
         <span class="live"><span class="pulse"></span>LIVE</span>
@@ -634,7 +640,7 @@
            endpoint would let a passer-by fabricate the findings this section exists
            to prove are real. -->
       <iframe class="dw-iframe"
-              src="https://nigel-lens-public-98022099798.us-central1.run.app/dashboard/#act"
+              src="https://nigel-lens-public-98022099798.us-central1.run.app/dashboard/?embed=1#act"
               title="Holonograph Lens Dashboard — Act"
               loading="lazy"></iframe>
     </div>
@@ -650,7 +656,7 @@
   <div class="wrap">
     <div class="footer-grid">
       <div class="f-brand">
-        <span class="mark"><b>H</b>OLONOGRAPH</span>
+        <span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span>
         <p class="f-tag">The calibrated instrument for agentic behavioral attribution.</p>
         <p class="f-pp">Patent pending</p>
       </div>
@@ -696,6 +702,17 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
   var header=document.getElementById('siteHeader');               // sticky header frosts once scrolled
   function onScroll(){ if(header) header.classList.toggle('scrolled', window.scrollY>8); }
   onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+  var seeLens=document.querySelector('[data-see-lens]');   // hero CTA: smooth-scroll all the way to the live lens iframe; Nigel auto-opens as its top enters view
+  if(seeLens){ seeLens.addEventListener('click', function(e){
+    var t=document.getElementById('lens-view');
+    if(!t || !t.offsetParent) t=document.getElementById('lens');   // iframe hidden < 860px → fall back to the section
+    if(t){ e.preventDefault(); t.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'start'});
+      // nudge Nigel's auto-open listener: scrollIntoView doesn't always emit scroll events (reduced motion, some engines)
+      setTimeout(function(){ window.dispatchEvent(new Event('scroll')); }, 140);
+      setTimeout(function(){ window.dispatchEvent(new Event('scroll')); }, 850);
+    }
+  }); }
 })();
 </script>
 
@@ -905,7 +922,7 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
   if(section.classList.contains('is-in')) play();   // already in view on load / reduced-motion
 })();
 </script>
-<script src="nigel.js?v=9"></script>
+<script src="nigel.js?v=15"></script>
 <script>
 /* Home-only: open Nigel when the live-demo section arrives, so the chat and the lens
    are on screen together. Nigel himself is in nigel.js — this only opens the panel. */

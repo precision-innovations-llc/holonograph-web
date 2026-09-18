@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>Route a verdict to a human — The Guide — Holonograph</title>
+<meta name="description" content="The Defense layer: route a lens verdict to an HMAC-signed webhook when a deterministic predicate over its own verdicts fires. Create, read, and delete subscriptions; verify the signature; set the allow-list." />
+<meta name="discloses" content="capability-only" />
+<meta name="reflects-version" content="v0.41.8" />
+<meta name="reflects-client-version" content="0.11.0" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="true" />
+<link rel="canonical" href="https://holonograph.ai/guide/subscriptions" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="Route a verdict to a human · Holonograph Guide" />
+<meta property="og:description" content="The Defense layer: route a lens verdict to an HMAC-signed webhook when a deterministic predicate over its own verdicts fires. Create, read, and delete subscriptions; verify the signature; set the allow-list." />
+<meta property="og:url" content="https://holonograph.ai/guide/subscriptions" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="Route a verdict to a human · Holonograph Guide" />
+<meta name="twitter:description" content="The Defense layer: route a lens verdict to an HMAC-signed webhook when a deterministic predicate over its own verdicts fires. Create, read, and delete subscriptions; verify the signature; set the allow-list." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css" />
+<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
+</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
+      <a class="pill" href="../pricing.html">Get started</a>
+    </nav></div>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">13</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">14</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li class="current"><span class="s-num">15</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 15</p>
+        <h1 class="guide-h1">Route a verdict to a human</h1>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          The analysis chapters are <strong>detection</strong>: the lens reads what happened and forms a verdict. This chapter is the layer after it — <strong>defense</strong>. When a deterministic predicate over the lens's own verdicts fires, the lens POSTs an <strong>HMAC-signed webhook</strong> to a consumer you control: a pager, a chat channel, or an agent that picks up the work. It speaks only when something crosses a line — no "all quiet" pings.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Where this sits</span>
+          The webhook is a <em>trigger</em>, not a conclusion. The usual path is: a predicate fires → a human is alerted → the human asks a coding agent to act → and the agent, before it changes anything, <strong>consults the reliability and drift reads</strong> (see <a href="./sdk-reference">Verdict reliability</a> and <a href="./drift-attribution">Drift attribution</a>) to decide whether the alert reflects real, trustworthy movement. The alert says <em>what</em> crossed a line; the reads say whether it is safe to act on.
+        </div>
+
+        <h2>The shape of it</h2>
+
+        <p>
+          You register a <strong>subscription</strong>: a predicate to watch, a window, and a webhook to call. On a schedule you own (Cloud Scheduler is the intended trigger), the lens evaluates every subscription against recent verdicts, fires the ones whose predicate matched, and <strong>dedupes</strong> a repeat of the same finding inside the window. The webhook secret proves the call came from your lens and nobody else.
+        </p>
+
+        <h2>Create a subscription</h2>
+
+        <p>Writes are approver-gated. The webhook <code>url</code> must be <code>https</code>, and the <code>secret</code> is 16–512 characters. The body is strict — an unknown field is rejected.</p>
+
+        <pre><code>POST /lens/subscriptions
+Authorization: Bearer &lt;token&gt;
+Content-Type: application/json
+
+{
+  "predicate": { "kind": "conformance-fail", "surfaceId": "support.triage" },
+  "windowMs": 300000,
+  "webhook": {
+    "url": "https://alerts.example.com/holonograph",
+    "secret": "&lt;16-512 random chars, kept secret&gt;"
+  },
+  "approverId": "brian"
+}</code></pre>
+
+        <p>
+          Success returns <code>201</code> with a <strong>redacted</strong> view of the subscription: <code>id</code>, <code>agentId</code>, the predicate and window, <code>createdAt</code>/<code>createdBy</code>, and <code>webhook: { url }</code> — <strong>the secret is write-only and is never read back</strong>. Set it once at create; if you lose it, delete and recreate.
+        </p>
+
+        <h2>Predicates — what fires an alert</h2>
+
+        <p>A predicate is a discriminated union on <code>kind</code>. Each names a <em>meaning</em>, never an opaque number. Three ship today:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>kind</th><th>Shape</th><th>Fires when</th></tr></thead>
+            <tbody>
+              <tr><td><code>conformance-fail</code></td><td><code>{ surfaceId, fixtureId? }</code></td><td>A conformance fixture FAILs on the surface (e.g. a required tool was never called). Omit <code>fixtureId</code> to fire on any fixture failure.</td></tr>
+              <tr><td><code>emission-breach</code></td><td><code>{ surfaceId, columnId? }</code></td><td>A substrate column declared <em>always-emitted</em> went silent in the window — a deployment is broken, not just underperforming.</td></tr>
+              <tr><td><code>dimension-below</code></td><td><code>{ surfaceId, dimensionId, threshold }</code></td><td>A judge dimension scored strictly below <code>threshold</code> in the window. The one predicate that reads a graded score.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Read and delete</h2>
+
+        <p>Reads are also served under the <code>/holonograph</code> alias. Every read redacts the webhook secret.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Returns</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/subscriptions</code></td><td>All subscriptions (optional <code>?surfaceId=</code> filter), each with <code>webhook: { url }</code> only.</td></tr>
+              <tr><td><code>GET /lens/subscriptions/:id</code></td><td>One subscription, or <code>404</code>.</td></tr>
+              <tr><td><code>DELETE /lens/subscriptions/:id?approverId=&lt;id&gt;</code></td><td>Deletes it. <code>approverId</code> is a required query param. Returns <code>{ deleted: true, id }</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">There is no update</span>
+          Subscriptions are create / read / delete. To change a predicate, window, or webhook, <strong>delete and recreate</strong>. There is no edit or pause endpoint on this release.
+        </div>
+
+        <h2>The webhook a consumer receives</h2>
+
+        <p>When a subscription fires, the lens POSTs this body to your <code>url</code>:</p>
+
+        <pre><code>POST https://alerts.example.com/holonograph
+x-holonograph-signature: sha256=&lt;hex&gt;
+Content-Type: application/json
+
+{
+  "subscriptionId": "sub_01H...",
+  "agentId": "rupert-swarm",
+  "predicate": { "kind": "conformance-fail", "surfaceId": "support.triage" },
+  "verdict": { /* structured, per predicate kind — the deterministic detail */ },
+  "summary": "save_report was never called on support.triage",
+  "fingerprint": "conformance:support.triage:...",
+  "firedAt": "2026-08-22T14:03:11Z"
+}</code></pre>
+
+        <p>
+          <code>verdict</code> is a structured object, not a string — it carries the per-kind detail (the failing fixture and violating event ids, the silent column ids, or the dimension, threshold, and below-threshold event ids). <code>summary</code> is the one-line human sentence. <code>fingerprint</code> is the dedupe key.
+        </p>
+
+        <h3>Verify the signature — first, always</h3>
+
+        <p>
+          The <code>x-holonograph-signature</code> header is <code>sha256=</code> followed by the <strong>HMAC-SHA256 of the raw request body</strong>, keyed by the subscription's secret. Verify it over the <em>raw bytes you received</em> — before parsing JSON — and reject anything that does not match. This is the whole reason the secret exists.
+        </p>
+
+        <pre><code>import { createHmac, timingSafeEqual } from "node:crypto";
+
+function verifyHolonographWebhook(rawBody, signatureHeader, secret) {
+  const expected = "sha256=" + createHmac("sha256", secret).update(rawBody).digest("hex");
+  const got = Buffer.from(signatureHeader ?? "");
+  const want = Buffer.from(expected);
+  // constant-time compare; length-guard first so timingSafeEqual never throws
+  return got.length === want.length &amp;&amp; timingSafeEqual(got, want);
+}</code></pre>
+
+        <h2>Required setup: the allow-list</h2>
+
+        <p>
+          Delivery is <strong>deny-by-default</strong>. A webhook fires only to a host on the operator's allow-list; with no allow-list, <strong>nothing fires</strong>. Point the lens at the file with <code>APERTURE_WEBHOOK_ALLOWLIST_PATH</code> — keep it alongside your judge rubrics. It is a JSON array of hostnames:
+        </p>
+
+        <pre><code>// $APERTURE_WEBHOOK_ALLOWLIST_PATH
+[
+  "alerts.example.com",
+  "localhost"
+]</code></pre>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Rule</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td>Deny-by-default</td><td>No allow-list (absent, empty, or malformed) ⇒ every host is denied and nothing fires.</td></tr>
+              <tr><td>Exact hostname</td><td>Case-insensitive exact match. <strong>No wildcards or suffixes</strong> — <code>*.example.com</code> is not a thing; list each host.</td></tr>
+              <tr><td>https required</td><td><code>https</code> for every remote host. <code>http</code> is tolerated only for loopback (<code>localhost</code>, <code>127.0.0.1</code>, <code>::1</code>) for local development.</td></tr>
+              <tr><td>No internal targets</td><td>At fire time the lens pins the resolved address and refuses private, loopback, link-local (incl. the cloud metadata address), and CGNAT ranges. It does not follow redirects.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>A demo or local bundle ships an allow-list with <code>localhost</code> in it so webhooks fire against a dev consumer.</p>
+
+        <h2>Firing: the evaluate cycle</h2>
+
+        <p>
+          Nothing fires on its own. Point <strong>Cloud Scheduler</strong> (bearer-gated) at the evaluate endpoint on the cadence you want; each call is one evaluation cycle across all subscriptions.
+        </p>
+
+        <pre><code>POST /lens/subscriptions/evaluate
+Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
+
+        <p>The response is <strong>counts only</strong> — the silence discipline again; there is no per-subscription "all quiet":</p>
+
+        <pre><code>{
+  "evaluated": 12,
+  "matched": 3,
+  "fired": 2,
+  "deduped": 1,
+  "blocked": 0,
+  "skipped": 0,
+  "capped": 0,
+  "allowlistConfigured": true,
+  "errors": []
+}</code></pre>
+
+        <p>
+          A match whose <code>fingerprint</code> already fired within its <code>windowMs</code> is suppressed (<code>deduped</code>), so one broken deployment is one alert, not a storm. Dedupe state is stamped only on a <em>successful</em> delivery, so a blocked or failed send re-attempts next cycle. Each cycle fires at most 100 webhooks; matches past that are <code>capped</code> and re-attempted next cycle.
+        </p>
+
+        <h2>Reference</h2>
+
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/subscriptions</code></td><td>Create a subscription (approver-gated).</td></tr>
+              <tr><td><code>GET /lens/subscriptions</code> <span class="s-num">·</span> <code>GET /holonograph/subscriptions</code></td><td>List (secret redacted). Optional <code>?surfaceId=</code>.</td></tr>
+              <tr><td><code>GET /lens/subscriptions/:id</code> <span class="s-num">·</span> <code>GET /holonograph/subscriptions/:id</code></td><td>Read one (secret redacted).</td></tr>
+              <tr><td><code>DELETE /lens/subscriptions/:id?approverId=</code></td><td>Delete (approver-gated).</td></tr>
+              <tr><td><code>POST /lens/subscriptions/evaluate</code></td><td>Run one evaluation cycle (Cloud Scheduler; bearer-gated).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Types</h3>
+
+        <p>
+          The wire types live in <code>@holonograph/types-public</code> — <code>CreateSubscriptionRequest</code>, <code>SubscriptionView</code>, <code>SubscriptionPredicate</code>, <code>SubscriptionWebhookPayload</code>, and <code>EvaluateSubscriptionsResponse</code>. There is no subscriptions helper in <code>@holonograph/client</code>; build the requests against the types and call the endpoints over HTTP.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Honest-null when unwired</span>
+          On a pure-collector lens with no subscription store configured, every route above answers <code>501</code> rather than pretending. The Defense layer is present only where an operator has wired it.
+        </div>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./variance-isolation" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Variance isolation</span>
+          </a>
+          <a href="./" class="nav-next">
+            <span class="nav-label">Back to</span>
+            <span class="nav-title">All chapters</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 15 · Route a verdict to a human</span>
+    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
+  </footer>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
+</body>
+</html>
