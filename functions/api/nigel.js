@@ -8,12 +8,14 @@
 // turns, and the six-new-sessions-a-day cap bit after six messages. Relayed through
 // here, the browser only ever talks to holonograph.ai and the cookie is first-party.
 //
-// Required Pages secret (production AND preview):
-//   NIGEL_PROXY_KEY  (secret)  shared with the nigel-chat service. It is what lets
-//                              Nigel trust x-nigel-client-ip: every relayed request
-//                              arrives from Cloudflare, so rate limiting has to key on
-//                              the IP reported here, and only a request carrying the
-//                              key is allowed to report one.
+// Pages secrets:
+//   NIGEL_PROXY_KEY     (production AND preview)  shared with the nigel-chat service.
+//                       It is what lets Nigel trust x-nigel-client-ip: every relayed
+//                       request arrives from Cloudflare, so rate limiting has to key
+//                       on the IP reported here, and only a request carrying the key
+//                       is allowed to report one.
+//   NIGEL_OPERATOR_KEY  (PREVIEW ONLY, never production)  tags every preview turn
+//                       as test traffic. See the block before the upstream fetch.
 //
 // The upstream is not configurable. This relay exists for one service.
 
@@ -63,6 +65,23 @@ export async function onRequestPost({ request, env }) {
   // Forward Nigel's cookie and nothing else. The rest of the visitor's cookies for
   // holonograph.ai are none of Cloud Run's business.
   if (sid) headers.cookie = `${COOKIE}=${sid}`;
+
+  // Test traffic must land in the lens as runMode eval (provenance
+  // manual_production_run), never as production. NIGEL_OPERATOR_KEY is set for the
+  // PREVIEW environment only, so everything sent through a preview URL, the widget
+  // included, is tagged eval with no secret ever in a browser; production has no
+  // such secret and so can never tag itself. Scripted tests against production send
+  // the two headers themselves, and Nigel refuses eval without a valid key rather
+  // than quietly filing the turn as production.
+  if (env.NIGEL_OPERATOR_KEY) {
+    headers["x-nigel-run-mode"] = "eval";
+    headers["x-nigel-operator-key"] = env.NIGEL_OPERATOR_KEY;
+  } else {
+    const runMode = request.headers.get("x-nigel-run-mode");
+    const operatorKey = request.headers.get("x-nigel-operator-key");
+    if (runMode !== null) headers["x-nigel-run-mode"] = runMode;
+    if (operatorKey !== null) headers["x-nigel-operator-key"] = operatorKey;
+  }
 
   let upstream;
   try {
