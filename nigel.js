@@ -13,13 +13,16 @@
 (function () {
   /* Endpoint. Set window.NIGEL_ENDPOINT before this script to override.
      On localhost we default to the local Nigel server (NigelPR: npm run serve:local)
-     so the widget can be driven for real while the lens is still being cut. */
+     so the widget can be driven for real while the lens is still being cut.
+     Everywhere else it is same-origin: /api/nigel is a Pages Function relaying to
+     Cloud Run, so Nigel's session cookie is first-party. Called on *.run.app it was
+     third-party, and Safari and Firefox dropped it between messages. */
   var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   var ENDPOINT =
     window.NIGEL_ENDPOINT ||
     (LOCAL
       ? 'http://localhost:8787'
-      : 'https://nigel-chat-98022099798.us-central1.run.app');
+      : '/api/nigel');
 
   var MARKUP =
     '<button class="nigel-fab" id="nigelFab" type="button" aria-label="Chat with Nigel" title="Chat with Nigel">N</button>' +
@@ -31,7 +34,7 @@
         '<button class="nigel-x" id="nigelClose" type="button" aria-label="Close">&times;</button>' +
       '</div>' +
       '<div class="nigel-body" id="nigelBody" role="log" aria-live="polite"></div>' +
-      '<p class="nigel-note">Do not share anything private. These messages may be made public in the lens.</p>' +
+      '<p class="nigel-note">Messages may appear in the public lens. <a href="/terms.html">Terms</a> &middot; <a href="/privacy.html">Privacy</a></p>' +
       '<form class="nigel-foot" id="nigelForm">' +
         '<input class="nigel-input" id="nigelInput" type="text" autocomplete="off" ' +
           'maxlength="1200" placeholder="Ask Nigel anything…" aria-label="Message Nigel">' +
