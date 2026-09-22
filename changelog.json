@@ -6,6 +6,185 @@
   },
   "releases": [
     {
+      "track": "sdk", "version": "0.15.0", "date": "2026-09-21",
+      "title": "The judge's full light source",
+      "notes": [
+        "Capture the judge's requested provider and credential beside its served model, so a judge change is attributed to the judge and not to your agent.",
+        "Vendor fan-out runs carry per-leg identity.",
+        "Richer health findings for judges and rubrics."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.42.2", "date": "2026-09-20",
+      "title": "Judge light source: attribution fix",
+      "notes": [
+        "The judge's requested provider and credential now resolve correctly on live traffic."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.42.1", "date": "2026-09-19",
+      "title": "Know the judge's light source",
+      "notes": [
+        "Capture the judge's requested provider and credential beside the model it actually served, so a change of judge is attributed to the judge and not mistaken for a change in your own agent."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.42.0", "date": "2026-09-14",
+      "title": "Holonograph enters beta",
+      "notes": [
+        "The pre-launch hardening pass is complete: security, reliability, and scoring consistency are at production grade, and Holonograph is ready for beta use.",
+        "Scoring produces results identical to the prior release, so upgrading changes nothing you have already measured."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.27", "date": "2026-09-13",
+      "title": "Sharper refusal detection, honest health",
+      "notes": [
+        "Wrongful-refusal detection along a conversation was tightened to flag only clear cases, so ordinary phrasing no longer trips a false alarm.",
+        "Lens Health shows a measuring state instead of a false none while a slow read completes, and its vendor readout lists every model in the window, not just the latest."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.26", "date": "2026-09-12",
+      "title": "A root-cause attention queue",
+      "notes": [
+        "Findings now carry their prerequisites: a downstream flag is marked blocked and traced to the upstream cause, so you fix the root first.",
+        "A finding flags when a facet is scored on the default rubric because its own reference did not resolve, so you can point it at the intended one.",
+        "New health findings surface when judges or scoring axes overlap, disagree, or drift together, so a real signal is easier to tell from an instrument artifact."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.25", "date": "2026-09-08",
+      "title": "Grok joins the vendor lineup",
+      "notes": [
+        "Run and compare xAI's Grok alongside your other model vendors, including side by side in a single run.",
+        "Current Google Gemini models are available again through their latest aliases."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.24", "date": "2026-09-07",
+      "title": "Dependable Explore filters",
+      "notes": [
+        "The role filter now narrows the list itself, and internal records stay available even when you have scoped to a surface.",
+        "A malformed date can no longer wedge the dashboard: date inputs are validated and bounded."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.23", "date": "2026-09-07",
+      "title": "Readable evaluation rows",
+      "notes": [
+        "Judge rows show a clean, title-cased name for what they grade, with the full identifier a hover away.",
+        "A surface's full description moves into its slide-over, and scoping to a judge reveals its events with an accurate count."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.22", "date": "2026-09-07",
+      "title": "Honest multiplex results",
+      "notes": [
+        "Run one prompt across vendors and each leg now captures structured and tool-call output, and says plainly why any response is missing instead of a single catch-all.",
+        "Explore groups surfaces by role, refreshes on its own, and moves the lens's coverage and delivery records to their own opt-in."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.21", "date": "2026-09-05",
+      "title": "Rubrics that weigh contradiction, not silence",
+      "notes": [
+        "A drafted rubric distinguishes a contradicted claim from one simply left unstated, so a partial answer is not penalized for what it did not address."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.20", "date": "2026-09-05",
+      "title": "Local-time stamps, cleaner Explore",
+      "notes": [
+        "Clock times across the dashboard render in your local timezone, while calendar dates stay in UTC on purpose.",
+        "Explore tucks the lens's own evaluation runs behind an internal-records toggle, so your event stream reads as your traffic."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.14.0", "date": "2026-09-03",
+      "title": "Attested identity for your grading judge",
+      "notes": [
+        "Declare your own grading judge and its identity is attested the same way the platform's judges are."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.19", "date": "2026-09-03",
+      "title": "Proposed rubrics ready to score",
+      "notes": [
+        "The dimensions a de-saturation proposal drafts are registered so each one can be scored on its own."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.18", "date": "2026-09-03",
+      "title": "De-saturation, end to end",
+      "notes": [
+        "The de-saturation proposal now runs its full loop cleanly, from detecting the saturated judge to drafting and delivering the sharper dimensions."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.17", "date": "2026-09-03",
+      "title": "Rescue a saturated judge",
+      "notes": [
+        "When a judge stops distinguishing good from great and its scores collapse toward one value, the lens flags the saturation and proposes sharper rubric dimensions to restore resolution."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.16", "date": "2026-09-03",
+      "title": "Judges mapped to what they grade",
+      "notes": [
+        "Declare which judge grades a dimension and the topology map nests that judge under the surface it drives, instead of drawing it as its own peak.",
+        "Judges no subject has claimed yet are grouped honestly as not yet linked."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.15", "date": "2026-09-03",
+      "title": "Lens Health without the wait",
+      "notes": [
+        "Lens Health and the topology map open right away: readings are precomputed and served with an 'as of' time, with a manual refresh on demand.",
+        "Heavy recomputation runs off the request path, so the dashboard stays responsive."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.14", "date": "2026-09-01",
+      "title": "Coverage numbers you can trust",
+      "notes": [
+        "Per-surface dimension counts and rubric pins now read from your live contract instead of showing zero.",
+        "The rubric-coverage card reflects your real coverage instead of reading empty when a check runs slow."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.13.1", "date": "2026-08-28",
+      "title": "Stable model identity across keys",
+      "notes": [
+        "A per-credential routing change no longer reads as a model change: the model identity stays fixed while the key varies."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.13.0", "date": "2026-08-27",
+      "title": "Attested judge identity",
+      "notes": [
+        "See which model, key, and rubric graded each result, with the lens's own record of whether it observed that identity or the scorer reported it.",
+        "Address one model through several credentials and track each one on its own."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.12", "date": "2026-08-23",
+      "title": "Several credentials per vendor",
+      "notes": [
+        "Address a single vendor through several API credentials, so rate limits, billing, and attribution can be separated per agent or per key.",
+        "Each call records the credential that actually served it."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.41.10", "date": "2026-08-23",
+      "title": "Hardened service defaults",
+      "notes": [
+        "Webhook targets aimed at an internal or cloud-metadata host are refused when you add them, not only when they fire.",
+        "Baseline security headers ship on every response, and a malformed request returns a clear error instead of a server fault.",
+        "Rate-limit headers report your remaining headroom on each request."
+      ]
+    },
+    {
       "track": "sdk", "version": "0.12.0", "date": "2026-08-22",
       "title": "Screen webhook targets before sending",
       "notes": [
