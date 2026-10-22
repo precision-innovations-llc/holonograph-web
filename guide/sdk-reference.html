@@ -382,6 +382,12 @@ await handle.reportOutcome({
         <h2>Verdict reliability — let the lens check your judge</h2>
 
         <p>
+          A verdict does not have to come back in-request. Which timings are available to a judge, and what
+          a verdict is allowed to do when it arrives, are set by its mode: see
+          <a href="./judge-modes">Judge modes</a>.
+        </p>
+
+        <p>
           A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong> — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
         </p>
 

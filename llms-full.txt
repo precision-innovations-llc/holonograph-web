@@ -482,6 +482,10 @@ Chapter 03
 
         Every evaluation Holonograph observes is written as one record (an `EvaluationEvent`) that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
 
+        A record does not have to keep its bulky payload forever. An aging event can be husked, which
+          removes the payload and keeps every structured field an estimator reads. See
+          [Compaction & husking](./compaction) for what is kept, what leaves, and who invokes it.
+
 ## What it is
 
         An event is the atomic unit. It's what *reportOutcome* writes when you finish an evaluation, and it's what *GET /lens/events* pages back to you when you're reading history. One event = one call to one surface at one moment.
@@ -1062,6 +1066,10 @@ Field	Shape	Notes
         Calling `reportOutcome` persists the evaluation event to Holonograph's substrate: one row, four layers bound (see [The four-layer snapshot](./snapshot)). What Holonograph does with that event afterwards is the subject of the analysis chapters.
 
 ## Verdict reliability — let the lens check your judge
+
+        A verdict does not have to come back in-request. Which timings are available to a judge, and what
+          a verdict is allowed to do when it arrives, are set by its mode: see
+          [Judge modes](./judge-modes).
 
         A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that **deterministically** — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a `claim` to any judged dimension:
 
@@ -2065,6 +2073,10 @@ Content-Type: application/json
 
 ## Reading the output
 
+        Conformance findings share the operator lifecycle described in
+          [The attention spine](./attention-spine): one identity, one annotation trail, one path
+          into a proposal.
+
 ### Assertion kinds
 
 Kind	Shape	Passes when
@@ -2186,6 +2198,11 @@ Chapter 11
 # The multiplexer
 
         The multiplexer lets one call to a surface land on several vendors at once: a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
+
+        That is the *served* multiplex: routing that was already on when the call happened, with one
+          primary and the rest observing. To fan a request across vendors on demand, after the fact or with
+          no prior capture at all, see [On-demand multiplex runs](./multiplex-runs), where every
+          peer is returned equally.
 
 ## What it is
 
@@ -2557,6 +2574,10 @@ Chapter 13
 # Drift attribution
 
         When a score changes over time, drift attribution tells you *which layer* of your system the change came from. It answers the question every operator asks after a moved number: *is this us, or is this the vendor, or is this our evaluation, or is this just noise?*
+
+        Attributing a change to the light source relies on recording both sides of it: the light source that
+          was requested and the model the vendor actually served. A re-route behind an unchanged alias is
+          visible only because those are separate axes. See [Model identity](./model-identity).
 
 ## What it is
 

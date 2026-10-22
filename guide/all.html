@@ -375,6 +375,12 @@ Content-Type: application/json
           Every evaluation Holonograph observes is written as one record (an <code>EvaluationEvent</code>) that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
         </p>
 
+        <p>
+          A record does not have to keep its bulky payload forever. An aging event can be husked, which
+          removes the payload and keeps every structured field an estimator reads. See
+          <a href="./compaction">Compaction &amp; husking</a> for what is kept, what leaves, and who invokes it.
+        </p>
+
         <h2>What it is</h2>
 
         <p>
@@ -985,6 +991,12 @@ await handle.reportOutcome({
         </p>
 
         <h2>Verdict reliability — let the lens check your judge</h2>
+
+        <p>
+          A verdict does not have to come back in-request. Which timings are available to a judge, and what
+          a verdict is allowed to do when it arrives, are set by its mode: see
+          <a href="./judge-modes">Judge modes</a>.
+        </p>
 
         <p>
           A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong> — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
@@ -2084,6 +2096,12 @@ Content-Type: application/json
 
         <h2>Reading the output</h2>
 
+        <p>
+          Conformance findings share the operator lifecycle described in
+          <a href="./attention-spine">The attention spine</a>: one identity, one annotation trail, one path
+          into a proposal.
+        </p>
+
         <h3>Assertion kinds</h3>
 
         <div class="guide-table-wrap">
@@ -2202,6 +2220,13 @@ Content-Type: application/json
 
         <p class="guide-lede">
           The multiplexer lets one call to a surface land on several vendors at once: a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
+        </p>
+
+        <p>
+          That is the <em>served</em> multiplex: routing that was already on when the call happened, with one
+          primary and the rest observing. To fan a request across vendors on demand, after the fact or with
+          no prior capture at all, see <a href="./multiplex-runs">On-demand multiplex runs</a>, where every
+          peer is returned equally.
         </p>
 
         <h2>What it is</h2>
@@ -2591,6 +2616,12 @@ Content-Type: application/json
 
         <p class="guide-lede">
           When a score changes over time, drift attribution tells you <em>which layer</em> of your system the change came from. It answers the question every operator asks after a moved number: <em>is this us, or is this the vendor, or is this our evaluation, or is this just noise?</em>
+        </p>
+
+        <p>
+          Attributing a change to the light source relies on recording both sides of it: the light source that
+          was requested and the model the vendor actually served. A re-route behind an unchanged alias is
+          visible only because those are separate axes. See <a href="./model-identity">Model identity</a>.
         </p>
 
         <h2>What it is</h2>

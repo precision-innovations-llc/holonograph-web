@@ -89,6 +89,12 @@
           Every evaluation Holonograph observes is written as one record (an <code>EvaluationEvent</code>) that binds four layers of one call into a single row you can query as history. This chapter is about that record: what it holds, how to ingest one, and how to page back through them.
         </p>
 
+        <p>
+          A record does not have to keep its bulky payload forever. An aging event can be husked, which
+          removes the payload and keeps every structured field an estimator reads. See
+          <a href="./compaction">Compaction &amp; husking</a> for what is kept, what leaves, and who invokes it.
+        </p>
+
         <h2>What it is</h2>
 
         <p>

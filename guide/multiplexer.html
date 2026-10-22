@@ -89,6 +89,13 @@
           The multiplexer lets one call to a surface land on several vendors at once: a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
         </p>
 
+        <p>
+          That is the <em>served</em> multiplex: routing that was already on when the call happened, with one
+          primary and the rest observing. To fan a request across vendors on demand, after the fact or with
+          no prior capture at all, see <a href="./multiplex-runs">On-demand multiplex runs</a>, where every
+          peer is returned equally.
+        </p>
+
         <h2>What it is</h2>
 
         <p>
