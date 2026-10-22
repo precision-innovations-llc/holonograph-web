@@ -6,6 +6,20 @@
   },
   "releases": [
     {
+      "track": "sdk", "version": "0.15.1", "date": "2026-09-24",
+      "title": "Your vendor options flow through",
+      "notes": [
+        "Options you attach to a call now reach the model unchanged, whether you call the mediator or dispatch directly."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.42.3", "date": "2026-09-24",
+      "title": "Vendor-native options reach the model",
+      "notes": [
+        "Vendor-native request options you set (for example top_k, seed, stop sequences, or vendor cache directives) now flow through every path to the model: direct calls, replay, fixture rerun, and each leg of a multiplex run."
+      ]
+    },
+    {
       "track": "sdk", "version": "0.15.0", "date": "2026-09-21",
       "title": "The judge's full light source",
       "notes": [

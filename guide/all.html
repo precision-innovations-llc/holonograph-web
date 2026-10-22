@@ -61,8 +61,7 @@
         <li><span class="s-num">16</span><a href="#attention-spine" class="s-ttl">The attention spine</a></li>
         <li><span class="s-num">17</span><a href="#model-identity" class="s-ttl">Model identity</a></li>
         <li><span class="s-num">18</span><a href="#judge-modes" class="s-ttl">Judge modes</a></li>
-        <li><span class="s-num">19</span><a href="#multiplex-runs" class="s-ttl">On-demand multiplex runs</a></li>
-        <li><span class="s-num">20</span><a href="#compaction" class="s-ttl">Compaction & husking</a></li>
+        <li><span class="s-num">19</span><a href="#compaction" class="s-ttl">Compaction & husking</a></li>
       </ol>
     </aside>
 
@@ -2222,13 +2221,6 @@ Content-Type: application/json
           The multiplexer lets one call to a surface land on several vendors at once: a primary whose reply the agent actually uses, and one or more observers running the same input in parallel. It's how you compare vendors head-to-head on speed, price, and accuracy, without changing a line of agent code.
         </p>
 
-        <p>
-          That is the <em>served</em> multiplex: routing that was already on when the call happened, with one
-          primary and the rest observing. To fan a request across vendors on demand, after the fact or with
-          no prior capture at all, see <a href="./multiplex-runs">On-demand multiplex runs</a>, where every
-          peer is returned equally.
-        </p>
-
         <h2>What it is</h2>
 
         <p>
@@ -2353,7 +2345,83 @@ await handle.reportOutcome({
           Per-vendor cost and latency are captured on each event without any operator work. When you multiplex three vendors, you get three vendors' cost and latency for the same input. That's the piece of the head-to-head that's normally hardest to compare fairly.
         </p>
 
+        <h2>Running one on demand</h2>
+
+        <p>
+          Everything above is the <em>served</em> multiplex: routing that was already on when the call
+          happened, with one primary the agent used and the rest observing.
+          <code>POST /lens/multiplex/run</code> is the same fan-out triggered after the fact, so a
+          comparison exists on demand rather than only where routing happened to be on.
+        </p>
+
+        <p>Three ways to name the request to fan out:</p>
+
+        <ul>
+          <li><code>sourceEventId</code>: replay this exact event's captured request. The event must carry <code>light.rawRequest</code>.</li>
+          <li><code>sourceCorrelationId</code>: resolve the first event under this correlation that carries a request.</li>
+          <li><code>input</code>: a direct canonical request body. The cold-start path, with no captured source event, so a comparison need not wait for the multiplexer to have run once. Requires <code>targetSurfaceId</code>.</li>
+        </ul>
+
+        <h3>These peers are primaryless</h3>
+
+        <p>
+          In the served multiplex one result is returned and the rest observe. In an on-demand run every
+          peer is returned equally and none can substitute for another. The primary and observer privilege
+          does not apply, so no vendor is the authoritative answer by position.
+        </p>
+
+        <h3>Persisting a run</h3>
+
+        <p>
+          <code>persist</code> (default <code>false</code>) turns an ephemeral comparison into a durable
+          collection. Each peer is written as an immutable, provenance-bucketed event outside the
+          production trajectory, idempotent on <code>(groupId, vendorId)</code>. Re-posting the same
+          <code>groupId</code> and vendor list re-runs only the peers not already collected, so a resume
+          never double-charges and never double-records.
+        </p>
+
+        <p>
+          That makes a persisted run usable as a scientific collection. A study controller supplies its own
+          cell identity in <code>groupId</code>, for example a specimen, replicate and wave key, and the
+          collection resumes cleanly across interruptions.
+        </p>
+
+        <h3>A failed peer is an observation</h3>
+
+        <p>
+          A peer that errors is recorded as its own event kind, carrying the vendor reason, its class, and
+          that peer's effective vendor options. It is the channel-availability trail and it is never
+          compacted. Observation and scoring consumers do not read it. An errored peer is never silence.
+        </p>
+
+        <h3>One boundary on scoring</h3>
+
+        <p>
+          Scoring is instrument-identity-bound. The binary does not run the operator's judge. The single
+          exception is a surface's gated dimensions, which the gate executor scores inline to decide flag,
+          block or retry. A leg's <code>dimensions[]</code> therefore carries only the gated-dimension
+          verdicts that fired for that run mode, and not a full grading.
+        </p>
+
+        <h3>Reading a run</h3>
+
+        <p>
+          Each leg carries its vendor, its result, its <code>stopReason</code> and the
+          <code>providerRequestId</code>, and those also reach the light snapshot. Each peer's effective
+          vendor options are persisted on its own <code>light.rawRequest</code>, so a per-peer option
+          difference is visible rather than inferred. The run is cost and approver gated: one whose
+          estimate exceeds the threshold requires <code>acknowledgedEstimateUsd</code>.
+        </p>
+
         <h2>Reference</h2>
+
+        <h3>On-demand run</h3>
+
+        <ul>
+          <li><code>POST /lens/multiplex/run</code></li>
+          <li>Peers share correlation id <code>multiplex:&lt;groupId&gt;</code>.</li>
+          <li>Each peer's event id derives deterministically from <code>(groupId, vendorId)</code>.</li>
+        </ul>
 
         <h3>Routing shape</h3>
 
@@ -3373,97 +3441,8 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         </section>
 
 
-        <section id="multiplex-runs" class="guide-chapter-block" aria-label="Chapter 19">
+        <section id="compaction" class="guide-chapter-block" aria-label="Chapter 19">
 <p class="guide-eyebrow">Chapter 19</p>
-        <h2 class="guide-h1">On-demand multiplex runs</h2>
-        <p class="guide-meta"></p>
-
-        <p class="guide-lede">
-          <code>POST /lens/multiplex/run</code> takes one request and fans it across several vendors now, so a cross-vendor comparison exists on demand rather than only where multiplex routing happened to be on.
-        </p>
-
-        <h2>What it is</h2>
-
-        <p>
-          Three ways to name the request to fan out:
-        </p>
-
-        <ul>
-          <li><code>sourceEventId</code>: replay this exact event's captured request. The event must carry <code>light.rawRequest</code>.</li>
-          <li><code>sourceCorrelationId</code>: resolve the first event under this correlation that carries a request.</li>
-          <li><code>input</code>: a direct canonical request body. The cold-start path, with no captured source event, so a comparison need not wait for the multiplexer to have run once. Requires <code>targetSurfaceId</code>.</li>
-        </ul>
-
-        <h3>The peers are primaryless</h3>
-
-        <p>
-          In the served multiplex one result is returned and the rest are observers. Here every peer is
-          returned equally and none can substitute for another. The primary and observer privilege does not
-          apply, so no vendor is the authoritative answer by position.
-        </p>
-
-        <h2>Why it matters</h2>
-
-        <p>
-          <code>persist</code> (default <code>false</code>) turns an ephemeral comparison into a durable
-          collection. Each peer is written as an immutable, provenance-bucketed event outside the
-          production trajectory, idempotent on <code>(groupId, vendorId)</code>. Re-posting the same
-          <code>groupId</code> and vendor list re-runs only the peers not already collected, so a resume
-          never double-charges and never double-records.
-        </p>
-
-        <p>
-          That makes a persisted run usable as a scientific collection. A study controller supplies its own
-          cell identity in <code>groupId</code>, for example a specimen, replicate and wave key, and the
-          collection resumes cleanly across interruptions.
-        </p>
-
-        <h3>A failed peer is an observation</h3>
-
-        <p>
-          A peer that errors is recorded as its own event kind, carrying the vendor reason, its class, and
-          that peer's effective vendor options. It is the channel-availability trail and it is never
-          compacted. Observation and scoring consumers do not read it. An errored peer is never silence.
-        </p>
-
-        <h2>How to use it</h2>
-
-        <ul>
-          <li>Name the request, name the vendors, name who triggered it.</li>
-          <li>The run is cost and approver gated. A run whose estimate exceeds the threshold requires <code>acknowledgedEstimateUsd</code>.</li>
-          <li>Set <code>persist</code> and a <code>groupId</code> when the comparison is evidence rather than a look.</li>
-        </ul>
-
-        <h2>Reading the output</h2>
-
-        <p>
-          Each leg carries its vendor, its result, its <code>stopReason</code> and the
-          <code>providerRequestId</code>, and those also reach the light snapshot. Each peer's effective
-          vendor options are persisted on its own <code>light.rawRequest</code>, so a per-peer option
-          difference is visible rather than inferred.
-        </p>
-
-        <h3>One boundary on scoring</h3>
-
-        <p>
-          Scoring is instrument-identity-bound. The binary does not run the operator's judge. The single
-          exception is a surface's gated dimensions, which the gate executor scores inline to decide flag,
-          block or retry. A leg's <code>dimensions[]</code> therefore carries only the gated-dimension
-          verdicts that fired for that run mode, and not a full grading.
-        </p>
-
-        <h2>Reference</h2>
-
-        <ul>
-          <li><code>POST /lens/multiplex/run</code></li>
-          <li>Peers share correlation id <code>multiplex:&lt;groupId&gt;</code>.</li>
-          <li>Each peer's event id derives deterministically from <code>(groupId, vendorId)</code>.</li>
-        </ul>
-        </section>
-
-
-        <section id="compaction" class="guide-chapter-block" aria-label="Chapter 20">
-<p class="guide-eyebrow">Chapter 20</p>
         <h2 class="guide-h1">Compaction &amp; husking</h2>
         <p class="guide-meta"></p>
 
