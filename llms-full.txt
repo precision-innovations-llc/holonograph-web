@@ -3013,6 +3013,367 @@ Method & path	Purpose
 
           Honest-null when unwired
           On a pure-collector lens with no subscription store configured, every route above answers `501` rather than pretending. The Defense layer is present only where an operator has wired it.
+
+---
+
+### Chapter 16 — The attention spine
+
+_Permalink: https://holonograph.ai/guide/attention-spine_
+
+Chapter 16
+
+# The attention spine
+
+        Every observe-only surface produces findings. Verdict reliability, judge liveness, trajectory, orthogonality, coverage, quarantine. The spine gives all of them one operator lifecycle instead of one list per surface.
+
+## What it is
+
+        A cross-source triage layer over findings. It declares three objects and nothing else:
+
+Object	What it holds
+
+`FindingRef`	The stable identity of a finding, independent of the scan that produced it.
+
+`TriageRecord`	An append-only annotation about that finding.
+
+`Proposal`	What a confirmed finding mints into Curate.
+
+## Why it matters
+
+        Two invariants hold the spine apart from the measurement it annotates.
+
+### A triage annotation never reaches the substrate
+
+        An annotation is *about* a derived finding. It lives in a separate store, downstream of
+          derivation. It is never an input to the lens hash, and it never mutates the substrate, a prompt,
+          or a threshold. The spine proposes; the existing gated approver path disposes. A triage click
+          changes nothing on the lens.
+
+### Identity survives re-derivation
+
+        Findings are re-derived on every scan. A triage record therefore keys to a content-derived
+          `findingKey` rather than a per-scan row index. Keying to a row index would orphan
+          every annotation on the next deploy. `clusterId` stays an attribute, never the
+          primary grain, because a non-deterministic key has the same effect.
+
+## How to use it
+
+          - Read findings from the spine rather than per-surface. One queue, one lifecycle.
+
+          - Annotate a finding to record what triage concluded. Annotations accumulate; nothing is overwritten.
+
+          - Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.
+
+## Reading the output
+
+        A finding carries its `findingRef`, the surface and dimension it came from, the run
+          mode it was derived under, and its triage state. Where a finding has an exemplar, the exemplar
+          payload travels with it under the same husk projection used elsewhere in the store, so a triaged
+          finding on a compacted span still opens.
+
+## Reference
+
+        The public module declares the wire and store contract only. Which surface maps to which
+          `FindingRef`, and the store implementation, live in the lens package.
+
+---
+
+### Chapter 17 — Model identity
+
+_Permalink: https://holonograph.ai/guide/model-identity_
+
+Chapter 17
+
+# Model identity
+
+        The model you asked for and the model that answered are two different facts. A vendor can re-route behind an unchanged alias. Holonograph records both sides, so that change has a name instead of showing up as unexplained drift.
+
+## What it is
+
+        Two apparatus-owned axes, stamped by the SDK at emit time:
+
+Column	What it records
+
+`light_source_identifier`	The light source that was requested.
+
+`light_source_served_model`	The model the vendor actually served.
+
+        Both sit in a reserved namespace. The apparatus owns them, and a consumer may not declare a
+          substrate column under that prefix. A declaration that collides is rejected at boot rather than
+          silently shadowed.
+
+## Why it matters
+
+        An alias is a promise about identity that the vendor is free to reinterpret. When a provider
+          moves the model behind a name you did not change, every reading on that surface shifts at once.
+          With only the requested axis recorded, the shift has no cause attached to it and reads as a
+          substrate or lens problem.
+
+        Served model is a first-class axis, so the transition is a recorded fact. The served-model ledger
+          reports those transitions over a window. Two properties of that ledger matter when you read it:
+          the changepoint penalty scales with the number of models in the window, and a stray served model
+          raises an explicit excursion rather than widening the band until the stray fits inside it.
+
+## How to use it
+
+          - Nothing to configure on the happy path. The client carries `light.servedModel` to the wire.
+
+          - In HTTP mode the attested `servedModel` and `keyId` ride on the primary `record.light`.
+
+          - If an older client did not send the axis, the server recovers it at ingest, so capture does not depend on client version.
+
+          - For history captured before the axis existed, an operator-run backfill resolver and its CLI fill it in.
+
+## Reading the output
+
+        A surface whose requested identifier held steady while the served model moved is a light-source
+          change, not a substrate change. Drift attribution reads both axes, so that case resolves to the
+          light source instead of competing with your own releases for the explanation.
+
+## Reference
+
+### The judge has the same two sides
+
+        The judge lens carries its own requested provider and credential identity, authored by the
+          apparatus and treated as a judge drift source. A single `lensVersion` under-specifies a
+          judge: two judges scoring the same response under the same software but a different rubric, a
+          different served model, or a different input-context scope are different lenses. The judge-lens
+          facets are stamped on every scored event under the reserved `judge.` namespace.
+
+---
+
+### Chapter 18 — Judge modes
+
+_Permalink: https://holonograph.ai/guide/judge-modes_
+
+Chapter 18
+
+# Judge modes
+
+        Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
+
+## What it is
+
+        Two axes. **Timing** is `async` (the judge runs off the producer's hot
+          path) or `inline` (the producer waits for the verdict before finishing).
+          **Authority over delivery** runs `open` (observe only) to
+          `reflection` (the judge may send the producer back to retry) to `gate`
+          (delivery is blocked).
+
+	open	reflection	gate
+
+**async**	Open, asynchronous	impossible	impossible
+
+**inline**	Open, inline	Reflection granted	Actually gated
+
+        The two empty cells are impossible rather than unspecified. Reflection and gating both need the
+          verdict before the producer finishes, and an asynchronous verdict is not back yet. The
+          consequence is worth stating plainly: **async is available only to a judge that observes
+          and nothing more.**
+
+## Why it matters
+
+### The judge never disposes
+
+        Across all four modes the judge's authority stops at reflection. It can observe, and at most it
+          can send the producer back to try again. It cannot block delivery. Disposal belongs to
+          deterministic code in the gate, which is producer-owned, or to operator policy. Propose-only
+          holds in every mode.
+
+### Inline and observing is the expensive cell
+
+        A judge that runs in-request while its verdict touches nothing pays full latency for no in-band
+          effect. A fleet of observe-only judges parked there is where large latency overheads come from.
+          The cell is justified as a step toward reflection or a gate, not as a destination. Move the judge
+          to async, or give it authority.
+
+## How to use it
+
+          - Pick the mode per surface. A judge that only records belongs in async.
+
+          - Reflection is a capped retry, not a block. Budget the retries.
+
+          - A gate is deterministic code reading a verdict. Write the gate; do not ask the model to be one.
+
+## Reading the output
+
+        An asynchronous verdict lands after the producer has answered, as a linked judge event. A reader
+          resolves it link-first and falls back to the embedded verdict, fail-open, so a consumer never
+          blocks on a verdict that has not arrived. Per-judgment verdict provenance distinguishes the raw
+          judge result from the producer-filtered one.
+
+## Reference
+
+        The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
+          the implementation. The reflection path and the judge-gate enforcement cluster each have their
+          own specification; this chapter is the frame that places them.
+
+---
+
+### Chapter 19 — On-demand multiplex runs
+
+_Permalink: https://holonograph.ai/guide/multiplex-runs_
+
+Chapter 19
+
+# On-demand multiplex runs
+
+        `POST /lens/multiplex/run` takes one request and fans it across several vendors now, so a cross-vendor comparison exists on demand rather than only where multiplex routing happened to be on.
+
+## What it is
+
+        Three ways to name the request to fan out:
+
+          - `sourceEventId`: replay this exact event's captured request. The event must carry `light.rawRequest`.
+
+          - `sourceCorrelationId`: resolve the first event under this correlation that carries a request.
+
+          - `input`: a direct canonical request body. The cold-start path, with no captured source event, so a comparison need not wait for the multiplexer to have run once. Requires `targetSurfaceId`.
+
+### The peers are primaryless
+
+        In the served multiplex one result is returned and the rest are observers. Here every peer is
+          returned equally and none can substitute for another. The primary and observer privilege does not
+          apply, so no vendor is the authoritative answer by position.
+
+## Why it matters
+
+        `persist` (default `false`) turns an ephemeral comparison into a durable
+          collection. Each peer is written as an immutable, provenance-bucketed event outside the
+          production trajectory, idempotent on `(groupId, vendorId)`. Re-posting the same
+          `groupId` and vendor list re-runs only the peers not already collected, so a resume
+          never double-charges and never double-records.
+
+        That makes a persisted run usable as a scientific collection. A study controller supplies its own
+          cell identity in `groupId`, for example a specimen, replicate and wave key, and the
+          collection resumes cleanly across interruptions.
+
+### A failed peer is an observation
+
+        A peer that errors is recorded as its own event kind, carrying the vendor reason, its class, and
+          that peer's effective vendor options. It is the channel-availability trail and it is never
+          compacted. Observation and scoring consumers do not read it. An errored peer is never silence.
+
+## How to use it
+
+          - Name the request, name the vendors, name who triggered it.
+
+          - The run is cost and approver gated. A run whose estimate exceeds the threshold requires `acknowledgedEstimateUsd`.
+
+          - Set `persist` and a `groupId` when the comparison is evidence rather than a look.
+
+## Reading the output
+
+        Each leg carries its vendor, its result, its `stopReason` and the
+          `providerRequestId`, and those also reach the light snapshot. Each peer's effective
+          vendor options are persisted on its own `light.rawRequest`, so a per-peer option
+          difference is visible rather than inferred.
+
+### One boundary on scoring
+
+        Scoring is instrument-identity-bound. The binary does not run the operator's judge. The single
+          exception is a surface's gated dimensions, which the gate executor scores inline to decide flag,
+          block or retry. A leg's `dimensions[]` therefore carries only the gated-dimension
+          verdicts that fired for that run mode, and not a full grading.
+
+## Reference
+
+          - `POST /lens/multiplex/run`
+
+          - Peers share correlation id `multiplex:`.
+
+          - Each peer's event id derives deterministically from `(groupId, vendorId)`.
+
+---
+
+### Chapter 20 — Compaction & husking
+
+_Permalink: https://holonograph.ai/guide/compaction_
+
+Chapter 20
+
+# Compaction & husking
+
+        Compaction removes the bulky payload from an aging event and keeps every structured field any estimator reads. The lens never compacts on its own.
+
+## What it is
+
+        An operator-invoked pipeline: plan, verify, seal, move. Three endpoints, and the first of them
+          writes nothing.
+
+Endpoint	Behavior
+
+`POST /lens/retention/plan`	Always a dry run. Reports what would be compacted and writes nothing.
+
+`POST /lens/retention/compact`	Executes an approved plan. Approver-gated.
+
+`POST /lens/retention/unseal`	Undoes an archive-mode seal.
+
+### Retention classes
+
+        Every event kind declares one. The enumeration is exhaustive, so a new event kind fails the type
+          check until it has been classified.
+
+Class	Meaning
+
+`never`	Never compacted. Evidence, markers and seals.
+
+`husk`	Payload may be archived or deleted; structured fields are kept.
+
+`summarise`	Compactable only into lossless summaries.
+
+## Why it matters
+
+### A husk is a projection, not a new fact
+
+        Husking keeps every structured field an estimator reads: ids, `occurredAt`, the whole
+          substrate, the surface grading including dimension scores, judge identity and structured claims,
+          gate outcomes, cohort tags, light identity and accounting. What leaves is bulk:
+          `light.rawRequest`, `rawResponse`, `reasoning`,
+          `toolCalls`, `vendorMetadata`, `error.message`, each dimension's
+          `rationale`, `sideEffects[].details`, and oversized unknown keys.
+
+        Where the payload went is recorded on the husk. `archived` means a sealed,
+          hash-chained archive segment holds the full event and the operator can unseal it.
+          `deleted` means it is gone and only the digest remains. `erased` means a
+          right-to-delete request removed it.
+
+### The stamp cannot be forged
+
+        A husk stamp is server-projected. It exists only on husks the compactor wrote into a sealed husk
+          segment, it is never written onto a stored raw event, and every producer ingest path rejects an
+          event that arrives carrying one. A forged stamp would claim facts the lens never extracted.
+
+### Payload-reading consumers keep working
+
+        Some consumers read the payload: verdict reliability, co-groundedness, trajectory, exemplars. The
+          husk carries a `facts` block holding those extractors' outputs, computed over the raw
+          event at seal time and stamped with each extractor's version. A consumer whose extractor version
+          or configuration no longer matches reports a method boundary rather than a clean result.
+
+## How to use it
+
+          - Plan first and read the plan. It is a dry run by construction, not by flag.
+
+          - Compact against an approved plan. The approval is the gate.
+
+          - Prefer archive mode where the payload may be wanted again; an archive seal can be unsealed, a delete cannot.
+
+          - Every consumer of event history declares its post-compaction fidelity, so check that declaration before compacting a span an analysis still depends on.
+
+## Reading the output
+
+        A compacted span reads the same as an uncompacted one for every structured consumer. Scores,
+          grading, gate outcomes and identity are unchanged, because none of them lived in the payload. A
+          reading that cannot be reproduced on a husk says so as a method boundary.
+
+## Reference
+
+          - On Firestore, compaction is opt-in and never edits a record in order to build its index.
+
+          - The judge-verdict linking model is husk-invariant: a husked event resolves the same verdict a whole one does.
+
+          - Retention policy and schedule are stored durably and are operator-owned.
 <!-- END-GENERATED-GUIDE-COMPLETE -->
 
 ## Links

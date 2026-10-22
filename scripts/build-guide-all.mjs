@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // build-guide-all.mjs
 //
-// Generates /guide/all.html — a single-URL consolidation of all 15 chapters —
+// Generates /guide/all.html — a single-URL consolidation of all 20 chapters —
 // and updates the "## The Guide — Complete text" section of /llms-full.txt with
 // full chapter prose. Run before wrangler deploy whenever chapter content changes.
 //
@@ -34,6 +34,11 @@ const CHAPTERS = [
   ["13", "drift-attribution", "Drift attribution"],
   ["14", "variance-isolation", "Variance isolation"],
   ["15", "subscriptions", "Route a verdict to a human"],
+  ["16", "attention-spine", "The attention spine"],
+  ["17", "model-identity", "Model identity"],
+  ["18", "judge-modes", "Judge modes"],
+  ["19", "multiplex-runs", "On-demand multiplex runs"],
+  ["20", "compaction", "Compaction & husking"],
 ];
 
 // ------- extract <article> body from a chapter file, strip prev/next nav -------

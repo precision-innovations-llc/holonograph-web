@@ -7,8 +7,8 @@
 <title>The Guide Mark II · Holonograph</title>
 <meta name="description" content="The complete Holonograph guide, all fifteen chapters in a single scrolling page. One URL for offline reading, LLM ingestion, and full-text search across the whole methodology." />
 <meta name="discloses" content="capability-only" />
-<meta name="reflects-version" content="v0.41.9" />
-<meta name="reflects-client-version" content="0.12.0" />
+<meta name="reflects-version" content="v0.42.3" />
+<meta name="reflects-client-version" content="0.15.1" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
 <meta name="generator" content="build-guide-all.mjs" />
@@ -33,7 +33,7 @@
     <span class="guide-topbar-sep">/</span>
     <span class="guide-crumb"><a href="./">The Guide</a> · Mark II</span>
     <span class="guide-topbar-right">
-      <span class="guide-version">v0.41.9 · client 0.12.0</span>
+      <span class="guide-version">v0.42.3 · client 0.15.1</span>
       <a href="./" class="guide-back-link">chapter view</a>
     </span>
   </header>
@@ -58,6 +58,11 @@
         <li><span class="s-num">13</span><a href="#drift-attribution" class="s-ttl">Drift attribution</a></li>
         <li><span class="s-num">14</span><a href="#variance-isolation" class="s-ttl">Variance isolation</a></li>
         <li><span class="s-num">15</span><a href="#subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">16</span><a href="#attention-spine" class="s-ttl">The attention spine</a></li>
+        <li><span class="s-num">17</span><a href="#model-identity" class="s-ttl">Model identity</a></li>
+        <li><span class="s-num">18</span><a href="#judge-modes" class="s-ttl">Judge modes</a></li>
+        <li><span class="s-num">19</span><a href="#multiplex-runs" class="s-ttl">On-demand multiplex runs</a></li>
+        <li><span class="s-num">20</span><a href="#compaction" class="s-ttl">Compaction & husking</a></li>
       </ol>
     </aside>
 
@@ -66,7 +71,7 @@
 
         <p class="guide-eyebrow">The Guide · one-page view</p>
         <h1 class="guide-h1">The Guide Mark II</h1>
-        <p class="guide-meta">Reflects Holonograph v0.41.9 <span class="dot">·</span> <code>@holonograph/client</code> 0.12.0 <span class="dot">·</span> all 15 chapters, one URL</p>
+        <p class="guide-meta">Reflects Holonograph v0.42.3 <span class="dot">·</span> <code>@holonograph/client</code> 0.15.1 <span class="dot">·</span> all 15 chapters, one URL</p>
 
         <p class="guide-lede">
           This page is the entire Holonograph guide in a single scrolling document. Every chapter that lives at its own permalink is included here in full, in reading order, without the per-page prev/next chrome. Use the sidebar to jump to a chapter, or read straight through.
@@ -3100,6 +3105,441 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         </section>
 
 
+        <section id="attention-spine" class="guide-chapter-block" aria-label="Chapter 16">
+<p class="guide-eyebrow">Chapter 16</p>
+        <h2 class="guide-h1">The attention spine</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          Every observe-only surface produces findings. Verdict reliability, judge liveness, trajectory, orthogonality, coverage, quarantine. The spine gives all of them one operator lifecycle instead of one list per surface.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          A cross-source triage layer over findings. It declares three objects and nothing else:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Object</th><th>What it holds</th></tr></thead>
+            <tbody>
+              <tr><td><code>FindingRef</code></td><td>The stable identity of a finding, independent of the scan that produced it.</td></tr>
+              <tr><td><code>TriageRecord</code></td><td>An append-only annotation about that finding.</td></tr>
+              <tr><td><code>Proposal</code></td><td>What a confirmed finding mints into Curate.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          Two invariants hold the spine apart from the measurement it annotates.
+        </p>
+
+        <h3>A triage annotation never reaches the substrate</h3>
+
+        <p>
+          An annotation is <em>about</em> a derived finding. It lives in a separate store, downstream of
+          derivation. It is never an input to the lens hash, and it never mutates the substrate, a prompt,
+          or a threshold. The spine proposes; the existing gated approver path disposes. A triage click
+          changes nothing on the lens.
+        </p>
+
+        <h3>Identity survives re-derivation</h3>
+
+        <p>
+          Findings are re-derived on every scan. A triage record therefore keys to a content-derived
+          <code>findingKey</code> rather than a per-scan row index. Keying to a row index would orphan
+          every annotation on the next deploy. <code>clusterId</code> stays an attribute, never the
+          primary grain, because a non-deterministic key has the same effect.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Read findings from the spine rather than per-surface. One queue, one lifecycle.</li>
+          <li>Annotate a finding to record what triage concluded. Annotations accumulate; nothing is overwritten.</li>
+          <li>Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.</li>
+        </ul>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          A finding carries its <code>findingRef</code>, the surface and dimension it came from, the run
+          mode it was derived under, and its triage state. Where a finding has an exemplar, the exemplar
+          payload travels with it under the same husk projection used elsewhere in the store, so a triaged
+          finding on a compacted span still opens.
+        </p>
+
+        <h2>Reference</h2>
+
+        <p>
+          The public module declares the wire and store contract only. Which surface maps to which
+          <code>FindingRef</code>, and the store implementation, live in the lens package.
+        </p>
+        </section>
+
+
+        <section id="model-identity" class="guide-chapter-block" aria-label="Chapter 17">
+<p class="guide-eyebrow">Chapter 17</p>
+        <h2 class="guide-h1">Model identity</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          The model you asked for and the model that answered are two different facts. A vendor can re-route behind an unchanged alias. Holonograph records both sides, so that change has a name instead of showing up as unexplained drift.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          Two apparatus-owned axes, stamped by the SDK at emit time:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Column</th><th>What it records</th></tr></thead>
+            <tbody>
+              <tr><td><code>light_source_identifier</code></td><td>The light source that was requested.</td></tr>
+              <tr><td><code>light_source_served_model</code></td><td>The model the vendor actually served.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Both sit in a reserved namespace. The apparatus owns them, and a consumer may not declare a
+          substrate column under that prefix. A declaration that collides is rejected at boot rather than
+          silently shadowed.
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          An alias is a promise about identity that the vendor is free to reinterpret. When a provider
+          moves the model behind a name you did not change, every reading on that surface shifts at once.
+          With only the requested axis recorded, the shift has no cause attached to it and reads as a
+          substrate or lens problem.
+        </p>
+
+        <p>
+          Served model is a first-class axis, so the transition is a recorded fact. The served-model ledger
+          reports those transitions over a window. Two properties of that ledger matter when you read it:
+          the changepoint penalty scales with the number of models in the window, and a stray served model
+          raises an explicit excursion rather than widening the band until the stray fits inside it.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Nothing to configure on the happy path. The client carries <code>light.servedModel</code> to the wire.</li>
+          <li>In HTTP mode the attested <code>servedModel</code> and <code>keyId</code> ride on the primary <code>record.light</code>.</li>
+          <li>If an older client did not send the axis, the server recovers it at ingest, so capture does not depend on client version.</li>
+          <li>For history captured before the axis existed, an operator-run backfill resolver and its CLI fill it in.</li>
+        </ul>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          A surface whose requested identifier held steady while the served model moved is a light-source
+          change, not a substrate change. Drift attribution reads both axes, so that case resolves to the
+          light source instead of competing with your own releases for the explanation.
+        </p>
+
+        <h2>Reference</h2>
+
+        <h3>The judge has the same two sides</h3>
+
+        <p>
+          The judge lens carries its own requested provider and credential identity, authored by the
+          apparatus and treated as a judge drift source. A single <code>lensVersion</code> under-specifies a
+          judge: two judges scoring the same response under the same software but a different rubric, a
+          different served model, or a different input-context scope are different lenses. The judge-lens
+          facets are stamped on every scored event under the reserved <code>judge.</code> namespace.
+        </p>
+        </section>
+
+
+        <section id="judge-modes" class="guide-chapter-block" aria-label="Chapter 18">
+<p class="guide-eyebrow">Chapter 18</p>
+        <h2 class="guide-h1">Judge modes</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          Two axes. <strong>Timing</strong> is <code>async</code> (the judge runs off the producer's hot
+          path) or <code>inline</code> (the producer waits for the verdict before finishing).
+          <strong>Authority over delivery</strong> runs <code>open</code> (observe only) to
+          <code>reflection</code> (the judge may send the producer back to retry) to <code>gate</code>
+          (delivery is blocked).
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th></th><th>open</th><th>reflection</th><th>gate</th></tr></thead>
+            <tbody>
+              <tr><td><strong>async</strong></td><td>Open, asynchronous</td><td>impossible</td><td>impossible</td></tr>
+              <tr><td><strong>inline</strong></td><td>Open, inline</td><td>Reflection granted</td><td>Actually gated</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The two empty cells are impossible rather than unspecified. Reflection and gating both need the
+          verdict before the producer finishes, and an asynchronous verdict is not back yet. The
+          consequence is worth stating plainly: <strong>async is available only to a judge that observes
+          and nothing more.</strong>
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <h3>The judge never disposes</h3>
+
+        <p>
+          Across all four modes the judge's authority stops at reflection. It can observe, and at most it
+          can send the producer back to try again. It cannot block delivery. Disposal belongs to
+          deterministic code in the gate, which is producer-owned, or to operator policy. Propose-only
+          holds in every mode.
+        </p>
+
+        <h3>Inline and observing is the expensive cell</h3>
+
+        <p>
+          A judge that runs in-request while its verdict touches nothing pays full latency for no in-band
+          effect. A fleet of observe-only judges parked there is where large latency overheads come from.
+          The cell is justified as a step toward reflection or a gate, not as a destination. Move the judge
+          to async, or give it authority.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Pick the mode per surface. A judge that only records belongs in async.</li>
+          <li>Reflection is a capped retry, not a block. Budget the retries.</li>
+          <li>A gate is deterministic code reading a verdict. Write the gate; do not ask the model to be one.</li>
+        </ul>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          An asynchronous verdict lands after the producer has answered, as a linked judge event. A reader
+          resolves it link-first and falls back to the embedded verdict, fail-open, so a consumer never
+          blocks on a verdict that has not arrived. Per-judgment verdict provenance distinguishes the raw
+          judge result from the producer-filtered one.
+        </p>
+
+        <h2>Reference</h2>
+
+        <p>
+          The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
+          the implementation. The reflection path and the judge-gate enforcement cluster each have their
+          own specification; this chapter is the frame that places them.
+        </p>
+        </section>
+
+
+        <section id="multiplex-runs" class="guide-chapter-block" aria-label="Chapter 19">
+<p class="guide-eyebrow">Chapter 19</p>
+        <h2 class="guide-h1">On-demand multiplex runs</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          <code>POST /lens/multiplex/run</code> takes one request and fans it across several vendors now, so a cross-vendor comparison exists on demand rather than only where multiplex routing happened to be on.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          Three ways to name the request to fan out:
+        </p>
+
+        <ul>
+          <li><code>sourceEventId</code>: replay this exact event's captured request. The event must carry <code>light.rawRequest</code>.</li>
+          <li><code>sourceCorrelationId</code>: resolve the first event under this correlation that carries a request.</li>
+          <li><code>input</code>: a direct canonical request body. The cold-start path, with no captured source event, so a comparison need not wait for the multiplexer to have run once. Requires <code>targetSurfaceId</code>.</li>
+        </ul>
+
+        <h3>The peers are primaryless</h3>
+
+        <p>
+          In the served multiplex one result is returned and the rest are observers. Here every peer is
+          returned equally and none can substitute for another. The primary and observer privilege does not
+          apply, so no vendor is the authoritative answer by position.
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          <code>persist</code> (default <code>false</code>) turns an ephemeral comparison into a durable
+          collection. Each peer is written as an immutable, provenance-bucketed event outside the
+          production trajectory, idempotent on <code>(groupId, vendorId)</code>. Re-posting the same
+          <code>groupId</code> and vendor list re-runs only the peers not already collected, so a resume
+          never double-charges and never double-records.
+        </p>
+
+        <p>
+          That makes a persisted run usable as a scientific collection. A study controller supplies its own
+          cell identity in <code>groupId</code>, for example a specimen, replicate and wave key, and the
+          collection resumes cleanly across interruptions.
+        </p>
+
+        <h3>A failed peer is an observation</h3>
+
+        <p>
+          A peer that errors is recorded as its own event kind, carrying the vendor reason, its class, and
+          that peer's effective vendor options. It is the channel-availability trail and it is never
+          compacted. Observation and scoring consumers do not read it. An errored peer is never silence.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Name the request, name the vendors, name who triggered it.</li>
+          <li>The run is cost and approver gated. A run whose estimate exceeds the threshold requires <code>acknowledgedEstimateUsd</code>.</li>
+          <li>Set <code>persist</code> and a <code>groupId</code> when the comparison is evidence rather than a look.</li>
+        </ul>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          Each leg carries its vendor, its result, its <code>stopReason</code> and the
+          <code>providerRequestId</code>, and those also reach the light snapshot. Each peer's effective
+          vendor options are persisted on its own <code>light.rawRequest</code>, so a per-peer option
+          difference is visible rather than inferred.
+        </p>
+
+        <h3>One boundary on scoring</h3>
+
+        <p>
+          Scoring is instrument-identity-bound. The binary does not run the operator's judge. The single
+          exception is a surface's gated dimensions, which the gate executor scores inline to decide flag,
+          block or retry. A leg's <code>dimensions[]</code> therefore carries only the gated-dimension
+          verdicts that fired for that run mode, and not a full grading.
+        </p>
+
+        <h2>Reference</h2>
+
+        <ul>
+          <li><code>POST /lens/multiplex/run</code></li>
+          <li>Peers share correlation id <code>multiplex:&lt;groupId&gt;</code>.</li>
+          <li>Each peer's event id derives deterministically from <code>(groupId, vendorId)</code>.</li>
+        </ul>
+        </section>
+
+
+        <section id="compaction" class="guide-chapter-block" aria-label="Chapter 20">
+<p class="guide-eyebrow">Chapter 20</p>
+        <h2 class="guide-h1">Compaction &amp; husking</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          Compaction removes the bulky payload from an aging event and keeps every structured field any estimator reads. The lens never compacts on its own.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          An operator-invoked pipeline: plan, verify, seal, move. Three endpoints, and the first of them
+          writes nothing.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Endpoint</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/retention/plan</code></td><td>Always a dry run. Reports what would be compacted and writes nothing.</td></tr>
+              <tr><td><code>POST /lens/retention/compact</code></td><td>Executes an approved plan. Approver-gated.</td></tr>
+              <tr><td><code>POST /lens/retention/unseal</code></td><td>Undoes an archive-mode seal.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Retention classes</h3>
+
+        <p>
+          Every event kind declares one. The enumeration is exhaustive, so a new event kind fails the type
+          check until it has been classified.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Class</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>never</code></td><td>Never compacted. Evidence, markers and seals.</td></tr>
+              <tr><td><code>husk</code></td><td>Payload may be archived or deleted; structured fields are kept.</td></tr>
+              <tr><td><code>summarise</code></td><td>Compactable only into lossless summaries.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Why it matters</h2>
+
+        <h3>A husk is a projection, not a new fact</h3>
+
+        <p>
+          Husking keeps every structured field an estimator reads: ids, <code>occurredAt</code>, the whole
+          substrate, the surface grading including dimension scores, judge identity and structured claims,
+          gate outcomes, cohort tags, light identity and accounting. What leaves is bulk:
+          <code>light.rawRequest</code>, <code>rawResponse</code>, <code>reasoning</code>,
+          <code>toolCalls</code>, <code>vendorMetadata</code>, <code>error.message</code>, each dimension's
+          <code>rationale</code>, <code>sideEffects[].details</code>, and oversized unknown keys.
+        </p>
+
+        <p>
+          Where the payload went is recorded on the husk. <code>archived</code> means a sealed,
+          hash-chained archive segment holds the full event and the operator can unseal it.
+          <code>deleted</code> means it is gone and only the digest remains. <code>erased</code> means a
+          right-to-delete request removed it.
+        </p>
+
+        <h3>The stamp cannot be forged</h3>
+
+        <p>
+          A husk stamp is server-projected. It exists only on husks the compactor wrote into a sealed husk
+          segment, it is never written onto a stored raw event, and every producer ingest path rejects an
+          event that arrives carrying one. A forged stamp would claim facts the lens never extracted.
+        </p>
+
+        <h3>Payload-reading consumers keep working</h3>
+
+        <p>
+          Some consumers read the payload: verdict reliability, co-groundedness, trajectory, exemplars. The
+          husk carries a <code>facts</code> block holding those extractors' outputs, computed over the raw
+          event at seal time and stamped with each extractor's version. A consumer whose extractor version
+          or configuration no longer matches reports a method boundary rather than a clean result.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Plan first and read the plan. It is a dry run by construction, not by flag.</li>
+          <li>Compact against an approved plan. The approval is the gate.</li>
+          <li>Prefer archive mode where the payload may be wanted again; an archive seal can be unsealed, a delete cannot.</li>
+          <li>Every consumer of event history declares its post-compaction fidelity, so check that declaration before compacting a span an analysis still depends on.</li>
+        </ul>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          A compacted span reads the same as an uncompacted one for every structured consumer. Scores,
+          grading, gate outcomes and identity are unchanged, because none of them lived in the payload. A
+          reading that cannot be reproduced on a husk says so as a method boundary.
+        </p>
+
+        <h2>Reference</h2>
+
+        <ul>
+          <li>On Firestore, compaction is opt-in and never edits a record in order to build its index.</li>
+          <li>The judge-verdict linking model is husk-invariant: a husked event resolves the same verdict a whole one does.</li>
+          <li>Retention policy and schedule are stored durably and are operator-owned.</li>
+        </ul>
+        </section>
+
+
       </article>
     </main>
 
@@ -3108,7 +3548,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
     <span>The Guide · Mark II</span>
-    <span>Patent pending · v0.41.9 · client 0.12.0</span>
+    <span>Patent pending · v0.42.3 · client 0.15.1</span>
   </footer>
 </body>
 </html>
