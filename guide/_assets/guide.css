@@ -206,6 +206,7 @@ html, body {
   max-height: calc(100vh - 88px);
   overflow-y: auto;
   padding-right: 8px;
+  padding-bottom: 56px;
   font-size: 13.5px;
 }
 .guide-sidebar-title {
