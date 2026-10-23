@@ -250,9 +250,9 @@ html, body {
 .guide-sidebar li.s-part {
   display: block;
   font-family: var(--font-mono);
-  font-size: 8.5px;
-  letter-spacing: 0.06em;
-  line-height: 1.5;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  line-height: 1.45;
   text-transform: uppercase;
   color: var(--muted, #6c6a78);
   opacity: 0.8;
@@ -789,7 +789,7 @@ html, body {
 .guide-part-divider:first-of-type { margin-top: 48px; }
 .guide-part-k {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
