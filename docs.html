@@ -41,7 +41,8 @@
   .start-card .go{margin-top:14px;font-size:13.5px;color:var(--iris);font-weight:500}
 
   .doc-group{padding:clamp(30px,5vh,52px) 0 0}
-  .doc-group > h2{font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:18px}
+  .doc-group > h2{font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:6px}
+  .doc-group-sub{font-size:14.5px;color:var(--ink-2);line-height:1.5;margin:0 0 18px;max-width:70ch}
   .doc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .doc-item{border:1px solid var(--line);border-radius:12px;background:#fff;padding:18px 18px 16px;text-decoration:none;display:block;transition:border-color .18s ease}
   .doc-item:hover{border-color:var(--iris)}
@@ -84,51 +85,49 @@
   </section>
 
   <section class="doc-group" data-reveal>
-    <h2>Concepts</h2>
+    <h2>Operating the lens</h2>
+    <p class="doc-group-sub">The mechanics: where the lens sits, what it records, and how you call it.</p>
     <div class="doc-grid">
-      <a class="doc-item" href="guide/mediating-lens.html"><h3>The mediating lens</h3><p>Where the lens sits, and why it captures every model call in both directions.</p></a>
-      <a class="doc-item" href="guide/substrate-columns.html"><h3>Substrate columns</h3><p>The structured record every reading is computed from.</p></a>
-      <a class="doc-item" href="guide/snapshot.html"><h3>Snapshots</h3><p>How a moment of the system is frozen for comparison over time.</p></a>
       <a class="doc-item" href="guide/surface-contracts.html"><h3>Surface contracts</h3><p>What a surface declares it will do, checked against what it did.</p></a>
-    </div>
-  </section>
-
-  <section class="doc-group" data-reveal>
-    <h2>Method</h2>
-    <div class="doc-grid">
-      <a class="doc-item" href="guide/drift-attribution.html"><h3>Drift attribution</h3><p>Splitting a shifted score into agent, model, eval, and noise.</p></a>
-      <a class="doc-item" href="guide/variance-isolation.html"><h3>Variance isolation</h3><p>Telling real change apart from sampling and chance.</p></a>
-      <a class="doc-item" href="guide/topology-scanner.html"><h3>Surface topology</h3><p>Declared surfaces, observed coverage, and the size of the blind spot.</p></a>
-      <a class="doc-item" href="guide/conformance.html"><h3>Conformance &amp; fixtures</h3><p>Whether a judge actually ran, or silently defaulted.</p></a>
-      <a class="doc-item" href="guide/lessons-pipeline.html"><h3>Lessons pipeline</h3><p>How findings turn into tightened checks over releases.</p></a>
-    </div>
-  </section>
-
-  <section class="doc-group" data-reveal>
-    <h2>Run modes &amp; vendors</h2>
-    <div class="doc-grid">
+      <a class="doc-item" href="guide/snapshot.html"><h3>The four-layer snapshot</h3><p>The record that binds four layers of one call into a queryable row.</p></a>
+      <a class="doc-item" href="guide/substrate-columns.html"><h3>Substrate columns</h3><p>The structured record every reading is computed from.</p></a>
+      <a class="doc-item" href="guide/sdk-reference.html"><h3>SDK reference</h3><p>The client contract, and the reliability loop over your own judge.</p></a>
+      <a class="doc-item" href="guide/mediating-lens.html"><h3>The mediating lens</h3><p>Where the lens sits, and why it captures every call in both directions.</p></a>
       <a class="doc-item" href="guide/run-modes.html"><h3>Run modes</h3><p>Production, evaluation, and the provenance every call is tagged with.</p></a>
-      <a class="doc-item" href="guide/multiplexer.html"><h3>The multiplexer</h3><p>Comparing vendors on identical terms, one lens across all.</p></a>
-    </div>
-  </section>
-
-  <section class="doc-group" data-reveal>
-    <h2>SDK &amp; operations</h2>
-    <div class="doc-grid">
-      <a class="doc-item" href="guide/sdk-reference.html"><h3>SDK reference</h3><p>The client contract, and the reliability loop: attach a claim, and the lens checks your judge.</p></a>
       <a class="doc-item" href="guide/sidecar.html"><h3>OTel sidecar</h3><p>Emitting to the lens without changing your request path.</p></a>
-      <a class="doc-item" href="guide/subscriptions.html"><h3>Route a verdict to a human</h3><p>Fire a signed webhook when a predicate over the lens's own verdicts crosses a line.</p></a>
+      <a class="doc-item" href="guide/topology-scanner.html"><h3>Surface topology scanner</h3><p>Declared surfaces, observed coverage, and the size of the blind spot.</p></a>
+      <a class="doc-item" href="guide/multiplexer.html"><h3>The multiplexer</h3><p>Comparing vendors on identical terms, routed or run on demand.</p></a>
+      <a class="doc-item" href="guide/drift-attribution.html"><h3>Drift attribution</h3><p>Assigning a change to one source, and recording both model identities.</p></a>
+      <a class="doc-item" href="guide/variance-isolation.html"><h3>Variance isolation</h3><p>Telling real change apart from sampling and chance.</p></a>
+      <a class="doc-item" href="guide/lessons-pipeline.html"><h3>The lessons pipeline</h3><p>Captured overrides and approvals becoming human-gated artifacts.</p></a>
     </div>
   </section>
-
-  <p class="doc-quip">&ldquo;The Guide is definitive. Reality is frequently inaccurate.&rdquo;</p>
-
-  <section class="doc-tail" data-reveal>
-    <div class="t">
-      <h3>New to Holonograph?</h3>
-      <p>The overview walks the whole instrument in a single read, from substrate to reading.</p>
+  <section class="doc-group" data-reveal>
+    <h2>Variance controls for model seams</h2>
+    <p class="doc-group-sub">A model call is a seam whose interpreter is not stationary, so it carries more machinery.</p>
+    <div class="doc-grid">
+      <a class="doc-item" href="guide/conformance.html"><h3>Conformance &amp; fixtures</h3><p>Whether a judge actually ran against its fixtures, or silently defaulted.</p></a>
+      <a class="doc-item" href="guide/judge-modes.html"><h3>Judge modes</h3><p>Does the producer wait, and may the verdict touch delivery.</p></a>
     </div>
-    <a class="btn" href="guide/overview.html">Start with the overview &rarr;</a>
+  </section>
+  <section class="doc-group" data-reveal>
+    <h2>Seams, soak, and authority</h2>
+    <p class="doc-group-sub">One arc: find the decision, measure it on live inputs, and qualify it over time.</p>
+    <div class="doc-grid">
+      <a class="doc-item" href="guide/seams.html"><h3>Seams</h3><p>An interpreted value driving a decision. Permanent, closeable, not removable.</p></a>
+      <a class="doc-item" href="guide/seam-monitor.html"><h3>The seam monitor</h3><p>Finding seams in source, adjudicating, registering, and soaking them.</p></a>
+      <a class="doc-item" href="guide/attention-spine.html"><h3>The attention spine</h3><p>One operator lifecycle over twenty-five sources of findings.</p></a>
+      <a class="doc-item" href="guide/authority.html"><h3>Authority</h3><p>The per-surface state that the declared prerequisites are satisfied.</p></a>
+      <a class="doc-item" href="guide/reflection.html"><h3>Reflection</h3><p>A capped retry against a certified judge, granted per cell.</p></a>
+    </div>
+  </section>
+  <section class="doc-group" data-reveal>
+    <h2>Operational utilities</h2>
+    <p class="doc-group-sub">Routing a verdict outward, and keeping the record affordable.</p>
+    <div class="doc-grid">
+      <a class="doc-item" href="guide/subscriptions.html"><h3>Route a verdict to a human</h3><p>Fire a signed webhook when a predicate over the verdicts crosses a line.</p></a>
+      <a class="doc-item" href="guide/compaction.html"><h3>Compaction &amp; husking</h3><p>Removing bulky payload while every structured field stays.</p></a>
+    </div>
   </section>
 </main>
 

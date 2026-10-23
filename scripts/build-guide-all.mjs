@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // build-guide-all.mjs
 //
-// Generates /guide/all.html — a single-URL consolidation of all 15 chapters —
+// Generates /guide/all.html — a single-URL consolidation of all 22 chapters —
 // and updates the "## The Guide — Complete text" section of /llms-full.txt with
 // full chapter prose. Run before wrangler deploy whenever chapter content changes.
 //
@@ -28,13 +28,30 @@ const CHAPTERS = [
   ["07", "run-modes", "Run modes"],
   ["08", "sidecar", "Sidecar / OTel integration"],
   ["09", "topology-scanner", "Surface topology scanner"],
-  ["10", "conformance", "Conformance & fixtures"],
-  ["11", "multiplexer", "The multiplexer"],
-  ["12", "lessons-pipeline", "The lessons pipeline"],
-  ["13", "drift-attribution", "Drift attribution"],
-  ["14", "variance-isolation", "Variance isolation"],
-  ["15", "subscriptions", "Route a verdict to a human"],
+  ["10", "multiplexer", "The multiplexer"],
+  ["11", "drift-attribution", "Drift attribution"],
+  ["12", "variance-isolation", "Variance isolation"],
+  ["13", "lessons-pipeline", "The lessons pipeline"],
+  ["14", "conformance", "Conformance & fixtures"],
+  ["15", "judge-modes", "Judge modes"],
+  ["16", "seams", "Seams"],
+  ["17", "seam-monitor", "The seam monitor"],
+  ["18", "attention-spine", "The attention spine"],
+  ["19", "authority", "Authority"],
+  ["20", "reflection", "Reflection"],
+  ["21", "subscriptions", "Route a verdict to a human"],
+  ["22", "compaction", "Compaction & husking"],
 ];
+
+// Parts, mirroring the per-chapter sidebar. Each entry is [part title, first chapter slug].
+const PARTS = [
+  ["Overview", "overview"],
+  ["Operating the lens", "surface-contracts"],
+  ["Variance controls for model seams", "conformance"],
+  ["Seams, soak, and authority", "seams"],
+  ["Operational utilities", "subscriptions"],
+];
+const PART_BY_FIRST_SLUG = new Map(PARTS.map(([t, slug], i) => [slug, { title: t, roman: ["I","II","III","IV","V"][i] }]));
 
 // ------- extract <article> body from a chapter file, strip prev/next nav -------
 function extractChapterBody(slug) {
@@ -119,22 +136,46 @@ const chapterBodies = CHAPTERS.map(([num, slug, title]) => {
   return { num, slug, title, body };
 });
 
-const sidebarItems = CHAPTERS.map(
-  ([num, slug, title]) =>
+const sidebarItems = CHAPTERS.flatMap(([num, slug, title]) => {
+  const part = PART_BY_FIRST_SLUG.get(slug);
+  const rows = [];
+  if (part) rows.push(`        <li class="s-part">${part.title}</li>`);
+  rows.push(
     `        <li><span class="s-num">${num}</span><a href="#${slug}" class="s-ttl">${title}</a></li>`
-).join("\n");
+  );
+  return rows;
+}).join("\n");
 
 // Note: all URL references in the generated page use the clean form (no .html)
 // to match sitemap.xml and per-chapter canonical tags.
 
+function shiftHeadings(body) {
+  // h4 -> h6, h3 -> h5, h2 -> h4 (descending so each shift sees the original level),
+  // then the chapter's own h1 -> h3, under the part's h2.
+  return body
+    .replace(/<(\/?)h4(\s|>)/g, "<$1h6$2")
+    .replace(/<(\/?)h3(\s|>)/g, "<$1h5$2")
+    .replace(/<(\/?)h2(\s|>)/g, "<$1h4$2")
+    .replace(/<h1([^>]*)>([\s\S]*?)<\/h1>/, "<h3$1>$2</h3>");
+}
+
 const chapterSections = chapterBodies
-  .map(
-    ({ num, slug, title, body }) => `
-        <section id="${slug}" class="guide-chapter-block" aria-label="Chapter ${num}">
-${body.replace(/<h1([^>]*)>([\s\S]*?)<\/h1>/, "<h2$1>$2</h2>")}
-        </section>
+  .map(({ num, slug, title, body }) => {
+    const part = PART_BY_FIRST_SLUG.get(slug);
+    const divider = part
+      ? `
+        <div class="guide-part-divider" id="part-${part.roman.toLowerCase()}">
+          <p class="guide-part-k">Part ${part.roman}</p>
+          <h2 class="guide-part-t">${part.title}</h2>
+        </div>
 `
-  )
+      : "";
+    return `${divider}
+        <section id="${slug}" class="guide-chapter-block" aria-label="Chapter ${num}">
+${shiftHeadings(body)}
+        </section>
+`;
+  })
   .join("\n");
 
 const allHtml = `<!DOCTYPE html>
@@ -142,9 +183,9 @@ const allHtml = `<!DOCTYPE html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="theme-color" content="#ffffff" />
+<meta name="theme-color" content="#f6f5f9" />
 <title>The Guide Mark II · Holonograph</title>
-<meta name="description" content="The complete Holonograph guide, all fifteen chapters in a single scrolling page. One URL for offline reading, LLM ingestion, and full-text search across the whole methodology." />
+<meta name="description" content="The complete Holonograph guide, every chapter in a single scrolling page, in five parts. One URL for offline reading, LLM ingestion, and full-text search across the whole methodology." />
 <meta name="discloses" content="capability-only" />
 <meta name="reflects-version" content="v${BIN}" />
 <meta name="reflects-client-version" content="${CLI}" />
@@ -156,7 +197,7 @@ const allHtml = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./_assets/guide.css" />
+<link rel="stylesheet" href="./_assets/guide.css?v=5" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -191,7 +232,7 @@ ${sidebarItems}
 
         <p class="guide-eyebrow">The Guide · one-page view</p>
         <h1 class="guide-h1">The Guide Mark II</h1>
-        <p class="guide-meta">Reflects Holonograph v${BIN} <span class="dot">·</span> <code>@holonograph/client</code> ${CLI} <span class="dot">·</span> all 15 chapters, one URL</p>
+        <p class="guide-meta">Reflects Holonograph v${BIN} <span class="dot">·</span> <code>@holonograph/client</code> ${CLI} <span class="dot">·</span> all ${CHAPTERS.length} chapters in ${PARTS.length} parts, one URL</p>
 
         <p class="guide-lede">
           This page is the entire Holonograph guide in a single scrolling document. Every chapter that lives at its own permalink is included here in full, in reading order, without the per-page prev/next chrome. Use the sidebar to jump to a chapter, or read straight through.

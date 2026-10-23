@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="theme-color" content="#f7f5f0" />
+<meta name="theme-color" content="#f6f5f9" />
 <title>The multiplexer — The Guide — Holonograph</title>
 <meta name="description" content="Fan one surface's calls across multiple vendors for head-to-head comparison, with zero awareness at the calling agent." />
 <meta name="discloses" content="capability-only" />
@@ -31,7 +31,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -55,7 +55,9 @@
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
       <ol>
+        <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li class="s-part">Operating the lens</li>
         <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
         <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
         <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
@@ -64,19 +66,29 @@
         <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
         <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
         <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li class="current"><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">12</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li><span class="s-num">13</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">14</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
-        <li><span class="s-num">15</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li class="current"><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Variance controls for model seams</li>
+        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
+        <li class="s-part">Seams, soak, and authority</li>
+        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li class="s-part">Operational utilities</li>
+        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
       </ol>
     </aside>
 
     <main class="guide-main">
       <article>
 
-        <p class="guide-eyebrow">Chapter 11</p>
+        <p class="guide-eyebrow">Chapter 10</p>
         <h1 class="guide-h1">The multiplexer</h1>
         <p class="guide-meta"></p>
 
@@ -208,7 +220,83 @@ await handle.reportOutcome({
           Per-vendor cost and latency are captured on each event without any operator work. When you multiplex three vendors, you get three vendors' cost and latency for the same input. That's the piece of the head-to-head that's normally hardest to compare fairly.
         </p>
 
+        <h2>Running one on demand</h2>
+
+        <p>
+          Everything above is the <em>served</em> multiplex: routing that was already on when the call
+          happened, with one primary the agent used and the rest observing.
+          <code>POST /lens/multiplex/run</code> is the same fan-out triggered after the fact, so a
+          comparison exists on demand rather than only where routing happened to be on.
+        </p>
+
+        <p>Three ways to name the request to fan out:</p>
+
+        <ul>
+          <li><code>sourceEventId</code>: replay this exact event's captured request. The event must carry <code>light.rawRequest</code>.</li>
+          <li><code>sourceCorrelationId</code>: resolve the first event under this correlation that carries a request.</li>
+          <li><code>input</code>: a direct canonical request body. The cold-start path, with no captured source event, so a comparison need not wait for the multiplexer to have run once. Requires <code>targetSurfaceId</code>.</li>
+        </ul>
+
+        <h3>These peers are primaryless</h3>
+
+        <p>
+          In the served multiplex one result is returned and the rest observe. In an on-demand run every
+          peer is returned equally and none can substitute for another. The primary and observer privilege
+          does not apply, so no vendor is the authoritative answer by position.
+        </p>
+
+        <h3>Persisting a run</h3>
+
+        <p>
+          <code>persist</code> (default <code>false</code>) turns an ephemeral comparison into a durable
+          collection. Each peer is written as an immutable, provenance-bucketed event outside the
+          production trajectory, idempotent on <code>(groupId, vendorId)</code>. Re-posting the same
+          <code>groupId</code> and vendor list re-runs only the peers not already collected, so a resume
+          never double-charges and never double-records.
+        </p>
+
+        <p>
+          That makes a persisted run usable as a scientific collection. A study controller supplies its own
+          cell identity in <code>groupId</code>, for example a specimen, replicate and wave key, and the
+          collection resumes cleanly across interruptions.
+        </p>
+
+        <h3>A failed peer is an observation</h3>
+
+        <p>
+          A peer that errors is recorded as its own event kind, carrying the vendor reason, its class, and
+          that peer's effective vendor options. It is the channel-availability trail and it is never
+          compacted. Observation and scoring consumers do not read it. An errored peer is never silence.
+        </p>
+
+        <h3>One boundary on scoring</h3>
+
+        <p>
+          Scoring is instrument-identity-bound. The binary does not run the operator's judge. The single
+          exception is a surface's gated dimensions, which the gate executor scores inline to decide flag,
+          block or retry. A leg's <code>dimensions[]</code> therefore carries only the gated-dimension
+          verdicts that fired for that run mode, and not a full grading.
+        </p>
+
+        <h3>Reading a run</h3>
+
+        <p>
+          Each leg carries its vendor, its result, its <code>stopReason</code> and the
+          <code>providerRequestId</code>, and those also reach the light snapshot. Each peer's effective
+          vendor options are persisted on its own <code>light.rawRequest</code>, so a per-peer option
+          difference is visible rather than inferred. The run is cost and approver gated: one whose
+          estimate exceeds the threshold requires <code>acknowledgedEstimateUsd</code>.
+        </p>
+
         <h2>Reference</h2>
+
+        <h3>On-demand run</h3>
+
+        <ul>
+          <li><code>POST /lens/multiplex/run</code></li>
+          <li>Peers share correlation id <code>multiplex:&lt;groupId&gt;</code>.</li>
+          <li>Each peer's event id derives deterministically from <code>(groupId, vendorId)</code>.</li>
+        </ul>
 
         <h3>Routing shape</h3>
 
@@ -239,13 +327,13 @@ await handle.reportOutcome({
         </ul>
 
         <nav class="guide-nav" aria-label="Chapter navigation">
-          <a href="./conformance" class="nav-prev">
+          <a href="./topology-scanner" class="nav-prev">
             <span class="nav-label">Previous</span>
-            <span class="nav-title">Conformance &amp; fixtures</span>
+            <span class="nav-title">Surface topology scanner</span>
           </a>
-          <a href="./lessons-pipeline" class="nav-next">
+          <a href="./drift-attribution" class="nav-next">
             <span class="nav-label">Next</span>
-            <span class="nav-title">The lessons pipeline</span>
+            <span class="nav-title">Drift attribution</span>
           </a>
         </nav>
 
@@ -255,7 +343,7 @@ await handle.reportOutcome({
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>Chapter 11 · The multiplexer</span>
+    <span>Chapter 10 · The multiplexer</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
 <script src="../guidenav.js"></script>

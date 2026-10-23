@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holonograph | Authority Governance &amp; Agentic Attribution</title>
+<meta name="description" content="Holonograph is a self-hosted authority-governance and agentic attribution platform. Discover consequential decisions, attribute behavioral changes, and monitor evidence-backed authority over time.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f6f5f9">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/build/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/"
+  }
+}
+</script>
+<style>
+  :root{
+    --paper:#f6f5f9; --ink:#17161d; --ink-2:#4b4a57; --ink-3:#6c6a78;
+    --iris:#5f3ddc; --iris-soft:#ece8fb; --line:#e4e1ee;
+    --sun:#e9552b; --sun-ink:#b23a16; --good:#1f7d59; --catch:#e0964a; --catch-ink:#8a5a12;
+    --sans:"Helvetica Neue",-apple-system,system-ui,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
+    --anim-dur:.62s; --anim-ease:cubic-bezier(.2,.8,.2,1); --anim-stagger:.15s; --anim-draw:.7s;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,44px);position:relative;z-index:2}
+  .skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--iris);color:#fff;padding:10px 16px;border-radius:0 0 8px 0;text-decoration:none;font-size:14px}
+  .skip:focus{left:0}
+
+  .stage{position:absolute;top:0;left:0;width:100%;height:100vh;z-index:0;overflow:visible;pointer-events:none}
+  #holon-lite{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:auto;touch-action:none}
+  .wash{position:absolute;top:0;left:0;width:100%;height:100vh;pointer-events:none;
+    background:
+      linear-gradient(90deg, var(--paper) 0%, var(--paper) 50%, rgba(246,245,249,.88) 62%, rgba(246,245,249,0) 76%),
+      linear-gradient(180deg, rgba(246,245,249,0) 84%, var(--paper) 100%);}
+
+  .site-header{position:sticky;top:0;z-index:50;border-bottom:1px solid transparent;
+    transition:background var(--anim-dur) var(--anim-ease), border-color var(--anim-dur) var(--anim-ease), box-shadow var(--anim-dur) var(--anim-ease)}
+  .site-header.scrolled{background:rgba(246,245,249,.82);border-bottom-color:var(--line);
+    box-shadow:0 6px 24px -18px rgba(23,22,29,.5);backdrop-filter:saturate(1.1) blur(10px);-webkit-backdrop-filter:saturate(1.1) blur(10px)}
+  .nav-wrap{position:relative;z-index:2}
+  nav{display:flex;align-items:center;gap:28px;height:78px}
+  .brand{display:flex;align-items:baseline;gap:12px}
+  .mark{font-family:var(--mono);font-size:15px;letter-spacing:.34em;font-weight:500;text-decoration:none;color:inherit}
+  .mark b{color:var(--sun);font-weight:500}
+  .mark .tm{font-size:.52em;letter-spacing:0;vertical-align:super;margin-left:-.24em;font-weight:500;color:var(--ink-3)}
+  .pp{font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+  .nav-links{display:flex;gap:22px;margin-left:auto;font-size:14px;color:var(--ink-2)}
+  .nav-links a{color:inherit;text-decoration:none}
+  .nav-links a:hover{color:var(--iris)}
+  .pill{font-size:14px;padding:9px 16px;border-radius:8px;background:var(--iris);color:#fff;text-decoration:none;font-weight:500;white-space:nowrap}
+
+  [data-reveal]{opacity:0;transform:translateY(18px);
+    transition:opacity var(--anim-dur) var(--anim-ease), transform var(--anim-dur) var(--anim-ease)}
+  [data-reveal].is-in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){ [data-reveal]{transition:none;opacity:1;transform:none} }
+
+  /* ── hero ── */
+  .hero{min-height:calc(100vh - 78px);display:flex;align-items:center;padding:clamp(24px,5vh,48px) 0}
+  .hero > .wrap{width:100%}
+  .col-text{max-width:660px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--iris);display:flex;align-items:center;gap:10px;margin-bottom:22px}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--sun)}
+  h1{font-size:clamp(32px,4.3vw,52px);line-height:1.08;letter-spacing:-.02em;font-weight:500;
+    text-wrap:balance;max-width:19ch;text-shadow:0 1px 8px var(--paper),0 0 2px var(--paper)}
+  .sub{margin-top:22px;font-size:clamp(16px,1.65vw,19px);color:var(--ink-2);max-width:52ch;line-height:1.5}
+  .audience-line{margin-top:18px;font-size:clamp(15px,1.5vw,17px);color:var(--ink);font-weight:500;max-width:50ch;line-height:1.45}
+  .pills{list-style:none;margin:24px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+  .pills li{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--ink-2);
+    border:1px solid var(--line);background:rgba(255,255,255,.72);border-radius:999px;padding:7px 14px}
+  .cta{display:flex;gap:12px;margin-top:34px;flex-wrap:wrap}
+  .btn{font-size:15px;font-weight:500;padding:12px 20px;border-radius:9px;text-decoration:none;
+    display:inline-flex;align-items:center;gap:8px}
+  .btn.solid{background:var(--iris);color:#fff}
+  .btn.ghost{color:var(--ink);border:1px solid var(--line);background:rgba(251,250,253,.7)}
+
+  /* ── shared section furniture ── */
+  .sec-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--iris);display:flex;align-items:center;gap:9px;margin-bottom:18px}
+  .sec-eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--sun)}
+  section{position:relative;z-index:2}
+  .sec-pad{padding:clamp(60px,11vh,130px) 0}
+  h2{font-size:clamp(28px,3.8vw,46px);line-height:1.06;letter-spacing:-.02em;font-weight:500}
+  h3{font-size:clamp(19px,2vw,23px);line-height:1.2;letter-spacing:-.01em;font-weight:600}
+  .lead{margin-top:20px;font-size:clamp(16px,1.5vw,19px);color:var(--ink-2);line-height:1.52}
+  .body-p{margin-top:16px;font-size:clamp(15px,1.4vw,17px);color:var(--ink-2);line-height:1.6}
+  .emph{color:var(--ink);font-weight:500}
+  .arrow-link{display:inline-flex;align-items:center;gap:8px;margin-top:26px;font-size:15px;
+    font-weight:500;color:var(--iris);text-decoration:none}
+  .arrow-link:hover{text-decoration:underline}
+  .link-row{display:flex;gap:28px;flex-wrap:wrap}
+
+  /* ── problem ── */
+  .problem{border-top:1px solid var(--line)}
+  .chain{list-style:none;margin:30px 0 0;padding:0;display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+  .chain li{flex:1 1 180px;min-width:0;position:relative;padding:0 26px 0 0}
+  .chain li + li{padding-left:26px}
+  .chain li + li::before{content:"";position:absolute;left:0;top:11px;width:11px;height:11px;
+    border-top:1.4px solid var(--sun);border-right:1.4px solid var(--sun);transform:translateX(-5px) rotate(45deg)}
+  .chain b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--sun-ink);font-weight:600;margin-bottom:7px}
+  .chain span{display:block;font-size:15.5px;color:var(--ink-2);line-height:1.4}
+  .chain-note{margin-top:28px;font-size:clamp(15px,1.45vw,17.5px);color:var(--ink-2);line-height:1.6}
+  .chain-note b{color:var(--ink);font-weight:600}
+  .callout{margin-top:clamp(34px,5vh,54px);padding:clamp(24px,3.6vw,34px);border:1px solid var(--line);
+    border-radius:16px;background:linear-gradient(180deg, var(--iris-soft), rgba(236,232,251,.3))}
+  .callout h3{font-size:clamp(18px,1.9vw,22px);font-weight:600}
+  .callout p{margin-top:12px;font-size:clamp(15px,1.4vw,16.5px);color:var(--ink-2);line-height:1.58}
+  .statement{margin-top:clamp(34px,5vh,52px);font-size:clamp(21px,2.7vw,33px);line-height:1.22;
+    font-weight:500;letter-spacing:-.018em;color:var(--ink);text-wrap:balance}
+  .note-block{margin-top:clamp(30px,4.5vh,48px);border-left:2px solid var(--sun);padding:4px 0 4px 20px}
+  .note-block p{font-size:15.5px;color:var(--ink-2);line-height:1.55}
+  .note-block p + p{margin-top:10px}
+
+  /* ── instrument ── */
+  .instrument{border-top:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--paper) 70%)}
+  .src-table{width:100%;border-collapse:collapse;margin-top:clamp(28px,4vh,42px);font-size:15px;max-width:980px}
+  .src-table th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-3);font-weight:600;padding:0 0 12px;border-bottom:1px solid var(--line)}
+  .src-table td{padding:17px 0;border-bottom:1px solid var(--line);color:var(--ink-2);line-height:1.5;vertical-align:top}
+  .src-table td:first-child{width:200px;padding-right:28px;font-family:var(--mono);font-size:13.5px;
+    font-weight:600;color:var(--sun-ink)}
+  .src-table tr:last-child td:first-child{color:var(--ink-3)}
+  .sub-block{margin-top:clamp(40px,6vh,68px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4.5vw,56px)}
+  .sub-block h3{margin-bottom:14px}
+
+  /* ── lifecycle ── */
+  .lifecycle{border-top:1px solid var(--line)}
+  .stage-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+  .stage-head h2{font-size:clamp(25px,3.2vw,38px)}
+  .stage-sub{margin-top:10px;font-size:clamp(16px,1.6vw,20px);color:var(--iris);font-weight:500}
+  .steps{margin-top:clamp(30px,4.5vh,46px);display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,34px)}
+  .step{border-top:2px solid var(--iris);padding-top:18px}
+  .step h4{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--iris);font-weight:600;margin-bottom:12px}
+  .step p{font-size:14.5px;color:var(--ink-2);line-height:1.55}
+  .step p + p{margin-top:10px}
+  .outcome{margin-top:clamp(26px,4vh,40px);display:flex;gap:12px;align-items:flex-start;
+    background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;max-width:760px}
+  .outcome .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:600;flex:none;padding-top:3px}
+  .outcome p{font-size:15px;color:var(--ink);line-height:1.5}
+  .outcome p span{display:block;margin-top:8px;color:var(--ink-2);font-size:14px}
+  .diagram{margin-top:clamp(36px,5.5vh,60px)}
+  .diagram svg{width:100%;height:auto;display:block;overflow:visible}
+  .dg-cap{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--ink-3);
+    margin-top:16px;display:flex;align-items:flex-start;gap:9px;max-width:70ch;line-height:1.5}
+  .dg-cap .dot{width:5px;height:5px;border-radius:50%;background:var(--sun);display:inline-block;flex:none;margin-top:7px}
+  .lc-divider{margin:clamp(56px,9vh,104px) 0;border:0;border-top:1px solid var(--line)}
+
+  /* diagram internals */
+  .dg-label{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;fill:var(--ink-3)}
+  .dg-stage{font-family:var(--mono);font-size:13px;letter-spacing:.15em;text-transform:uppercase;fill:var(--iris);font-weight:600}
+  .dg-state{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;font-weight:600}
+  .dg-note{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;fill:var(--ink-3)}
+  .dg-box{fill:#fff;stroke:var(--line);stroke-width:1}
+  .dg-box-iris{fill:var(--iris-soft);stroke:var(--iris);stroke-width:1.2}
+  .dg-line{stroke:var(--iris);stroke-width:1.4;fill:none}
+  .dg-line-soft{stroke:#b5b1c4;stroke-width:1.2;fill:none}
+  .dg-line-sun{stroke:var(--sun);stroke-width:1.4;fill:none}
+  .dg-dash{stroke-dasharray:4 4}
+
+  /* ── principle ── */
+  .principle{border-top:1px solid var(--line);background:linear-gradient(180deg,var(--paper),#efedf6)}
+  .principle-inner{max-width:780px;margin:0 auto;text-align:center}
+  .principle h2{font-size:clamp(28px,4vw,50px)}
+  .principle .body-p{margin-left:auto;margin-right:auto;max-width:62ch}
+  .principle .pin{margin-top:clamp(28px,4vh,40px);font-size:clamp(17px,1.9vw,21px);
+    color:var(--ink);font-weight:500;line-height:1.45}
+
+  /* ── evidence ── */
+  .evidence-sec{border-top:1px solid var(--line)}
+  .ev-grid{margin-top:clamp(34px,5vh,52px);display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(32px,5vw,64px)}
+  .ev-card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:clamp(24px,3.4vw,32px)}
+  .ev-card h3{margin-bottom:16px}
+  .ev-card p{font-size:15px;color:var(--ink-2);line-height:1.58}
+  .ev-card p + p{margin-top:12px}
+  .ev-tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--catch-ink);border:1px solid rgba(224,150,74,.4);background:rgba(224,150,74,.1);
+    padding:4px 9px;border-radius:6px;display:inline-block;margin-bottom:16px}
+  .ev-tag.study{color:var(--iris);border-color:rgba(95,61,220,.35);background:var(--iris-soft)}
+  .boundary{margin-top:clamp(34px,5vh,52px);border:1px solid var(--line);border-radius:16px;
+    padding:clamp(24px,3.4vw,32px);background:var(--paper)}
+  .boundary h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:600;margin-bottom:14px}
+  .boundary p{font-size:14.5px;color:var(--ink-2);line-height:1.58}
+  .boundary p + p{margin-top:10px}
+
+  /* ── audience ── */
+  .audience{border-top:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--paper) 60%)}
+  .aud-grid{margin-top:clamp(34px,5vh,52px);display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,32px)}
+  .aud{border-top:2px solid var(--sun);padding-top:18px}
+  .aud h3{font-size:17px;font-weight:600;margin-bottom:10px}
+  .aud p{font-size:14.5px;color:var(--ink-2);line-height:1.52}
+
+  /* ── demo ── */
+  .demo{border-top:1px solid var(--line);padding:clamp(56px,10vh,120px) 0}
+  .demo-intro{max-width:720px;margin:0 auto clamp(34px,5vh,52px);text-align:center}
+  .demo-intro .sec-eyebrow{justify-content:center}
+  .demo-mobile{display:none;max-width:520px;margin:0 auto;text-align:center;border:1px solid var(--line);
+    border-radius:16px;background:#fff;padding:clamp(28px,6vw,40px)}
+  .dw-frame{max-width:1100px;margin:0 auto;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    background:#0c0c12;box-shadow:0 50px 120px -50px rgba(23,22,29,.55),0 8px 30px -18px rgba(23,22,29,.32)}
+  .dw-chrome{display:flex;align-items:center;gap:10px;padding:11px 15px;background:#0e0e15;border-bottom:1px solid #201f2b}
+  .dw-chrome .dots{display:flex;gap:7px}
+  .dw-chrome .dots i{width:11px;height:11px;border-radius:50%;background:#34333f;display:block}
+  .dw-chrome .live{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#46c08a}
+  .dw-chrome .live .pulse{width:7px;height:7px;border-radius:50%;background:#46c08a;animation:livePulse 1.8s infinite}
+  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(70,192,138,.5)}70%{box-shadow:0 0 0 7px rgba(70,192,138,0)}100%{box-shadow:0 0 0 0 rgba(70,192,138,0)}}
+  @media (prefers-reduced-motion:reduce){ .dw-chrome .live .pulse{animation:none} }
+  .dw-iframe{display:block;width:100%;height:760px;border:0;background:#0c0c12}
+
+  /* ── footer ── */
+  .site-footer{border-top:1px solid var(--line);background:linear-gradient(180deg, var(--paper), #f0eef6);position:relative;z-index:2}
+  .footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:clamp(28px,4vw,60px);padding:clamp(48px,7vh,80px) 0 clamp(30px,4vh,42px)}
+  .f-brand .mark{font-family:var(--mono);font-size:15px;letter-spacing:.34em;font-weight:500;color:var(--ink)}
+  .f-tag{margin-top:14px;font-size:14px;color:var(--ink-2);line-height:1.5;max-width:32ch}
+  .f-pp{margin-top:14px;font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
+  .f-col h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px;font-weight:600}
+  .f-col a{display:block;font-size:14px;color:var(--ink-2);text-decoration:none;margin-bottom:10px}
+  .f-col a:hover{color:var(--iris)}
+  .footer-bar{border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;
+    padding:20px 0;font-size:12.5px;color:var(--ink-3)}
+  .footer-bar .sep{color:var(--line)}
+  .footer-bar .right{margin-left:auto;display:flex;gap:18px}
+  .footer-bar a{color:var(--ink-3);text-decoration:none}
+
+  @media (max-width:980px){
+    .seam-list{grid-template-columns:repeat(2,1fr)}
+    .steps{grid-template-columns:1fr;gap:26px}
+    .aud-grid{grid-template-columns:repeat(2,1fr)}
+    .ev-grid{grid-template-columns:1fr}
+    .sub-block{grid-template-columns:1fr;gap:32px}
+  }
+  @media (max-width:860px){
+    .stage{opacity:.12}
+    .nav-links{display:none}
+    .hero{min-height:auto;padding:26px 0 8px}
+    .col-text{max-width:100%}
+    .sec-pad{padding:52px 0}
+    .dw-frame{display:none}
+    .demo-mobile{display:block}
+    .footer-grid{grid-template-columns:1fr 1fr;gap:32px 24px}
+    .f-brand{grid-column:1 / -1}
+    .footer-bar{flex-direction:column;align-items:flex-start}
+    .footer-bar .right{margin-left:0}
+    .src-table td:first-child{width:130px;padding-right:16px;font-size:12.5px}
+    .wash{background:linear-gradient(180deg, rgba(246,245,249,.35) 0%, rgba(246,245,249,0) 46%, var(--paper) 100%);}
+  }
+  @media (max-width:620px){
+    .seam-list{grid-template-columns:1fr}
+    .aud-grid{grid-template-columns:1fr}
+  }
+</style>
+<link rel="stylesheet" href="mobilenav.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="stage" aria-hidden="true">
+  <canvas id="holon-lite"></canvas>
+  <div class="wash"></div>
+</div>
+
+<header class="site-header" id="siteHeader">
+  <div class="wrap nav-wrap">
+    <nav aria-label="Primary">
+      <span class="brand">
+        <a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>
+        <span class="pp">patent&nbsp;pending</span>
+      </span>
+      <span class="nav-links"><a href="/">Platform</a><a href="/authority-governance/">Authority</a><a href="/attribution">Attribution</a><a href="/builders">Builders</a><a href="/papers">Research</a><a href="docs.html">Docs</a></span>
+      <a class="pill" href="contact.html">Request a demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ══ 1 · HERO ══ -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="col-text">
+        <p class="eyebrow"><span class="dot"></span>Authority Governance</p>
+        <h1>Measure the Authority of Your AI Systems.</h1>
+        <p class="sub">Holonograph is a self-hosted authority-governance and agentic attribution platform. It identifies consequential decisions in AI-powered systems, attributes behavioral changes to their sources, and continuously evaluates whether declared operating conditions remain established.</p>
+        <p class="audience-line">Built for teams developing and operating agentic AI, including autonomous software development systems.</p>
+        <ul class="pills"><li>Research-grade attribution</li><li>Enterprise-grade deployment</li><li>Longitudinal authority governance</li></ul>
+        <div class="cta">
+          <a class="btn solid" href="/attribution">Explore the Instrument <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn ghost" href="docs.html">Start Building</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 2 · THE PROBLEM ══ -->
+  <section class="problem sec-pad" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>The problem</p>
+      <h2>Software can be correct about the wrong thing.</h2>
+
+      <ol class="chain">
+        <li><b>Parser</b><span>extracts a value</span></li>
+        <li><b>Matcher</b><span>resolves an identity</span></li>
+        <li><b>Classifier</b><span>selects a rule</span></li>
+        <li><b>Agent</b><span>interprets an instruction</span></li>
+      </ol>
+      <p class="chain-note">Every handoff carries an interpretation into the next decision. That handoff is a <b>seam</b>: a location where an interpretation becomes consequential.</p>
+
+      <p class="body-p">Software may behave exactly as implemented while acting on an interpretation that was incomplete, incorrect, or never qualified for the decision it influenced.</p>
+      <p class="body-p"><span class="emph">Tests can confirm the implementation without establishing the authority of its interpretive inputs.</span></p>
+      <p class="body-p">No decision surface starts with authority. Every one of them establishes it through observation, and evidence that held yesterday can stop holding after a relevant change. A regex-derived candidate set may be treated as the complete set of applicable rules without evidence that the selection was complete.</p>
+      <p class="body-p">Agentic systems compound this problem, at machine speed. These incomplete or inaccurate parses exist as ground truths to model interpretation. Models introduce their own stochastic behavior, external dependencies, and changing evaluation behavior. Coding agents accelerate the creation and modification of the software surrounding those models.</p>
+
+      <p class="statement">Consequential decisions need an observable basis for authority.</p>
+      <p class="body-p">Holonograph identifies where interpretation influences those decisions and provides the measurement infrastructure to determine what the available evidence supports.</p>
+
+      <div class="callout">
+        <h3>AI-driven decisions depend on more than LLM outputs.</h3>
+        <p>Application logic, data transformations, heuristics, tools, and LLM interpretations can all influence consequential outcomes. Holonograph identifies those dependencies and observes their behavior as the surrounding system evolves.</p>
+      </div>
+
+      <div class="note-block">
+        <p><span class="emph">A seam is not necessarily a defect.</span></p>
+        <p>It is a location where an interpretation becomes consequential.</p>
+        <p>The purpose of discovering it is not automatically to remove it. It is to make its provenance, permitted influence, and subsequent behavior observable.</p>
+      </div>
+
+      <a class="arrow-link" href="/seams">Explore Authority Seams <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </section>
+
+  <!-- ══ 3 · THE INSTRUMENT ══ -->
+  <section class="instrument sec-pad" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>The instrument</p>
+      <h2>Attribution at the source of change.</h2>
+      <p class="lead">Observability alone does not establish attribution. Holonograph separates four sources of variance within an immutable event.</p>
+
+      <table class="src-table">
+        <thead><tr><th scope="col">Source</th><th scope="col">What it represents</th></tr></thead>
+        <tbody>
+          <tr><td>Substrate</td><td>The evaluated system, its inputs, tools, code, and declared operating context</td></tr>
+          <tr><td>Light source</td><td>The model and provider-controlled behavior</td></tr>
+          <tr><td>Lens</td><td>The evaluation apparatus, including judges, criteria, and configurations</td></tr>
+          <tr><td>Stochastic floor</td><td>Residual variation characterized by the measurement procedure</td></tr>
+        </tbody>
+      </table>
+
+      <p class="body-p">A change in the measurement apparatus can resemble a change in the system being measured. Holonograph preserves the identities and relationships needed to investigate that difference.</p>
+
+      <div class="sub-block">
+        <div>
+          <h3>Research-grade measurement</h3>
+          <p class="body-p">The Lens supports versioned evaluation surfaces, structured facets and subfacets, judge-model attribution, rubric management, saturation diagnostics, orthogonality analysis, dark-surface discovery, non-primary model multiplexing, and longitudinal cohort monitoring.</p>
+          <p class="body-p">Judge behavior is itself observable. Evaluation criteria can change, discrimination can weaken, and apparent stability can conceal a saturated measurement channel.</p>
+          <p class="body-p">The instrument records those conditions rather than treating a judge's score as self-validating evidence.</p>
+        </div>
+        <div>
+          <h3>Deployment</h3>
+          <p class="body-p">A signed, self-hosted binary runs inside the customer's infrastructure under a cryptographically sealed license term.</p>
+          <p class="body-p">Native model-boundary mediation and OTLP-compatible instrumentation connect observed behavior to declared surfaces and their provenance.</p>
+          <p class="body-p">The public SDK and schema provide integration contracts without requiring access to Holonograph's implementation.</p>
+        </div>
+      </div>
+
+      <div class="link-row">
+        <a class="arrow-link" href="/attribution">Explore Four-Source Attribution <span aria-hidden="true">&rarr;</span></a>
+        <a class="arrow-link" href="lens-facets.html">Explore Lens Facets <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 4 · THE LIFECYCLE ══ -->
+  <section class="lifecycle sec-pad" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>The lifecycle</p>
+
+      <!-- 4a — establishing the surface -->
+      <div class="stage-head"><h2>Establish the observation surface.</h2></div>
+      <p class="stage-sub">Define the observational environment, immutable evidence, and facet architecture.</p>
+      <p class="body-p">These operations establish what the instrument is observing and what evidence the surface is expected to provide.</p>
+      <p class="body-p">They are not hand-run. Dark-surface analysis reports traffic arriving with no declared surface, so the map extends from observed behavior rather than from a human inventory. The SDK lets a coding agent read and revise surface contracts directly in the repository, against the operator's stated preferences. Attributional schemas are declared as versioned code and applied, the way infrastructure is.</p>
+
+      <div class="steps">
+        <div class="step">
+          <h4>Discover</h4>
+          <p>Identify consequential interpretation boundaries in code, agent workflows, model interactions, and runtime behavior.</p>
+          <p>Source analysis locates candidate decision points. Runtime observation identifies activity associated with declared and undeclared surfaces.</p>
+        </div>
+        <div class="step">
+          <h4>Declare</h4>
+          <p>Define the surface's identity, expected behavior, relevant dimensions, and authority requirements.</p>
+          <p>A declaration describes what must be measured. It does not establish that the requirements have been satisfied.</p>
+        </div>
+        <div class="step">
+          <h4>Measure</h4>
+          <p>Collect attributable observations against the declared contract.</p>
+          <p>Use deterministic checks, structured evaluation, LLM judges, or appropriate combinations. Qualify the measurement channel before relying on its results.</p>
+        </div>
+      </div>
+
+      <div class="outcome">
+        <span class="k">Outcome</span>
+        <p>An identifiable, instrumented surface with explicit measurement requirements.
+          <span>This stage can often be completed during initial integration; for a bounded surface, setup may fit into an afternoon. It does not automatically confer operational authority.</span>
+        </p>
+      </div>
+
+      <!-- Diagram 1 -->
+      <figure class="diagram">
+        <svg viewBox="0 0 980 360" role="img" aria-labelledby="dg1t dg1d">
+          <title id="dg1t">From consequential decision to measurable surface</title>
+          <desc id="dg1d">Source analysis, model interactions, and runtime instrumentation converge on the Discover, Declare and Measure stages, producing a versioned surface contract whose authority state is Not earned.</desc>
+
+          <text class="dg-label" x="0" y="16">Inputs</text>
+          <rect class="dg-box" x="0" y="34" width="176" height="46" rx="9"/>
+          <text class="dg-note" x="16" y="62">Source analysis</text>
+          <rect class="dg-box" x="0" y="96" width="176" height="46" rx="9"/>
+          <text class="dg-note" x="16" y="124">Model interactions</text>
+          <rect class="dg-box" x="0" y="158" width="176" height="46" rx="9"/>
+          <text class="dg-note" x="16" y="186">Runtime instrumentation</text>
+
+          <path class="dg-line-soft" d="M176 57 C 214 57, 214 119, 252 119"/>
+          <path class="dg-line-soft" d="M176 119 L 252 119"/>
+          <path class="dg-line-soft" d="M176 181 C 214 181, 214 119, 252 119"/>
+          <path class="dg-line-soft" d="M244 113 L 252 119 L 244 125"/>
+
+          <text class="dg-label" x="252" y="16">Stages</text>
+          <rect class="dg-box-iris" x="252" y="96" width="140" height="46" rx="9"/>
+          <text class="dg-stage" x="276" y="124">Discover</text>
+          <path class="dg-line" d="M392 119 L 440 119"/>
+          <path class="dg-line" d="M432 113 L 440 119 L 432 125"/>
+          <rect class="dg-box-iris" x="440" y="96" width="140" height="46" rx="9"/>
+          <text class="dg-stage" x="468" y="124">Declare</text>
+          <path class="dg-line" d="M580 119 L 628 119"/>
+          <path class="dg-line" d="M620 113 L 628 119 L 620 125"/>
+          <rect class="dg-box-iris" x="628" y="96" width="140" height="46" rx="9"/>
+          <text class="dg-stage" x="652" y="124">Measure</text>
+
+          <path class="dg-line" d="M768 119 L 820 119"/>
+          <path class="dg-line" d="M812 113 L 820 119 L 812 125"/>
+          <text class="dg-label" x="820" y="16">Result</text>
+          <rect class="dg-box" x="820" y="90" width="160" height="58" rx="9" stroke="#5f3ddc" stroke-width="1.4"/>
+          <text class="dg-note" x="836" y="114" style="fill:#17161d;font-weight:600">Versioned</text>
+          <text class="dg-note" x="836" y="130" style="fill:#17161d;font-weight:600">surface contract</text>
+
+          <path class="dg-line-sun dg-dash" d="M900 148 L 900 236"/>
+          <rect x="748" y="236" width="232" height="56" rx="9" fill="#fff" stroke="#e9552b" stroke-width="1.3" stroke-dasharray="5 4"/>
+          <text class="dg-state" x="768" y="261" style="fill:#b23a16">Authority: not earned</text>
+          <text class="dg-note" x="768" y="279">Declaration is not qualification</text>
+
+          <rect x="0" y="252" width="520" height="70" rx="12" fill="#ece8fb" opacity=".55"/>
+          <text class="dg-label" x="22" y="280" style="fill:#5f3ddc">Critical distinction</text>
+          <text class="dg-note" x="22" y="300" style="font-size:11.5px;fill:#4b4a57">Surface discovery is not authority approval.</text>
+        </svg>
+        <figcaption class="dg-cap"><span class="dot"></span>Diagram 1 &middot; From consequential decision to measurable surface. The stages produce an instrumented surface with explicit measurement requirements. They do not confer authority.</figcaption>
+      </figure>
+
+      <hr class="lc-divider">
+
+      <!-- 4b — the authority lifecycle -->
+      <div class="stage-head"><h2>Attribute. Monitor. Requalify.</h2></div>
+      <p class="stage-sub">Authority requires continuing evidence.</p>
+      <p class="body-p">A declared surface does not automatically earn authority. Its observations must establish the required conditions, and subsequent changes may invalidate that evidence.</p>
+
+      <div class="steps">
+        <div class="step">
+          <h4>Attribute</h4>
+          <p>Investigate behavioral changes using the available substrate, light-source, Lens, and stochastic evidence.</p>
+          <p>Distinguish changes in the evaluated system from changes in the measurement apparatus where the observations permit that distinction.</p>
+        </div>
+        <div class="step">
+          <h4>Monitor</h4>
+          <p>Observe longitudinal behavior through declared cohorts, facets, transfer characteristics, saturation diagnostics, and attention-spine alarms.</p>
+          <p>Track which surfaces remain within their established measurement and operating conditions.</p>
+        </div>
+        <div class="step">
+          <h4>Requalify</h4>
+          <p>When relevant conditions change, evaluate whether the existing evidence remains sufficient.</p>
+          <p>Authority may remain established, become withdrawn, or require additional observation. Requalification follows the surface's declared requirements rather than a universal waiting period.</p>
+        </div>
+      </div>
+
+      <div class="outcome">
+        <span class="k">Outcome</span>
+        <p>An evolving record of what each surface has established, what remains unresolved, and what evidence is required next.</p>
+      </div>
+
+      <!-- Diagram 2 -->
+      <figure class="diagram">
+        <svg viewBox="0 0 980 440" role="img" aria-labelledby="dg2t dg2d">
+          <title id="dg2t">Authority is earned through observation</title>
+          <desc id="dg2d">A longitudinal state diagram. Attribution and monitoring evidence feeds every qualification decision. Undeclared traffic appears as a dark surface. A declared surface begins Not earned, accumulates evidence while Running and soaking, and may reach Held. A relevant change withdraws authority with a stated reason and returns the surface to observation.</desc>
+
+          <!-- evidence feeds, above the governed row -->
+          <rect x="150" y="18" width="576" height="60" rx="12" fill="#ece8fb" opacity=".6"/>
+          <text class="dg-label" x="172" y="44" style="fill:#5f3ddc">Attribute &middot; Monitor</text>
+          <text class="dg-note" x="172" y="64" style="font-size:11px;fill:#4b4a57">Substrate, light source, Lens and stochastic evidence feed every qualification decision.</text>
+          <path class="dg-line-soft dg-dash" d="M225 78 L 225 104"/>
+          <path class="dg-line-soft" d="M219 96 L 225 104 L 231 96"/>
+          <path class="dg-line-soft dg-dash" d="M438 78 L 438 104"/>
+          <path class="dg-line-soft" d="M432 96 L 438 104 L 444 96"/>
+          <path class="dg-line-soft dg-dash" d="M651 78 L 651 104"/>
+          <path class="dg-line-soft" d="M645 96 L 651 104 L 657 96"/>
+
+          <!-- dark surface, off the governed path -->
+          <rect class="dg-box" x="0" y="160" width="124" height="50" rx="9" stroke="#6c6a78" stroke-dasharray="5 4"/>
+          <text class="dg-state" x="16" y="183" style="fill:#6c6a78">Dark</text>
+          <text class="dg-note" x="16" y="200">Undeclared</text>
+          <path class="dg-line-soft dg-dash" d="M124 185 L 170 185 L 170 154"/>
+          <path class="dg-line-soft" d="M164 162 L 170 154 L 176 162"/>
+          <text class="dg-note" x="128" y="176">declare</text>
+
+          <!-- governed states -->
+          <rect class="dg-box" x="150" y="104" width="150" height="50" rx="9" stroke="#b23a16"/>
+          <text class="dg-state" x="168" y="127" style="fill:#b23a16">Not earned</text>
+          <text class="dg-note" x="168" y="144">No qualifying evidence</text>
+
+          <path class="dg-line" d="M300 129 L 352 129"/>
+          <path class="dg-line" d="M344 123 L 352 129 L 344 135"/>
+
+          <rect class="dg-box-iris" x="352" y="104" width="172" height="50" rx="9"/>
+          <text class="dg-state" x="370" y="127" style="fill:#5f3ddc">Running / soaking</text>
+          <text class="dg-note" x="370" y="144">Evidence accumulating</text>
+
+          <path class="dg-line" d="M524 129 L 576 129"/>
+          <path class="dg-line" d="M568 123 L 576 129 L 568 135"/>
+          <text class="dg-note" x="506" y="94">conditions met</text>
+
+          <rect class="dg-box" x="576" y="104" width="150" height="50" rx="9" stroke="#1f7d59" stroke-width="1.4"/>
+          <text class="dg-state" x="596" y="127" style="fill:#1f7d59">Held</text>
+          <text class="dg-note" x="596" y="144">Conditions established</text>
+
+          <path class="dg-line-sun" d="M726 129 L 790 129"/>
+          <path class="dg-line-sun" d="M782 123 L 790 129 L 782 135"/>
+          <text class="dg-note" x="712" y="94" style="fill:#b23a16">relevant change</text>
+          <rect class="dg-box" x="790" y="104" width="190" height="50" rx="9" stroke="#e9552b" stroke-width="1.4"/>
+          <text class="dg-state" x="808" y="127" style="fill:#b23a16">Withdrawn</text>
+          <text class="dg-note" x="808" y="144">With a stated reason</text>
+
+          <!-- requalification returns to observation -->
+          <path class="dg-line-sun dg-dash" d="M885 154 L 885 232 L 438 232 L 438 154"/>
+          <path class="dg-line-sun" d="M432 162 L 438 154 L 444 162"/>
+          <text class="dg-note" x="520" y="250" style="fill:#b23a16">requalify against the surface's declared requirements</text>
+
+          <!-- time -->
+          <path class="dg-line-soft" d="M150 330 L 966 330"/>
+          <path class="dg-line-soft" d="M958 324 L 966 330 L 958 336"/>
+          <text class="dg-label" x="150" y="318">Observation over time</text>
+          <g opacity=".55">
+            <circle cx="372" cy="330" r="2" fill="#5f3ddc"/><circle cx="404" cy="330" r="2.4" fill="#5f3ddc"/>
+            <circle cx="436" cy="330" r="2.8" fill="#5f3ddc"/><circle cx="468" cy="330" r="3.2" fill="#5f3ddc"/>
+            <circle cx="500" cy="330" r="3.6" fill="#5f3ddc"/><circle cx="532" cy="330" r="4" fill="#5f3ddc"/>
+            <circle cx="564" cy="330" r="4.4" fill="#5f3ddc"/>
+          </g>
+          <text class="dg-note" x="150" y="356">Different surfaces require different evidence and different observation durations.</text>
+          <text class="dg-note" x="150" y="372">There is no universal timer and no immediate qualification.</text>
+        </svg>
+        <figcaption class="dg-cap"><span class="dot"></span>Diagram 2 &middot; Authority is earned through observation. Operator permission, surface declaration, and evidence-established authority are separate concepts.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ══ 5 · CENTRAL PRINCIPLE ══ -->
+  <section class="principle sec-pad" data-reveal>
+    <div class="wrap">
+      <div class="principle-inner">
+        <p class="sec-eyebrow" style="justify-content:center"><span class="dot"></span>The principle</p>
+        <h2>Intelligence is inexpensive. Authority must be earned.</h2>
+        <p class="body-p">Agentic systems can generate interpretations, decisions, and software changes at increasing speed. The evidence required to justify consequential behavior does not necessarily accumulate at that speed.</p>
+        <p class="body-p">A new decision surface may be discovered and instrumented in an afternoon. Establishing its behavior under relevant operating conditions may require substantially more observation. And evidence that was sufficient yesterday may no longer be sufficient after a relevant change.</p>
+        <p class="pin">Holonograph maintains the record between those moments.</p>
+        <p class="body-p">This is the commercial meaning of longitudinal authority governance. It does not promise permanent validation. It provides an explicit account of what has been established, what has changed, and what remains to be demonstrated.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 6 · EVIDENCE ══ -->
+  <section class="evidence-sec sec-pad" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Evidence</p>
+      <h2>Observed in real development.</h2>
+
+      <div class="ev-grid">
+        <div class="ev-card">
+          <span class="ev-tag">Engineering record</span>
+          <h3>Authority-seam analysis on a rule-based calendaring agent</h3>
+          <p>During development of a rule-based calendaring agent, authority-seam analysis identified consequential dependencies that a separate rule audit had missed.</p>
+          <p>A heuristic filer-side inference was presented as established information and influenced which rules reached the model.</p>
+          <p>A fuzzy matter match received an authoritative label that did not distinguish it from an exact identifier match.</p>
+          <p>Subsequent investigation identified additional authority-bearing dependencies in rule selection and evaluation context.</p>
+          <p>These findings demonstrate the practical importance of examining <span class="emph">how interpreted values influence downstream decisions</span>, including decisions made before a model call.</p>
+          <p>The seam reports required investigation and disposition; a reported seam is not automatically a defect.</p>
+        </div>
+        <div class="ev-card">
+          <span class="ev-tag study">Research</span>
+          <h3>What Does an LLM Judge Actually Measure?</h3>
+          <p>Two prospectively governed studies examined whether evaluation frames established discrimination of a target construct.</p>
+          <p>Across 13,440 canonical judgments, the studies showed that the registered inferential status of target discrimination depended on the evaluation frame.</p>
+          <p>The target-bound measurement channel was established across three evaluator configurations. The stronger preregistered binding-recovery claim was not supported, and conditional attenuation remained unidentified.</p>
+          <p>The work illustrates why measurement-channel qualification must precede consequential scientific inference.</p>
+          <a class="arrow-link" href="/papers">Read the Research <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+
+      <div class="boundary">
+        <h4>Evidence boundary</h4>
+        <p>Holonograph reports what the declared measurement contract establishes. Its record does not independently certify the correctness of a consequential decision beyond that contract and its qualified evidence.</p>
+        <p>Public demonstrations, engineering records, and controlled studies establish different things. Engineering findings demonstrate observed utility in specific workflows. Controlled studies support their registered scientific conclusions.</p>
+        <p>Neither establishes universal scanner coverage, permanent correctness, or guaranteed operational outcomes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 7 · AUDIENCE ══ -->
+  <section class="audience sec-pad" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Audience</p>
+      <h2>Built for teams developing and operating agentic AI, including autonomous software development systems.</h2>
+      <p class="lead">As AI systems interpret information, select actions, and modify software, consequential decisions can emerge faster than conventional review processes can meaningfully examine them. Holonograph provides attribution and longitudinal observation to evaluate those decisions over time.</p>
+
+      <div class="aud-grid">
+        <div class="aud">
+          <h3>Agentic applications</h3>
+          <p>Systems in which models, tools, and programmatic interpretation influence consequential outcomes.</p>
+        </div>
+        <div class="aud">
+          <h3>AI-assisted software development</h3>
+          <p>Workflows in which coding agents modify implementation and authority-bearing behavior at machine speed.</p>
+        </div>
+        <div class="aud">
+          <h3>Autonomous development systems</h3>
+          <p>Systems capable of proposing, implementing, and testing changes to their own software or organizational structure.</p>
+        </div>
+        <div class="aud">
+          <h3>AI evaluation infrastructure</h3>
+          <p>Teams requiring attributable, versioned measurement across models, judges, rubrics, and changing experimental conditions.</p>
+        </div>
+        <div class="aud">
+          <h3>Enterprise AI decision systems</h3>
+          <p>AI-powered applications where interpretation influences consequential operations and teams need a record of provenance, qualification, and changing operating conditions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 8 · THE INSTRUMENT, RUNNING ══ -->
+  <section class="demo" id="lens" data-reveal>
+    <div class="wrap">
+      <div class="demo-intro">
+        <p class="sec-eyebrow"><span class="dot"></span>See it live</p>
+        <h2>The instrument, running.</h2>
+        <p class="lead" style="margin-left:auto;margin-right:auto">This is the Act queue against a live agent: every finding it surfaces, the moment it fires.</p>
+      </div>
+      <div class="dw-frame" id="lens-view">
+        <div class="dw-chrome"><span class="dots"><i></i><i></i><i></i></span><span class="live"><span class="pulse"></span>LIVE</span></div>
+        <iframe class="dw-iframe" src="https://nigel-lens-public-98022099798.us-central1.run.app/dashboard/?embed=1#act" title="Holonograph Lens Dashboard — Act" loading="lazy"></iframe>
+      </div>
+      <div class="demo-mobile">
+        <p style="font-size:17px;font-weight:500">The live readout runs best on desktop.</p>
+        <p style="margin-top:10px;font-size:14.5px;color:var(--ink-2)">Open Holonograph on a larger screen to watch findings fire in real time.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="f-brand">
+        <span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span>
+        <p class="f-tag">The self-hosted instrument for authority governance and agentic attribution.</p>
+        <p class="f-pp">Patent pending</p>
+      </div>
+      <div class="f-col"><h4>Platform</h4><a href="/authority-governance/">Authority governance</a><a href="/seams">Authority seams</a><a href="/attribution">Attribution</a><a href="lens-facets.html">Lens facets</a><a href="/builders">Builders</a></div>
+      <div class="f-col"><h4>Resources</h4><a href="docs.html">Docs</a><a href="docs.html">Guide</a><a href="glossary.html">Glossary</a><a href="/papers">Research</a><a href="changelog.html">Changelog</a></div>
+      <div class="f-col"><h4>Company</h4><a href="value.html">Value</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a></div>
+    </div>
+    <div class="footer-bar">
+      <span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span>
+      <span class="right"><a href="#">GitHub</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:700, settle:200 };
+(function(){
+  var A=window.HOLO_ANIM, s=document.documentElement.style;
+  s.setProperty('--anim-dur',(A.dur/1000)+'s'); s.setProperty('--anim-ease',A.ease);
+  s.setProperty('--anim-stagger',(A.stagger/1000)+'s'); s.setProperty('--anim-draw',(A.draw/1000)+'s');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els=[].slice.call(document.querySelectorAll('[data-reveal]'));
+  if(reduce || !('IntersectionObserver' in window)){
+    els.forEach(function(e){ e.classList.add('is-in'); });
+  } else {
+    var io=new IntersectionObserver(function(ents){
+      ents.forEach(function(en){
+        if(en.isIntersecting===en.target.__in) return;
+        en.target.__in=en.isIntersecting;
+        en.target.classList.toggle('is-in', en.isIntersecting);
+      });
+    }, {threshold:0.08, rootMargin:'0px 0px -8% 0px'});
+    els.forEach(function(e){ io.observe(e); });
+  }
+  var header=document.getElementById('siteHeader');
+  function onScroll(){ if(header) header.classList.toggle('scrolled', window.scrollY>8); }
+  onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+})();
+</script>
+<script type="module" src="./holon-light.js?v=15"></script>
+<script src="mobilenav.js"></script>
+</body>
+</html>

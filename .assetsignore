@@ -15,3 +15,6 @@ README.md
 .DS_Store
 
 # Search-engine verification token stays (BingSiteAuth.xml) — do not add it here.
+
+# v5.1 homepage mockup, local review only
+index-v5.html

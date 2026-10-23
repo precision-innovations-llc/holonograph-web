@@ -9,9 +9,9 @@
    ----------------------------------------------------------------------------- */
 
 :root {
-  --bg: #ffffff;                             /* paper white */
-  --bg-elev: #f7f6f9;                        /* soft panel — elevated cards / code */
-  --bg-sunk: #f7f6f9;                        /* pull-quote surface (same neutral panel) */
+  --bg: #f6f5f9;                             /* paper — matches the site --paper */
+  --bg-elev: #ffffff;                        /* raised panel — cards, table head, nav */
+  --bg-sunk: #eceaf3;                        /* recessed surface — callouts, pull-quotes */
   --fg: #17161d;                             /* near-black */
   --fg-dim: #4b4a55;                         /* body de-emphasis */
   --fg-faint: #8a8894;                       /* captions, meta */
@@ -20,7 +20,7 @@
   --accent-hover: #4c2fc0;
   --accent-soft: #efeafd;                    /* accent-tinted surface */
   --rule: #e6e4ec;                           /* light rule */
-  --code-bg: #f7f6f9;
+  --code-bg: #ffffff;
   --code-fg: #2a1f4a;
   --danger: #b91c1c;                         /* wall-warning red, used sparingly */
   --orange: #d97747;                         /* wordmark H only — Holonograph brand */
@@ -206,6 +206,7 @@ html, body {
   max-height: calc(100vh - 88px);
   overflow-y: auto;
   padding-right: 8px;
+  padding-bottom: 56px;
   font-size: 13.5px;
 }
 .guide-sidebar-title {
@@ -247,6 +248,32 @@ html, body {
 .guide-sidebar li.current .s-ttl { color: var(--fg); font-weight: 600; }
 .guide-sidebar li.current { background: var(--accent-soft); margin: 0 -8px; padding: 8px; border-radius: 6px; border-bottom-color: transparent; }
 .guide-sidebar li.current .s-num { opacity: 1; }
+.guide-sidebar li.s-part {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  line-height: 1.45;
+  text-transform: uppercase;
+  color: var(--muted, #6c6a78);
+  opacity: 0.8;
+  margin: 18px 0 6px;
+  padding: 0;
+  border-bottom: none;
+}
+.guide-sidebar li.s-part:first-child { margin-top: 0; }
+.guide-toc-full li.t-part {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 34px 0 10px;
+  padding: 0;
+  border: none;
+}
+.guide-toc-full li.t-part:first-child { margin-top: 0; }
 .guide-sidebar .s-status {
   font-family: var(--font-mono);
   font-size: 8.5px;
@@ -748,4 +775,98 @@ html, body {
   .guide-topbar, .guide-sidebar, .guide-nav, .guide-footer { display: none; }
   .guide-shell { grid-template-columns: 1fr; padding: 20px; }
   a { color: var(--fg); text-decoration: none; border: 0; }
+}
+
+/* ── one-page build (/guide/all): a chapter must read as a chapter ────────────
+   Inside .guide-chapter-block the heading hierarchy is shifted down one level so
+   the part (h2) outranks the chapter (h3) outranks its sections (h4). These rules
+   restore the per-chapter look at the shifted levels. */
+
+.guide-part-divider {
+  margin: 112px 0 0;
+  padding-top: 40px;
+  border-top: 1px solid var(--rule);
+}
+.guide-part-divider:first-of-type { margin-top: 48px; }
+.guide-part-k {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+.guide-main h2.guide-part-t {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: clamp(26px, 3vw, 34px);
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+  margin: 0 0 6px;
+  padding-top: 0;
+  color: var(--fg);
+}
+.guide-main h2.guide-part-t::before { content: none; }
+
+.guide-chapter-block {
+  margin-top: 72px;
+  padding-top: 44px;
+  border-top: 2px solid var(--accent);
+}
+.guide-part-divider + .guide-chapter-block {
+  margin-top: 40px;
+  padding-top: 0;
+  border-top: none;
+}
+.guide-chapter-block > .guide-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 10px;
+}
+.guide-main .guide-chapter-block h3.guide-h1 {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: clamp(30px, 4vw, 42px);
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+  margin: 0 0 18px;
+  color: var(--fg);
+}
+.guide-main .guide-chapter-block h4 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: clamp(20px, 2.3vw, 24px);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin: 44px 0 14px;
+  color: var(--fg);
+  padding-top: 6px;
+}
+.guide-main .guide-chapter-block h4::before {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 2px;
+  background: var(--accent);
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+.guide-main .guide-chapter-block h5 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.005em;
+  line-height: 1.35;
+  margin: 28px 0 8px;
+  color: var(--fg);
+}
+.guide-main .guide-chapter-block h6 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 15px;
+  margin: 22px 0 6px;
+  color: var(--fg);
 }
