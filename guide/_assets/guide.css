@@ -775,3 +775,97 @@ html, body {
   .guide-shell { grid-template-columns: 1fr; padding: 20px; }
   a { color: var(--fg); text-decoration: none; border: 0; }
 }
+
+/* ── one-page build (/guide/all): a chapter must read as a chapter ────────────
+   Inside .guide-chapter-block the heading hierarchy is shifted down one level so
+   the part (h2) outranks the chapter (h3) outranks its sections (h4). These rules
+   restore the per-chapter look at the shifted levels. */
+
+.guide-part-divider {
+  margin: 112px 0 0;
+  padding-top: 40px;
+  border-top: 1px solid var(--rule);
+}
+.guide-part-divider:first-of-type { margin-top: 48px; }
+.guide-part-k {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+.guide-main h2.guide-part-t {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: clamp(26px, 3vw, 34px);
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+  margin: 0 0 6px;
+  padding-top: 0;
+  color: var(--fg);
+}
+.guide-main h2.guide-part-t::before { content: none; }
+
+.guide-chapter-block {
+  margin-top: 72px;
+  padding-top: 44px;
+  border-top: 2px solid var(--accent);
+}
+.guide-part-divider + .guide-chapter-block {
+  margin-top: 40px;
+  padding-top: 0;
+  border-top: none;
+}
+.guide-chapter-block > .guide-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 10px;
+}
+.guide-main .guide-chapter-block h3.guide-h1 {
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: clamp(30px, 4vw, 42px);
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+  margin: 0 0 18px;
+  color: var(--fg);
+}
+.guide-main .guide-chapter-block h4 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: clamp(20px, 2.3vw, 24px);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin: 44px 0 14px;
+  color: var(--fg);
+  padding-top: 6px;
+}
+.guide-main .guide-chapter-block h4::before {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 2px;
+  background: var(--accent);
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+.guide-main .guide-chapter-block h5 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.005em;
+  line-height: 1.35;
+  margin: 28px 0 8px;
+  color: var(--fg);
+}
+.guide-main .guide-chapter-block h6 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 15px;
+  margin: 22px 0 6px;
+  color: var(--fg);
+}
