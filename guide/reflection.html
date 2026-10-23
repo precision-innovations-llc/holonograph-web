@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>Reflection — The Guide — Holonograph</title>
+<meta name="description" content="Feeding a proven judge’s grounded critique back to the producer for a capped retry. Granted per judge, rubric, facet and surface, only after that cell certifies." />
+<meta name="discloses" content="capability-only" />
+<meta name="status" content="design" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/reflection" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="Reflection · Holonograph Guide" />
+<meta property="og:description" content="Feeding a proven judge’s grounded critique back to the producer for a capped retry. Granted per judge, rubric, facet and surface, only after that cell certifies." />
+<meta property="og:url" content="https://holonograph.ai/guide/reflection" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="Reflection · Holonograph Guide" />
+<meta name="twitter:description" content="Feeding a proven judge’s grounded critique back to the producer for a capped retry. Granted per judge, rubric, facet and surface, only after that cell certifies." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=2" />
+<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
+</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
+      <a class="pill" href="../pricing.html">Get started</a>
+    </nav></div>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li class="s-part">Overview</li>
+        <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li class="s-part">Operating the lens</li>
+        <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Variance controls for model seams</li>
+        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
+        <li class="s-part">Seams, soak, and authority</li>
+        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li class="current"><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li class="s-part">Operational utilities</li>
+        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 20</p>
+        <h1 class="guide-h1">Reflection</h1>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          When a response fails a judge, the judge’s grounded critique can go back to the producer for a capped retry. Holonograph grants that per judge, rubric, facet and surface, and only after that exact cell has certified. It is never a default and never an operator toggle.
+        </p>
+
+        <h2>Why it is gated</h2>
+
+        <p>
+          Reflection turns a judge from an evaluator you read into an optimization target the producer
+          chases. That inverts the trust requirement. A judge you only read can be a little wrong, because
+          you flag and a human reviews. A judge you optimize against has to be right, because the producer
+          will find and exploit every gap in it.
+        </p>
+
+        <p>
+          The gate is on validity, not on discrimination. Those come apart: a judge can score stably and
+          still be blind, saturated, or wrong about how a construct should treat absence. Scoring the same
+          way every time is reliability, and reliability does not imply validity.
+        </p>
+
+        <h3>The specific hazard</h3>
+
+        <p>
+          Real dimensions are often requires-confirmation: an honest "I do not have the data" correctly
+          scores low. Put that judge in a retry loop and the cheapest way for the producer to raise its
+          score is to stop being honest about the absence and fabricate. That is the exact failure the
+          apparatus exists to catch, now with a loop optimizing toward it.
+        </p>
+
+        <p>
+          So reflection without established authority is not merely a waste of tokens and time. It is a
+          pressure applied to the one behavior you most need preserved.
+        </p>
+
+        <h2>What has to hold</h2>
+
+        <p>
+          Reflection unlocks for a <code>judge &times; rubric &times; facet &times; surface</code> cell when
+          all of the following hold. The gate is dual: Holonograph computes the statistical pass, then a
+          human confirms.
+        </p>
+
+        <ul>
+          <li><strong>Soak.</strong> Enough live production data to reach a statistical N. Holonograph determines the statistical pass; a human approves the N, judging whether the sample spans the breadth of real inputs and outputs.</li>
+          <li><strong>Discrimination.</strong> The facet's dimensions pass discrimination evaluation, with a human confirming key outlier calls and a statistical sampling of calls on that facet.</li>
+          <li><strong>Saturation cleared.</strong> Every dimension passes the saturation audit.</li>
+        </ul>
+
+        <p>
+          Validity is cell-specific, so the grant is too. A judge certified on one facet of one surface has
+          said nothing about another.
+        </p>
+
+        <h2>What it does</h2>
+
+        <p>
+          A failing response returns to the producer with the judge's grounded critique attached, and the
+          producer retries, capped. Reflection is the soft tier of the judge's authority over delivery: it
+          can send the producer back, it cannot block. Blocking remains deterministic code in the gate, or
+          operator policy.
+        </p>
+
+        <p>
+          Because a verdict has to be in hand before the producer finishes, reflection is inline by
+          construction. An asynchronous judge observes and nothing more.
+        </p>
+
+        <h2>Revocation</h2>
+
+        <p>
+          The grant is revoked on any change to the identity it was computed on. A new judge model, a
+          revised rubric, a changed context scope: the cell certifies again or it does not reflect. This is
+          the authority machinery applied to the judge rather than to the producer, and it suspends the same
+          way for the same reasons.
+        </p>
+
+        <h2>Reference</h2>
+
+        <p>
+          Your own reflection loop remains yours to run; nothing here prevents it. The claim is narrower
+          and worth stating plainly: a retry loop against an uncertified judge spends tokens to apply
+          pressure in an unknown direction. Holonograph turns reflection on when the cell has earned it, if
+          you have asked for it.
+        </p>
+
+        <p>
+          The taxonomy that places reflection among the judge modes is documented ahead of the
+          implementation, as is this chapter.
+        </p>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./authority" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Authority</span>
+          </a>
+          <a href="./subscriptions" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Route a verdict to a human</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 20 · Reflection</span>
+    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
+  </footer>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
+</body>
+</html>

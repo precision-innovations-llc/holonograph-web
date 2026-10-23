@@ -29,7 +29,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=2" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -98,6 +98,8 @@
 
       <ol class="guide-toc-full" aria-label="All chapters">
 
+        <li class="t-part">Overview</li>
+
         <li data-status="live">
           <span class="t-num">01</span>
           <span class="t-body">
@@ -107,11 +109,13 @@
           <span class="t-status">live</span>
         </li>
 
+        <li class="t-part">Operating the lens</li>
+
         <li data-status="live">
           <span class="t-num">02</span>
           <span class="t-body">
             <a href="./surface-contracts" class="t-ttl">Surface contracts</a>
-            <span class="t-gloss">Declaring an evaluation surface (its dimensions, cohort tags, substrate columns, and routings) and versioning it.</span>
+            <span class="t-gloss">What a surface declares it will do, checked against what it did.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -120,7 +124,7 @@
           <span class="t-num">03</span>
           <span class="t-body">
             <a href="./snapshot" class="t-ttl">The four-layer snapshot</a>
-            <span class="t-gloss">The atomic record captured per evaluation, and how to read it back.</span>
+            <span class="t-gloss">The record that binds four layers of one call into a row you can query as history.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -129,7 +133,7 @@
           <span class="t-num">04</span>
           <span class="t-body">
             <a href="./substrate-columns" class="t-ttl">Substrate columns</a>
-            <span class="t-gloss">The named columns you populate so drift can be attributed to what changed about your deployment.</span>
+            <span class="t-gloss">The structured record every reading is computed from.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -138,7 +142,7 @@
           <span class="t-num">05</span>
           <span class="t-body">
             <a href="./sdk-reference" class="t-ttl">SDK reference</a>
-            <span class="t-gloss">The <code>HolonographClient</code> surface end-to-end: constructor, calls, outcomes, headers.</span>
+            <span class="t-gloss">The client contract, and the reliability loop over your own judge.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -146,8 +150,8 @@
         <li data-status="live">
           <span class="t-num">06</span>
           <span class="t-body">
-            <a href="./mediating-lens" class="t-ttl">The mediating lens: placement &amp; call flow</a>
-            <span class="t-gloss">Where the lens sits in the call path, and what it captures at the boundary.</span>
+            <a href="./mediating-lens" class="t-ttl">The mediating lens</a>
+            <span class="t-gloss">Where the lens sits, and why it captures every model call in both directions.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -165,7 +169,7 @@
           <span class="t-num">08</span>
           <span class="t-body">
             <a href="./sidecar" class="t-ttl">Sidecar / OTel integration</a>
-            <span class="t-gloss">Capturing what doesn't pass through the lens, via OpenTelemetry.</span>
+            <span class="t-gloss">Emitting to the lens without changing your request path.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -174,7 +178,7 @@
           <span class="t-num">09</span>
           <span class="t-body">
             <a href="./topology-scanner" class="t-ttl">Surface topology scanner</a>
-            <span class="t-gloss">Comparing what you declared against what the lens observed, and closing the gaps.</span>
+            <span class="t-gloss">Declared surfaces, observed coverage, and the size of the blind spot.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -182,8 +186,8 @@
         <li data-status="live">
           <span class="t-num">10</span>
           <span class="t-body">
-            <a href="./conformance" class="t-ttl">Conformance &amp; the fixture generator</a>
-            <span class="t-gloss">Turning a capability surface (tools + prose rules) into reproducible, mechanically-checkable fixtures.</span>
+            <a href="./multiplexer" class="t-ttl">The multiplexer</a>
+            <span class="t-gloss">Comparing vendors on identical terms, routed or run on demand.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -191,8 +195,8 @@
         <li data-status="live">
           <span class="t-num">11</span>
           <span class="t-body">
-            <a href="./multiplexer" class="t-ttl">The multiplexer</a>
-            <span class="t-gloss">Fanning one surface's calls across multiple vendors for head-to-head comparison, with zero awareness at the calling agent.</span>
+            <a href="./drift-attribution" class="t-ttl">Drift attribution</a>
+            <span class="t-gloss">Assigning a change to one source, and recording both sides of the model identity.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -200,8 +204,8 @@
         <li data-status="live">
           <span class="t-num">12</span>
           <span class="t-body">
-            <a href="./lessons-pipeline" class="t-ttl">The lessons pipeline</a>
-            <span class="t-gloss">Captured overrides and approvals becoming drafted, human-gated corrective artifacts.</span>
+            <a href="./variance-isolation" class="t-ttl">Variance isolation</a>
+            <span class="t-gloss">Telling real change apart from sampling and chance.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -209,51 +213,25 @@
         <li data-status="live">
           <span class="t-num">13</span>
           <span class="t-body">
-            <a href="./drift-attribution" class="t-ttl">Drift attribution</a>
-            <span class="t-gloss">Assigning an observed change to exactly one source: substrate, light source, lens, or noise.</span>
+            <a href="./lessons-pipeline" class="t-ttl">The lessons pipeline</a>
+            <span class="t-gloss">Captured overrides and approvals becoming drafted, human-gated artifacts.</span>
           </span>
           <span class="t-status">live</span>
         </li>
+
+        <li class="t-part">Variance controls for model seams</li>
 
         <li data-status="live">
           <span class="t-num">14</span>
           <span class="t-body">
-            <a href="./variance-isolation" class="t-ttl">Variance isolation</a>
-            <span class="t-gloss">Separating real movement in your scores from the noise of measuring with a language model.</span>
-          </span>
-          <span class="t-status">live</span>
-        </li>
-
-        <li data-status="live">
-          <span class="t-num">15</span>
-          <span class="t-body">
-            <a href="./subscriptions" class="t-ttl">Route a verdict to a human</a>
-            <span class="t-gloss">The Defense layer: fire a signed webhook when a predicate over the lens's own verdicts crosses a line.</span>
-          </span>
-          <span class="t-status">live</span>
-        </li>
-
-
-        <li data-status="live">
-          <span class="t-num">16</span>
-          <span class="t-body">
-            <a href="./attention-spine" class="t-ttl">The attention spine</a>
-            <span class="t-gloss">One operator lifecycle for every finding: a stable identity, an append-only annotation, and a proposal.</span>
-          </span>
-          <span class="t-status">live</span>
-        </li>
-
-        <li data-status="live">
-          <span class="t-num">17</span>
-          <span class="t-body">
-            <a href="./model-identity" class="t-ttl">Model identity</a>
-            <span class="t-gloss">The requested light source and the model the vendor actually served, recorded as two separate axes.</span>
+            <a href="./conformance" class="t-ttl">Conformance &amp; fixtures</a>
+            <span class="t-gloss">Whether a judge actually ran against its fixtures, or silently defaulted.</span>
           </span>
           <span class="t-status">live</span>
         </li>
 
         <li data-status="design">
-          <span class="t-num">18</span>
+          <span class="t-num">15</span>
           <span class="t-body">
             <a href="./judge-modes" class="t-ttl">Judge modes</a>
             <span class="t-gloss">Four modes on two axes: does the producer wait, and may the verdict touch delivery.</span>
@@ -261,11 +239,69 @@
           <span class="t-status">design</span>
         </li>
 
+        <li class="t-part">Seams, soak, and authority</li>
+
+        <li data-status="live">
+          <span class="t-num">16</span>
+          <span class="t-body">
+            <a href="./seams" class="t-ttl">Seams</a>
+            <span class="t-gloss">An interpreted value driving a decision. Permanent, closeable, not removable.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
+        <li data-status="live">
+          <span class="t-num">17</span>
+          <span class="t-body">
+            <a href="./seam-monitor" class="t-ttl">The seam monitor</a>
+            <span class="t-gloss">Finding seams in source, adjudicating them, registering them, and soaking them.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
+        <li data-status="live">
+          <span class="t-num">18</span>
+          <span class="t-body">
+            <a href="./attention-spine" class="t-ttl">The attention spine</a>
+            <span class="t-gloss">One operator lifecycle over twenty-five sources of findings.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
         <li data-status="live">
           <span class="t-num">19</span>
           <span class="t-body">
+            <a href="./authority" class="t-ttl">Authority</a>
+            <span class="t-gloss">The per-surface state that the declared prerequisites are satisfied on the record.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
+        <li data-status="design">
+          <span class="t-num">20</span>
+          <span class="t-body">
+            <a href="./reflection" class="t-ttl">Reflection</a>
+            <span class="t-gloss">A capped retry against a certified judge, granted per cell.</span>
+          </span>
+          <span class="t-status">design</span>
+        </li>
+
+        <li class="t-part">Operational utilities</li>
+
+        <li data-status="live">
+          <span class="t-num">21</span>
+          <span class="t-body">
+            <a href="./subscriptions" class="t-ttl">Route a verdict to a human</a>
+            <span class="t-gloss">Fire a signed webhook when a predicate over the lens&rsquo;s own verdicts crosses a line.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
+        <li data-status="live">
+          <span class="t-num">22</span>
+          <span class="t-body">
             <a href="./compaction" class="t-ttl">Compaction &amp; husking</a>
-            <span class="t-gloss">Removing bulky payload from an aging event while keeping every structured field an estimator reads.</span>
+            <span class="t-gloss">Removing bulky payload from an aging event while structured fields stay.</span>
           </span>
           <span class="t-status">live</span>
         </li>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f7f5f0" />
+<title>The seam monitor — The Guide — Holonograph</title>
+<meta name="description" content="Finding seams in source at authorship, adjudicating which are real, registering them as surfaces, and measuring their viability on live traffic." />
+<meta name="discloses" content="capability-only" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/seam-monitor" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="The seam monitor · Holonograph Guide" />
+<meta property="og:description" content="Finding seams in source at authorship, adjudicating which are real, registering them as surfaces, and measuring their viability on live traffic." />
+<meta property="og:url" content="https://holonograph.ai/guide/seam-monitor" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="The seam monitor · Holonograph Guide" />
+<meta name="twitter:description" content="Finding seams in source at authorship, adjudicating which are real, registering them as surfaces, and measuring their viability on live traffic." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=2" />
+<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
+</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
+      <a class="pill" href="../pricing.html">Get started</a>
+    </nav></div>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <ol>
+        <li class="s-part">Overview</li>
+        <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li class="s-part">Operating the lens</li>
+        <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Variance controls for model seams</li>
+        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
+        <li class="s-part">Seams, soak, and authority</li>
+        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li class="current"><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li class="s-part">Operational utilities</li>
+        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+        <p class="guide-eyebrow">Chapter 17</p>
+        <h1 class="guide-h1">The seam monitor</h1>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          The monitor has a build-time half and a run-time half over one record. Source analysis produces evidence, a gate adjudicates it, a confirmed seam is registered as a surface, and soak measures whether the closure holds against real inputs.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          Five stages, each with one job and one output. The separation matters: the scanner is an evidence
+          producer, not an adjudicator.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Stage</th><th>Role</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>Source scan</td><td>Evidence producer</td><td>A candidate interpretation edge, as structural facts</td></tr>
+              <tr><td>Interpretation gate</td><td>Semantic adjudication</td><td>A typed disposition</td></tr>
+              <tr><td>Registration</td><td>Declaration</td><td>A surface on the append-only record</td></tr>
+              <tr><td>Run-time producer</td><td>Viability measurement</td><td>Soak findings on live traffic</td></tr>
+              <tr><td>Authority state</td><td>Consumer</td><td>The per-surface reading over all of the above</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The scan reports what it can establish structurally: that a value originates from a known source
+          locus, flows through named identifiers, reaches a branch, threshold, pattern or key sink, and that
+          the default path has a particular shape. It never emits a verdict.
+        </p>
+
+        <h3>The three dispositions</h3>
+
+        <p>
+          The gate answers one question before the authority machine asks any of its own: is this a closure
+          over an open interpreted domain at all?
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Disposition</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>certain-interpreted</code></td><td>The input's meaning is not fixed by its representation and the edge governs authority. A real seam; the state machine applies.</td></tr>
+              <tr><td><code>certain-mechanical</code></td><td>The edge is deterministic or the domain is closed. An exact match, an enum lookup. Not a seam.</td></tr>
+              <tr><td><code>unresolved</code></td><td>Abstain. The apparatus cannot yet tell, so it withholds the disposition and keeps measuring.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Only <code>certain-interpreted</code> edges become registered records. Abstention here means
+          withholding a consequential disposition and continuing to measure. It is not a queue of requests
+          for a human.
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <h3>The scanner is its own dark surface</h3>
+
+        <p>
+          Finding seams is itself a closure over an open domain, namely arbitrary code, so it reports its
+          own blind spots as first-class coverage rather than as silence.
+        </p>
+
+        <ul>
+          <li><code>coverage.status</code>: the overall coverage state for the scanned unit.</li>
+          <li><code>coverage.supported_constructs</code>: the language constructs the front end actually handles.</li>
+          <li><code>coverage.unresolved_edges</code>: edges the taint could not fully follow.</li>
+          <li><code>coverage.unparsed</code>: code the front end could not parse.</li>
+          <li><code>coverage.dynamic_escape</code>: points where dynamic dispatch, reflection or serialization broke the path.</li>
+        </ul>
+
+        <p>
+          Partial coverage is never reported as no seams. A scan that could not follow an edge says so, and
+          the hook that reports into a build session says so too rather than issuing a false all-clear.
+        </p>
+
+        <h3>Propose only</h3>
+
+        <p>
+          The monitor flags and drafts. It does not edit code and it does not block on the lens's own
+          authority. Whether a build stops is a policy the operator or CI sets, and the detector must
+          qualify before that policy is even eligible: observe first, everywhere, including the detector
+          run against its own repository.
+        </p>
+
+        <p>
+          The criterion that governs that qualification is the one the invariant demands of every other
+          instrument. Under rising uncertainty the detector must abstain more, not assert more.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Scan a repository and push its seams to the lens, or run the hook so a seam is reported into the session that wrote it.</li>
+          <li><code>--propose-sinks</code> and <code>--propose-skips</code> mechanically propose candidates for the authority-sink and skip-path lists rather than asking you to author them cold.</li>
+          <li>Accepted declarations are honored: a seam you declare drops from the lens as well as from the scan.</li>
+          <li>Each reported seam names the authority sink it reaches, so the choice is to declare it or restructure around it.</li>
+        </ul>
+
+        <h2>Soak: the run-time half</h2>
+
+        <p>
+          A soak is the empirical life of a registered seam: how often its no-match or abstention path
+          actually fires, which branch it takes, how the decided value's identity churns over time, and
+          optionally whether that value is efficacious.
+        </p>
+
+        <p>
+          A soak observation is a full evaluation event rather than a new event kind, so every existing
+          tool works on it unchanged: the producers, the dashboard, retention and husking, the judge link.
+          The seam-ness lives on the run-time configuration axes instead.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Axis</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td><code>provenance</code></td><td><code>seam</code>. The isolation key. It sits in neither the production-state nor the exploratory-state set, so soaks are excluded from every default analysis and cannot drown a small agent's readings.</td></tr>
+              <tr><td><code>runMode</code></td><td>The shared enum. Isolation is provenance-keyed and independent of run mode, so <code>eval</code> and <code>replay</code> mean here what they mean everywhere.</td></tr>
+              <tr><td><code>lightSourceIdentifier</code></td><td><code>seam/&lt;component&gt;/&lt;scan&gt;</code>. A seam is a light source that is not a model, and it takes the slot honestly rather than faking a vendor.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The husk-surviving facts, whether it abstained and which path it took and the value fingerprint,
+          ride in the surface dimension, the substrate columns and the cohort tags. A raw decided value
+          rides in the payload and husks away like a judge rationale.
+        </p>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          Soaks file under one reserved surface, adjacent to the surface registered seams file under, with
+          individual seams as loci inside it. Findings from both reach the attention spine as
+          <code>builder-seam</code> and <code>seam-soak</code> sources, alongside every other finding the
+          instrument produces.
+        </p>
+
+        <h2>Reference</h2>
+
+        <p>
+          The shared vocabulary, the four sink shapes, the default-path forms and the sink kinds, lives in
+          the public contract package so the build-time scanner and the run-time producer name the same
+          things. The interpretation disposition is the same enum the authority state machine reads.
+        </p>
+
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./seams" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Seams</span>
+          </a>
+          <a href="./attention-spine" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">The attention spine</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 17 · The seam monitor</span>
+    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
+  </footer>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
+</body>
+</html>

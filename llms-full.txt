@@ -1962,238 +1962,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 10 — Conformance & fixtures
-
-_Permalink: https://holonograph.ai/guide/conformance_
-
-Chapter 10
-
-# Conformance & fixtures
-
-        A capability surface is what you say your agent can do: the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is *derive → approve → check*.
-
-## What it is
-
-        Three moving pieces:
-
-          - **The derive step** reads a capability surface (its tool declarations and prose rules) and proposes candidate fixtures, one per rule, each with the strongest assertion the rule allows.
-
-          - **The fixtures step** is the human-in-the-loop approval gate. A named approver reviews the candidates, edits or discards, and commits the ones they trust. Nothing runs as a check until it's approved.
-
-          - **The check step** runs the approved fixtures against real events over a window and returns a verdict per fixture plus a summary.
-
-### Enforceability taxonomy
-
-        Not every rule can be checked mechanically. The derive step labels each candidate with one of three enforceability categories, so the coverage report is honest about which rules the machine can actually hold you to:
-
-Label	Meaning
-
-`trace-enforceable`	The rule maps to a deterministic check on the captured trace: tool invocation, marker presence, output field.
-
-`judge-required`	The rule can only be evaluated by a graded judgment call: an LLM judge running against the event.
-
-`unenforceable`	The rule is worth stating but can't be mechanically checked at all (e.g. "be polite"). Recorded for completeness; produces no assertion.
-
-## Why it matters
-
-        A prose rule that can't be checked is a rule the system will drift on. Conformance moves rules from "our team believes this" to "the last check confirmed this at 06:00 Tuesday". The coverage report tells you exactly how many of the surface's rules you have mechanical accountability for, and the needs-repair panel tells you which ones the derive step couldn't formalize on its own.
-
-## How to use it
-
-### 1. Derive candidates from the surface
-
-        Send the capability surface (its tools and its rules) and get back a set of candidate fixtures with per-rule enforceability labels.
-
-```
-POST /lens/conformance/derive
-x-holonograph-run-mode: production
-Content-Type: application/json
-
-{
-  "surfaceId": "classify-intent",
-  "tools": [ /* tool declarations */ ],
-  "rules": [
-    "If the user asks for a refund, invoke the refund_lookup tool before responding.",
-    "Never quote a specific dollar amount unless refund_lookup returned one.",
-    "Be polite."
-  ]
-}
-```
-
-        The response gives you the candidates, a coverage summary (e.g. "2 of 3 rules mechanically enforceable"), and a needs-repair list for rules the derive step could not fully formalize.
-
-### 2. Review and approve
-
-        Each candidate is a JSON fixture describing an assertion (or a set of assertions, guarded by a `when` predicate). Review the derived shape, edit if needed, and submit each approved fixture with an `approverId`.
-
-```
-POST /lens/conformance/fixtures
-x-holonograph-run-mode: production
-Content-Type: application/json
-
-{
-  "approverId": "brian",
-  "sourceSurfaceId": "classify-intent",
-  "fixture": {
-    "fixtureId": "refund-requires-lookup",
-    "ruleId": "billing-triage-refund-flow-01",
-    "ruleSource": "Refund rules v3",
-    "description": "If the user asks for a refund, refund_lookup must be invoked before responding.",
-    "enforceability": "trace-enforceable",
-    "appliesTo": { "surfaceId": "classify-intent" },
-    "when": [{ "kind": "marker-contains", "column": "user_message", "value": "refund" }],
-    "assertion": { "kind": "marker-contains", "column": "tool_invocations", "value": "refund_lookup" }
-  }
-}
-```
-
-          The tool-discipline recipe
-          The cleanest trace-enforceable realization of "tool X was invoked" is `marker-contains` on a consumer-emitted column. Your agent emits a delimited-list substrate column (here `tool_invocations`) recording every tool it actually called; the fixture checks that column with `marker-contains`. Deterministic, cheap, and consumer-neutral. It catches missed tool calls without an LLM judge.
-
-        Response: an `eventId` for the approval event. The fixture is now live in the store and will be picked up by subsequent checks.
-
-### 3. Run a check
-
-        Point the checker at either an inline fixture or a stored one, plus a window and a surface filter.
-
-```
-POST /lens/conformance/check
-x-holonograph-run-mode: production
-Content-Type: application/json
-
-{
-  "fixtureId": "refund-requires-lookup",
-  "surfaceId": "classify-intent",
-  "since": "2026-07-01T00:00:00Z",
-  "until": "2026-07-05T00:00:00Z"
-}
-```
-
-        The response includes a top-level `verdict`, a per-event breakdown, the count of events checked, and the window actually used.
-
-## Reading the output
-
-        Conformance findings share the operator lifecycle described in
-          [The attention spine](./attention-spine): one identity, one annotation trail, one path
-          into a proposal.
-
-### Assertion kinds
-
-Kind	Shape	Passes when
-
-`marker-contains`	`{ column, value }`	A delimited-list substrate column contains `value` as one of its comma-separated members. The consumer-neutral, trace-enforceable realization of "tool X was invoked" when the consumer captures invocations in a column.
-
-`marker-not-contains`	`{ column, value }`	The delimited-list column does NOT contain `value`. Used for forbidden members.
-
-`marker-present`	`{ column, equals? }`	A named substrate column is present on the event. Optionally, its value equals a fixed string.
-
-`marker-absent`	`{ column }`	A named substrate column is absent from the event.
-
-`tool-invoked`	`{ toolName }`	The named tool appears in the call trace. See the callout above: prefer `marker-contains` on a consumer-emitted column for tool-discipline enforcement.
-
-`tool-not-invoked`	`{ toolName }`	The named tool does NOT appear in the call trace. A forbidden path.
-
-`judge`	`{ prompt }`	An LLM judge is invoked with the given prompt and returns a pass/fail verdict against the event.
-
-### Guarded assertions
-
-        A fixture can carry a `when` predicate that decides whether the assertions apply to a given event. The predicate uses the same assertion kinds as the assertions themselves. If `when` is absent, the assertions apply to every event in the window.
-
-```
-{
-  "fixtureId": "no-dollar-figures-without-lookup",
-  "when": [{ "kind": "marker-not-contains", "column": "tool_invocations", "value": "refund_lookup" }],
-  "assertion": { "kind": "marker-not-contains", "column": "response_text", "value": "$" }
-}
-```
-
-        An event that fails the `when` predicate returns `not-applicable` for this fixture instead of pass/fail.
-
-### Verdict precedence
-
-        When multiple assertions run against one event, the overall event verdict is the strongest of the individual assertion verdicts, in this order:
-
-          - `fail`: one assertion definitively failed.
-
-          - `pass`: at least one assertion passed and none failed.
-
-          - `requires-judge`: a `judge` assertion needs to be run before the verdict is complete.
-
-          - `unevaluable`: the event was missing the shape needed to run the assertion at all.
-
-          - `not-applicable`: the `when` guard filtered this event out.
-
-        The check's top-level verdict is the strongest across events, using the same precedence.
-
-### Coverage report
-
-        The derive response's coverage summary is the honest headline: *K of N rules are mechanically enforceable*. It's the number to track over time. As your rules mature and the derive step's classifier improves, the ratio should climb. What it can't yet cover ends up in the needs-repair panel.
-
-### Needs-repair panel
-
-        A rule ends up in `needsRepair` when the derive step couldn't turn it into a check on its own, usually because the rule is ambiguous, or references a system state the fixture format doesn't reach yet. Two ways to clear the entry: rephrase the rule so the derive step can formalize it, or hand-author a fixture and approve it directly.
-
-## Reference
-
-### Endpoints
-
-Method & path	Purpose
-
-`POST /lens/conformance/derive`	Propose candidate fixtures from a capability surface.
-
-`POST /lens/conformance/fixtures`	Approve a fixture (name an `approverId`).
-
-`POST /lens/conformance/check`	Run one or more fixtures against events in a window.
-
-### POST /lens/conformance/derive: response fields
-
-Field	Shape	Notes
-
-`surfaceId`	string	Echo of the surface.
-
-`candidates[]`	array	Proposed fixtures, one per rule that could be formalized.
-
-`coverage`	object	"K of N rules mechanically enforceable" summary.
-
-`needsRepair[]`	array	Rules the derive step could not formalize.
-
-`droppedCount`	number	Count of rules discarded outright (empty, duplicate, or unenforceable in a way the format can't record).
-
-`readBy`	string	The identifier of the derive-step version that produced this output.
-
-`clerkResponseIssue`	object (opt)	Present when the derive step's own output had a shape problem worth surfacing.
-
-### POST /lens/conformance/check: request & response
-
-Field	Shape	Notes
-
-`fixture`	object (opt)	Inline fixture. One of `fixture` or `fixtureId` is required.
-
-`fixtureId`	string (opt)	Stored fixture to run.
-
-`surfaceId`	string (opt)	Restrict the check to one surface.
-
-`provenance`	enum (opt)	Default `all`. Same values as [GET /lens/events](./snapshot).
-
-`since`, `until`	ISO 8601 (opt)	Window bounds.
-
-`limit`	number (opt)	Cap on events considered. Default 1000.
-
-`verdict`	enum	Top-level: `pass`, `fail`, `requires-judge`, `unevaluable`, `not-applicable`.
-
-`verdictDetails[]`	array	Per-event breakdown.
-
-`checkedEventCount`	number	How many events were actually evaluated.
-
-`window`	object	The actual window used (may differ from request when bounds were open).
-
----
-
-### Chapter 11 — The multiplexer
+### Chapter 10 — The multiplexer
 
 _Permalink: https://holonograph.ai/guide/multiplexer_
 
-Chapter 11
+Chapter 10
 
 # The multiplexer
 
@@ -2393,11 +2166,353 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 12 — The lessons pipeline
+### Chapter 11 — Drift attribution
+
+_Permalink: https://holonograph.ai/guide/drift-attribution_
+
+Chapter 11
+
+# Drift attribution
+
+        When a score changes over time, drift attribution tells you *which layer* of your system the change came from. It answers the question every operator asks after a moved number: *is this us, or is this the vendor, or is this our evaluation, or is this just noise?*
+
+## What it is
+
+        A per-surface analysis over a window that returns a **timeline of change points**. Each change point carries three things: the timestamp of the shift, one of four **source labels**, and the window over which the analysis is confident about that label.
+
+        The four source labels are the same four sources of drift the four-layer snapshot separates at capture time:
+
+          - **substrate**: your own deployment
+
+          - **light source**: the vendor moved under you
+
+          - **lens**: your evaluation configuration changed
+
+          - **noise**: the model's irreducible non-determinism
+
+          How to read the four labels
+          Attribute the *change*, not the *component*. The same component can move for different reasons, and each reason is a different source. When your judge model changes, the source is not "the judge" — it is decided by who controlled the change and whether it was visible to you. A vendor silently rerouting the model behind a fixed alias is **light source** drift. You deliberately swapping the judge model, or revising its rubric, is **lens** drift. Same component, same moved number, read apart by control and visibility. Always attribute a change to the source that produced it, never to the part of the system it happened to touch.
+
+## Why it matters
+
+        Without attribution, a score move is a mystery. The operator has to guess at the cause, and every guess pulls the team in a different direction. With attribution, the same score move is a labeled event with a first suggestion for what to do next. The whole point is to route the response to the layer that can act on it.
+
+## How to use it
+
+        Point the analysis at a surface and a window:
+
+```
+POST /lens/attribute
+Authorization: Bearer
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "since": "2026-06-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z",
+  "bucket": "day",
+  "changePointDeltaThreshold": 0.15
+}
+```
+
+        The response is the timeline plus a couple of companion arrays:
+
+```
+{
+  "surfaceId": "classify-intent",
+  "eventCount": 12483,
+  "changePoints": [
+    {
+      "timestamp": "2026-06-14T09:20:00Z",
+      "source": "light source",
+      "window": { "from": "2026-06-12T00:00:00Z", "to": "2026-06-15T00:00:00Z" }
+    }
+  ],
+  "bracketedWindows": [ /* companion windows the analysis wants you to know about before acting */ ]
+}
+```
+
+        `bucket` controls the temporal resolution of the timeline. `changePointDeltaThreshold` is a sensitivity knob: *higher = fewer points*. Both are optional; the defaults are usually what you want.
+
+## Reading the output
+
+        Every change point comes with one of the four source labels. Do this with each:
+
+Label	What it means	What to do
+
+                `substrate`
+                The change tracks something you changed about your deployment.
+                Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your substrate columns (Chapter 04) are where you look first.
+
+                `light source`
+                The vendor moved under you: a model was silently re-routed, updated, or its behavior shifted.
+                Check `light_source_identifier` across the window. If it's stable and the behavior still moved, the vendor changed the model behind an unchanged name.
+
+                `lens`
+                Your evaluation configuration changed.
+                Check the lens version history. A new lens version around the change point means you're seeing the apparatus move, not the system.
+
+                `noise`
+                The model's irreducible non-determinism dominates this window.
+                Gather more data before acting. A noise-labeled change point is a signal to widen the window, not a signal to ship a fix.
+
+        The `bracketedWindows` array holds companion windows the analysis wants you to see before acting on a source label: periods where the timeline is less confident than usual. Read those first when a change point lands adjacent to one.
+
+### Working through a report
+
+        The usual cadence: run the analysis over a window that ends at "yesterday," then walk the change points in order. Each label sends you to a different place (your deploy log, the vendor's changelog, your lens history), and the labeled window tells you where to look. Once every point has an action (or a decision not to act), the report is done.
+
+## Model identity: requested and served
+
+        Attributing a change to the light source relies on recording both sides of it. The model you
+          asked for and the model that answered are two different facts, and a vendor can re-route behind
+          an unchanged alias.
+
+Two apparatus-owned axes, stamped by the SDK at emit time:
+
+Column	What it records
+
+`light_source_identifier`	The light source that was requested.
+
+`light_source_served_model`	The model the vendor actually served.
+
+        Both sit in a reserved namespace. The apparatus owns them, and a consumer may not declare a
+          substrate column under that prefix. A declaration that collides is rejected at boot rather than
+          silently shadowed.
+
+### Why both sides are recorded
+
+        An alias is a promise about identity that the vendor is free to reinterpret. When a provider
+          moves the model behind a name you did not change, every reading on that surface shifts at once.
+          With only the requested axis recorded, the shift has no cause attached to it and reads as a
+          substrate or lens problem.
+
+        Served model is a first-class axis, so the transition is a recorded fact. The served-model ledger
+          reports those transitions over a window. Two properties of that ledger matter when you read it:
+          the changepoint penalty scales with the number of models in the window, and a stray served model
+          raises an explicit excursion rather than widening the band until the stray fits inside it.
+
+### Capturing the axis
+
+          - Nothing to configure on the happy path. The client carries `light.servedModel` to the wire.
+
+          - In HTTP mode the attested `servedModel` and `keyId` ride on the primary `record.light`.
+
+          - If an older client did not send the axis, the server recovers it at ingest, so capture does not depend on client version.
+
+          - For history captured before the axis existed, an operator-run backfill resolver and its CLI fill it in.
+
+### Reading it
+
+        A surface whose requested identifier held steady while the served model moved is a light-source
+          change, not a substrate change. Drift attribution reads both axes, so that case resolves to the
+          light source instead of competing with your own releases for the explanation.
+
+### The judge has the same two sides
+
+        The judge lens carries its own requested provider and credential identity, authored by the
+          apparatus and treated as a judge drift source. A single `lensVersion` under-specifies a
+          judge: two judges scoring the same response under the same software but a different rubric, a
+          different served model, or a different input-context scope are different lenses. The judge-lens
+          facets are stamped on every scored event under the reserved `judge.` namespace.
+
+## Reference
+
+### Endpoint
+
+Method & path	Purpose
+
+`POST /lens/attribute`	Run drift attribution over a window.
+
+### Request
+
+Field	Shape	Notes
+
+`surfaceId`	string (req)	The surface to analyze.
+
+`since`	ISO 8601 (opt)	Inclusive lower bound on events considered.
+
+`until`	ISO 8601 (opt)	Exclusive upper bound.
+
+`bucket`	enum (opt)	`day`, `hour`, `minute`. Temporal resolution of the timeline.
+
+`changePointDeltaThreshold`	number 0–1 (opt)	Sensitivity. Higher = fewer change points.
+
+### Response
+
+Field	Shape	Notes
+
+`surfaceId`	string	Echo of the surface.
+
+`eventCount`	number	How many events were considered.
+
+`changePoints[]`	array	Timeline of change points; each has `timestamp`, `source` label, and `window`.
+
+`bracketedWindows[]`	array	Companion windows worth reading before acting on nearby change points.
+
+---
+
+### Chapter 12 — Variance isolation
+
+_Permalink: https://holonograph.ai/guide/variance-isolation_
+
+Chapter 12
+
+# Variance isolation
+
+        When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a **cleaned** reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
+
+## What it is
+
+        A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a **confidence verdict**. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
+
+## What you get
+
+        A cleaned variance figure and a **confidence verdict**. There are four:
+
+Verdict	Meaning
+
+`viable`	Trustworthy. Act on it.
+
+`degenerate`	Too few distinct conditions to separate signal from noise. Gather more data.
+
+`contaminated`	Inputs weren't held constant enough. Re-run under controlled conditions.
+
+`instrument-limited`	Measurement noise dominates. Don't trust the reading yet.
+
+        The verdict is what decides whether the number is worth acting on. A `viable` reading is the one you use; the other three are diagnostic. Each names *why* the reading isn't ready and *what* would fix it.
+
+## How to run it
+
+        Three endpoints, in order. The first produces the reading; the second gives it a verdict; the third governs what happens to it.
+
+### 1. Produce the reading
+
+```
+POST /lens/decomposeVariance
+Authorization: Bearer
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness",
+  "since": "2026-06-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z"
+}
+```
+
+        Response: an analysis record you'll reference by `eventId` in the next step.
+
+```
+{
+  "eventId": "evt_01H...",
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness"
+}
+```
+
+### 2. Get the verdict
+
+```
+POST /lens/decomposition/evaluate
+Content-Type: application/json
+
+{ "targetEventId": "evt_01H..." }
+```
+
+        Response: the confidence verdict and guidance for what to do next.
+
+### 3. Govern the result
+
+        Once you've seen the verdict, decide what to do with the reading. Governance is one of four actions:
+
+```
+POST /lens/decomposition/lifecycle
+Content-Type: application/json
+
+{
+  "targetEventId": "evt_01H...",
+  "status": "lock",
+  "approverId": "brian",
+  "pinnedLabel": "billing-triage-baseline-2026-Q3"
+}
+```
+
+Status	Effect
+
+`quarantine`	Hold the reading aside; don't use it in downstream comparisons until reviewed.
+
+`approve`	Accept the reading as trustworthy. Requires an `approverId`.
+
+`lock`	Freeze this reading as the reference against a `pinnedLabel`. Requires an `approverId` and the `pinnedLabel`.
+
+`reject`	Discard the reading. Requires an `approverId` and a comment.
+
+        The lifecycle response returns the persisted status alongside the original `targetEventId`. Governance decisions are themselves substrate events. They become part of the record, attributable in future drift readings like any other change.
+
+## What to do with each verdict
+
+Verdict	Next action
+
+                `viable`
+                Read the cleaned variance figure. If you want to hold this specific reading as a reference, `lock` it with a `pinnedLabel`. Otherwise `approve` and move on.
+
+                `degenerate`
+                The window doesn't have enough distinct conditions for the analysis to separate signal from noise. Widen the window, or drive more variety through the surface before re-running.
+
+                `contaminated`
+                The inputs weren't held constant enough to trust the reading. Re-run under controlled conditions. A replay through the surface at a fixed input panel is the usual fix.
+
+                `instrument-limited`
+                Measurement noise dominates whatever real movement is present. Don't trust the reading yet; if the reading matters, `quarantine` it while you widen the window or reduce input variability.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/decomposeVariance`	Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record `eventId`.
+
+`POST /lens/decomposition/evaluate`	Return the confidence verdict for the analysis record.
+
+`POST /lens/decomposition/lifecycle`	Govern the reading: `quarantine`, `approve`, `lock`, or `reject`.
+
+### POST /lens/decomposeVariance: request
+
+Field	Shape	Notes
+
+`surfaceId`	string (req)	The surface.
+
+`dimensionId`	string (req)	The dimension to isolate variance for.
+
+`since`	ISO 8601 (opt)	Inclusive lower bound on events considered.
+
+`until`	ISO 8601 (opt)	Exclusive upper bound.
+
+### POST /lens/decomposition/lifecycle: request
+
+Field	Shape	Notes
+
+`targetEventId`	string (req)	The analysis record from `decomposeVariance`.
+
+`status`	enum (req)	`quarantine`, `approve`, `lock`, or `reject`.
+
+`approverId`	string	Required for `approve`, `lock`, `reject`.
+
+`comment`	string (opt)	Free-form explanation. Required for `reject`.
+
+`pinnedLabel`	string	Required for `lock`. The label under which this reading is held as a reference.
+
+---
+
+### Chapter 13 — The lessons pipeline
 
 _Permalink: https://holonograph.ai/guide/lessons-pipeline_
 
-Chapter 12
+Chapter 13
 
 # The lessons pipeline
 
@@ -2622,257 +2737,176 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 13 — Drift attribution
+### Chapter 14 — Conformance & fixtures
 
-_Permalink: https://holonograph.ai/guide/drift-attribution_
-
-Chapter 13
-
-# Drift attribution
-
-        When a score changes over time, drift attribution tells you *which layer* of your system the change came from. It answers the question every operator asks after a moved number: *is this us, or is this the vendor, or is this our evaluation, or is this just noise?*
-
-        Attributing a change to the light source relies on recording both sides of it: the light source that
-          was requested and the model the vendor actually served. A re-route behind an unchanged alias is
-          visible only because those are separate axes. See [Model identity](./model-identity).
-
-## What it is
-
-        A per-surface analysis over a window that returns a **timeline of change points**. Each change point carries three things: the timestamp of the shift, one of four **source labels**, and the window over which the analysis is confident about that label.
-
-        The four source labels are the same four sources of drift the four-layer snapshot separates at capture time:
-
-          - **substrate**: your own deployment
-
-          - **light source**: the vendor moved under you
-
-          - **lens**: your evaluation configuration changed
-
-          - **noise**: the model's irreducible non-determinism
-
-          How to read the four labels
-          Attribute the *change*, not the *component*. The same component can move for different reasons, and each reason is a different source. When your judge model changes, the source is not "the judge" — it is decided by who controlled the change and whether it was visible to you. A vendor silently rerouting the model behind a fixed alias is **light source** drift. You deliberately swapping the judge model, or revising its rubric, is **lens** drift. Same component, same moved number, read apart by control and visibility. Always attribute a change to the source that produced it, never to the part of the system it happened to touch.
-
-## Why it matters
-
-        Without attribution, a score move is a mystery. The operator has to guess at the cause, and every guess pulls the team in a different direction. With attribution, the same score move is a labeled event with a first suggestion for what to do next. The whole point is to route the response to the layer that can act on it.
-
-## How to use it
-
-        Point the analysis at a surface and a window:
-
-```
-POST /lens/attribute
-Authorization: Bearer
-x-holonograph-run-mode: production
-Content-Type: application/json
-
-{
-  "surfaceId": "classify-intent",
-  "since": "2026-06-01T00:00:00Z",
-  "until": "2026-07-05T00:00:00Z",
-  "bucket": "day",
-  "changePointDeltaThreshold": 0.15
-}
-```
-
-        The response is the timeline plus a couple of companion arrays:
-
-```
-{
-  "surfaceId": "classify-intent",
-  "eventCount": 12483,
-  "changePoints": [
-    {
-      "timestamp": "2026-06-14T09:20:00Z",
-      "source": "light source",
-      "window": { "from": "2026-06-12T00:00:00Z", "to": "2026-06-15T00:00:00Z" }
-    }
-  ],
-  "bracketedWindows": [ /* companion windows the analysis wants you to know about before acting */ ]
-}
-```
-
-        `bucket` controls the temporal resolution of the timeline. `changePointDeltaThreshold` is a sensitivity knob: *higher = fewer points*. Both are optional; the defaults are usually what you want.
-
-## Reading the output
-
-        Every change point comes with one of the four source labels. Do this with each:
-
-Label	What it means	What to do
-
-                `substrate`
-                The change tracks something you changed about your deployment.
-                Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your substrate columns (Chapter 04) are where you look first.
-
-                `light source`
-                The vendor moved under you: a model was silently re-routed, updated, or its behavior shifted.
-                Check `light_source_identifier` across the window. If it's stable and the behavior still moved, the vendor changed the model behind an unchanged name.
-
-                `lens`
-                Your evaluation configuration changed.
-                Check the lens version history. A new lens version around the change point means you're seeing the apparatus move, not the system.
-
-                `noise`
-                The model's irreducible non-determinism dominates this window.
-                Gather more data before acting. A noise-labeled change point is a signal to widen the window, not a signal to ship a fix.
-
-        The `bracketedWindows` array holds companion windows the analysis wants you to see before acting on a source label: periods where the timeline is less confident than usual. Read those first when a change point lands adjacent to one.
-
-### Working through a report
-
-        The usual cadence: run the analysis over a window that ends at "yesterday," then walk the change points in order. Each label sends you to a different place (your deploy log, the vendor's changelog, your lens history), and the labeled window tells you where to look. Once every point has an action (or a decision not to act), the report is done.
-
-## Reference
-
-### Endpoint
-
-Method & path	Purpose
-
-`POST /lens/attribute`	Run drift attribution over a window.
-
-### Request
-
-Field	Shape	Notes
-
-`surfaceId`	string (req)	The surface to analyze.
-
-`since`	ISO 8601 (opt)	Inclusive lower bound on events considered.
-
-`until`	ISO 8601 (opt)	Exclusive upper bound.
-
-`bucket`	enum (opt)	`day`, `hour`, `minute`. Temporal resolution of the timeline.
-
-`changePointDeltaThreshold`	number 0–1 (opt)	Sensitivity. Higher = fewer change points.
-
-### Response
-
-Field	Shape	Notes
-
-`surfaceId`	string	Echo of the surface.
-
-`eventCount`	number	How many events were considered.
-
-`changePoints[]`	array	Timeline of change points; each has `timestamp`, `source` label, and `window`.
-
-`bracketedWindows[]`	array	Companion windows worth reading before acting on nearby change points.
-
----
-
-### Chapter 14 — Variance isolation
-
-_Permalink: https://holonograph.ai/guide/variance-isolation_
+_Permalink: https://holonograph.ai/guide/conformance_
 
 Chapter 14
 
-# Variance isolation
+# Conformance & fixtures
 
-        When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a **cleaned** reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
+        A capability surface is what you say your agent can do: the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is *derive → approve → check*.
 
 ## What it is
 
-        A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a **confidence verdict**. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
+        Three moving pieces:
 
-## What you get
+          - **The derive step** reads a capability surface (its tool declarations and prose rules) and proposes candidate fixtures, one per rule, each with the strongest assertion the rule allows.
 
-        A cleaned variance figure and a **confidence verdict**. There are four:
+          - **The fixtures step** is the human-in-the-loop approval gate. A named approver reviews the candidates, edits or discards, and commits the ones they trust. Nothing runs as a check until it's approved.
 
-Verdict	Meaning
+          - **The check step** runs the approved fixtures against real events over a window and returns a verdict per fixture plus a summary.
 
-`viable`	Trustworthy. Act on it.
+### Enforceability taxonomy
 
-`degenerate`	Too few distinct conditions to separate signal from noise. Gather more data.
+        Not every rule can be checked mechanically. The derive step labels each candidate with one of three enforceability categories, so the coverage report is honest about which rules the machine can actually hold you to:
 
-`contaminated`	Inputs weren't held constant enough. Re-run under controlled conditions.
+Label	Meaning
 
-`instrument-limited`	Measurement noise dominates. Don't trust the reading yet.
+`trace-enforceable`	The rule maps to a deterministic check on the captured trace: tool invocation, marker presence, output field.
 
-        The verdict is what decides whether the number is worth acting on. A `viable` reading is the one you use; the other three are diagnostic. Each names *why* the reading isn't ready and *what* would fix it.
+`judge-required`	The rule can only be evaluated by a graded judgment call: an LLM judge running against the event.
 
-## How to run it
+`unenforceable`	The rule is worth stating but can't be mechanically checked at all (e.g. "be polite"). Recorded for completeness; produces no assertion.
 
-        Three endpoints, in order. The first produces the reading; the second gives it a verdict; the third governs what happens to it.
+## Why it matters
 
-### 1. Produce the reading
+        A prose rule that can't be checked is a rule the system will drift on. Conformance moves rules from "our team believes this" to "the last check confirmed this at 06:00 Tuesday". The coverage report tells you exactly how many of the surface's rules you have mechanical accountability for, and the needs-repair panel tells you which ones the derive step couldn't formalize on its own.
+
+## How to use it
+
+### 1. Derive candidates from the surface
+
+        Send the capability surface (its tools and its rules) and get back a set of candidate fixtures with per-rule enforceability labels.
 
 ```
-POST /lens/decomposeVariance
-Authorization: Bearer
+POST /lens/conformance/derive
 x-holonograph-run-mode: production
 Content-Type: application/json
 
 {
   "surfaceId": "classify-intent",
-  "dimensionId": "correctness",
-  "since": "2026-06-01T00:00:00Z",
+  "tools": [ /* tool declarations */ ],
+  "rules": [
+    "If the user asks for a refund, invoke the refund_lookup tool before responding.",
+    "Never quote a specific dollar amount unless refund_lookup returned one.",
+    "Be polite."
+  ]
+}
+```
+
+        The response gives you the candidates, a coverage summary (e.g. "2 of 3 rules mechanically enforceable"), and a needs-repair list for rules the derive step could not fully formalize.
+
+### 2. Review and approve
+
+        Each candidate is a JSON fixture describing an assertion (or a set of assertions, guarded by a `when` predicate). Review the derived shape, edit if needed, and submit each approved fixture with an `approverId`.
+
+```
+POST /lens/conformance/fixtures
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "approverId": "brian",
+  "sourceSurfaceId": "classify-intent",
+  "fixture": {
+    "fixtureId": "refund-requires-lookup",
+    "ruleId": "billing-triage-refund-flow-01",
+    "ruleSource": "Refund rules v3",
+    "description": "If the user asks for a refund, refund_lookup must be invoked before responding.",
+    "enforceability": "trace-enforceable",
+    "appliesTo": { "surfaceId": "classify-intent" },
+    "when": [{ "kind": "marker-contains", "column": "user_message", "value": "refund" }],
+    "assertion": { "kind": "marker-contains", "column": "tool_invocations", "value": "refund_lookup" }
+  }
+}
+```
+
+          The tool-discipline recipe
+          The cleanest trace-enforceable realization of "tool X was invoked" is `marker-contains` on a consumer-emitted column. Your agent emits a delimited-list substrate column (here `tool_invocations`) recording every tool it actually called; the fixture checks that column with `marker-contains`. Deterministic, cheap, and consumer-neutral. It catches missed tool calls without an LLM judge.
+
+        Response: an `eventId` for the approval event. The fixture is now live in the store and will be picked up by subsequent checks.
+
+### 3. Run a check
+
+        Point the checker at either an inline fixture or a stored one, plus a window and a surface filter.
+
+```
+POST /lens/conformance/check
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "fixtureId": "refund-requires-lookup",
+  "surfaceId": "classify-intent",
+  "since": "2026-07-01T00:00:00Z",
   "until": "2026-07-05T00:00:00Z"
 }
 ```
 
-        Response: an analysis record you'll reference by `eventId` in the next step.
+        The response includes a top-level `verdict`, a per-event breakdown, the count of events checked, and the window actually used.
+
+## Reading the output
+
+        Conformance findings share the operator lifecycle described in
+          [The attention spine](./attention-spine): one identity, one annotation trail, one path
+          into a proposal.
+
+### Assertion kinds
+
+Kind	Shape	Passes when
+
+`marker-contains`	`{ column, value }`	A delimited-list substrate column contains `value` as one of its comma-separated members. The consumer-neutral, trace-enforceable realization of "tool X was invoked" when the consumer captures invocations in a column.
+
+`marker-not-contains`	`{ column, value }`	The delimited-list column does NOT contain `value`. Used for forbidden members.
+
+`marker-present`	`{ column, equals? }`	A named substrate column is present on the event. Optionally, its value equals a fixed string.
+
+`marker-absent`	`{ column }`	A named substrate column is absent from the event.
+
+`tool-invoked`	`{ toolName }`	The named tool appears in the call trace. See the callout above: prefer `marker-contains` on a consumer-emitted column for tool-discipline enforcement.
+
+`tool-not-invoked`	`{ toolName }`	The named tool does NOT appear in the call trace. A forbidden path.
+
+`judge`	`{ prompt }`	An LLM judge is invoked with the given prompt and returns a pass/fail verdict against the event.
+
+### Guarded assertions
+
+        A fixture can carry a `when` predicate that decides whether the assertions apply to a given event. The predicate uses the same assertion kinds as the assertions themselves. If `when` is absent, the assertions apply to every event in the window.
 
 ```
 {
-  "eventId": "evt_01H...",
-  "surfaceId": "classify-intent",
-  "dimensionId": "correctness"
+  "fixtureId": "no-dollar-figures-without-lookup",
+  "when": [{ "kind": "marker-not-contains", "column": "tool_invocations", "value": "refund_lookup" }],
+  "assertion": { "kind": "marker-not-contains", "column": "response_text", "value": "$" }
 }
 ```
 
-### 2. Get the verdict
+        An event that fails the `when` predicate returns `not-applicable` for this fixture instead of pass/fail.
 
-```
-POST /lens/decomposition/evaluate
-Content-Type: application/json
+### Verdict precedence
 
-{ "targetEventId": "evt_01H..." }
-```
+        When multiple assertions run against one event, the overall event verdict is the strongest of the individual assertion verdicts, in this order:
 
-        Response: the confidence verdict and guidance for what to do next.
+          - `fail`: one assertion definitively failed.
 
-### 3. Govern the result
+          - `pass`: at least one assertion passed and none failed.
 
-        Once you've seen the verdict, decide what to do with the reading. Governance is one of four actions:
+          - `requires-judge`: a `judge` assertion needs to be run before the verdict is complete.
 
-```
-POST /lens/decomposition/lifecycle
-Content-Type: application/json
+          - `unevaluable`: the event was missing the shape needed to run the assertion at all.
 
-{
-  "targetEventId": "evt_01H...",
-  "status": "lock",
-  "approverId": "brian",
-  "pinnedLabel": "billing-triage-baseline-2026-Q3"
-}
-```
+          - `not-applicable`: the `when` guard filtered this event out.
 
-Status	Effect
+        The check's top-level verdict is the strongest across events, using the same precedence.
 
-`quarantine`	Hold the reading aside; don't use it in downstream comparisons until reviewed.
+### Coverage report
 
-`approve`	Accept the reading as trustworthy. Requires an `approverId`.
+        The derive response's coverage summary is the honest headline: *K of N rules are mechanically enforceable*. It's the number to track over time. As your rules mature and the derive step's classifier improves, the ratio should climb. What it can't yet cover ends up in the needs-repair panel.
 
-`lock`	Freeze this reading as the reference against a `pinnedLabel`. Requires an `approverId` and the `pinnedLabel`.
+### Needs-repair panel
 
-`reject`	Discard the reading. Requires an `approverId` and a comment.
-
-        The lifecycle response returns the persisted status alongside the original `targetEventId`. Governance decisions are themselves substrate events. They become part of the record, attributable in future drift readings like any other change.
-
-## What to do with each verdict
-
-Verdict	Next action
-
-                `viable`
-                Read the cleaned variance figure. If you want to hold this specific reading as a reference, `lock` it with a `pinnedLabel`. Otherwise `approve` and move on.
-
-                `degenerate`
-                The window doesn't have enough distinct conditions for the analysis to separate signal from noise. Widen the window, or drive more variety through the surface before re-running.
-
-                `contaminated`
-                The inputs weren't held constant enough to trust the reading. Re-run under controlled conditions. A replay through the surface at a fixed input panel is the usual fix.
-
-                `instrument-limited`
-                Measurement noise dominates whatever real movement is present. Don't trust the reading yet; if the reading matters, `quarantine` it while you widen the window or reduce input variability.
+        A rule ends up in `needsRepair` when the derive step couldn't turn it into a check on its own, usually because the rule is ambiguous, or references a system state the fixture format doesn't reach yet. Two ways to clear the entry: rephrase the rule so the derive step can formalize it, or hand-author a fixture and approve it directly.
 
 ## Reference
 
@@ -2880,45 +2914,647 @@ Verdict	Next action
 
 Method & path	Purpose
 
-`POST /lens/decomposeVariance`	Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record `eventId`.
+`POST /lens/conformance/derive`	Propose candidate fixtures from a capability surface.
 
-`POST /lens/decomposition/evaluate`	Return the confidence verdict for the analysis record.
+`POST /lens/conformance/fixtures`	Approve a fixture (name an `approverId`).
 
-`POST /lens/decomposition/lifecycle`	Govern the reading: `quarantine`, `approve`, `lock`, or `reject`.
+`POST /lens/conformance/check`	Run one or more fixtures against events in a window.
 
-### POST /lens/decomposeVariance: request
-
-Field	Shape	Notes
-
-`surfaceId`	string (req)	The surface.
-
-`dimensionId`	string (req)	The dimension to isolate variance for.
-
-`since`	ISO 8601 (opt)	Inclusive lower bound on events considered.
-
-`until`	ISO 8601 (opt)	Exclusive upper bound.
-
-### POST /lens/decomposition/lifecycle: request
+### POST /lens/conformance/derive: response fields
 
 Field	Shape	Notes
 
-`targetEventId`	string (req)	The analysis record from `decomposeVariance`.
+`surfaceId`	string	Echo of the surface.
 
-`status`	enum (req)	`quarantine`, `approve`, `lock`, or `reject`.
+`candidates[]`	array	Proposed fixtures, one per rule that could be formalized.
 
-`approverId`	string	Required for `approve`, `lock`, `reject`.
+`coverage`	object	"K of N rules mechanically enforceable" summary.
 
-`comment`	string (opt)	Free-form explanation. Required for `reject`.
+`needsRepair[]`	array	Rules the derive step could not formalize.
 
-`pinnedLabel`	string	Required for `lock`. The label under which this reading is held as a reference.
+`droppedCount`	number	Count of rules discarded outright (empty, duplicate, or unenforceable in a way the format can't record).
+
+`readBy`	string	The identifier of the derive-step version that produced this output.
+
+`clerkResponseIssue`	object (opt)	Present when the derive step's own output had a shape problem worth surfacing.
+
+### POST /lens/conformance/check: request & response
+
+Field	Shape	Notes
+
+`fixture`	object (opt)	Inline fixture. One of `fixture` or `fixtureId` is required.
+
+`fixtureId`	string (opt)	Stored fixture to run.
+
+`surfaceId`	string (opt)	Restrict the check to one surface.
+
+`provenance`	enum (opt)	Default `all`. Same values as [GET /lens/events](./snapshot).
+
+`since`, `until`	ISO 8601 (opt)	Window bounds.
+
+`limit`	number (opt)	Cap on events considered. Default 1000.
+
+`verdict`	enum	Top-level: `pass`, `fail`, `requires-judge`, `unevaluable`, `not-applicable`.
+
+`verdictDetails[]`	array	Per-event breakdown.
+
+`checkedEventCount`	number	How many events were actually evaluated.
+
+`window`	object	The actual window used (may differ from request when bounds were open).
 
 ---
 
-### Chapter 15 — Route a verdict to a human
+### Chapter 15 — Judge modes
+
+_Permalink: https://holonograph.ai/guide/judge-modes_
+
+Chapter 15
+
+# Judge modes
+
+        Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
+
+## What it is
+
+        Two axes. **Timing** is `async` (the judge runs off the producer's hot
+          path) or `inline` (the producer waits for the verdict before finishing).
+          **Authority over delivery** runs `open` (observe only) to
+          `reflection` (the judge may send the producer back to retry) to `gate`
+          (delivery is blocked).
+
+	open	reflection	gate
+
+**async**	Open, asynchronous	impossible	impossible
+
+**inline**	Open, inline	Reflection granted	Actually gated
+
+        The two empty cells are impossible rather than unspecified. Reflection and gating both need the
+          verdict before the producer finishes, and an asynchronous verdict is not back yet. The
+          consequence is worth stating plainly: **async is available only to a judge that observes
+          and nothing more.**
+
+## Why it matters
+
+### The judge never disposes
+
+        Across all four modes the judge's authority stops at reflection. It can observe, and at most it
+          can send the producer back to try again. It cannot block delivery. Disposal belongs to
+          deterministic code in the gate, which is producer-owned, or to operator policy. Propose-only
+          holds in every mode.
+
+### Inline and observing is the expensive cell
+
+        A judge that runs in-request while its verdict touches nothing pays full latency for no in-band
+          effect. A fleet of observe-only judges parked there is where large latency overheads come from.
+          The cell is justified as a step toward reflection or a gate, not as a destination. Move the judge
+          to async, or give it authority.
+
+## How to use it
+
+          - Pick the mode per surface. A judge that only records belongs in async.
+
+          - Reflection is a capped retry, not a block. Budget the retries.
+
+          - A gate is deterministic code reading a verdict. Write the gate; do not ask the model to be one.
+
+## Reading the output
+
+        An asynchronous verdict lands after the producer has answered, as a linked judge event. A reader
+          resolves it link-first and falls back to the embedded verdict, fail-open, so a consumer never
+          blocks on a verdict that has not arrived. Per-judgment verdict provenance distinguishes the raw
+          judge result from the producer-filtered one.
+
+## Reference
+
+        The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
+          the implementation. The reflection path and the judge-gate enforcement cluster each have their
+          own specification; this chapter is the frame that places them.
+
+---
+
+### Chapter 16 — Seams
+
+_Permalink: https://holonograph.ai/guide/seams_
+
+Chapter 16
+
+# Seams
+
+        A value whose meaning is not fixed by its representation, driving a decision that governs a consequential transition, is a seam. It is permanent. You can close it and you can monitor it. You cannot validate it away.
+
+## What it is
+
+        A seam is an edge: the path a value travels from where it is produced to the decision that
+          consumes it. Write it `I &rarr; DP`, interpretive source to decision point.
+
+        Whether an input is interpreted is a property of that edge, not of the field and not of whether
+          the code is deterministic. The same field can lie on a deterministic edge to one consumer and an
+          interpreted edge to another. A model output, a classifier, an approximate match, a pattern applied
+          to free text, an external feed, a recorded human judgment: each is an interpreted source, and each
+          is interpreted because of what the consuming decision does with it.
+
+        The decision point reverts to an ordinary, inert sink under one condition only: it stops making
+          decisions. Its output goes to a log line, a rendered field, a return nobody branches on. Short of
+          that, the seam stays.
+
+## Why it matters
+
+### Provenance is monotone
+
+        Consider a decision that reads free text and returns one of three values:
+
+        function decide(ticket): 'page' | 'auto-reply' | 'queue' {
+  const msg = (ticket.subject + ticket.body).toLowerCase();   // I0
+  if (INCIDENT.test(msg)) return 'page';
+  ...
+}
+
+const action = decide(ticket);        // I1: deterministic in value, interpreted in provenance
+if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority
+
+          The enum is not a sanitizer. It is the decision's codomain. `action` is a first-class
+          interpretive value, deterministic in what it holds and interpreted in where it came from. The
+          chain runs `I0 &rarr; DP &rarr; I1 &rarr; DP1` and onward, and the provenance rides
+          through every hop. Relocating the decision upstream moves the decision point; it does not escape
+          anything. The next scan finds it in its new place.
+
+### Validation changes the character of the error, not its existence
+
+        A schema boundary filters the catastrophic: wrong type, missing field, malformed JSON. It passes
+          the shape-valid-but-wrong. So it raises the floor and, in the same motion, makes the residual
+          error insidious, because the value now looks right, types right, and fails quietly downstream.
+
+        A pattern that pulls `'success'` out of *"I hope you are a great success in life"*
+          and resolves it to `route.SUCCESS` is the whole problem in one line. The enum fixed the
+          form, not the misread. It is a confidently wrong signal wearing a valid badge.
+
+        This is why structure cannot finish the job. Closing a seam makes the decision attended and
+          monitorable. It does not make the decision correct. Correctness is a different axis, the empirical
+          misfire rate, and the only instrument for it is soak. Structure hands off exactly the error class
+          it cannot catch to the instrument that can.
+
+## Open and closed
+
+        With provenance carried, the two states have a precise inductive definition over the chain.
+
+State	Condition
+
+**closed**	The decision point is attended, meaning it has a defined no-match or abstention path, *and* its output's provenance chain terminates in non-deciding sinks. Every downstream consumer is either another closed decision point or something that does not decide.
+
+**open**	Any unattended decision point in the chain, or a chain that feeds an unattended authority decision point. The defective state.
+
+        A closed seam is a declared surface. It stays closed only while its measurement holds, which is
+          why closed and ready for soak belong in the same breath.
+
+## The four closure shapes
+
+        These are the structural forms a closure takes. They are shapes, not an exhaustive list of the
+          decisions that can exercise authority; the sink taxonomy is an open registry.
+
+Shape	Form
+
+`regex-over-value`	A pattern tested, matched or replaced against the interpreted value.
+
+`branch-on-value`	An `if` or `switch` comparing the value to literals.
+
+`threshold-on-value`	An `if` comparing the value to a numeric literal.
+
+`value-as-key`	The value used as an index or map key.
+
+## Model calls are seams
+
+        A model call is a seam whose interpreter is not stationary. A pattern does not rewrite itself
+          between releases; a model can be re-routed behind an unchanged alias, and the instrument scoring
+          it is usually another model. So a model seam carries more variance machinery: the four-source
+          decomposition, the served-model axis, judge facets, saturation and orthogonality.
+
+        The machinery differs; the lifecycle does not. Code seams and model seams both soak, both file
+          findings on the spine, and both reach authority. They sit on adjacent surfaces, not in separate
+          systems. A seam is itself a light source, recorded as
+          `seam//`, which is how a non-model interpreter takes the
+          same slot a vendor would without pretending to be one.
+
+## Reference
+
+        The shape is the lens's own `judge &rarr; verdict &rarr; gate &rarr; action` model
+          applied inside ordinary code: `decide &rarr; enum &rarr; dispatch &rarr; sink` is the
+          same structure. The enum is a verdict, carrying light from an interpreted source, and a dispatch
+          acting on it is governed by that light.
+
+---
+
+### Chapter 17 — The seam monitor
+
+_Permalink: https://holonograph.ai/guide/seam-monitor_
+
+Chapter 17
+
+# The seam monitor
+
+        The monitor has a build-time half and a run-time half over one record. Source analysis produces evidence, a gate adjudicates it, a confirmed seam is registered as a surface, and soak measures whether the closure holds against real inputs.
+
+## What it is
+
+        Five stages, each with one job and one output. The separation matters: the scanner is an evidence
+          producer, not an adjudicator.
+
+Stage	Role	Output
+
+Source scan	Evidence producer	A candidate interpretation edge, as structural facts
+
+Interpretation gate	Semantic adjudication	A typed disposition
+
+Registration	Declaration	A surface on the append-only record
+
+Run-time producer	Viability measurement	Soak findings on live traffic
+
+Authority state	Consumer	The per-surface reading over all of the above
+
+        The scan reports what it can establish structurally: that a value originates from a known source
+          locus, flows through named identifiers, reaches a branch, threshold, pattern or key sink, and that
+          the default path has a particular shape. It never emits a verdict.
+
+### The three dispositions
+
+        The gate answers one question before the authority machine asks any of its own: is this a closure
+          over an open interpreted domain at all?
+
+Disposition	Meaning
+
+`certain-interpreted`	The input's meaning is not fixed by its representation and the edge governs authority. A real seam; the state machine applies.
+
+`certain-mechanical`	The edge is deterministic or the domain is closed. An exact match, an enum lookup. Not a seam.
+
+`unresolved`	Abstain. The apparatus cannot yet tell, so it withholds the disposition and keeps measuring.
+
+        Only `certain-interpreted` edges become registered records. Abstention here means
+          withholding a consequential disposition and continuing to measure. It is not a queue of requests
+          for a human.
+
+## Why it matters
+
+### The scanner is its own dark surface
+
+        Finding seams is itself a closure over an open domain, namely arbitrary code, so it reports its
+          own blind spots as first-class coverage rather than as silence.
+
+          - `coverage.status`: the overall coverage state for the scanned unit.
+
+          - `coverage.supported_constructs`: the language constructs the front end actually handles.
+
+          - `coverage.unresolved_edges`: edges the taint could not fully follow.
+
+          - `coverage.unparsed`: code the front end could not parse.
+
+          - `coverage.dynamic_escape`: points where dynamic dispatch, reflection or serialization broke the path.
+
+        Partial coverage is never reported as no seams. A scan that could not follow an edge says so, and
+          the hook that reports into a build session says so too rather than issuing a false all-clear.
+
+### Propose only
+
+        The monitor flags and drafts. It does not edit code and it does not block on the lens's own
+          authority. Whether a build stops is a policy the operator or CI sets, and the detector must
+          qualify before that policy is even eligible: observe first, everywhere, including the detector
+          run against its own repository.
+
+        The criterion that governs that qualification is the one the invariant demands of every other
+          instrument. Under rising uncertainty the detector must abstain more, not assert more.
+
+## How to use it
+
+          - Scan a repository and push its seams to the lens, or run the hook so a seam is reported into the session that wrote it.
+
+          - `--propose-sinks` and `--propose-skips` mechanically propose candidates for the authority-sink and skip-path lists rather than asking you to author them cold.
+
+          - Accepted declarations are honored: a seam you declare drops from the lens as well as from the scan.
+
+          - Each reported seam names the authority sink it reaches, so the choice is to declare it or restructure around it.
+
+## Soak: the run-time half
+
+        A soak is the empirical life of a registered seam: how often its no-match or abstention path
+          actually fires, which branch it takes, how the decided value's identity churns over time, and
+          optionally whether that value is efficacious.
+
+        A soak observation is a full evaluation event rather than a new event kind, so every existing
+          tool works on it unchanged: the producers, the dashboard, retention and husking, the judge link.
+          The seam-ness lives on the run-time configuration axes instead.
+
+Axis	Value
+
+`provenance`	`seam`. The isolation key. It sits in neither the production-state nor the exploratory-state set, so soaks are excluded from every default analysis and cannot drown a small agent's readings.
+
+`runMode`	The shared enum. Isolation is provenance-keyed and independent of run mode, so `eval` and `replay` mean here what they mean everywhere.
+
+`lightSourceIdentifier`	`seam//`. A seam is a light source that is not a model, and it takes the slot honestly rather than faking a vendor.
+
+        The husk-surviving facts, whether it abstained and which path it took and the value fingerprint,
+          ride in the surface dimension, the substrate columns and the cohort tags. A raw decided value
+          rides in the payload and husks away like a judge rationale.
+
+## Reading the output
+
+        Soaks file under one reserved surface, adjacent to the surface registered seams file under, with
+          individual seams as loci inside it. Findings from both reach the attention spine as
+          `builder-seam` and `seam-soak` sources, alongside every other finding the
+          instrument produces.
+
+## Reference
+
+        The shared vocabulary, the four sink shapes, the default-path forms and the sink kinds, lives in
+          the public contract package so the build-time scanner and the run-time producer name the same
+          things. The interpretation disposition is the same enum the authority state machine reads.
+
+---
+
+### Chapter 18 — The attention spine
+
+_Permalink: https://holonograph.ai/guide/attention-spine_
+
+Chapter 18
+
+# The attention spine
+
+        Every observe-only surface produces findings, and there are twenty-five sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
+
+## What it is
+
+        A cross-source triage layer over findings. It declares three objects and nothing else:
+
+Object	What it holds
+
+`FindingRef`	The stable identity of a finding, independent of the scan that produced it.
+
+`TriageRecord`	An append-only annotation about that finding.
+
+`Proposal`	What a confirmed finding mints into Curate.
+
+### The sources
+
+        Twenty-five, spanning judge behavior, evaluation structure, coverage, the store, and the seam
+          work. They are listed here because the spine is only as good as what files into it.
+
+Group	Sources
+
+Judge behavior	`verdict-reliability`, `judge-liveness`, `judge-malfunction`, `co-groundedness`
+
+Evaluation structure	`orthogonality-hypothesis`, `primary-axis-orthogonality`, `redundancy-candidate`, `pairwise-drift`, `contested-cohort`, `rubric-gap`, `rubric-ref-broken`
+
+Coverage and reach	`coverage-gap`, `reach-gap`, `emission-gap`, `dark-mass-blindspot`, `read-window-underpowered`
+
+Surface lifecycle	`trajectory`, `quarantine-candidate`, `retirement-candidate`, `hash-provenance`
+
+Seams and authority	`builder-seam`, `seam-soak`, `authority-suspended`
+
+Store	`store-capacity`, `retention-integrity`
+
+        A code seam and a model call file into the same spine. They arrive from different sources and sit
+          on adjacent surfaces, and from the lifecycle's side they are the same object.
+
+### Three grains
+
+        What a finding's identity means depends on its grain: `run` for one call,
+          `conversation` for one conversation, and `structural` for a declared
+          surface, dimension or axis with no single event behind it.
+
+## Why it matters
+
+        Two invariants hold the spine apart from the measurement it annotates.
+
+### A triage annotation never reaches the substrate
+
+        An annotation is *about* a derived finding. It lives in a separate store, downstream of
+          derivation. It is never an input to the lens hash, and it never mutates the substrate, a prompt,
+          or a threshold. The spine proposes; the existing gated approver path disposes. A triage click
+          changes nothing on the lens.
+
+### Identity survives re-derivation
+
+        Findings are re-derived on every scan. A triage record therefore keys to a content-derived
+          `findingKey` rather than a per-scan row index. Keying to a row index would orphan
+          every annotation on the next deploy. `clusterId` stays an attribute, never the
+          primary grain, because a non-deterministic key has the same effect.
+
+## How to use it
+
+          - Read findings from the spine rather than per-surface. One queue, one lifecycle.
+
+          - Annotate a finding to record what triage concluded. Annotations accumulate; nothing is overwritten.
+
+          - Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.
+
+## Reading the output
+
+        A finding carries its `findingRef`, the surface and dimension it came from, the run
+          mode it was derived under, and its triage state. Where a finding has an exemplar, the exemplar
+          payload travels with it under the same husk projection used elsewhere in the store, so a triaged
+          finding on a compacted span still opens.
+
+## What sits on top
+
+        The spine is the base. Authority is a reading over the same record: a per-surface state derived
+          from what the gates, the dependencies and the soak evidence say, re-derived on every read. A
+          surface whose grant is withdrawn files `authority-suspended` back onto the spine as
+          another finding, which is how a withdrawal reaches the same queue as everything else.
+
+        Reflection sits above that again, switched on for a cell once its authority is established.
+
+## Reference
+
+        The public module declares the wire and store contract only. Which surface maps to which
+          `FindingRef`, and the store implementation, live in the lens package.
+
+---
+
+### Chapter 19 — Authority
+
+_Permalink: https://holonograph.ai/guide/authority_
+
+Chapter 19
+
+# Authority
+
+        Authority is a state held per decision surface: the declared prerequisites for a specified consequential transition are satisfied on the record as it stands. It is established only by the satisfaction of the gates its contract names, it is re-derived at every read, and no actor confers it.
+
+## What it is not
+
+        Four neighbouring words get used for this and none of them is it.
+
+Term	What it means
+
+Permission	An actor is allowed to act.
+
+Approval	An actor affirmatively accepts something.
+
+Correctness	A proposition matches an applicable reference.
+
+Confidence	A degree of belief, or a measurement's precision.
+
+**Authority**	The declared prerequisites for this transition are satisfied on the record.
+
+        Humans, builders and mechanicals all produce events on the record. No kind of actor confers
+          authority. An operator approving a decision is approval, recorded as such; it does not move the
+          state.
+
+## The six states
+
+        An ordered ladder a decision surface climbs, plus the one state the apparatus can drop it into.
+
+State	Meaning
+
+`unmapped`	No authority sink has been identified here. The honest default: not yet mapped, rather than no seam.
+
+`mapped`	A sink is identified, but nothing asserts authority over it. The seam exists; no claim of certainty stands on it.
+
+`declared`	Authority is asserted and the gate is live, but the certainty condition is not established and no qualifying evidence is accruing.
+
+`qualifying`	Asserted and actively accumulating the evidence that would establish the condition. Live traffic is exercising the sink.
+
+`granted`	The declared certainty condition is established on live evidence and every dependency holds.
+
+`suspended`	Authority was granted and a dependency left its declared condition, so the apparatus withdrew the grant itself.
+
+        Default ordering puts `suspended` first, because a grant withdrawn out from under a
+          live decision is the loudest thing on the page. `granted` and `unmapped` are
+          the quietest: one is working as intended, the other is a coverage note rather than an alarm.
+
+### Re-derived, never stored
+
+        A reading is computed from the recorded events at every read. No state is stored, so a reading
+          cannot drift from the substrate it describes. A reading also never mutates anything: the apparatus
+          proposes, the operator and CI dispose.
+
+## The authority stack and its conditions
+
+        Every object whose identity or value a grant was computed on is recorded as a stamped column. The
+          set of them is the surface's authority stack. Where a dependency is a model, the recorded identity
+          is the one that *served* the call, not the one requested.
+
+        Each dependency declares the envelope within which a change leaves the grant valid.
+
+Condition	Envelope
+
+`identity`	The default. The dependency must be the same thing.
+
+`equivalence`	A different thing, declared equivalent.
+
+`reach`	Within a declared reach.
+
+`band`	Within a declared band.
+
+        A change inside the envelope is recorded and raised for review, with no transition. A change
+          outside it suspends. Re-establishing a withdrawn grant takes the re-satisfaction of every gate
+          over the post-change record, not an acknowledgement.
+
+### Tears
+
+        A tear is a served or judge model value appearing on a surface for the first time. The soak window
+          anchors at the previous stack change, held back to the segment before the latest unacknowledged
+          tear, and **a tear never self-clears**. An operator acknowledgement releases it; the
+          window then starts no earlier than the acknowledged tear, and the acknowledgement leaves an
+          append-only, server-minted audit record that is never compacted.
+
+        Acknowledgements apply oldest first. Acknowledging a tear while an older one on the same surface
+          is still open is refused. The operator's authority policy sets whether one acknowledgement covers
+          a per-surface watermark, the default, or only the single tear.
+
+## How to use it
+
+          - Declare the surface and its contract: what the decision concludes, on what evidence, under what prerequisites, with which abstention path and gate composition.
+
+          - Let it run. A surface without traffic cannot accumulate the evidence that would qualify it, which is why `declared` and `qualifying` are different states.
+
+          - Read the map rather than a single number. A living system holds authority on every surface rarely and briefly; which surfaces hold it, and what withdrew the rest, is the reading.
+
+## Reference
+
+        The state ontology, the dependency-condition kinds, the stack and contract shapes and the pure
+          state machine are public contract. Signal extraction, turning gate composition, floors, versions
+          and drift into the preconditions the machine maps to a state, lives in the lens.
+
+---
+
+### Chapter 20 — Reflection
+
+_Permalink: https://holonograph.ai/guide/reflection_
+
+Chapter 20
+
+# Reflection
+
+        When a response fails a judge, the judge’s grounded critique can go back to the producer for a capped retry. Holonograph grants that per judge, rubric, facet and surface, and only after that exact cell has certified. It is never a default and never an operator toggle.
+
+## Why it is gated
+
+        Reflection turns a judge from an evaluator you read into an optimization target the producer
+          chases. That inverts the trust requirement. A judge you only read can be a little wrong, because
+          you flag and a human reviews. A judge you optimize against has to be right, because the producer
+          will find and exploit every gap in it.
+
+        The gate is on validity, not on discrimination. Those come apart: a judge can score stably and
+          still be blind, saturated, or wrong about how a construct should treat absence. Scoring the same
+          way every time is reliability, and reliability does not imply validity.
+
+### The specific hazard
+
+        Real dimensions are often requires-confirmation: an honest "I do not have the data" correctly
+          scores low. Put that judge in a retry loop and the cheapest way for the producer to raise its
+          score is to stop being honest about the absence and fabricate. That is the exact failure the
+          apparatus exists to catch, now with a loop optimizing toward it.
+
+        So reflection without established authority is not merely a waste of tokens and time. It is a
+          pressure applied to the one behavior you most need preserved.
+
+## What has to hold
+
+        Reflection unlocks for a `judge &times; rubric &times; facet &times; surface` cell when
+          all of the following hold. The gate is dual: Holonograph computes the statistical pass, then a
+          human confirms.
+
+          - **Soak.** Enough live production data to reach a statistical N. Holonograph determines the statistical pass; a human approves the N, judging whether the sample spans the breadth of real inputs and outputs.
+
+          - **Discrimination.** The facet's dimensions pass discrimination evaluation, with a human confirming key outlier calls and a statistical sampling of calls on that facet.
+
+          - **Saturation cleared.** Every dimension passes the saturation audit.
+
+        Validity is cell-specific, so the grant is too. A judge certified on one facet of one surface has
+          said nothing about another.
+
+## What it does
+
+        A failing response returns to the producer with the judge's grounded critique attached, and the
+          producer retries, capped. Reflection is the soft tier of the judge's authority over delivery: it
+          can send the producer back, it cannot block. Blocking remains deterministic code in the gate, or
+          operator policy.
+
+        Because a verdict has to be in hand before the producer finishes, reflection is inline by
+          construction. An asynchronous judge observes and nothing more.
+
+## Revocation
+
+        The grant is revoked on any change to the identity it was computed on. A new judge model, a
+          revised rubric, a changed context scope: the cell certifies again or it does not reflect. This is
+          the authority machinery applied to the judge rather than to the producer, and it suspends the same
+          way for the same reasons.
+
+## Reference
+
+        Your own reflection loop remains yours to run; nothing here prevents it. The claim is narrower
+          and worth stating plainly: a retry loop against an uncertified judge spends tokens to apply
+          pressure in an unknown direction. Holonograph turns reflection on when the cell has earned it, if
+          you have asked for it.
+
+        The taxonomy that places reflection among the judge modes is documented ahead of the
+          implementation, as is this chapter.
+
+---
+
+### Chapter 21 — Route a verdict to a human
 
 _Permalink: https://holonograph.ai/guide/subscriptions_
 
-Chapter 15
+Chapter 21
 
 # Route a verdict to a human
 
@@ -3094,205 +3730,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 16 — The attention spine
-
-_Permalink: https://holonograph.ai/guide/attention-spine_
-
-Chapter 16
-
-# The attention spine
-
-        Every observe-only surface produces findings. Verdict reliability, judge liveness, trajectory, orthogonality, coverage, quarantine. The spine gives all of them one operator lifecycle instead of one list per surface.
-
-## What it is
-
-        A cross-source triage layer over findings. It declares three objects and nothing else:
-
-Object	What it holds
-
-`FindingRef`	The stable identity of a finding, independent of the scan that produced it.
-
-`TriageRecord`	An append-only annotation about that finding.
-
-`Proposal`	What a confirmed finding mints into Curate.
-
-## Why it matters
-
-        Two invariants hold the spine apart from the measurement it annotates.
-
-### A triage annotation never reaches the substrate
-
-        An annotation is *about* a derived finding. It lives in a separate store, downstream of
-          derivation. It is never an input to the lens hash, and it never mutates the substrate, a prompt,
-          or a threshold. The spine proposes; the existing gated approver path disposes. A triage click
-          changes nothing on the lens.
-
-### Identity survives re-derivation
-
-        Findings are re-derived on every scan. A triage record therefore keys to a content-derived
-          `findingKey` rather than a per-scan row index. Keying to a row index would orphan
-          every annotation on the next deploy. `clusterId` stays an attribute, never the
-          primary grain, because a non-deterministic key has the same effect.
-
-## How to use it
-
-          - Read findings from the spine rather than per-surface. One queue, one lifecycle.
-
-          - Annotate a finding to record what triage concluded. Annotations accumulate; nothing is overwritten.
-
-          - Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.
-
-## Reading the output
-
-        A finding carries its `findingRef`, the surface and dimension it came from, the run
-          mode it was derived under, and its triage state. Where a finding has an exemplar, the exemplar
-          payload travels with it under the same husk projection used elsewhere in the store, so a triaged
-          finding on a compacted span still opens.
-
-## Reference
-
-        The public module declares the wire and store contract only. Which surface maps to which
-          `FindingRef`, and the store implementation, live in the lens package.
-
----
-
-### Chapter 17 — Model identity
-
-_Permalink: https://holonograph.ai/guide/model-identity_
-
-Chapter 17
-
-# Model identity
-
-        The model you asked for and the model that answered are two different facts. A vendor can re-route behind an unchanged alias. Holonograph records both sides, so that change has a name instead of showing up as unexplained drift.
-
-## What it is
-
-        Two apparatus-owned axes, stamped by the SDK at emit time:
-
-Column	What it records
-
-`light_source_identifier`	The light source that was requested.
-
-`light_source_served_model`	The model the vendor actually served.
-
-        Both sit in a reserved namespace. The apparatus owns them, and a consumer may not declare a
-          substrate column under that prefix. A declaration that collides is rejected at boot rather than
-          silently shadowed.
-
-## Why it matters
-
-        An alias is a promise about identity that the vendor is free to reinterpret. When a provider
-          moves the model behind a name you did not change, every reading on that surface shifts at once.
-          With only the requested axis recorded, the shift has no cause attached to it and reads as a
-          substrate or lens problem.
-
-        Served model is a first-class axis, so the transition is a recorded fact. The served-model ledger
-          reports those transitions over a window. Two properties of that ledger matter when you read it:
-          the changepoint penalty scales with the number of models in the window, and a stray served model
-          raises an explicit excursion rather than widening the band until the stray fits inside it.
-
-## How to use it
-
-          - Nothing to configure on the happy path. The client carries `light.servedModel` to the wire.
-
-          - In HTTP mode the attested `servedModel` and `keyId` ride on the primary `record.light`.
-
-          - If an older client did not send the axis, the server recovers it at ingest, so capture does not depend on client version.
-
-          - For history captured before the axis existed, an operator-run backfill resolver and its CLI fill it in.
-
-## Reading the output
-
-        A surface whose requested identifier held steady while the served model moved is a light-source
-          change, not a substrate change. Drift attribution reads both axes, so that case resolves to the
-          light source instead of competing with your own releases for the explanation.
-
-## Reference
-
-### The judge has the same two sides
-
-        The judge lens carries its own requested provider and credential identity, authored by the
-          apparatus and treated as a judge drift source. A single `lensVersion` under-specifies a
-          judge: two judges scoring the same response under the same software but a different rubric, a
-          different served model, or a different input-context scope are different lenses. The judge-lens
-          facets are stamped on every scored event under the reserved `judge.` namespace.
-
----
-
-### Chapter 18 — Judge modes
-
-_Permalink: https://holonograph.ai/guide/judge-modes_
-
-Chapter 18
-
-# Judge modes
-
-        Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
-
-## What it is
-
-        Two axes. **Timing** is `async` (the judge runs off the producer's hot
-          path) or `inline` (the producer waits for the verdict before finishing).
-          **Authority over delivery** runs `open` (observe only) to
-          `reflection` (the judge may send the producer back to retry) to `gate`
-          (delivery is blocked).
-
-	open	reflection	gate
-
-**async**	Open, asynchronous	impossible	impossible
-
-**inline**	Open, inline	Reflection granted	Actually gated
-
-        The two empty cells are impossible rather than unspecified. Reflection and gating both need the
-          verdict before the producer finishes, and an asynchronous verdict is not back yet. The
-          consequence is worth stating plainly: **async is available only to a judge that observes
-          and nothing more.**
-
-## Why it matters
-
-### The judge never disposes
-
-        Across all four modes the judge's authority stops at reflection. It can observe, and at most it
-          can send the producer back to try again. It cannot block delivery. Disposal belongs to
-          deterministic code in the gate, which is producer-owned, or to operator policy. Propose-only
-          holds in every mode.
-
-### Inline and observing is the expensive cell
-
-        A judge that runs in-request while its verdict touches nothing pays full latency for no in-band
-          effect. A fleet of observe-only judges parked there is where large latency overheads come from.
-          The cell is justified as a step toward reflection or a gate, not as a destination. Move the judge
-          to async, or give it authority.
-
-## How to use it
-
-          - Pick the mode per surface. A judge that only records belongs in async.
-
-          - Reflection is a capped retry, not a block. Budget the retries.
-
-          - A gate is deterministic code reading a verdict. Write the gate; do not ask the model to be one.
-
-## Reading the output
-
-        An asynchronous verdict lands after the producer has answered, as a linked judge event. A reader
-          resolves it link-first and falls back to the embedded verdict, fail-open, so a consumer never
-          blocks on a verdict that has not arrived. Per-judgment verdict provenance distinguishes the raw
-          judge result from the producer-filtered one.
-
-## Reference
-
-        The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
-          the implementation. The reflection path and the judge-gate enforcement cluster each have their
-          own specification; this chapter is the frame that places them.
-
----
-
-### Chapter 19 — Compaction & husking
+### Chapter 22 — Compaction & husking
 
 _Permalink: https://holonograph.ai/guide/compaction_
 
-Chapter 19
+Chapter 22
 
 # Compaction & husking
 

@@ -31,7 +31,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=2" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -55,7 +55,9 @@
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
       <ol>
+        <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li class="s-part">Operating the lens</li>
         <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
         <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
         <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
@@ -64,28 +66,34 @@
         <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
         <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
         <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">12</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li><span class="s-num">13</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">14</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
-        <li><span class="s-num">15</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li class="current"><span class="s-num">16</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
-        <li><span class="s-num">17</span><a href="./model-identity" class="s-ttl">Model identity</a></li>
-        <li><span class="s-num">18</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
-        <li><span class="s-num">19</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Variance controls for model seams</li>
+        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
+        <li class="s-part">Seams, soak, and authority</li>
+        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li class="current"><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li class="s-part">Operational utilities</li>
+        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
       </ol>
     </aside>
 
     <main class="guide-main">
       <article>
 
-        <p class="guide-eyebrow">Chapter 16</p>
+        <p class="guide-eyebrow">Chapter 18</p>
         <h1 class="guide-h1">The attention spine</h1>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          Every observe-only surface produces findings. Verdict reliability, judge liveness, trajectory, orthogonality, coverage, quarantine. The spine gives all of them one operator lifecycle instead of one list per surface.
+          Every observe-only surface produces findings, and there are twenty-five sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
         </p>
 
         <h2>What it is</h2>
@@ -104,6 +112,40 @@
             </tbody>
           </table>
         </div>
+
+        <h3>The sources</h3>
+
+        <p>
+          Twenty-five, spanning judge behavior, evaluation structure, coverage, the store, and the seam
+          work. They are listed here because the spine is only as good as what files into it.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Group</th><th>Sources</th></tr></thead>
+            <tbody>
+              <tr><td>Judge behavior</td><td><code>verdict-reliability</code>, <code>judge-liveness</code>, <code>judge-malfunction</code>, <code>co-groundedness</code></td></tr>
+              <tr><td>Evaluation structure</td><td><code>orthogonality-hypothesis</code>, <code>primary-axis-orthogonality</code>, <code>redundancy-candidate</code>, <code>pairwise-drift</code>, <code>contested-cohort</code>, <code>rubric-gap</code>, <code>rubric-ref-broken</code></td></tr>
+              <tr><td>Coverage and reach</td><td><code>coverage-gap</code>, <code>reach-gap</code>, <code>emission-gap</code>, <code>dark-mass-blindspot</code>, <code>read-window-underpowered</code></td></tr>
+              <tr><td>Surface lifecycle</td><td><code>trajectory</code>, <code>quarantine-candidate</code>, <code>retirement-candidate</code>, <code>hash-provenance</code></td></tr>
+              <tr><td>Seams and authority</td><td><code>builder-seam</code>, <code>seam-soak</code>, <code>authority-suspended</code></td></tr>
+              <tr><td>Store</td><td><code>store-capacity</code>, <code>retention-integrity</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          A code seam and a model call file into the same spine. They arrive from different sources and sit
+          on adjacent surfaces, and from the lifecycle's side they are the same object.
+        </p>
+
+        <h3>Three grains</h3>
+
+        <p>
+          What a finding's identity means depends on its grain: <code>run</code> for one call,
+          <code>conversation</code> for one conversation, and <code>structural</code> for a declared
+          surface, dimension or axis with no single event behind it.
+        </p>
 
         <h2>Why it matters</h2>
 
@@ -146,6 +188,19 @@
           finding on a compacted span still opens.
         </p>
 
+        <h2>What sits on top</h2>
+
+        <p>
+          The spine is the base. Authority is a reading over the same record: a per-surface state derived
+          from what the gates, the dependencies and the soak evidence say, re-derived on every read. A
+          surface whose grant is withdrawn files <code>authority-suspended</code> back onto the spine as
+          another finding, which is how a withdrawal reaches the same queue as everything else.
+        </p>
+
+        <p>
+          Reflection sits above that again, switched on for a cell once its authority is established.
+        </p>
+
         <h2>Reference</h2>
 
         <p>
@@ -154,13 +209,13 @@
         </p>
 
         <nav class="guide-nav" aria-label="Chapter navigation">
-          <a href="./subscriptions" class="nav-prev">
+          <a href="./seam-monitor" class="nav-prev">
             <span class="nav-label">Previous</span>
-            <span class="nav-title">Route a verdict to a human</span>
+            <span class="nav-title">The seam monitor</span>
           </a>
-          <a href="./model-identity" class="nav-next">
+          <a href="./authority" class="nav-next">
             <span class="nav-label">Next</span>
-            <span class="nav-title">Model identity</span>
+            <span class="nav-title">Authority</span>
           </a>
         </nav>
 
@@ -170,7 +225,7 @@
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>Chapter 16 · The attention spine</span>
+    <span>Chapter 18 · The attention spine</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
 <script src="../guidenav.js"></script>

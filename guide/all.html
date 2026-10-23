@@ -52,16 +52,19 @@
         <li><span class="s-num">07</span><a href="#run-modes" class="s-ttl">Run modes</a></li>
         <li><span class="s-num">08</span><a href="#sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
         <li><span class="s-num">09</span><a href="#topology-scanner" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="#conformance" class="s-ttl">Conformance & fixtures</a></li>
-        <li><span class="s-num">11</span><a href="#multiplexer" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">12</span><a href="#lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li><span class="s-num">13</span><a href="#drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">14</span><a href="#variance-isolation" class="s-ttl">Variance isolation</a></li>
-        <li><span class="s-num">15</span><a href="#subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li><span class="s-num">16</span><a href="#attention-spine" class="s-ttl">The attention spine</a></li>
-        <li><span class="s-num">17</span><a href="#model-identity" class="s-ttl">Model identity</a></li>
-        <li><span class="s-num">18</span><a href="#judge-modes" class="s-ttl">Judge modes</a></li>
-        <li><span class="s-num">19</span><a href="#compaction" class="s-ttl">Compaction & husking</a></li>
+        <li><span class="s-num">10</span><a href="#multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">11</span><a href="#drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">12</span><a href="#variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">13</span><a href="#lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li><span class="s-num">14</span><a href="#conformance" class="s-ttl">Conformance & fixtures</a></li>
+        <li><span class="s-num">15</span><a href="#judge-modes" class="s-ttl">Judge modes</a></li>
+        <li><span class="s-num">16</span><a href="#seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">17</span><a href="#seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">18</span><a href="#attention-spine" class="s-ttl">The attention spine</a></li>
+        <li><span class="s-num">19</span><a href="#authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">20</span><a href="#reflection" class="s-ttl">Reflection</a></li>
+        <li><span class="s-num">21</span><a href="#subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">22</span><a href="#compaction" class="s-ttl">Compaction & husking</a></li>
       </ol>
     </aside>
 
@@ -1974,246 +1977,8 @@ Content-Type: application/json
         </section>
 
 
-        <section id="conformance" class="guide-chapter-block" aria-label="Chapter 10">
+        <section id="multiplexer" class="guide-chapter-block" aria-label="Chapter 10">
 <p class="guide-eyebrow">Chapter 10</p>
-        <h2 class="guide-h1">Conformance &amp; fixtures</h2>
-        <p class="guide-meta"></p>
-
-        <p class="guide-lede">
-          A capability surface is what you say your agent can do: the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is <em>derive → approve → check</em>.
-        </p>
-
-        <h2>What it is</h2>
-
-        <p>
-          Three moving pieces:
-        </p>
-
-        <ul>
-          <li><strong>The derive step</strong> reads a capability surface (its tool declarations and prose rules) and proposes candidate fixtures, one per rule, each with the strongest assertion the rule allows.</li>
-          <li><strong>The fixtures step</strong> is the human-in-the-loop approval gate. A named approver reviews the candidates, edits or discards, and commits the ones they trust. Nothing runs as a check until it's approved.</li>
-          <li><strong>The check step</strong> runs the approved fixtures against real events over a window and returns a verdict per fixture plus a summary.</li>
-        </ul>
-
-        <h3>Enforceability taxonomy</h3>
-
-        <p>
-          Not every rule can be checked mechanically. The derive step labels each candidate with one of three enforceability categories, so the coverage report is honest about which rules the machine can actually hold you to:
-        </p>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Label</th><th>Meaning</th></tr></thead>
-            <tbody>
-              <tr><td><code>trace-enforceable</code></td><td>The rule maps to a deterministic check on the captured trace: tool invocation, marker presence, output field.</td></tr>
-              <tr><td><code>judge-required</code></td><td>The rule can only be evaluated by a graded judgment call: an LLM judge running against the event.</td></tr>
-              <tr><td><code>unenforceable</code></td><td>The rule is worth stating but can't be mechanically checked at all (e.g. "be polite"). Recorded for completeness; produces no assertion.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>Why it matters</h2>
-
-        <p>
-          A prose rule that can't be checked is a rule the system will drift on. Conformance moves rules from "our team believes this" to "the last check confirmed this at 06:00 Tuesday". The coverage report tells you exactly how many of the surface's rules you have mechanical accountability for, and the needs-repair panel tells you which ones the derive step couldn't formalize on its own.
-        </p>
-
-        <h2>How to use it</h2>
-
-        <h3>1. Derive candidates from the surface</h3>
-
-        <p>
-          Send the capability surface (its tools and its rules) and get back a set of candidate fixtures with per-rule enforceability labels.
-        </p>
-
-        <pre><code>POST /lens/conformance/derive
-x-holonograph-run-mode: production
-Content-Type: application/json
-
-{
-  "surfaceId": "classify-intent",
-  "tools": [ /* tool declarations */ ],
-  "rules": [
-    "If the user asks for a refund, invoke the refund_lookup tool before responding.",
-    "Never quote a specific dollar amount unless refund_lookup returned one.",
-    "Be polite."
-  ]
-}</code></pre>
-
-        <p>
-          The response gives you the candidates, a coverage summary (e.g. "2 of 3 rules mechanically enforceable"), and a needs-repair list for rules the derive step could not fully formalize.
-        </p>
-
-        <h3>2. Review and approve</h3>
-
-        <p>
-          Each candidate is a JSON fixture describing an assertion (or a set of assertions, guarded by a <code>when</code> predicate). Review the derived shape, edit if needed, and submit each approved fixture with an <code>approverId</code>.
-        </p>
-
-        <pre><code>POST /lens/conformance/fixtures
-x-holonograph-run-mode: production
-Content-Type: application/json
-
-{
-  "approverId": "brian",
-  "sourceSurfaceId": "classify-intent",
-  "fixture": {
-    "fixtureId": "refund-requires-lookup",
-    "ruleId": "billing-triage-refund-flow-01",
-    "ruleSource": "Refund rules v3",
-    "description": "If the user asks for a refund, refund_lookup must be invoked before responding.",
-    "enforceability": "trace-enforceable",
-    "appliesTo": { "surfaceId": "classify-intent" },
-    "when": [{ "kind": "marker-contains", "column": "user_message", "value": "refund" }],
-    "assertion": { "kind": "marker-contains", "column": "tool_invocations", "value": "refund_lookup" }
-  }
-}</code></pre>
-
-        <div class="guide-callout">
-          <span class="callout-label">The tool-discipline recipe</span>
-          The cleanest trace-enforceable realization of "tool X was invoked" is <code>marker-contains</code> on a consumer-emitted column. Your agent emits a delimited-list substrate column (here <code>tool_invocations</code>) recording every tool it actually called; the fixture checks that column with <code>marker-contains</code>. Deterministic, cheap, and consumer-neutral. It catches missed tool calls without an LLM judge.
-        </div>
-
-        <p>Response: an <code>eventId</code> for the approval event. The fixture is now live in the store and will be picked up by subsequent checks.</p>
-
-        <h3>3. Run a check</h3>
-
-        <p>Point the checker at either an inline fixture or a stored one, plus a window and a surface filter.</p>
-
-        <pre><code>POST /lens/conformance/check
-x-holonograph-run-mode: production
-Content-Type: application/json
-
-{
-  "fixtureId": "refund-requires-lookup",
-  "surfaceId": "classify-intent",
-  "since": "2026-07-01T00:00:00Z",
-  "until": "2026-07-05T00:00:00Z"
-}</code></pre>
-
-        <p>The response includes a top-level <code>verdict</code>, a per-event breakdown, the count of events checked, and the window actually used.</p>
-
-        <h2>Reading the output</h2>
-
-        <p>
-          Conformance findings share the operator lifecycle described in
-          <a href="./attention-spine">The attention spine</a>: one identity, one annotation trail, one path
-          into a proposal.
-        </p>
-
-        <h3>Assertion kinds</h3>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Kind</th><th>Shape</th><th>Passes when</th></tr></thead>
-            <tbody>
-              <tr><td><code>marker-contains</code></td><td><code>{ column, value }</code></td><td>A delimited-list substrate column contains <code>value</code> as one of its comma-separated members. The consumer-neutral, trace-enforceable realization of "tool X was invoked" when the consumer captures invocations in a column.</td></tr>
-              <tr><td><code>marker-not-contains</code></td><td><code>{ column, value }</code></td><td>The delimited-list column does NOT contain <code>value</code>. Used for forbidden members.</td></tr>
-              <tr><td><code>marker-present</code></td><td><code>{ column, equals? }</code></td><td>A named substrate column is present on the event. Optionally, its value equals a fixed string.</td></tr>
-              <tr><td><code>marker-absent</code></td><td><code>{ column }</code></td><td>A named substrate column is absent from the event.</td></tr>
-              <tr><td><code>tool-invoked</code></td><td><code>{ toolName }</code></td><td>The named tool appears in the call trace. See the callout above: prefer <code>marker-contains</code> on a consumer-emitted column for tool-discipline enforcement.</td></tr>
-              <tr><td><code>tool-not-invoked</code></td><td><code>{ toolName }</code></td><td>The named tool does NOT appear in the call trace. A forbidden path.</td></tr>
-              <tr><td><code>judge</code></td><td><code>{ prompt }</code></td><td>An LLM judge is invoked with the given prompt and returns a pass/fail verdict against the event.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Guarded assertions</h3>
-
-        <p>
-          A fixture can carry a <code>when</code> predicate that decides whether the assertions apply to a given event. The predicate uses the same assertion kinds as the assertions themselves. If <code>when</code> is absent, the assertions apply to every event in the window.
-        </p>
-
-        <pre><code>{
-  "fixtureId": "no-dollar-figures-without-lookup",
-  "when": [{ "kind": "marker-not-contains", "column": "tool_invocations", "value": "refund_lookup" }],
-  "assertion": { "kind": "marker-not-contains", "column": "response_text", "value": "$" }
-}</code></pre>
-
-        <p>An event that fails the <code>when</code> predicate returns <code>not-applicable</code> for this fixture instead of pass/fail.</p>
-
-        <h3>Verdict precedence</h3>
-
-        <p>
-          When multiple assertions run against one event, the overall event verdict is the strongest of the individual assertion verdicts, in this order:
-        </p>
-
-        <ol>
-          <li><code>fail</code>: one assertion definitively failed.</li>
-          <li><code>pass</code>: at least one assertion passed and none failed.</li>
-          <li><code>requires-judge</code>: a <code>judge</code> assertion needs to be run before the verdict is complete.</li>
-          <li><code>unevaluable</code>: the event was missing the shape needed to run the assertion at all.</li>
-          <li><code>not-applicable</code>: the <code>when</code> guard filtered this event out.</li>
-        </ol>
-
-        <p>The check's top-level verdict is the strongest across events, using the same precedence.</p>
-
-        <h3>Coverage report</h3>
-
-        <p>The derive response's coverage summary is the honest headline: <em>K of N rules are mechanically enforceable</em>. It's the number to track over time. As your rules mature and the derive step's classifier improves, the ratio should climb. What it can't yet cover ends up in the needs-repair panel.</p>
-
-        <h3>Needs-repair panel</h3>
-
-        <p>
-          A rule ends up in <code>needsRepair</code> when the derive step couldn't turn it into a check on its own, usually because the rule is ambiguous, or references a system state the fixture format doesn't reach yet. Two ways to clear the entry: rephrase the rule so the derive step can formalize it, or hand-author a fixture and approve it directly.
-        </p>
-
-        <h2>Reference</h2>
-
-        <h3>Endpoints</h3>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
-            <tbody>
-              <tr><td><code>POST /lens/conformance/derive</code></td><td>Propose candidate fixtures from a capability surface.</td></tr>
-              <tr><td><code>POST /lens/conformance/fixtures</code></td><td>Approve a fixture (name an <code>approverId</code>).</td></tr>
-              <tr><td><code>POST /lens/conformance/check</code></td><td>Run one or more fixtures against events in a window.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3><code>POST /lens/conformance/derive</code>: response fields</h3>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td><code>surfaceId</code></td><td>string</td><td>Echo of the surface.</td></tr>
-              <tr><td><code>candidates[]</code></td><td>array</td><td>Proposed fixtures, one per rule that could be formalized.</td></tr>
-              <tr><td><code>coverage</code></td><td>object</td><td>"K of N rules mechanically enforceable" summary.</td></tr>
-              <tr><td><code>needsRepair[]</code></td><td>array</td><td>Rules the derive step could not formalize.</td></tr>
-              <tr><td><code>droppedCount</code></td><td>number</td><td>Count of rules discarded outright (empty, duplicate, or unenforceable in a way the format can't record).</td></tr>
-              <tr><td><code>readBy</code></td><td>string</td><td>The identifier of the derive-step version that produced this output.</td></tr>
-              <tr><td><code>clerkResponseIssue</code></td><td>object (opt)</td><td>Present when the derive step's own output had a shape problem worth surfacing.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3><code>POST /lens/conformance/check</code>: request &amp; response</h3>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td><code>fixture</code></td><td>object (opt)</td><td>Inline fixture. One of <code>fixture</code> or <code>fixtureId</code> is required.</td></tr>
-              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>Stored fixture to run.</td></tr>
-              <tr><td><code>surfaceId</code></td><td>string (opt)</td><td>Restrict the check to one surface.</td></tr>
-              <tr><td><code>provenance</code></td><td>enum (opt)</td><td>Default <code>all</code>. Same values as <a href="./snapshot">GET /lens/events</a>.</td></tr>
-              <tr><td><code>since</code>, <code>until</code></td><td>ISO 8601 (opt)</td><td>Window bounds.</td></tr>
-              <tr><td><code>limit</code></td><td>number (opt)</td><td>Cap on events considered. Default 1000.</td></tr>
-              <tr><td><code>verdict</code></td><td>enum</td><td>Top-level: <code>pass</code>, <code>fail</code>, <code>requires-judge</code>, <code>unevaluable</code>, <code>not-applicable</code>.</td></tr>
-              <tr><td><code>verdictDetails[]</code></td><td>array</td><td>Per-event breakdown.</td></tr>
-              <tr><td><code>checkedEventCount</code></td><td>number</td><td>How many events were actually evaluated.</td></tr>
-              <tr><td><code>window</code></td><td>object</td><td>The actual window used (may differ from request when bounds were open).</td></tr>
-            </tbody>
-          </table>
-        </div>
-        </section>
-
-
-        <section id="multiplexer" class="guide-chapter-block" aria-label="Chapter 11">
-<p class="guide-eyebrow">Chapter 11</p>
         <h2 class="guide-h1">The multiplexer</h2>
         <p class="guide-meta"></p>
 
@@ -2453,8 +2218,403 @@ await handle.reportOutcome({
         </section>
 
 
-        <section id="lessons-pipeline" class="guide-chapter-block" aria-label="Chapter 12">
+        <section id="drift-attribution" class="guide-chapter-block" aria-label="Chapter 11">
+<p class="guide-eyebrow">Chapter 11</p>
+        <h2 class="guide-h1">Drift attribution</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          When a score changes over time, drift attribution tells you <em>which layer</em> of your system the change came from. It answers the question every operator asks after a moved number: <em>is this us, or is this the vendor, or is this our evaluation, or is this just noise?</em>
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          A per-surface analysis over a window that returns a <strong>timeline of change points</strong>. Each change point carries three things: the timestamp of the shift, one of four <strong>source labels</strong>, and the window over which the analysis is confident about that label.
+        </p>
+
+        <p>The four source labels are the same four sources of drift the four-layer snapshot separates at capture time:</p>
+
+        <ul>
+          <li><strong>substrate</strong>: your own deployment</li>
+          <li><strong>light source</strong>: the vendor moved under you</li>
+          <li><strong>lens</strong>: your evaluation configuration changed</li>
+          <li><strong>noise</strong>: the model's irreducible non-determinism</li>
+        </ul>
+
+        <div class="guide-callout">
+          <span class="callout-label">How to read the four labels</span>
+          Attribute the <em>change</em>, not the <em>component</em>. The same component can move for different reasons, and each reason is a different source. When your judge model changes, the source is not "the judge" — it is decided by who controlled the change and whether it was visible to you. A vendor silently rerouting the model behind a fixed alias is <strong>light source</strong> drift. You deliberately swapping the judge model, or revising its rubric, is <strong>lens</strong> drift. Same component, same moved number, read apart by control and visibility. Always attribute a change to the source that produced it, never to the part of the system it happened to touch.
+        </div>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          Without attribution, a score move is a mystery. The operator has to guess at the cause, and every guess pulls the team in a different direction. With attribution, the same score move is a labeled event with a first suggestion for what to do next. The whole point is to route the response to the layer that can act on it.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <p>Point the analysis at a surface and a window:</p>
+
+        <pre><code>POST /lens/attribute
+Authorization: Bearer &lt;token&gt;
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "since": "2026-06-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z",
+  "bucket": "day",
+  "changePointDeltaThreshold": 0.15
+}</code></pre>
+
+        <p>The response is the timeline plus a couple of companion arrays:</p>
+
+        <pre><code>{
+  "surfaceId": "classify-intent",
+  "eventCount": 12483,
+  "changePoints": [
+    {
+      "timestamp": "2026-06-14T09:20:00Z",
+      "source": "light source",
+      "window": { "from": "2026-06-12T00:00:00Z", "to": "2026-06-15T00:00:00Z" }
+    }
+  ],
+  "bracketedWindows": [ /* companion windows the analysis wants you to know about before acting */ ]
+}</code></pre>
+
+        <p><code>bucket</code> controls the temporal resolution of the timeline. <code>changePointDeltaThreshold</code> is a sensitivity knob: <em>higher = fewer points</em>. Both are optional; the defaults are usually what you want.</p>
+
+        <h2>Reading the output</h2>
+
+        <p>Every change point comes with one of the four source labels. Do this with each:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Label</th><th>What it means</th><th>What to do</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>substrate</code></td>
+                <td>The change tracks something you changed about your deployment.</td>
+                <td>Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your substrate columns (Chapter 04) are where you look first.</td>
+              </tr>
+              <tr>
+                <td><code>light source</code></td>
+                <td>The vendor moved under you: a model was silently re-routed, updated, or its behavior shifted.</td>
+                <td>Check <code>light_source_identifier</code> across the window. If it's stable and the behavior still moved, the vendor changed the model behind an unchanged name.</td>
+              </tr>
+              <tr>
+                <td><code>lens</code></td>
+                <td>Your evaluation configuration changed.</td>
+                <td>Check the lens version history. A new lens version around the change point means you're seeing the apparatus move, not the system.</td>
+              </tr>
+              <tr>
+                <td><code>noise</code></td>
+                <td>The model's irreducible non-determinism dominates this window.</td>
+                <td>Gather more data before acting. A noise-labeled change point is a signal to widen the window, not a signal to ship a fix.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The <code>bracketedWindows</code> array holds companion windows the analysis wants you to see before acting on a source label: periods where the timeline is less confident than usual. Read those first when a change point lands adjacent to one.
+        </p>
+
+        <h3>Working through a report</h3>
+
+        <p>The usual cadence: run the analysis over a window that ends at "yesterday," then walk the change points in order. Each label sends you to a different place (your deploy log, the vendor's changelog, your lens history), and the labeled window tells you where to look. Once every point has an action (or a decision not to act), the report is done.</p>
+
+
+        <h2>Model identity: requested and served</h2>
+
+        <p>
+          Attributing a change to the light source relies on recording both sides of it. The model you
+          asked for and the model that answered are two different facts, and a vendor can re-route behind
+          an unchanged alias.
+        </p>
+
+<p>
+          Two apparatus-owned axes, stamped by the SDK at emit time:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Column</th><th>What it records</th></tr></thead>
+            <tbody>
+              <tr><td><code>light_source_identifier</code></td><td>The light source that was requested.</td></tr>
+              <tr><td><code>light_source_served_model</code></td><td>The model the vendor actually served.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Both sit in a reserved namespace. The apparatus owns them, and a consumer may not declare a
+          substrate column under that prefix. A declaration that collides is rejected at boot rather than
+          silently shadowed.
+        </p>
+
+        <h3>Why both sides are recorded</h3>
+
+        <p>
+          An alias is a promise about identity that the vendor is free to reinterpret. When a provider
+          moves the model behind a name you did not change, every reading on that surface shifts at once.
+          With only the requested axis recorded, the shift has no cause attached to it and reads as a
+          substrate or lens problem.
+        </p>
+
+        <p>
+          Served model is a first-class axis, so the transition is a recorded fact. The served-model ledger
+          reports those transitions over a window. Two properties of that ledger matter when you read it:
+          the changepoint penalty scales with the number of models in the window, and a stray served model
+          raises an explicit excursion rather than widening the band until the stray fits inside it.
+        </p>
+
+        <h3>Capturing the axis</h3>
+
+        <ul>
+          <li>Nothing to configure on the happy path. The client carries <code>light.servedModel</code> to the wire.</li>
+          <li>In HTTP mode the attested <code>servedModel</code> and <code>keyId</code> ride on the primary <code>record.light</code>.</li>
+          <li>If an older client did not send the axis, the server recovers it at ingest, so capture does not depend on client version.</li>
+          <li>For history captured before the axis existed, an operator-run backfill resolver and its CLI fill it in.</li>
+        </ul>
+
+        <h3>Reading it</h3>
+
+        <p>
+          A surface whose requested identifier held steady while the served model moved is a light-source
+          change, not a substrate change. Drift attribution reads both axes, so that case resolves to the
+          light source instead of competing with your own releases for the explanation.
+        </p>
+
+        <h3>The judge has the same two sides</h3>
+
+        <p>
+          The judge lens carries its own requested provider and credential identity, authored by the
+          apparatus and treated as a judge drift source. A single <code>lensVersion</code> under-specifies a
+          judge: two judges scoring the same response under the same software but a different rubric, a
+          different served model, or a different input-context scope are different lenses. The judge-lens
+          facets are stamped on every scored event under the reserved <code>judge.</code> namespace.
+        </p>
+
+        <h2>Reference</h2>
+
+        <h3>Endpoint</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/attribute</code></td><td>Run drift attribution over a window.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Request</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string (req)</td><td>The surface to analyze.</td></tr>
+              <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on events considered.</td></tr>
+              <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound.</td></tr>
+              <tr><td><code>bucket</code></td><td>enum (opt)</td><td><code>day</code>, <code>hour</code>, <code>minute</code>. Temporal resolution of the timeline.</td></tr>
+              <tr><td><code>changePointDeltaThreshold</code></td><td>number 0–1 (opt)</td><td>Sensitivity. Higher = fewer change points.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Response</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string</td><td>Echo of the surface.</td></tr>
+              <tr><td><code>eventCount</code></td><td>number</td><td>How many events were considered.</td></tr>
+              <tr><td><code>changePoints[]</code></td><td>array</td><td>Timeline of change points; each has <code>timestamp</code>, <code>source</code> label, and <code>window</code>.</td></tr>
+              <tr><td><code>bracketedWindows[]</code></td><td>array</td><td>Companion windows worth reading before acting on nearby change points.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        </section>
+
+
+        <section id="variance-isolation" class="guide-chapter-block" aria-label="Chapter 12">
 <p class="guide-eyebrow">Chapter 12</p>
+        <h2 class="guide-h1">Variance isolation</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a <strong>cleaned</strong> reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
+        </p>
+
+        <h2>What you get</h2>
+
+        <p>A cleaned variance figure and a <strong>confidence verdict</strong>. There are four:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Verdict</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>viable</code></td><td>Trustworthy. Act on it.</td></tr>
+              <tr><td><code>degenerate</code></td><td>Too few distinct conditions to separate signal from noise. Gather more data.</td></tr>
+              <tr><td><code>contaminated</code></td><td>Inputs weren't held constant enough. Re-run under controlled conditions.</td></tr>
+              <tr><td><code>instrument-limited</code></td><td>Measurement noise dominates. Don't trust the reading yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The verdict is what decides whether the number is worth acting on. A <code>viable</code> reading is the one you use; the other three are diagnostic. Each names <em>why</em> the reading isn't ready and <em>what</em> would fix it.
+        </p>
+
+        <h2>How to run it</h2>
+
+        <p>Three endpoints, in order. The first produces the reading; the second gives it a verdict; the third governs what happens to it.</p>
+
+        <h3>1. Produce the reading</h3>
+
+        <pre><code>POST /lens/decomposeVariance
+Authorization: Bearer &lt;token&gt;
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness",
+  "since": "2026-06-01T00:00:00Z",
+  "until": "2026-07-05T00:00:00Z"
+}</code></pre>
+
+        <p>Response: an analysis record you'll reference by <code>eventId</code> in the next step.</p>
+
+        <pre><code>{
+  "eventId": "evt_01H...",
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness"
+}</code></pre>
+
+        <h3>2. Get the verdict</h3>
+
+        <pre><code>POST /lens/decomposition/evaluate
+Content-Type: application/json
+
+{ "targetEventId": "evt_01H..." }</code></pre>
+
+        <p>Response: the confidence verdict and guidance for what to do next.</p>
+
+        <h3>3. Govern the result</h3>
+
+        <p>Once you've seen the verdict, decide what to do with the reading. Governance is one of four actions:</p>
+
+        <pre><code>POST /lens/decomposition/lifecycle
+Content-Type: application/json
+
+{
+  "targetEventId": "evt_01H...",
+  "status": "lock",
+  "approverId": "brian",
+  "pinnedLabel": "billing-triage-baseline-2026-Q3"
+}</code></pre>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Status</th><th>Effect</th></tr></thead>
+            <tbody>
+              <tr><td><code>quarantine</code></td><td>Hold the reading aside; don't use it in downstream comparisons until reviewed.</td></tr>
+              <tr><td><code>approve</code></td><td>Accept the reading as trustworthy. Requires an <code>approverId</code>.</td></tr>
+              <tr><td><code>lock</code></td><td>Freeze this reading as the reference against a <code>pinnedLabel</code>. Requires an <code>approverId</code> and the <code>pinnedLabel</code>.</td></tr>
+              <tr><td><code>reject</code></td><td>Discard the reading. Requires an <code>approverId</code> and a comment.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The lifecycle response returns the persisted status alongside the original <code>targetEventId</code>. Governance decisions are themselves substrate events. They become part of the record, attributable in future drift readings like any other change.</p>
+
+        <h2>What to do with each verdict</h2>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Verdict</th><th>Next action</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>viable</code></td>
+                <td>Read the cleaned variance figure. If you want to hold this specific reading as a reference, <code>lock</code> it with a <code>pinnedLabel</code>. Otherwise <code>approve</code> and move on.</td>
+              </tr>
+              <tr>
+                <td><code>degenerate</code></td>
+                <td>The window doesn't have enough distinct conditions for the analysis to separate signal from noise. Widen the window, or drive more variety through the surface before re-running.</td>
+              </tr>
+              <tr>
+                <td><code>contaminated</code></td>
+                <td>The inputs weren't held constant enough to trust the reading. Re-run under controlled conditions. A replay through the surface at a fixed input panel is the usual fix.</td>
+              </tr>
+              <tr>
+                <td><code>instrument-limited</code></td>
+                <td>Measurement noise dominates whatever real movement is present. Don't trust the reading yet; if the reading matters, <code>quarantine</code> it while you widen the window or reduce input variability.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Reference</h2>
+
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/decomposeVariance</code></td><td>Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record <code>eventId</code>.</td></tr>
+              <tr><td><code>POST /lens/decomposition/evaluate</code></td><td>Return the confidence verdict for the analysis record.</td></tr>
+              <tr><td><code>POST /lens/decomposition/lifecycle</code></td><td>Govern the reading: <code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>POST /lens/decomposeVariance</code>: request</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>surfaceId</code></td><td>string (req)</td><td>The surface.</td></tr>
+              <tr><td><code>dimensionId</code></td><td>string (req)</td><td>The dimension to isolate variance for.</td></tr>
+              <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on events considered.</td></tr>
+              <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><code>POST /lens/decomposition/lifecycle</code>: request</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>targetEventId</code></td><td>string (req)</td><td>The analysis record from <code>decomposeVariance</code>.</td></tr>
+              <tr><td><code>status</code></td><td>enum (req)</td><td><code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
+              <tr><td><code>approverId</code></td><td>string</td><td>Required for <code>approve</code>, <code>lock</code>, <code>reject</code>.</td></tr>
+              <tr><td><code>comment</code></td><td>string (opt)</td><td>Free-form explanation. Required for <code>reject</code>.</td></tr>
+              <tr><td><code>pinnedLabel</code></td><td>string</td><td>Required for <code>lock</code>. The label under which this reading is held as a reference.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        </section>
+
+
+        <section id="lessons-pipeline" class="guide-chapter-block" aria-label="Chapter 13">
+<p class="guide-eyebrow">Chapter 13</p>
         <h2 class="guide-h1">The lessons pipeline</h2>
         <p class="guide-meta"></p>
 
@@ -2677,288 +2837,189 @@ Content-Type: application/json
         </section>
 
 
-        <section id="drift-attribution" class="guide-chapter-block" aria-label="Chapter 13">
-<p class="guide-eyebrow">Chapter 13</p>
-        <h2 class="guide-h1">Drift attribution</h2>
+        <section id="conformance" class="guide-chapter-block" aria-label="Chapter 14">
+<p class="guide-eyebrow">Chapter 14</p>
+        <h2 class="guide-h1">Conformance &amp; fixtures</h2>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          When a score changes over time, drift attribution tells you <em>which layer</em> of your system the change came from. It answers the question every operator asks after a moved number: <em>is this us, or is this the vendor, or is this our evaluation, or is this just noise?</em>
-        </p>
-
-        <p>
-          Attributing a change to the light source relies on recording both sides of it: the light source that
-          was requested and the model the vendor actually served. A re-route behind an unchanged alias is
-          visible only because those are separate axes. See <a href="./model-identity">Model identity</a>.
+          A capability surface is what you say your agent can do: the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is <em>derive → approve → check</em>.
         </p>
 
         <h2>What it is</h2>
 
         <p>
-          A per-surface analysis over a window that returns a <strong>timeline of change points</strong>. Each change point carries three things: the timestamp of the shift, one of four <strong>source labels</strong>, and the window over which the analysis is confident about that label.
+          Three moving pieces:
         </p>
 
-        <p>The four source labels are the same four sources of drift the four-layer snapshot separates at capture time:</p>
-
         <ul>
-          <li><strong>substrate</strong>: your own deployment</li>
-          <li><strong>light source</strong>: the vendor moved under you</li>
-          <li><strong>lens</strong>: your evaluation configuration changed</li>
-          <li><strong>noise</strong>: the model's irreducible non-determinism</li>
+          <li><strong>The derive step</strong> reads a capability surface (its tool declarations and prose rules) and proposes candidate fixtures, one per rule, each with the strongest assertion the rule allows.</li>
+          <li><strong>The fixtures step</strong> is the human-in-the-loop approval gate. A named approver reviews the candidates, edits or discards, and commits the ones they trust. Nothing runs as a check until it's approved.</li>
+          <li><strong>The check step</strong> runs the approved fixtures against real events over a window and returns a verdict per fixture plus a summary.</li>
         </ul>
 
-        <div class="guide-callout">
-          <span class="callout-label">How to read the four labels</span>
-          Attribute the <em>change</em>, not the <em>component</em>. The same component can move for different reasons, and each reason is a different source. When your judge model changes, the source is not "the judge" — it is decided by who controlled the change and whether it was visible to you. A vendor silently rerouting the model behind a fixed alias is <strong>light source</strong> drift. You deliberately swapping the judge model, or revising its rubric, is <strong>lens</strong> drift. Same component, same moved number, read apart by control and visibility. Always attribute a change to the source that produced it, never to the part of the system it happened to touch.
+        <h3>Enforceability taxonomy</h3>
+
+        <p>
+          Not every rule can be checked mechanically. The derive step labels each candidate with one of three enforceability categories, so the coverage report is honest about which rules the machine can actually hold you to:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Label</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>trace-enforceable</code></td><td>The rule maps to a deterministic check on the captured trace: tool invocation, marker presence, output field.</td></tr>
+              <tr><td><code>judge-required</code></td><td>The rule can only be evaluated by a graded judgment call: an LLM judge running against the event.</td></tr>
+              <tr><td><code>unenforceable</code></td><td>The rule is worth stating but can't be mechanically checked at all (e.g. "be polite"). Recorded for completeness; produces no assertion.</td></tr>
+            </tbody>
+          </table>
         </div>
 
         <h2>Why it matters</h2>
 
         <p>
-          Without attribution, a score move is a mystery. The operator has to guess at the cause, and every guess pulls the team in a different direction. With attribution, the same score move is a labeled event with a first suggestion for what to do next. The whole point is to route the response to the layer that can act on it.
+          A prose rule that can't be checked is a rule the system will drift on. Conformance moves rules from "our team believes this" to "the last check confirmed this at 06:00 Tuesday". The coverage report tells you exactly how many of the surface's rules you have mechanical accountability for, and the needs-repair panel tells you which ones the derive step couldn't formalize on its own.
         </p>
 
         <h2>How to use it</h2>
 
-        <p>Point the analysis at a surface and a window:</p>
+        <h3>1. Derive candidates from the surface</h3>
 
-        <pre><code>POST /lens/attribute
-Authorization: Bearer &lt;token&gt;
+        <p>
+          Send the capability surface (its tools and its rules) and get back a set of candidate fixtures with per-rule enforceability labels.
+        </p>
+
+        <pre><code>POST /lens/conformance/derive
 x-holonograph-run-mode: production
 Content-Type: application/json
 
 {
   "surfaceId": "classify-intent",
-  "since": "2026-06-01T00:00:00Z",
-  "until": "2026-07-05T00:00:00Z",
-  "bucket": "day",
-  "changePointDeltaThreshold": 0.15
+  "tools": [ /* tool declarations */ ],
+  "rules": [
+    "If the user asks for a refund, invoke the refund_lookup tool before responding.",
+    "Never quote a specific dollar amount unless refund_lookup returned one.",
+    "Be polite."
+  ]
 }</code></pre>
 
-        <p>The response is the timeline plus a couple of companion arrays:</p>
+        <p>
+          The response gives you the candidates, a coverage summary (e.g. "2 of 3 rules mechanically enforceable"), and a needs-repair list for rules the derive step could not fully formalize.
+        </p>
 
-        <pre><code>{
-  "surfaceId": "classify-intent",
-  "eventCount": 12483,
-  "changePoints": [
-    {
-      "timestamp": "2026-06-14T09:20:00Z",
-      "source": "light source",
-      "window": { "from": "2026-06-12T00:00:00Z", "to": "2026-06-15T00:00:00Z" }
-    }
-  ],
-  "bracketedWindows": [ /* companion windows the analysis wants you to know about before acting */ ]
-}</code></pre>
-
-        <p><code>bucket</code> controls the temporal resolution of the timeline. <code>changePointDeltaThreshold</code> is a sensitivity knob: <em>higher = fewer points</em>. Both are optional; the defaults are usually what you want.</p>
-
-        <h2>Reading the output</h2>
-
-        <p>Every change point comes with one of the four source labels. Do this with each:</p>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Label</th><th>What it means</th><th>What to do</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><code>substrate</code></td>
-                <td>The change tracks something you changed about your deployment.</td>
-                <td>Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your substrate columns (Chapter 04) are where you look first.</td>
-              </tr>
-              <tr>
-                <td><code>light source</code></td>
-                <td>The vendor moved under you: a model was silently re-routed, updated, or its behavior shifted.</td>
-                <td>Check <code>light_source_identifier</code> across the window. If it's stable and the behavior still moved, the vendor changed the model behind an unchanged name.</td>
-              </tr>
-              <tr>
-                <td><code>lens</code></td>
-                <td>Your evaluation configuration changed.</td>
-                <td>Check the lens version history. A new lens version around the change point means you're seeing the apparatus move, not the system.</td>
-              </tr>
-              <tr>
-                <td><code>noise</code></td>
-                <td>The model's irreducible non-determinism dominates this window.</td>
-                <td>Gather more data before acting. A noise-labeled change point is a signal to widen the window, not a signal to ship a fix.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <h3>2. Review and approve</h3>
 
         <p>
-          The <code>bracketedWindows</code> array holds companion windows the analysis wants you to see before acting on a source label: periods where the timeline is less confident than usual. Read those first when a change point lands adjacent to one.
+          Each candidate is a JSON fixture describing an assertion (or a set of assertions, guarded by a <code>when</code> predicate). Review the derived shape, edit if needed, and submit each approved fixture with an <code>approverId</code>.
         </p>
 
-        <h3>Working through a report</h3>
-
-        <p>The usual cadence: run the analysis over a window that ends at "yesterday," then walk the change points in order. Each label sends you to a different place (your deploy log, the vendor's changelog, your lens history), and the labeled window tells you where to look. Once every point has an action (or a decision not to act), the report is done.</p>
-
-        <h2>Reference</h2>
-
-        <h3>Endpoint</h3>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
-            <tbody>
-              <tr><td><code>POST /lens/attribute</code></td><td>Run drift attribution over a window.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Request</h3>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td><code>surfaceId</code></td><td>string (req)</td><td>The surface to analyze.</td></tr>
-              <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on events considered.</td></tr>
-              <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound.</td></tr>
-              <tr><td><code>bucket</code></td><td>enum (opt)</td><td><code>day</code>, <code>hour</code>, <code>minute</code>. Temporal resolution of the timeline.</td></tr>
-              <tr><td><code>changePointDeltaThreshold</code></td><td>number 0–1 (opt)</td><td>Sensitivity. Higher = fewer change points.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Response</h3>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td><code>surfaceId</code></td><td>string</td><td>Echo of the surface.</td></tr>
-              <tr><td><code>eventCount</code></td><td>number</td><td>How many events were considered.</td></tr>
-              <tr><td><code>changePoints[]</code></td><td>array</td><td>Timeline of change points; each has <code>timestamp</code>, <code>source</code> label, and <code>window</code>.</td></tr>
-              <tr><td><code>bracketedWindows[]</code></td><td>array</td><td>Companion windows worth reading before acting on nearby change points.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        </section>
-
-
-        <section id="variance-isolation" class="guide-chapter-block" aria-label="Chapter 14">
-<p class="guide-eyebrow">Chapter 14</p>
-        <h2 class="guide-h1">Variance isolation</h2>
-        <p class="guide-meta"></p>
-
-        <p class="guide-lede">
-          When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a <strong>cleaned</strong> reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
-        </p>
-
-        <h2>What it is</h2>
-
-        <p>
-          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
-        </p>
-
-        <h2>What you get</h2>
-
-        <p>A cleaned variance figure and a <strong>confidence verdict</strong>. There are four:</p>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Verdict</th><th>Meaning</th></tr></thead>
-            <tbody>
-              <tr><td><code>viable</code></td><td>Trustworthy. Act on it.</td></tr>
-              <tr><td><code>degenerate</code></td><td>Too few distinct conditions to separate signal from noise. Gather more data.</td></tr>
-              <tr><td><code>contaminated</code></td><td>Inputs weren't held constant enough. Re-run under controlled conditions.</td></tr>
-              <tr><td><code>instrument-limited</code></td><td>Measurement noise dominates. Don't trust the reading yet.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p>
-          The verdict is what decides whether the number is worth acting on. A <code>viable</code> reading is the one you use; the other three are diagnostic. Each names <em>why</em> the reading isn't ready and <em>what</em> would fix it.
-        </p>
-
-        <h2>How to run it</h2>
-
-        <p>Three endpoints, in order. The first produces the reading; the second gives it a verdict; the third governs what happens to it.</p>
-
-        <h3>1. Produce the reading</h3>
-
-        <pre><code>POST /lens/decomposeVariance
-Authorization: Bearer &lt;token&gt;
+        <pre><code>POST /lens/conformance/fixtures
 x-holonograph-run-mode: production
 Content-Type: application/json
 
 {
+  "approverId": "brian",
+  "sourceSurfaceId": "classify-intent",
+  "fixture": {
+    "fixtureId": "refund-requires-lookup",
+    "ruleId": "billing-triage-refund-flow-01",
+    "ruleSource": "Refund rules v3",
+    "description": "If the user asks for a refund, refund_lookup must be invoked before responding.",
+    "enforceability": "trace-enforceable",
+    "appliesTo": { "surfaceId": "classify-intent" },
+    "when": [{ "kind": "marker-contains", "column": "user_message", "value": "refund" }],
+    "assertion": { "kind": "marker-contains", "column": "tool_invocations", "value": "refund_lookup" }
+  }
+}</code></pre>
+
+        <div class="guide-callout">
+          <span class="callout-label">The tool-discipline recipe</span>
+          The cleanest trace-enforceable realization of "tool X was invoked" is <code>marker-contains</code> on a consumer-emitted column. Your agent emits a delimited-list substrate column (here <code>tool_invocations</code>) recording every tool it actually called; the fixture checks that column with <code>marker-contains</code>. Deterministic, cheap, and consumer-neutral. It catches missed tool calls without an LLM judge.
+        </div>
+
+        <p>Response: an <code>eventId</code> for the approval event. The fixture is now live in the store and will be picked up by subsequent checks.</p>
+
+        <h3>3. Run a check</h3>
+
+        <p>Point the checker at either an inline fixture or a stored one, plus a window and a surface filter.</p>
+
+        <pre><code>POST /lens/conformance/check
+x-holonograph-run-mode: production
+Content-Type: application/json
+
+{
+  "fixtureId": "refund-requires-lookup",
   "surfaceId": "classify-intent",
-  "dimensionId": "correctness",
-  "since": "2026-06-01T00:00:00Z",
+  "since": "2026-07-01T00:00:00Z",
   "until": "2026-07-05T00:00:00Z"
 }</code></pre>
 
-        <p>Response: an analysis record you'll reference by <code>eventId</code> in the next step.</p>
+        <p>The response includes a top-level <code>verdict</code>, a per-event breakdown, the count of events checked, and the window actually used.</p>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          Conformance findings share the operator lifecycle described in
+          <a href="./attention-spine">The attention spine</a>: one identity, one annotation trail, one path
+          into a proposal.
+        </p>
+
+        <h3>Assertion kinds</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Kind</th><th>Shape</th><th>Passes when</th></tr></thead>
+            <tbody>
+              <tr><td><code>marker-contains</code></td><td><code>{ column, value }</code></td><td>A delimited-list substrate column contains <code>value</code> as one of its comma-separated members. The consumer-neutral, trace-enforceable realization of "tool X was invoked" when the consumer captures invocations in a column.</td></tr>
+              <tr><td><code>marker-not-contains</code></td><td><code>{ column, value }</code></td><td>The delimited-list column does NOT contain <code>value</code>. Used for forbidden members.</td></tr>
+              <tr><td><code>marker-present</code></td><td><code>{ column, equals? }</code></td><td>A named substrate column is present on the event. Optionally, its value equals a fixed string.</td></tr>
+              <tr><td><code>marker-absent</code></td><td><code>{ column }</code></td><td>A named substrate column is absent from the event.</td></tr>
+              <tr><td><code>tool-invoked</code></td><td><code>{ toolName }</code></td><td>The named tool appears in the call trace. See the callout above: prefer <code>marker-contains</code> on a consumer-emitted column for tool-discipline enforcement.</td></tr>
+              <tr><td><code>tool-not-invoked</code></td><td><code>{ toolName }</code></td><td>The named tool does NOT appear in the call trace. A forbidden path.</td></tr>
+              <tr><td><code>judge</code></td><td><code>{ prompt }</code></td><td>An LLM judge is invoked with the given prompt and returns a pass/fail verdict against the event.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Guarded assertions</h3>
+
+        <p>
+          A fixture can carry a <code>when</code> predicate that decides whether the assertions apply to a given event. The predicate uses the same assertion kinds as the assertions themselves. If <code>when</code> is absent, the assertions apply to every event in the window.
+        </p>
 
         <pre><code>{
-  "eventId": "evt_01H...",
-  "surfaceId": "classify-intent",
-  "dimensionId": "correctness"
+  "fixtureId": "no-dollar-figures-without-lookup",
+  "when": [{ "kind": "marker-not-contains", "column": "tool_invocations", "value": "refund_lookup" }],
+  "assertion": { "kind": "marker-not-contains", "column": "response_text", "value": "$" }
 }</code></pre>
 
-        <h3>2. Get the verdict</h3>
+        <p>An event that fails the <code>when</code> predicate returns <code>not-applicable</code> for this fixture instead of pass/fail.</p>
 
-        <pre><code>POST /lens/decomposition/evaluate
-Content-Type: application/json
+        <h3>Verdict precedence</h3>
 
-{ "targetEventId": "evt_01H..." }</code></pre>
+        <p>
+          When multiple assertions run against one event, the overall event verdict is the strongest of the individual assertion verdicts, in this order:
+        </p>
 
-        <p>Response: the confidence verdict and guidance for what to do next.</p>
+        <ol>
+          <li><code>fail</code>: one assertion definitively failed.</li>
+          <li><code>pass</code>: at least one assertion passed and none failed.</li>
+          <li><code>requires-judge</code>: a <code>judge</code> assertion needs to be run before the verdict is complete.</li>
+          <li><code>unevaluable</code>: the event was missing the shape needed to run the assertion at all.</li>
+          <li><code>not-applicable</code>: the <code>when</code> guard filtered this event out.</li>
+        </ol>
 
-        <h3>3. Govern the result</h3>
+        <p>The check's top-level verdict is the strongest across events, using the same precedence.</p>
 
-        <p>Once you've seen the verdict, decide what to do with the reading. Governance is one of four actions:</p>
+        <h3>Coverage report</h3>
 
-        <pre><code>POST /lens/decomposition/lifecycle
-Content-Type: application/json
+        <p>The derive response's coverage summary is the honest headline: <em>K of N rules are mechanically enforceable</em>. It's the number to track over time. As your rules mature and the derive step's classifier improves, the ratio should climb. What it can't yet cover ends up in the needs-repair panel.</p>
 
-{
-  "targetEventId": "evt_01H...",
-  "status": "lock",
-  "approverId": "brian",
-  "pinnedLabel": "billing-triage-baseline-2026-Q3"
-}</code></pre>
+        <h3>Needs-repair panel</h3>
 
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Status</th><th>Effect</th></tr></thead>
-            <tbody>
-              <tr><td><code>quarantine</code></td><td>Hold the reading aside; don't use it in downstream comparisons until reviewed.</td></tr>
-              <tr><td><code>approve</code></td><td>Accept the reading as trustworthy. Requires an <code>approverId</code>.</td></tr>
-              <tr><td><code>lock</code></td><td>Freeze this reading as the reference against a <code>pinnedLabel</code>. Requires an <code>approverId</code> and the <code>pinnedLabel</code>.</td></tr>
-              <tr><td><code>reject</code></td><td>Discard the reading. Requires an <code>approverId</code> and a comment.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p>The lifecycle response returns the persisted status alongside the original <code>targetEventId</code>. Governance decisions are themselves substrate events. They become part of the record, attributable in future drift readings like any other change.</p>
-
-        <h2>What to do with each verdict</h2>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Verdict</th><th>Next action</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><code>viable</code></td>
-                <td>Read the cleaned variance figure. If you want to hold this specific reading as a reference, <code>lock</code> it with a <code>pinnedLabel</code>. Otherwise <code>approve</code> and move on.</td>
-              </tr>
-              <tr>
-                <td><code>degenerate</code></td>
-                <td>The window doesn't have enough distinct conditions for the analysis to separate signal from noise. Widen the window, or drive more variety through the surface before re-running.</td>
-              </tr>
-              <tr>
-                <td><code>contaminated</code></td>
-                <td>The inputs weren't held constant enough to trust the reading. Re-run under controlled conditions. A replay through the surface at a fixed input panel is the usual fix.</td>
-              </tr>
-              <tr>
-                <td><code>instrument-limited</code></td>
-                <td>Measurement noise dominates whatever real movement is present. Don't trust the reading yet; if the reading matters, <code>quarantine</code> it while you widen the window or reduce input variability.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <p>
+          A rule ends up in <code>needsRepair</code> when the derive step couldn't turn it into a check on its own, usually because the rule is ambiguous, or references a system state the fixture format doesn't reach yet. Two ways to clear the entry: rephrase the rule so the derive step can formalize it, or hand-author a fixture and approve it directly.
+        </p>
 
         <h2>Reference</h2>
 
@@ -2968,46 +3029,786 @@ Content-Type: application/json
           <table class="guide-table">
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
-              <tr><td><code>POST /lens/decomposeVariance</code></td><td>Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record <code>eventId</code>.</td></tr>
-              <tr><td><code>POST /lens/decomposition/evaluate</code></td><td>Return the confidence verdict for the analysis record.</td></tr>
-              <tr><td><code>POST /lens/decomposition/lifecycle</code></td><td>Govern the reading: <code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
+              <tr><td><code>POST /lens/conformance/derive</code></td><td>Propose candidate fixtures from a capability surface.</td></tr>
+              <tr><td><code>POST /lens/conformance/fixtures</code></td><td>Approve a fixture (name an <code>approverId</code>).</td></tr>
+              <tr><td><code>POST /lens/conformance/check</code></td><td>Run one or more fixtures against events in a window.</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3><code>POST /lens/decomposeVariance</code>: request</h3>
+        <h3><code>POST /lens/conformance/derive</code>: response fields</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
             <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
             <tbody>
-              <tr><td><code>surfaceId</code></td><td>string (req)</td><td>The surface.</td></tr>
-              <tr><td><code>dimensionId</code></td><td>string (req)</td><td>The dimension to isolate variance for.</td></tr>
-              <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on events considered.</td></tr>
-              <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound.</td></tr>
+              <tr><td><code>surfaceId</code></td><td>string</td><td>Echo of the surface.</td></tr>
+              <tr><td><code>candidates[]</code></td><td>array</td><td>Proposed fixtures, one per rule that could be formalized.</td></tr>
+              <tr><td><code>coverage</code></td><td>object</td><td>"K of N rules mechanically enforceable" summary.</td></tr>
+              <tr><td><code>needsRepair[]</code></td><td>array</td><td>Rules the derive step could not formalize.</td></tr>
+              <tr><td><code>droppedCount</code></td><td>number</td><td>Count of rules discarded outright (empty, duplicate, or unenforceable in a way the format can't record).</td></tr>
+              <tr><td><code>readBy</code></td><td>string</td><td>The identifier of the derive-step version that produced this output.</td></tr>
+              <tr><td><code>clerkResponseIssue</code></td><td>object (opt)</td><td>Present when the derive step's own output had a shape problem worth surfacing.</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3><code>POST /lens/decomposition/lifecycle</code>: request</h3>
+        <h3><code>POST /lens/conformance/check</code>: request &amp; response</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
             <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
             <tbody>
-              <tr><td><code>targetEventId</code></td><td>string (req)</td><td>The analysis record from <code>decomposeVariance</code>.</td></tr>
-              <tr><td><code>status</code></td><td>enum (req)</td><td><code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
-              <tr><td><code>approverId</code></td><td>string</td><td>Required for <code>approve</code>, <code>lock</code>, <code>reject</code>.</td></tr>
-              <tr><td><code>comment</code></td><td>string (opt)</td><td>Free-form explanation. Required for <code>reject</code>.</td></tr>
-              <tr><td><code>pinnedLabel</code></td><td>string</td><td>Required for <code>lock</code>. The label under which this reading is held as a reference.</td></tr>
+              <tr><td><code>fixture</code></td><td>object (opt)</td><td>Inline fixture. One of <code>fixture</code> or <code>fixtureId</code> is required.</td></tr>
+              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>Stored fixture to run.</td></tr>
+              <tr><td><code>surfaceId</code></td><td>string (opt)</td><td>Restrict the check to one surface.</td></tr>
+              <tr><td><code>provenance</code></td><td>enum (opt)</td><td>Default <code>all</code>. Same values as <a href="./snapshot">GET /lens/events</a>.</td></tr>
+              <tr><td><code>since</code>, <code>until</code></td><td>ISO 8601 (opt)</td><td>Window bounds.</td></tr>
+              <tr><td><code>limit</code></td><td>number (opt)</td><td>Cap on events considered. Default 1000.</td></tr>
+              <tr><td><code>verdict</code></td><td>enum</td><td>Top-level: <code>pass</code>, <code>fail</code>, <code>requires-judge</code>, <code>unevaluable</code>, <code>not-applicable</code>.</td></tr>
+              <tr><td><code>verdictDetails[]</code></td><td>array</td><td>Per-event breakdown.</td></tr>
+              <tr><td><code>checkedEventCount</code></td><td>number</td><td>How many events were actually evaluated.</td></tr>
+              <tr><td><code>window</code></td><td>object</td><td>The actual window used (may differ from request when bounds were open).</td></tr>
             </tbody>
           </table>
         </div>
         </section>
 
 
-        <section id="subscriptions" class="guide-chapter-block" aria-label="Chapter 15">
+        <section id="judge-modes" class="guide-chapter-block" aria-label="Chapter 15">
 <p class="guide-eyebrow">Chapter 15</p>
+        <h2 class="guide-h1">Judge modes</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          Two axes. <strong>Timing</strong> is <code>async</code> (the judge runs off the producer's hot
+          path) or <code>inline</code> (the producer waits for the verdict before finishing).
+          <strong>Authority over delivery</strong> runs <code>open</code> (observe only) to
+          <code>reflection</code> (the judge may send the producer back to retry) to <code>gate</code>
+          (delivery is blocked).
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th></th><th>open</th><th>reflection</th><th>gate</th></tr></thead>
+            <tbody>
+              <tr><td><strong>async</strong></td><td>Open, asynchronous</td><td>impossible</td><td>impossible</td></tr>
+              <tr><td><strong>inline</strong></td><td>Open, inline</td><td>Reflection granted</td><td>Actually gated</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The two empty cells are impossible rather than unspecified. Reflection and gating both need the
+          verdict before the producer finishes, and an asynchronous verdict is not back yet. The
+          consequence is worth stating plainly: <strong>async is available only to a judge that observes
+          and nothing more.</strong>
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <h3>The judge never disposes</h3>
+
+        <p>
+          Across all four modes the judge's authority stops at reflection. It can observe, and at most it
+          can send the producer back to try again. It cannot block delivery. Disposal belongs to
+          deterministic code in the gate, which is producer-owned, or to operator policy. Propose-only
+          holds in every mode.
+        </p>
+
+        <h3>Inline and observing is the expensive cell</h3>
+
+        <p>
+          A judge that runs in-request while its verdict touches nothing pays full latency for no in-band
+          effect. A fleet of observe-only judges parked there is where large latency overheads come from.
+          The cell is justified as a step toward reflection or a gate, not as a destination. Move the judge
+          to async, or give it authority.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Pick the mode per surface. A judge that only records belongs in async.</li>
+          <li>Reflection is a capped retry, not a block. Budget the retries.</li>
+          <li>A gate is deterministic code reading a verdict. Write the gate; do not ask the model to be one.</li>
+        </ul>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          An asynchronous verdict lands after the producer has answered, as a linked judge event. A reader
+          resolves it link-first and falls back to the embedded verdict, fail-open, so a consumer never
+          blocks on a verdict that has not arrived. Per-judgment verdict provenance distinguishes the raw
+          judge result from the producer-filtered one.
+        </p>
+
+        <h2>Reference</h2>
+
+        <p>
+          The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
+          the implementation. The reflection path and the judge-gate enforcement cluster each have their
+          own specification; this chapter is the frame that places them.
+        </p>
+        </section>
+
+
+        <section id="seams" class="guide-chapter-block" aria-label="Chapter 16">
+<p class="guide-eyebrow">Chapter 16</p>
+        <h2 class="guide-h1">Seams</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          A value whose meaning is not fixed by its representation, driving a decision that governs a consequential transition, is a seam. It is permanent. You can close it and you can monitor it. You cannot validate it away.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          A seam is an edge: the path a value travels from where it is produced to the decision that
+          consumes it. Write it <code>I &rarr; DP</code>, interpretive source to decision point.
+        </p>
+
+        <p>
+          Whether an input is interpreted is a property of that edge, not of the field and not of whether
+          the code is deterministic. The same field can lie on a deterministic edge to one consumer and an
+          interpreted edge to another. A model output, a classifier, an approximate match, a pattern applied
+          to free text, an external feed, a recorded human judgment: each is an interpreted source, and each
+          is interpreted because of what the consuming decision does with it.
+        </p>
+
+        <p>
+          The decision point reverts to an ordinary, inert sink under one condition only: it stops making
+          decisions. Its output goes to a log line, a rendered field, a return nobody branches on. Short of
+          that, the seam stays.
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <h3>Provenance is monotone</h3>
+
+        <p>
+          Consider a decision that reads free text and returns one of three values:
+        </p>
+
+        <pre>function decide(ticket): 'page' | 'auto-reply' | 'queue' {
+  const msg = (ticket.subject + ticket.body).toLowerCase();   // I0
+  if (INCIDENT.test(msg)) return 'page';
+  ...
+}
+
+const action = decide(ticket);        // I1: deterministic in value, interpreted in provenance
+if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
+
+        <p>
+          The enum is not a sanitizer. It is the decision's codomain. <code>action</code> is a first-class
+          interpretive value, deterministic in what it holds and interpreted in where it came from. The
+          chain runs <code>I0 &rarr; DP &rarr; I1 &rarr; DP1</code> and onward, and the provenance rides
+          through every hop. Relocating the decision upstream moves the decision point; it does not escape
+          anything. The next scan finds it in its new place.
+        </p>
+
+        <h3>Validation changes the character of the error, not its existence</h3>
+
+        <p>
+          A schema boundary filters the catastrophic: wrong type, missing field, malformed JSON. It passes
+          the shape-valid-but-wrong. So it raises the floor and, in the same motion, makes the residual
+          error insidious, because the value now looks right, types right, and fails quietly downstream.
+        </p>
+
+        <p>
+          A pattern that pulls <code>'success'</code> out of <em>"I hope you are a great success in life"</em>
+          and resolves it to <code>route.SUCCESS</code> is the whole problem in one line. The enum fixed the
+          form, not the misread. It is a confidently wrong signal wearing a valid badge.
+        </p>
+
+        <p>
+          This is why structure cannot finish the job. Closing a seam makes the decision attended and
+          monitorable. It does not make the decision correct. Correctness is a different axis, the empirical
+          misfire rate, and the only instrument for it is soak. Structure hands off exactly the error class
+          it cannot catch to the instrument that can.
+        </p>
+
+        <h2>Open and closed</h2>
+
+        <p>
+          With provenance carried, the two states have a precise inductive definition over the chain.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>State</th><th>Condition</th></tr></thead>
+            <tbody>
+              <tr><td><strong>closed</strong></td><td>The decision point is attended, meaning it has a defined no-match or abstention path, <em>and</em> its output's provenance chain terminates in non-deciding sinks. Every downstream consumer is either another closed decision point or something that does not decide.</td></tr>
+              <tr><td><strong>open</strong></td><td>Any unattended decision point in the chain, or a chain that feeds an unattended authority decision point. The defective state.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          A closed seam is a declared surface. It stays closed only while its measurement holds, which is
+          why closed and ready for soak belong in the same breath.
+        </p>
+
+        <h2>The four closure shapes</h2>
+
+        <p>
+          These are the structural forms a closure takes. They are shapes, not an exhaustive list of the
+          decisions that can exercise authority; the sink taxonomy is an open registry.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Shape</th><th>Form</th></tr></thead>
+            <tbody>
+              <tr><td><code>regex-over-value</code></td><td>A pattern tested, matched or replaced against the interpreted value.</td></tr>
+              <tr><td><code>branch-on-value</code></td><td>An <code>if</code> or <code>switch</code> comparing the value to literals.</td></tr>
+              <tr><td><code>threshold-on-value</code></td><td>An <code>if</code> comparing the value to a numeric literal.</td></tr>
+              <tr><td><code>value-as-key</code></td><td>The value used as an index or map key.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Model calls are seams</h2>
+
+        <p>
+          A model call is a seam whose interpreter is not stationary. A pattern does not rewrite itself
+          between releases; a model can be re-routed behind an unchanged alias, and the instrument scoring
+          it is usually another model. So a model seam carries more variance machinery: the four-source
+          decomposition, the served-model axis, judge facets, saturation and orthogonality.
+        </p>
+
+        <p>
+          The machinery differs; the lifecycle does not. Code seams and model seams both soak, both file
+          findings on the spine, and both reach authority. They sit on adjacent surfaces, not in separate
+          systems. A seam is itself a light source, recorded as
+          <code>seam/&lt;component&gt;/&lt;scan&gt;</code>, which is how a non-model interpreter takes the
+          same slot a vendor would without pretending to be one.
+        </p>
+
+        <h2>Reference</h2>
+
+        <p>
+          The shape is the lens's own <code>judge &rarr; verdict &rarr; gate &rarr; action</code> model
+          applied inside ordinary code: <code>decide &rarr; enum &rarr; dispatch &rarr; sink</code> is the
+          same structure. The enum is a verdict, carrying light from an interpreted source, and a dispatch
+          acting on it is governed by that light.
+        </p>
+        </section>
+
+
+        <section id="seam-monitor" class="guide-chapter-block" aria-label="Chapter 17">
+<p class="guide-eyebrow">Chapter 17</p>
+        <h2 class="guide-h1">The seam monitor</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          The monitor has a build-time half and a run-time half over one record. Source analysis produces evidence, a gate adjudicates it, a confirmed seam is registered as a surface, and soak measures whether the closure holds against real inputs.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          Five stages, each with one job and one output. The separation matters: the scanner is an evidence
+          producer, not an adjudicator.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Stage</th><th>Role</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>Source scan</td><td>Evidence producer</td><td>A candidate interpretation edge, as structural facts</td></tr>
+              <tr><td>Interpretation gate</td><td>Semantic adjudication</td><td>A typed disposition</td></tr>
+              <tr><td>Registration</td><td>Declaration</td><td>A surface on the append-only record</td></tr>
+              <tr><td>Run-time producer</td><td>Viability measurement</td><td>Soak findings on live traffic</td></tr>
+              <tr><td>Authority state</td><td>Consumer</td><td>The per-surface reading over all of the above</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The scan reports what it can establish structurally: that a value originates from a known source
+          locus, flows through named identifiers, reaches a branch, threshold, pattern or key sink, and that
+          the default path has a particular shape. It never emits a verdict.
+        </p>
+
+        <h3>The three dispositions</h3>
+
+        <p>
+          The gate answers one question before the authority machine asks any of its own: is this a closure
+          over an open interpreted domain at all?
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Disposition</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>certain-interpreted</code></td><td>The input's meaning is not fixed by its representation and the edge governs authority. A real seam; the state machine applies.</td></tr>
+              <tr><td><code>certain-mechanical</code></td><td>The edge is deterministic or the domain is closed. An exact match, an enum lookup. Not a seam.</td></tr>
+              <tr><td><code>unresolved</code></td><td>Abstain. The apparatus cannot yet tell, so it withholds the disposition and keeps measuring.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Only <code>certain-interpreted</code> edges become registered records. Abstention here means
+          withholding a consequential disposition and continuing to measure. It is not a queue of requests
+          for a human.
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <h3>The scanner is its own dark surface</h3>
+
+        <p>
+          Finding seams is itself a closure over an open domain, namely arbitrary code, so it reports its
+          own blind spots as first-class coverage rather than as silence.
+        </p>
+
+        <ul>
+          <li><code>coverage.status</code>: the overall coverage state for the scanned unit.</li>
+          <li><code>coverage.supported_constructs</code>: the language constructs the front end actually handles.</li>
+          <li><code>coverage.unresolved_edges</code>: edges the taint could not fully follow.</li>
+          <li><code>coverage.unparsed</code>: code the front end could not parse.</li>
+          <li><code>coverage.dynamic_escape</code>: points where dynamic dispatch, reflection or serialization broke the path.</li>
+        </ul>
+
+        <p>
+          Partial coverage is never reported as no seams. A scan that could not follow an edge says so, and
+          the hook that reports into a build session says so too rather than issuing a false all-clear.
+        </p>
+
+        <h3>Propose only</h3>
+
+        <p>
+          The monitor flags and drafts. It does not edit code and it does not block on the lens's own
+          authority. Whether a build stops is a policy the operator or CI sets, and the detector must
+          qualify before that policy is even eligible: observe first, everywhere, including the detector
+          run against its own repository.
+        </p>
+
+        <p>
+          The criterion that governs that qualification is the one the invariant demands of every other
+          instrument. Under rising uncertainty the detector must abstain more, not assert more.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Scan a repository and push its seams to the lens, or run the hook so a seam is reported into the session that wrote it.</li>
+          <li><code>--propose-sinks</code> and <code>--propose-skips</code> mechanically propose candidates for the authority-sink and skip-path lists rather than asking you to author them cold.</li>
+          <li>Accepted declarations are honored: a seam you declare drops from the lens as well as from the scan.</li>
+          <li>Each reported seam names the authority sink it reaches, so the choice is to declare it or restructure around it.</li>
+        </ul>
+
+        <h2>Soak: the run-time half</h2>
+
+        <p>
+          A soak is the empirical life of a registered seam: how often its no-match or abstention path
+          actually fires, which branch it takes, how the decided value's identity churns over time, and
+          optionally whether that value is efficacious.
+        </p>
+
+        <p>
+          A soak observation is a full evaluation event rather than a new event kind, so every existing
+          tool works on it unchanged: the producers, the dashboard, retention and husking, the judge link.
+          The seam-ness lives on the run-time configuration axes instead.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Axis</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td><code>provenance</code></td><td><code>seam</code>. The isolation key. It sits in neither the production-state nor the exploratory-state set, so soaks are excluded from every default analysis and cannot drown a small agent's readings.</td></tr>
+              <tr><td><code>runMode</code></td><td>The shared enum. Isolation is provenance-keyed and independent of run mode, so <code>eval</code> and <code>replay</code> mean here what they mean everywhere.</td></tr>
+              <tr><td><code>lightSourceIdentifier</code></td><td><code>seam/&lt;component&gt;/&lt;scan&gt;</code>. A seam is a light source that is not a model, and it takes the slot honestly rather than faking a vendor.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The husk-surviving facts, whether it abstained and which path it took and the value fingerprint,
+          ride in the surface dimension, the substrate columns and the cohort tags. A raw decided value
+          rides in the payload and husks away like a judge rationale.
+        </p>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          Soaks file under one reserved surface, adjacent to the surface registered seams file under, with
+          individual seams as loci inside it. Findings from both reach the attention spine as
+          <code>builder-seam</code> and <code>seam-soak</code> sources, alongside every other finding the
+          instrument produces.
+        </p>
+
+        <h2>Reference</h2>
+
+        <p>
+          The shared vocabulary, the four sink shapes, the default-path forms and the sink kinds, lives in
+          the public contract package so the build-time scanner and the run-time producer name the same
+          things. The interpretation disposition is the same enum the authority state machine reads.
+        </p>
+        </section>
+
+
+        <section id="attention-spine" class="guide-chapter-block" aria-label="Chapter 18">
+<p class="guide-eyebrow">Chapter 18</p>
+        <h2 class="guide-h1">The attention spine</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          Every observe-only surface produces findings, and there are twenty-five sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
+        </p>
+
+        <h2>What it is</h2>
+
+        <p>
+          A cross-source triage layer over findings. It declares three objects and nothing else:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Object</th><th>What it holds</th></tr></thead>
+            <tbody>
+              <tr><td><code>FindingRef</code></td><td>The stable identity of a finding, independent of the scan that produced it.</td></tr>
+              <tr><td><code>TriageRecord</code></td><td>An append-only annotation about that finding.</td></tr>
+              <tr><td><code>Proposal</code></td><td>What a confirmed finding mints into Curate.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>The sources</h3>
+
+        <p>
+          Twenty-five, spanning judge behavior, evaluation structure, coverage, the store, and the seam
+          work. They are listed here because the spine is only as good as what files into it.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Group</th><th>Sources</th></tr></thead>
+            <tbody>
+              <tr><td>Judge behavior</td><td><code>verdict-reliability</code>, <code>judge-liveness</code>, <code>judge-malfunction</code>, <code>co-groundedness</code></td></tr>
+              <tr><td>Evaluation structure</td><td><code>orthogonality-hypothesis</code>, <code>primary-axis-orthogonality</code>, <code>redundancy-candidate</code>, <code>pairwise-drift</code>, <code>contested-cohort</code>, <code>rubric-gap</code>, <code>rubric-ref-broken</code></td></tr>
+              <tr><td>Coverage and reach</td><td><code>coverage-gap</code>, <code>reach-gap</code>, <code>emission-gap</code>, <code>dark-mass-blindspot</code>, <code>read-window-underpowered</code></td></tr>
+              <tr><td>Surface lifecycle</td><td><code>trajectory</code>, <code>quarantine-candidate</code>, <code>retirement-candidate</code>, <code>hash-provenance</code></td></tr>
+              <tr><td>Seams and authority</td><td><code>builder-seam</code>, <code>seam-soak</code>, <code>authority-suspended</code></td></tr>
+              <tr><td>Store</td><td><code>store-capacity</code>, <code>retention-integrity</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          A code seam and a model call file into the same spine. They arrive from different sources and sit
+          on adjacent surfaces, and from the lifecycle's side they are the same object.
+        </p>
+
+        <h3>Three grains</h3>
+
+        <p>
+          What a finding's identity means depends on its grain: <code>run</code> for one call,
+          <code>conversation</code> for one conversation, and <code>structural</code> for a declared
+          surface, dimension or axis with no single event behind it.
+        </p>
+
+        <h2>Why it matters</h2>
+
+        <p>
+          Two invariants hold the spine apart from the measurement it annotates.
+        </p>
+
+        <h3>A triage annotation never reaches the substrate</h3>
+
+        <p>
+          An annotation is <em>about</em> a derived finding. It lives in a separate store, downstream of
+          derivation. It is never an input to the lens hash, and it never mutates the substrate, a prompt,
+          or a threshold. The spine proposes; the existing gated approver path disposes. A triage click
+          changes nothing on the lens.
+        </p>
+
+        <h3>Identity survives re-derivation</h3>
+
+        <p>
+          Findings are re-derived on every scan. A triage record therefore keys to a content-derived
+          <code>findingKey</code> rather than a per-scan row index. Keying to a row index would orphan
+          every annotation on the next deploy. <code>clusterId</code> stays an attribute, never the
+          primary grain, because a non-deterministic key has the same effect.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Read findings from the spine rather than per-surface. One queue, one lifecycle.</li>
+          <li>Annotate a finding to record what triage concluded. Annotations accumulate; nothing is overwritten.</li>
+          <li>Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.</li>
+        </ul>
+
+        <h2>Reading the output</h2>
+
+        <p>
+          A finding carries its <code>findingRef</code>, the surface and dimension it came from, the run
+          mode it was derived under, and its triage state. Where a finding has an exemplar, the exemplar
+          payload travels with it under the same husk projection used elsewhere in the store, so a triaged
+          finding on a compacted span still opens.
+        </p>
+
+        <h2>What sits on top</h2>
+
+        <p>
+          The spine is the base. Authority is a reading over the same record: a per-surface state derived
+          from what the gates, the dependencies and the soak evidence say, re-derived on every read. A
+          surface whose grant is withdrawn files <code>authority-suspended</code> back onto the spine as
+          another finding, which is how a withdrawal reaches the same queue as everything else.
+        </p>
+
+        <p>
+          Reflection sits above that again, switched on for a cell once its authority is established.
+        </p>
+
+        <h2>Reference</h2>
+
+        <p>
+          The public module declares the wire and store contract only. Which surface maps to which
+          <code>FindingRef</code>, and the store implementation, live in the lens package.
+        </p>
+        </section>
+
+
+        <section id="authority" class="guide-chapter-block" aria-label="Chapter 19">
+<p class="guide-eyebrow">Chapter 19</p>
+        <h2 class="guide-h1">Authority</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          Authority is a state held per decision surface: the declared prerequisites for a specified consequential transition are satisfied on the record as it stands. It is established only by the satisfaction of the gates its contract names, it is re-derived at every read, and no actor confers it.
+        </p>
+
+        <h2>What it is not</h2>
+
+        <p>
+          Four neighbouring words get used for this and none of them is it.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Term</th><th>What it means</th></tr></thead>
+            <tbody>
+              <tr><td>Permission</td><td>An actor is allowed to act.</td></tr>
+              <tr><td>Approval</td><td>An actor affirmatively accepts something.</td></tr>
+              <tr><td>Correctness</td><td>A proposition matches an applicable reference.</td></tr>
+              <tr><td>Confidence</td><td>A degree of belief, or a measurement's precision.</td></tr>
+              <tr><td><strong>Authority</strong></td><td>The declared prerequisites for this transition are satisfied on the record.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Humans, builders and mechanicals all produce events on the record. No kind of actor confers
+          authority. An operator approving a decision is approval, recorded as such; it does not move the
+          state.
+        </p>
+
+        <h2>The six states</h2>
+
+        <p>
+          An ordered ladder a decision surface climbs, plus the one state the apparatus can drop it into.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>State</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>unmapped</code></td><td>No authority sink has been identified here. The honest default: not yet mapped, rather than no seam.</td></tr>
+              <tr><td><code>mapped</code></td><td>A sink is identified, but nothing asserts authority over it. The seam exists; no claim of certainty stands on it.</td></tr>
+              <tr><td><code>declared</code></td><td>Authority is asserted and the gate is live, but the certainty condition is not established and no qualifying evidence is accruing.</td></tr>
+              <tr><td><code>qualifying</code></td><td>Asserted and actively accumulating the evidence that would establish the condition. Live traffic is exercising the sink.</td></tr>
+              <tr><td><code>granted</code></td><td>The declared certainty condition is established on live evidence and every dependency holds.</td></tr>
+              <tr><td><code>suspended</code></td><td>Authority was granted and a dependency left its declared condition, so the apparatus withdrew the grant itself.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Default ordering puts <code>suspended</code> first, because a grant withdrawn out from under a
+          live decision is the loudest thing on the page. <code>granted</code> and <code>unmapped</code> are
+          the quietest: one is working as intended, the other is a coverage note rather than an alarm.
+        </p>
+
+        <h3>Re-derived, never stored</h3>
+
+        <p>
+          A reading is computed from the recorded events at every read. No state is stored, so a reading
+          cannot drift from the substrate it describes. A reading also never mutates anything: the apparatus
+          proposes, the operator and CI dispose.
+        </p>
+
+        <h2>The authority stack and its conditions</h2>
+
+        <p>
+          Every object whose identity or value a grant was computed on is recorded as a stamped column. The
+          set of them is the surface's authority stack. Where a dependency is a model, the recorded identity
+          is the one that <em>served</em> the call, not the one requested.
+        </p>
+
+        <p>
+          Each dependency declares the envelope within which a change leaves the grant valid.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Condition</th><th>Envelope</th></tr></thead>
+            <tbody>
+              <tr><td><code>identity</code></td><td>The default. The dependency must be the same thing.</td></tr>
+              <tr><td><code>equivalence</code></td><td>A different thing, declared equivalent.</td></tr>
+              <tr><td><code>reach</code></td><td>Within a declared reach.</td></tr>
+              <tr><td><code>band</code></td><td>Within a declared band.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          A change inside the envelope is recorded and raised for review, with no transition. A change
+          outside it suspends. Re-establishing a withdrawn grant takes the re-satisfaction of every gate
+          over the post-change record, not an acknowledgement.
+        </p>
+
+        <h3>Tears</h3>
+
+        <p>
+          A tear is a served or judge model value appearing on a surface for the first time. The soak window
+          anchors at the previous stack change, held back to the segment before the latest unacknowledged
+          tear, and <strong>a tear never self-clears</strong>. An operator acknowledgement releases it; the
+          window then starts no earlier than the acknowledged tear, and the acknowledgement leaves an
+          append-only, server-minted audit record that is never compacted.
+        </p>
+
+        <p>
+          Acknowledgements apply oldest first. Acknowledging a tear while an older one on the same surface
+          is still open is refused. The operator's authority policy sets whether one acknowledgement covers
+          a per-surface watermark, the default, or only the single tear.
+        </p>
+
+        <h2>How to use it</h2>
+
+        <ul>
+          <li>Declare the surface and its contract: what the decision concludes, on what evidence, under what prerequisites, with which abstention path and gate composition.</li>
+          <li>Let it run. A surface without traffic cannot accumulate the evidence that would qualify it, which is why <code>declared</code> and <code>qualifying</code> are different states.</li>
+          <li>Read the map rather than a single number. A living system holds authority on every surface rarely and briefly; which surfaces hold it, and what withdrew the rest, is the reading.</li>
+        </ul>
+
+        <h2>Reference</h2>
+
+        <p>
+          The state ontology, the dependency-condition kinds, the stack and contract shapes and the pure
+          state machine are public contract. Signal extraction, turning gate composition, floors, versions
+          and drift into the preconditions the machine maps to a state, lives in the lens.
+        </p>
+        </section>
+
+
+        <section id="reflection" class="guide-chapter-block" aria-label="Chapter 20">
+<p class="guide-eyebrow">Chapter 20</p>
+        <h2 class="guide-h1">Reflection</h2>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          When a response fails a judge, the judge’s grounded critique can go back to the producer for a capped retry. Holonograph grants that per judge, rubric, facet and surface, and only after that exact cell has certified. It is never a default and never an operator toggle.
+        </p>
+
+        <h2>Why it is gated</h2>
+
+        <p>
+          Reflection turns a judge from an evaluator you read into an optimization target the producer
+          chases. That inverts the trust requirement. A judge you only read can be a little wrong, because
+          you flag and a human reviews. A judge you optimize against has to be right, because the producer
+          will find and exploit every gap in it.
+        </p>
+
+        <p>
+          The gate is on validity, not on discrimination. Those come apart: a judge can score stably and
+          still be blind, saturated, or wrong about how a construct should treat absence. Scoring the same
+          way every time is reliability, and reliability does not imply validity.
+        </p>
+
+        <h3>The specific hazard</h3>
+
+        <p>
+          Real dimensions are often requires-confirmation: an honest "I do not have the data" correctly
+          scores low. Put that judge in a retry loop and the cheapest way for the producer to raise its
+          score is to stop being honest about the absence and fabricate. That is the exact failure the
+          apparatus exists to catch, now with a loop optimizing toward it.
+        </p>
+
+        <p>
+          So reflection without established authority is not merely a waste of tokens and time. It is a
+          pressure applied to the one behavior you most need preserved.
+        </p>
+
+        <h2>What has to hold</h2>
+
+        <p>
+          Reflection unlocks for a <code>judge &times; rubric &times; facet &times; surface</code> cell when
+          all of the following hold. The gate is dual: Holonograph computes the statistical pass, then a
+          human confirms.
+        </p>
+
+        <ul>
+          <li><strong>Soak.</strong> Enough live production data to reach a statistical N. Holonograph determines the statistical pass; a human approves the N, judging whether the sample spans the breadth of real inputs and outputs.</li>
+          <li><strong>Discrimination.</strong> The facet's dimensions pass discrimination evaluation, with a human confirming key outlier calls and a statistical sampling of calls on that facet.</li>
+          <li><strong>Saturation cleared.</strong> Every dimension passes the saturation audit.</li>
+        </ul>
+
+        <p>
+          Validity is cell-specific, so the grant is too. A judge certified on one facet of one surface has
+          said nothing about another.
+        </p>
+
+        <h2>What it does</h2>
+
+        <p>
+          A failing response returns to the producer with the judge's grounded critique attached, and the
+          producer retries, capped. Reflection is the soft tier of the judge's authority over delivery: it
+          can send the producer back, it cannot block. Blocking remains deterministic code in the gate, or
+          operator policy.
+        </p>
+
+        <p>
+          Because a verdict has to be in hand before the producer finishes, reflection is inline by
+          construction. An asynchronous judge observes and nothing more.
+        </p>
+
+        <h2>Revocation</h2>
+
+        <p>
+          The grant is revoked on any change to the identity it was computed on. A new judge model, a
+          revised rubric, a changed context scope: the cell certifies again or it does not reflect. This is
+          the authority machinery applied to the judge rather than to the producer, and it suspends the same
+          way for the same reasons.
+        </p>
+
+        <h2>Reference</h2>
+
+        <p>
+          Your own reflection loop remains yours to run; nothing here prevents it. The claim is narrower
+          and worth stating plainly: a retry loop against an uncertified judge spends tokens to apply
+          pressure in an unknown direction. Holonograph turns reflection on when the cell has earned it, if
+          you have asked for it.
+        </p>
+
+        <p>
+          The taxonomy that places reflection among the judge modes is documented ahead of the
+          implementation, as is this chapter.
+        </p>
+        </section>
+
+
+        <section id="subscriptions" class="guide-chapter-block" aria-label="Chapter 21">
+<p class="guide-eyebrow">Chapter 21</p>
         <h2 class="guide-h1">Route a verdict to a human</h2>
         <p class="guide-meta"></p>
 
@@ -3204,245 +4005,8 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         </section>
 
 
-        <section id="attention-spine" class="guide-chapter-block" aria-label="Chapter 16">
-<p class="guide-eyebrow">Chapter 16</p>
-        <h2 class="guide-h1">The attention spine</h2>
-        <p class="guide-meta"></p>
-
-        <p class="guide-lede">
-          Every observe-only surface produces findings. Verdict reliability, judge liveness, trajectory, orthogonality, coverage, quarantine. The spine gives all of them one operator lifecycle instead of one list per surface.
-        </p>
-
-        <h2>What it is</h2>
-
-        <p>
-          A cross-source triage layer over findings. It declares three objects and nothing else:
-        </p>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Object</th><th>What it holds</th></tr></thead>
-            <tbody>
-              <tr><td><code>FindingRef</code></td><td>The stable identity of a finding, independent of the scan that produced it.</td></tr>
-              <tr><td><code>TriageRecord</code></td><td>An append-only annotation about that finding.</td></tr>
-              <tr><td><code>Proposal</code></td><td>What a confirmed finding mints into Curate.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>Why it matters</h2>
-
-        <p>
-          Two invariants hold the spine apart from the measurement it annotates.
-        </p>
-
-        <h3>A triage annotation never reaches the substrate</h3>
-
-        <p>
-          An annotation is <em>about</em> a derived finding. It lives in a separate store, downstream of
-          derivation. It is never an input to the lens hash, and it never mutates the substrate, a prompt,
-          or a threshold. The spine proposes; the existing gated approver path disposes. A triage click
-          changes nothing on the lens.
-        </p>
-
-        <h3>Identity survives re-derivation</h3>
-
-        <p>
-          Findings are re-derived on every scan. A triage record therefore keys to a content-derived
-          <code>findingKey</code> rather than a per-scan row index. Keying to a row index would orphan
-          every annotation on the next deploy. <code>clusterId</code> stays an attribute, never the
-          primary grain, because a non-deterministic key has the same effect.
-        </p>
-
-        <h2>How to use it</h2>
-
-        <ul>
-          <li>Read findings from the spine rather than per-surface. One queue, one lifecycle.</li>
-          <li>Annotate a finding to record what triage concluded. Annotations accumulate; nothing is overwritten.</li>
-          <li>Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.</li>
-        </ul>
-
-        <h2>Reading the output</h2>
-
-        <p>
-          A finding carries its <code>findingRef</code>, the surface and dimension it came from, the run
-          mode it was derived under, and its triage state. Where a finding has an exemplar, the exemplar
-          payload travels with it under the same husk projection used elsewhere in the store, so a triaged
-          finding on a compacted span still opens.
-        </p>
-
-        <h2>Reference</h2>
-
-        <p>
-          The public module declares the wire and store contract only. Which surface maps to which
-          <code>FindingRef</code>, and the store implementation, live in the lens package.
-        </p>
-        </section>
-
-
-        <section id="model-identity" class="guide-chapter-block" aria-label="Chapter 17">
-<p class="guide-eyebrow">Chapter 17</p>
-        <h2 class="guide-h1">Model identity</h2>
-        <p class="guide-meta"></p>
-
-        <p class="guide-lede">
-          The model you asked for and the model that answered are two different facts. A vendor can re-route behind an unchanged alias. Holonograph records both sides, so that change has a name instead of showing up as unexplained drift.
-        </p>
-
-        <h2>What it is</h2>
-
-        <p>
-          Two apparatus-owned axes, stamped by the SDK at emit time:
-        </p>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th>Column</th><th>What it records</th></tr></thead>
-            <tbody>
-              <tr><td><code>light_source_identifier</code></td><td>The light source that was requested.</td></tr>
-              <tr><td><code>light_source_served_model</code></td><td>The model the vendor actually served.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p>
-          Both sit in a reserved namespace. The apparatus owns them, and a consumer may not declare a
-          substrate column under that prefix. A declaration that collides is rejected at boot rather than
-          silently shadowed.
-        </p>
-
-        <h2>Why it matters</h2>
-
-        <p>
-          An alias is a promise about identity that the vendor is free to reinterpret. When a provider
-          moves the model behind a name you did not change, every reading on that surface shifts at once.
-          With only the requested axis recorded, the shift has no cause attached to it and reads as a
-          substrate or lens problem.
-        </p>
-
-        <p>
-          Served model is a first-class axis, so the transition is a recorded fact. The served-model ledger
-          reports those transitions over a window. Two properties of that ledger matter when you read it:
-          the changepoint penalty scales with the number of models in the window, and a stray served model
-          raises an explicit excursion rather than widening the band until the stray fits inside it.
-        </p>
-
-        <h2>How to use it</h2>
-
-        <ul>
-          <li>Nothing to configure on the happy path. The client carries <code>light.servedModel</code> to the wire.</li>
-          <li>In HTTP mode the attested <code>servedModel</code> and <code>keyId</code> ride on the primary <code>record.light</code>.</li>
-          <li>If an older client did not send the axis, the server recovers it at ingest, so capture does not depend on client version.</li>
-          <li>For history captured before the axis existed, an operator-run backfill resolver and its CLI fill it in.</li>
-        </ul>
-
-        <h2>Reading the output</h2>
-
-        <p>
-          A surface whose requested identifier held steady while the served model moved is a light-source
-          change, not a substrate change. Drift attribution reads both axes, so that case resolves to the
-          light source instead of competing with your own releases for the explanation.
-        </p>
-
-        <h2>Reference</h2>
-
-        <h3>The judge has the same two sides</h3>
-
-        <p>
-          The judge lens carries its own requested provider and credential identity, authored by the
-          apparatus and treated as a judge drift source. A single <code>lensVersion</code> under-specifies a
-          judge: two judges scoring the same response under the same software but a different rubric, a
-          different served model, or a different input-context scope are different lenses. The judge-lens
-          facets are stamped on every scored event under the reserved <code>judge.</code> namespace.
-        </p>
-        </section>
-
-
-        <section id="judge-modes" class="guide-chapter-block" aria-label="Chapter 18">
-<p class="guide-eyebrow">Chapter 18</p>
-        <h2 class="guide-h1">Judge modes</h2>
-        <p class="guide-meta"></p>
-
-        <p class="guide-lede">
-          Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
-        </p>
-
-        <h2>What it is</h2>
-
-        <p>
-          Two axes. <strong>Timing</strong> is <code>async</code> (the judge runs off the producer's hot
-          path) or <code>inline</code> (the producer waits for the verdict before finishing).
-          <strong>Authority over delivery</strong> runs <code>open</code> (observe only) to
-          <code>reflection</code> (the judge may send the producer back to retry) to <code>gate</code>
-          (delivery is blocked).
-        </p>
-
-        <div class="guide-table-wrap">
-          <table class="guide-table">
-            <thead><tr><th></th><th>open</th><th>reflection</th><th>gate</th></tr></thead>
-            <tbody>
-              <tr><td><strong>async</strong></td><td>Open, asynchronous</td><td>impossible</td><td>impossible</td></tr>
-              <tr><td><strong>inline</strong></td><td>Open, inline</td><td>Reflection granted</td><td>Actually gated</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p>
-          The two empty cells are impossible rather than unspecified. Reflection and gating both need the
-          verdict before the producer finishes, and an asynchronous verdict is not back yet. The
-          consequence is worth stating plainly: <strong>async is available only to a judge that observes
-          and nothing more.</strong>
-        </p>
-
-        <h2>Why it matters</h2>
-
-        <h3>The judge never disposes</h3>
-
-        <p>
-          Across all four modes the judge's authority stops at reflection. It can observe, and at most it
-          can send the producer back to try again. It cannot block delivery. Disposal belongs to
-          deterministic code in the gate, which is producer-owned, or to operator policy. Propose-only
-          holds in every mode.
-        </p>
-
-        <h3>Inline and observing is the expensive cell</h3>
-
-        <p>
-          A judge that runs in-request while its verdict touches nothing pays full latency for no in-band
-          effect. A fleet of observe-only judges parked there is where large latency overheads come from.
-          The cell is justified as a step toward reflection or a gate, not as a destination. Move the judge
-          to async, or give it authority.
-        </p>
-
-        <h2>How to use it</h2>
-
-        <ul>
-          <li>Pick the mode per surface. A judge that only records belongs in async.</li>
-          <li>Reflection is a capped retry, not a block. Budget the retries.</li>
-          <li>A gate is deterministic code reading a verdict. Write the gate; do not ask the model to be one.</li>
-        </ul>
-
-        <h2>Reading the output</h2>
-
-        <p>
-          An asynchronous verdict lands after the producer has answered, as a linked judge event. A reader
-          resolves it link-first and falls back to the embedded verdict, fail-open, so a consumer never
-          blocks on a verdict that has not arrived. Per-judgment verdict provenance distinguishes the raw
-          judge result from the producer-filtered one.
-        </p>
-
-        <h2>Reference</h2>
-
-        <p>
-          The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
-          the implementation. The reflection path and the judge-gate enforcement cluster each have their
-          own specification; this chapter is the frame that places them.
-        </p>
-        </section>
-
-
-        <section id="compaction" class="guide-chapter-block" aria-label="Chapter 19">
-<p class="guide-eyebrow">Chapter 19</p>
+        <section id="compaction" class="guide-chapter-block" aria-label="Chapter 22">
+<p class="guide-eyebrow">Chapter 22</p>
         <h2 class="guide-h1">Compaction &amp; husking</h2>
         <p class="guide-meta"></p>
 

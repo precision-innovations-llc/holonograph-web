@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // build-guide-all.mjs
 //
-// Generates /guide/all.html — a single-URL consolidation of all 19 chapters —
+// Generates /guide/all.html — a single-URL consolidation of all 22 chapters —
 // and updates the "## The Guide — Complete text" section of /llms-full.txt with
 // full chapter prose. Run before wrangler deploy whenever chapter content changes.
 //
@@ -28,16 +28,19 @@ const CHAPTERS = [
   ["07", "run-modes", "Run modes"],
   ["08", "sidecar", "Sidecar / OTel integration"],
   ["09", "topology-scanner", "Surface topology scanner"],
-  ["10", "conformance", "Conformance & fixtures"],
-  ["11", "multiplexer", "The multiplexer"],
-  ["12", "lessons-pipeline", "The lessons pipeline"],
-  ["13", "drift-attribution", "Drift attribution"],
-  ["14", "variance-isolation", "Variance isolation"],
-  ["15", "subscriptions", "Route a verdict to a human"],
-  ["16", "attention-spine", "The attention spine"],
-  ["17", "model-identity", "Model identity"],
-  ["18", "judge-modes", "Judge modes"],
-  ["19", "compaction", "Compaction & husking"],
+  ["10", "multiplexer", "The multiplexer"],
+  ["11", "drift-attribution", "Drift attribution"],
+  ["12", "variance-isolation", "Variance isolation"],
+  ["13", "lessons-pipeline", "The lessons pipeline"],
+  ["14", "conformance", "Conformance & fixtures"],
+  ["15", "judge-modes", "Judge modes"],
+  ["16", "seams", "Seams"],
+  ["17", "seam-monitor", "The seam monitor"],
+  ["18", "attention-spine", "The attention spine"],
+  ["19", "authority", "Authority"],
+  ["20", "reflection", "Reflection"],
+  ["21", "subscriptions", "Route a verdict to a human"],
+  ["22", "compaction", "Compaction & husking"],
 ];
 
 // ------- extract <article> body from a chapter file, strip prev/next nav -------
