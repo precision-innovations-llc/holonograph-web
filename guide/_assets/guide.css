@@ -9,9 +9,9 @@
    ----------------------------------------------------------------------------- */
 
 :root {
-  --bg: #ffffff;                             /* paper white */
-  --bg-elev: #f7f6f9;                        /* soft panel — elevated cards / code */
-  --bg-sunk: #f7f6f9;                        /* pull-quote surface (same neutral panel) */
+  --bg: #f6f5f9;                             /* paper — matches the site --paper */
+  --bg-elev: #ffffff;                        /* raised panel — cards, table head, nav */
+  --bg-sunk: #eceaf3;                        /* recessed surface — callouts, pull-quotes */
   --fg: #17161d;                             /* near-black */
   --fg-dim: #4b4a55;                         /* body de-emphasis */
   --fg-faint: #8a8894;                       /* captions, meta */
@@ -20,7 +20,7 @@
   --accent-hover: #4c2fc0;
   --accent-soft: #efeafd;                    /* accent-tinted surface */
   --rule: #e6e4ec;                           /* light rule */
-  --code-bg: #f7f6f9;
+  --code-bg: #ffffff;
   --code-fg: #2a1f4a;
   --danger: #b91c1c;                         /* wall-warning red, used sparingly */
   --orange: #d97747;                         /* wordmark H only — Holonograph brand */
