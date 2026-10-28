@@ -315,6 +315,48 @@
     .sf-band{grid-template-columns:1fr;gap:6px}
     .sf-arrow{margin-left:18px}
   }
+  /* ── v6 multi-view mockup ── */
+  .view[hidden]{display:none !important}
+  .review-bar{position:sticky;top:78px;z-index:45;background:#17161d;color:#cfccdb;font-size:12.5px}
+  .rb-inner{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;min-height:40px;padding-top:6px;padding-bottom:6px}
+  .rb-k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--catch)}
+  .rb-now b{color:#fff;font-weight:600}
+  .rb-now code{font-family:var(--mono);font-size:11.5px;color:#fff;background:rgba(255,255,255,.1);padding:1px 6px;border-radius:4px}
+  .rb-pages{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px}
+  .rb-pages a{color:#cfccdb;text-decoration:none;padding:4px 9px;border-radius:6px;font-size:12px}
+  .rb-pages a:hover{color:#fff}
+  .rb-pages a.on{background:var(--iris);color:#fff}
+  .nav-links a.on{color:var(--iris);font-weight:500}
+
+  .page-head{padding-bottom:clamp(20px,4vh,40px)}
+  .page-h1{font-size:clamp(32px,4.6vw,54px);line-height:1.06;letter-spacing:-.02em;font-weight:500}
+  .view > section + section{border-top:1px solid var(--line)}
+
+  .tbl{margin-top:clamp(20px,3vh,30px);border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+  .tbl-row{display:grid;grid-template-columns:200px 1fr;border-bottom:1px solid var(--line)}
+  .tbl-row:last-child{border-bottom:0}
+  .tbl-row span{padding:14px 18px;font-size:15px;color:var(--ink-2);line-height:1.5;min-width:0}
+  .tbl-row .tbl-k{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--sun-ink);border-right:1px solid var(--line)}
+  .tbl-row .tbl-k code{font-family:var(--mono);font-size:12.5px;color:var(--iris);background:none;padding:0}
+  .tbl-hi{background:var(--iris-soft)}
+  .tbl-hi .tbl-k{color:var(--iris)}
+
+  .code{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.6;color:#2a1f4a}
+  .body-p code{font-family:var(--mono);font-size:.88em;background:var(--iris-soft);color:var(--iris);padding:1px 6px;border-radius:5px}
+
+  .placeholder{margin-top:clamp(22px,3.5vh,34px);border:1.5px dashed var(--catch);border-radius:14px;padding:18px 20px;background:rgba(224,150,74,.06)}
+  .placeholder p{font-size:14.5px;color:var(--ink-2);line-height:1.55}
+
+  .tg-link{display:inline-block;margin-top:12px;font-size:13.5px;font-weight:500;color:var(--iris);text-decoration:none}
+  .tg-link:hover{text-decoration:underline}
+  .body-p a{color:var(--iris);font-weight:500;text-decoration:none}
+
+  @media (max-width:860px){
+    .review-bar{top:66px}
+    .rb-pages{margin-left:0;width:100%}
+    .tbl-row{grid-template-columns:1fr}
+    .tbl-row .tbl-k{border-right:0;border-bottom:1px dashed var(--line);padding-bottom:6px}
+  }
 </style>
 <link rel="stylesheet" href="mobilenav.css">
 </head>
@@ -329,18 +371,37 @@
   <div class="wrap nav-wrap">
     <nav aria-label="Primary">
       <span class="brand">
-        <a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>
+        <a class="mark" href="#home"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>
         <span class="pp">patent&nbsp;pending</span>
       </span>
-      <span class="nav-links"><a href="/">Platform</a><a href="/authority-governance/">Authority</a><a href="/attribution">Attribution</a><a href="/builders">Builders</a><a href="/papers">Research</a><a href="docs.html">Docs</a></span>
+      <span class="nav-links"><a href="#home" data-nav="home">Platform</a><a href="#authority-governance" data-nav="authority-governance">Authority</a><a href="#seams" data-nav="seams">Seams</a><a href="#attribution" data-nav="attribution">Attribution</a><a href="#builders" data-nav="builders">Builders</a><a href="#papers" data-nav="papers">Research</a><a href="guide/">Docs</a></span>
       <a class="pill" href="contact.html">Request a demo</a>
     </nav>
   </div>
 </header>
 
+<div class="review-bar" id="reviewBar" role="navigation" aria-label="Review: pages in this mockup">
+  <div class="wrap rb-inner">
+    <span class="rb-k">Review</span>
+    <span class="rb-now">Page: <b id="rbName">Home</b> &middot; ships at <code id="rbUrl">/</code></span>
+    <span class="rb-pages">
+      <a href="#home" data-rb="home">Home</a>
+      <a href="#authority-governance" data-rb="authority-governance">Authority governance</a>
+      <a href="#seams" data-rb="seams">Seams</a>
+      <a href="#attribution" data-rb="attribution">Attribution</a>
+      <a href="#builders" data-rb="builders">Builders</a>
+      <a href="#papers" data-rb="papers">Research</a>
+    </span>
+  </div>
+</div>
+
 <main id="main">
 
-  <!-- ══ 1 · HERO ══ -->
+<!-- ════════════════════════════════════════════════════════════════════
+     HOME  ·  production route: /
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" data-route="home" data-url="/">
+
   <section class="hero">
     <div class="wrap">
       <div class="col-text">
@@ -350,166 +411,79 @@
         <p class="audience-line">Holonograph identifies interpretive dependencies at machine speed, shows where they influence consequential decisions, and grants authority on evidence.</p>
         <ul class="pills"><li>Self-hosted</li><li>Code and model seams</li><li>Authority from evidence</li></ul>
         <div class="cta">
-          <a class="btn solid" href="#together">How it comes together <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn solid" href="#together" data-scroll>How it comes together <span aria-hidden="true">&rarr;</span></a>
           <a class="btn ghost" href="guide/">Read the Guide</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ══ 2 · THE PROBLEM ══ -->
   <section class="problem sec-pad" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>The problem</p>
       <h2>A valid value can carry a wrong interpretation.</h2>
-
       <div class="concept">
         <span class="concept-k">Conceptual example</span>
         <p>A ticket reads <em>&ldquo;I hope your launch is a success.&rdquo;</em> A pattern pulls out <code>success</code>, maps it to <code>route.SUCCESS</code>, and a branch downstream closes the incident.</p>
         <p>Every type checks. The enum is valid. The interpretation is wrong, and nothing in the test suite can see it, because the test suite checks the code.</p>
       </div>
-
-      <p class="body-p">That is the shape of the problem wherever it appears: a regular expression over free text, a fuzzy match on a name, a classifier selecting a rule, a model answering a question. The interpreter differs. The handoff is the same, and once the value is a typed, validated, well-formed fact, every decision after it inherits the assumption.</p>
-      <p class="body-p"><span class="emph">Working as designed and being right are different properties.</span> Tests establish the first. Holonograph is built for the second.</p>
+      <p class="body-p">The interpreter differs from system to system: a pattern over free text, a fuzzy match on a name, a classifier selecting a rule, a model answering a question. The handoff is the same, and once the value is a typed, validated fact, every decision after it inherits the assumption.</p>
+      <a class="arrow-link" href="#seams">Seams, and why a model is one <span aria-hidden="true">&rarr;</span></a>
     </div>
   </section>
 
-  <!-- ══ 3 · HOW IT COMES TOGETHER ══ -->
   <section class="together sec-pad" id="together" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>How it comes together</p>
       <h2>One dependency, followed from its source to its consequence.</h2>
       <p class="lead">Four things happen to every interpretive dependency Holonograph governs. They are one process over one record, in the order the dependency itself moves.</p>
-
       <div class="together-grid">
         <div class="tg">
           <h3>Find it</h3>
-          <p>Source analysis locates where an interpreted value reaches a decision that matters. Runtime observation locates traffic arriving at a decision no one declared. Each finding names the sink it reaches and the coverage the scan could not follow.</p>
+          <p>Source analysis locates where an interpreted value reaches a decision that matters. Runtime observation locates traffic arriving at a decision no one declared. Each finding names the sink it reaches.</p>
+          <a class="tg-link" href="#seams">Seams &rarr;</a>
         </div>
         <div class="tg">
           <h3>Measure it</h3>
-          <p>Once declared, the dependency is observed on real inputs: how often its no-match path fires, which branch runs, whether the decided value churns, and whether it is efficacious. A closed seam is ready to observe. It is not proven correct.</p>
+          <p>Once declared, the dependency is observed on real inputs: how often its no-match path fires, which branch runs, whether the decided value churns. A closed seam is ready to observe, not proven correct.</p>
+          <a class="tg-link" href="#builders">In the build loop &rarr;</a>
         </div>
         <div class="tg">
           <h3>Separate what moved</h3>
-          <p>When a reading changes on a model seam, the change is split into the deployment, the model that answered, the evaluation, and noise, with the limits of the record stated. Where two causes cannot be separated, the reading says so.</p>
+          <p>When a reading changes, the change is split into the deployment, the model that answered, the evaluation, and noise, across every dimension and every version, with the limits of the record stated.</p>
+          <a class="tg-link" href="#attribution">Attribution &rarr;</a>
         </div>
         <div class="tg">
           <h3>Derive authority</h3>
           <p>From the declared conditions and the evidence on the record, each surface is read as one of six states, re-derived at every read. No person confers it and no judge votes it in; the record does, or it does not.</p>
+          <a class="tg-link" href="#authority-governance">Authority governance &rarr;</a>
         </div>
       </div>
-
-      <div class="note-block">
-        <p><span class="emph">Two things never confer authority.</span></p>
-        <p>An approved corrective change is a recorded change. It enters the record; it does not feed a grant. Whether delivery proceeds is operator or CI policy reading the record; the lens never blocks on its own authority.</p>
-      </div>
+      <p class="body-p">Everything the instrument finds along the way, from a judge that went quiet to a surface that lost its grant, reports into one queue with its evidence attached. <a href="#authority-governance">The attention spine &rarr;</a></p>
     </div>
   </section>
 
-  <!-- ══ 4 · CODE SEAMS AND MODEL SEAMS ══ -->
-  <section class="seams sec-pad" data-reveal>
-    <div class="wrap">
-      <p class="sec-eyebrow"><span class="dot"></span>Seams</p>
-      <h2>A model is a seam whose interpreter moves.</h2>
-      <p class="lead">A pattern does not rewrite itself between releases. A model can be re-routed behind an unchanged name, and the instrument scoring it is usually another model. So a model seam carries more variance control. The lifecycle is the same.</p>
-
-      <div class="compare" role="table" aria-label="Code seams and model seams compared">
-        <div class="cmp-head" role="row"><span role="columnheader"></span><span role="columnheader">Code seam</span><span role="columnheader">Model seam</span></div>
-        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Interpretive source</span><span role="cell">A heuristic or pattern over open text.</span><span role="cell">A model interpretation, or the model as the decider itself.</span></div>
-        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Consequential consumer</span><span role="cell">A branch, threshold, pattern, or key sink.</span><span role="cell">Downstream code, or the model selecting an action.</span></div>
-        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Declared dependency</span><span role="cell">Source identity and the supported static flow.</span><span role="cell">The served model, the judge, its rubric and context scope.</span></div>
-        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Structural observation</span><span role="cell">No-match and abstention behavior, found in source.</span><span role="cell">Reliability, discrimination, saturation, independence of the scored dimensions.</span></div>
-        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Runtime evidence</span><span role="cell">Branch taken, value churn, optional efficacy.</span><span role="cell">The same, plus the identity of the model that actually answered.</span></div>
-        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Limits</span><span role="cell">Unsupported constructs and dynamic escapes, reported as coverage.</span><span role="cell">A provider's internal routing is not visible. Served identity is what was observed.</span></div>
-        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Authority reading</span><span role="cell">Derived from the record.</span><span role="cell">Derived from the record.</span></div>
-        <div class="cmp-band"><span>Declared conditions</span><i>&rarr;</i><span>Evidence over time</span><i>&rarr;</i><span>Derived authority</span><i>&rarr;</i><span>Continuing observation</span></div>
-      </div>
-      <p class="body-p">A model can sit on either side of the seam: as the interpreter whose output a branch consumes, or as the decider that consumes an interpreted input and chooses an action. Holonograph labels the interpretation, the decision it influences, and the action boundary separately, so a model occupying both roles in one workflow is read as two dependencies, not one.</p>
-      <div class="link-row">
-        <a class="arrow-link" href="guide/seams">Seams <span aria-hidden="true">&rarr;</span></a>
-        <a class="arrow-link" href="guide/seam-monitor">The seam monitor <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══ 5 · THE ATTENTION SPINE ══ -->
-  <section class="spine sec-pad" data-reveal>
-    <div class="wrap">
-      <p class="sec-eyebrow"><span class="dot"></span>The attention spine</p>
-      <h2>One queue for everything the instrument finds.</h2>
-      <p class="lead">Twenty-five sources report into one place: judge behavior, evaluation structure, coverage and reach, surface lifecycle, seams and authority, and the store itself. What that buys you is simple to state.</p>
-
-      <div class="together-grid">
-        <div class="tg"><h3>Findings keep their name</h3><p>A finding has the same identity across every rescan, so the annotation you made last week is still attached to it today.</p></div>
-        <div class="tg"><h3>Triage never touches the measurement</h3><p>Annotations live beside the record, not inside it. No status click changes a threshold, a prompt, or a hash.</p></div>
-        <div class="tg"><h3>Ranked by what needs attention</h3><p>A grant withdrawn out from under a live decision is at the top. A coverage note is at the bottom. The order is a fact about the record, not a dashboard choice.</p></div>
-        <div class="tg"><h3>A confirmed finding becomes a proposal</h3><p>It enters the approval path as a proposal, where a person disposes. A proposal is not a grant, and a finding is not a verdict.</p></div>
-      </div>
-
-      <figure class="spine-flow">
-        <div class="sf-band sf-src"><span class="sf-k">Activity</span><span>Model calls &middot; evaluation events &middot; builder seams &middot; runtime observations</span></div>
-        <div class="sf-arrow" aria-hidden="true"></div>
-        <div class="sf-band sf-concerns">
-          <span class="sf-k">Concerns</span>
-          <span class="sf-cards"><b>Unreliable evaluations</b><b>Grounding concerns</b><b>Blind spots and missing coverage</b><b>Drift and anomalous behavior</b></span>
-        </div>
-        <div class="sf-arrow" aria-hidden="true"></div>
-        <div class="sf-band sf-spine"><span class="sf-k">Attention spine</span><span>Examine findings &middot; inspect evidence &middot; investigate candidate dependencies</span></div>
-        <div class="sf-arrow sf-dashed" aria-hidden="true"></div>
-        <div class="sf-band sf-invest"><span class="sf-k">Builder investigation</span><span>What interpretation influenced the decision, and what justified that influence?</span></div>
-        <div class="sf-arrow sf-dashed" aria-hidden="true"></div>
-        <div class="sf-band sf-act"><span class="sf-k">Corrective action</span><span>Proposed change &middot; independent approval &middot; renewed observation</span></div>
-        <figcaption class="dg-cap"><span class="dot"></span>Solid steps are recorded data flow. Dashed steps are investigation. Authority is derived separately, from gates, dependencies, and evidence; nothing on this path confers it.</figcaption>
-      </figure>
-
-      <a class="arrow-link" href="guide/attention-spine">All twenty-five finding sources <span aria-hidden="true">&rarr;</span></a>
-    </div>
-  </section>
-
-  <!-- ══ 6 · WHEN A SCORE MOVES ══ -->
-  <section class="attribution sec-pad" data-reveal>
-    <div class="wrap">
-      <p class="sec-eyebrow"><span class="dot"></span>Attribution</p>
-      <h2>When a score moves, investigate what moved with it.</h2>
-      <p class="lead">A changed score can reflect your deployment, the model that answered, the evaluation configuration, or noise. Holonograph keeps those identities on every observation, so a reading is compared under the versions that produced it. Where the record cannot separate two explanations, the reading says so and names the observation that would.</p>
-      <a class="arrow-link" href="guide/drift-attribution">Drift attribution <span aria-hidden="true">&rarr;</span></a>
-    </div>
-  </section>
-
-  <!-- ══ 7 · EVIDENCE ══ -->
   <section class="evidence-sec sec-pad" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Evidence</p>
       <h2>What has been observed.</h2>
-
       <div class="ev-grid">
         <div class="ev-card">
           <span class="ev-tag">Development account</span>
           <h3>A rule-based calendaring agent</h3>
-          <p>During development, a conventional implementation review left an authority-bearing dependency unresolved. Seam analysis identified where an interpreted value was being treated as more authoritative than its provenance justified.</p>
-          <p>The producer's code did not need to change. The consequential behavior downstream did.</p>
-          <p class="ev-fine">An account from development, not an independently reproduced case study. It illustrates the gap between a correct producer and an unjustified downstream decision; it does not establish a prevented failure.</p>
+          <p>A conventional implementation review left an authority-bearing dependency unresolved. Seam analysis identified where an interpreted value was being treated as more authoritative than its provenance justified. The producer's code did not need to change; the consequential behavior downstream did.</p>
+          <a class="arrow-link" href="#builders">The full account <span aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="ev-card">
           <span class="ev-tag study">Research</span>
           <h3>What Does an LLM Judge Actually Measure?</h3>
-          <p>Two prospectively governed studies examined whether evaluation frames established discrimination of a target construct. Across 13,440 canonical judgments, whether a judge could discriminate the intended defect depended on the evaluation frame.</p>
-          <p>Under ordinary holistic scoring, no configuration established the preregistered criterion. Under target-bound scoring, all three did.</p>
-          <p class="ev-fine">Holonograph is developed by the study's author. The study states this in its own methods, and so does this page.</p>
-          <a class="arrow-link" href="/papers">Read the study <span aria-hidden="true">&rarr;</span></a>
+          <p>Across 13,440 canonical judgments, whether a judge could discriminate the intended defect depended on the evaluation frame. Under ordinary holistic scoring, no configuration established the criterion. Under target-bound scoring, all three did.</p>
+          <a class="arrow-link" href="#papers">The study <span aria-hidden="true">&rarr;</span></a>
         </div>
-      </div>
-
-      <div class="boundary">
-        <h4>Evidence boundary</h4>
-        <p>Holonograph reports what the declared measurement contract establishes. Its record does not independently certify the correctness of a consequential decision beyond that contract and its qualified evidence.</p>
-        <p>A development account, a public demonstration, and a controlled study establish different things. None of them establishes universal coverage, permanent correctness, or a guaranteed outcome.</p>
       </div>
     </div>
   </section>
 
-  <!-- ══ 8 · THE INSTRUMENT, RUNNING ══ -->
   <section class="demo" id="lens" data-reveal>
     <div class="wrap">
       <div class="demo-intro">
@@ -528,7 +502,6 @@
     </div>
   </section>
 
-  <!-- ══ 9 · CLOSE ══ -->
   <section class="close sec-pad" data-reveal>
     <div class="wrap close-inner">
       <p class="close-line">Authority on evidence.</p>
@@ -538,6 +511,245 @@
       </div>
     </div>
   </section>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     AUTHORITY GOVERNANCE  ·  production route: /authority-governance/
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" data-route="authority-governance" data-url="/authority-governance/" hidden>
+  <section class="page-head sec-pad">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Authority governance</p>
+      <h2 class="page-h1">Authority, derived from the record.</h2>
+      <p class="lead">Authority is the state, held per decision surface, that the declared prerequisites for a consequential transition are satisfied on the record as it stands. It is granted on evidence, re-derived at every read, and no actor confers it.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>Four neighbouring words, and none of them is it.</h2>
+      <div class="tbl">
+        <div class="tbl-row"><span class="tbl-k">Permission</span><span>An actor is allowed to act.</span></div>
+        <div class="tbl-row"><span class="tbl-k">Approval</span><span>An actor affirmatively accepts something.</span></div>
+        <div class="tbl-row"><span class="tbl-k">Correctness</span><span>A proposition matches an applicable reference.</span></div>
+        <div class="tbl-row"><span class="tbl-k">Confidence</span><span>A degree of belief, or a measurement's precision.</span></div>
+        <div class="tbl-row tbl-hi"><span class="tbl-k">Authority</span><span>The declared prerequisites for this transition are satisfied on the record.</span></div>
+      </div>
+      <p class="body-p">Humans, builders and mechanicals all produce events on the record. An operator approving a decision is approval, recorded as such. It does not move the state.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>Six states a surface can be in.</h2>
+      <div class="tbl">
+        <div class="tbl-row"><span class="tbl-k"><code>unmapped</code></span><span>No decision here is known to act on an interpreted value. Not yet mapped, rather than no seam.</span></div>
+        <div class="tbl-row"><span class="tbl-k"><code>mapped</code></span><span>A decision is identified. Nothing asserts authority over it.</span></div>
+        <div class="tbl-row"><span class="tbl-k"><code>declared</code></span><span>Authority is asserted and the gate is live, but no qualifying evidence is accruing.</span></div>
+        <div class="tbl-row"><span class="tbl-k"><code>qualifying</code></span><span>Live traffic is accumulating the evidence that would establish the condition.</span></div>
+        <div class="tbl-row tbl-hi"><span class="tbl-k"><code>granted</code></span><span>The condition is established on live evidence and every dependency holds its declared envelope.</span></div>
+        <div class="tbl-row"><span class="tbl-k"><code>suspended</code></span><span>A dependency left its declared envelope and the grant was withdrawn by the apparatus.</span></div>
+      </div>
+      <p class="body-p">The first five are a ladder. The sixth is a withdrawal, drawn as a branch and never as a completion stage. Re-establishing a grant takes the re-satisfaction of every gate over the post-change record, not an acknowledgement.</p>
+      <div class="note-block">
+        <p><span class="emph">Two things never confer authority.</span></p>
+        <p>An approved corrective change is a recorded change. It enters the record; it does not feed a grant. Whether delivery proceeds is operator or CI policy reading the record; the lens never blocks on its own authority.</p>
+      </div>
+      <a class="arrow-link" href="guide/authority.html">The full state machine, dependencies, and tears <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </section>
+
+  <section class="spine sec-pad" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>The attention spine</p>
+      <h2>One queue for everything the instrument finds.</h2>
+      <p class="lead">Twenty-five sources report into one place: judge behavior, evaluation structure, coverage and reach, surface lifecycle, seams and authority, and the store itself. The spine is the base the authority reading sits on.</p>
+      <div class="together-grid">
+        <div class="tg"><h3>Findings keep their name</h3><p>A finding has the same identity across every rescan, so the annotation you made last week is still attached to it today.</p></div>
+        <div class="tg"><h3>Triage never touches the measurement</h3><p>Annotations live beside the record, not inside it. No status click changes a threshold, a prompt, or a hash.</p></div>
+        <div class="tg"><h3>Ranked by what needs attention</h3><p>A grant withdrawn out from under a live decision is at the top. A coverage note is at the bottom.</p></div>
+        <div class="tg"><h3>A confirmed finding becomes a proposal</h3><p>It enters the approval path as a proposal, where a person disposes. A proposal is not a grant, and a finding is not a verdict.</p></div>
+      </div>
+      <figure class="spine-flow">
+        <div class="sf-band sf-src"><span class="sf-k">Activity</span><span>Model calls &middot; evaluation events &middot; builder seams &middot; runtime observations</span></div>
+        <div class="sf-arrow" aria-hidden="true"></div>
+        <div class="sf-band sf-concerns"><span class="sf-k">Concerns</span><span class="sf-cards"><b>Unreliable evaluations</b><b>Grounding concerns</b><b>Blind spots and missing coverage</b><b>Drift and anomalous behavior</b></span></div>
+        <div class="sf-arrow" aria-hidden="true"></div>
+        <div class="sf-band sf-spine"><span class="sf-k">Attention spine</span><span>Examine findings &middot; inspect evidence &middot; investigate candidate dependencies</span></div>
+        <div class="sf-arrow sf-dashed" aria-hidden="true"></div>
+        <div class="sf-band sf-invest"><span class="sf-k">Builder investigation</span><span>What interpretation influenced the decision, and what justified that influence?</span></div>
+        <div class="sf-arrow sf-dashed" aria-hidden="true"></div>
+        <div class="sf-band sf-act"><span class="sf-k">Corrective action</span><span>Proposed change &middot; independent approval &middot; renewed observation</span></div>
+        <figcaption class="dg-cap"><span class="dot"></span>Solid steps are recorded data flow. Dashed steps are investigation. Authority is derived separately, from gates, dependencies, and evidence; nothing on this path confers it.</figcaption>
+      </figure>
+      <a class="arrow-link" href="guide/attention-spine.html">All twenty-five finding sources <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </section>
+
+  <section class="sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>Reflection is granted, never switched on.</h2>
+      <p class="lead">When a response fails a certified judge, the judge's grounded critique can go back to the producer for a capped retry. That is granted per judge, rubric, facet and surface, only after the cell certifies, and revoked on any change to the identity it was computed on.</p>
+      <p class="body-p">Reflection against an uncertified judge turns the judge into an optimization target, and the cheapest way for a producer to raise a score on a requires-confirmation dimension is to stop being honest about absence. So the loop opens only where authority already stands.</p>
+      <a class="arrow-link" href="guide/reflection.html">Reflection <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SEAMS  ·  production route: /seams
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" data-route="seams" data-url="/seams" hidden>
+  <section class="page-head sec-pad">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Seams</p>
+      <h2 class="page-h1">Where inference becomes a decision.</h2>
+      <p class="lead">An interpreted value driving a decision that governs a consequential transition is a seam. It is permanent. You can close it and you can monitor it. You cannot validate it away.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>Provenance survives every hop.</h2>
+      <p class="body-p">Consider a decision that reads free text and returns one of three values:</p>
+      <pre class="code">function decide(ticket): 'page' | 'auto-reply' | 'queue' {
+  const msg = (ticket.subject + ticket.body).toLowerCase();   // interpreted
+  if (INCIDENT.test(msg)) return 'page';
+  ...
+}
+
+const action = decide(ticket);        // deterministic in value, interpreted in provenance
+if (action === 'page') pageOnCall();  // the dispatch reaches authority</pre>
+      <p class="body-p">The enum is not a sanitizer. It is the decision's codomain. <code>action</code> is deterministic in what it holds and interpreted in where it came from, and the provenance rides through every downstream hop. Moving the decision upstream moves the decision point; the next scan finds it in its new place.</p>
+      <p class="body-p">A schema boundary filters the catastrophic and passes the shape-valid-but-wrong. It raises the floor and, in the same motion, makes the residual error insidious: the value now looks right, types right, and fails downstream. Closing a seam makes the decision attended and monitorable. Correctness is a different axis, and the only instrument for it is observation on real inputs over time.</p>
+      <div class="tbl">
+        <div class="tbl-row"><span class="tbl-k">closed</span><span>The decision point has a defined no-match or abstention path, and its output's provenance chain ends in consumers that do not decide.</span></div>
+        <div class="tbl-row"><span class="tbl-k">open</span><span>Any unattended decision point in the chain, or a chain that feeds an unattended authority decision. The defective state.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seams sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>A model is a seam whose interpreter moves.</h2>
+      <p class="lead">A pattern does not rewrite itself between releases. A model can be re-routed behind an unchanged name, and the instrument scoring it is usually another model. So a model seam carries more variance control. The lifecycle is the same.</p>
+      <div class="compare" role="table" aria-label="Code seams and model seams compared">
+        <div class="cmp-head" role="row"><span role="columnheader"></span><span role="columnheader">Code seam</span><span role="columnheader">Model seam</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Interpretive source</span><span role="cell">A heuristic or pattern over open text.</span><span role="cell">A model interpretation, or the model as the decider itself.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Consequential consumer</span><span role="cell">A branch, threshold, pattern, or key sink.</span><span role="cell">Downstream code, or the model selecting an action.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Declared dependency</span><span role="cell">Source identity and the supported static flow.</span><span role="cell">The served model, the judge, its rubric and context scope.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Structural observation</span><span role="cell">No-match and abstention behavior, found in source.</span><span role="cell">Reliability, discrimination, saturation, independence of the scored dimensions.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Runtime evidence</span><span role="cell">Branch taken, value churn, optional efficacy.</span><span role="cell">The same, plus the identity of the model that actually answered.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Limits</span><span role="cell">Unsupported constructs and dynamic escapes, reported as coverage.</span><span role="cell">A provider's internal routing is not visible. Served identity is what was observed.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Authority reading</span><span role="cell">Derived from the record.</span><span role="cell">Derived from the record.</span></div>
+        <div class="cmp-band"><span>Declared conditions</span><i>&rarr;</i><span>Evidence over time</span><i>&rarr;</i><span>Derived authority</span><i>&rarr;</i><span>Continuing observation</span></div>
+      </div>
+      <p class="body-p">A model can sit on either side of the seam: as the interpreter whose output a branch consumes, or as the decider that consumes an interpreted input and chooses an action. Holonograph labels the interpretation, the decision it influences, and the action boundary separately, so a model occupying both roles in one workflow is read as two dependencies.</p>
+      <div class="link-row">
+        <a class="arrow-link" href="guide/seams.html">Seams <span aria-hidden="true">&rarr;</span></a>
+        <a class="arrow-link" href="guide/seam-monitor.html">The seam monitor <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     ATTRIBUTION  ·  production route: /attribution
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" data-route="attribution" data-url="/attribution" hidden>
+  <section class="page-head sec-pad">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Attribution</p>
+      <h2 class="page-h1">When a score moves, investigate what moved with it.</h2>
+      <p class="lead">A changed score can reflect your deployment, the model that answered, the evaluation configuration, or noise. Holonograph keeps those identities on every observation, so a reading is compared under the versions that produced it. Where the record cannot separate two explanations, the reading says so and names the observation that would.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>Four sources of variance, within one immutable event.</h2>
+      <div class="tbl">
+        <div class="tbl-row"><span class="tbl-k">Substrate</span><span>Your deployment: the prompts, tools, code and declared context you control.</span></div>
+        <div class="tbl-row"><span class="tbl-k">Light source</span><span>The model that answered, and everything the provider controls about it.</span></div>
+        <div class="tbl-row"><span class="tbl-k">Lens</span><span>The evaluation apparatus: judges, rubrics, configurations.</span></div>
+        <div class="tbl-row"><span class="tbl-k">Noise</span><span>Residual per-call variation, characterized as a floor a real change has to clear.</span></div>
+      </div>
+      <p class="body-p">A change in the measurement apparatus can look like a change in the system being measured. Holonograph preserves the identities and relationships needed to tell them apart, across every declared dimension and every version.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>Attribution requires memory.</h2>
+      <p class="lead">A number can move without the behavior moving. When the lens that scores a surface is revised, the metric drifts while the behavior may not have changed at all. Holonograph versions every lens and keeps the full history, so each reading is checked against the exact lens that produced it.</p>
+      <p class="body-p">The model you asked for and the model that answered are two different facts. A vendor can re-route behind an unchanged alias. Holonograph records both sides, so that change has a name instead of showing up as unexplained drift. The judge has the same two sides.</p>
+      <div class="placeholder"><span class="concept-k">Figures, redrawn for this page</span><p>The longitudinal record: four aligned lanes (deployment, served model, evaluation, outcome) across time columns, with a vertical connector binding the four identities of one observation. The attribution reading: evidence inputs, the attribution and reliability checks, and a reading that names its source or reports that the record cannot separate the causes.</p></div>
+      <div class="placeholder"><span class="concept-k">Illustrative readings</span><p>The region and citation readings from the current site sit here, under a visible label: examples of the format of a reading, not measurements from a named deployment.</p></div>
+      <div class="link-row">
+        <a class="arrow-link" href="guide/drift-attribution.html">Drift attribution <span aria-hidden="true">&rarr;</span></a>
+        <a class="arrow-link" href="guide/variance-isolation.html">Variance isolation <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     BUILDERS  ·  production route: /builders
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" data-route="builders" data-url="/builders" hidden>
+  <section class="page-head sec-pad">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Builders</p>
+      <h2 class="page-h1">Reported in the session that wrote it.</h2>
+      <p class="lead">The seam monitor runs inside the build loop. When a seam that reaches authority is written, it is reported at birth, in the session, naming the sink it reaches and the coverage the scan could not follow.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>What a report says, and the choice it leaves you.</h2>
+      <p class="body-p">A report names the interpretation, the decision it reaches, and what the scan could not follow. The scan reports structural facts and never a verdict; a separate gate adjudicates whether the edge is a real seam, and only confirmed edges are registered. The choice is yours: declare the seam, or restructure around it. Accepted declarations are honored, in the scan and in the lens.</p>
+      <p class="body-p">You are not asked to author the sink and skip lists cold. The monitor proposes candidates for both from the code it has already read.</p>
+      <p class="body-p"><span class="emph">The monitor flags and drafts. It does not edit code and it does not block a build on its own authority.</span> Whether a build stops is operator or CI policy, and the detector qualifies before that policy is eligible: observe first, everywhere, including on its own repository.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>A rule-based calendaring agent.</h2>
+      <span class="ev-tag">Development account</span>
+      <p class="body-p">During development, a conventional implementation review left an authority-bearing dependency unresolved. Seam analysis identified where an interpreted value was being treated as more authoritative than its provenance justified: a heuristic inference presented as established information, which filtered the rules the model was shown, and a fuzzy match carrying the same label as an exact one.</p>
+      <p class="body-p">The producer's code did not need to change. The consequential behavior downstream did. Subsequent investigation identified further authority-bearing dependencies in rule selection and evaluation context.</p>
+      <p class="ev-fine">An account from development, not an independently reproduced case study. It illustrates the gap between a correct producer and an unjustified downstream decision; it does not establish a prevented failure. A reported seam is not automatically a defect.</p>
+      <a class="arrow-link" href="guide/seam-monitor.html">The seam monitor <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </section>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     RESEARCH  ·  production route: /papers
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" data-route="papers" data-url="/papers" hidden>
+  <section class="page-head sec-pad">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Research</p>
+      <h2 class="page-h1">What Does an LLM Judge Actually Measure?</h2>
+      <p class="lead">The Role of Evaluation Frames in Construct Discrimination. Brian Kerrigan, 2026.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad" data-reveal>
+    <div class="wrap">
+      <h2>The finding.</h2>
+      <p class="body-p">An LLM judge can produce a coherent rationale and a stable-looking score without establishing that the score measures the defect the operator intended. Two prospectively governed studies tested controlled defects across three fixed evaluator configurations: 4,800 judgments under ordinary holistic scoring, then 8,640 across three evaluation frames.</p>
+      <p class="body-p">Under ordinary holistic scoring, no configuration established the preregistered target-discrimination criterion. Under target-bound scoring, all three did. Before relying on a judge for consequential inference, its ability to discriminate the relevant construct should be demonstrated under the intended evaluation frame.</p>
+      <p class="body-p">Calls passed through dedicated local Holonograph Lens instances, which supplied call-time correlation, route and served-model identity, substrate stamps, cohort tags, and immutable digest-only events. Raw requests and responses stayed outside the Lens.</p>
+      <p class="ev-fine"><span class="emph">Disclosure.</span> Holonograph is developed by the study's author. The manuscript states this in its own methods, and so does this page.</p>
+      <div class="placeholder"><span class="concept-k">On publication</span><p>Manuscript link, DOI or arXiv identifier, and a BibTeX block go here. The public commitments and aggregate records are indexed in the attestations repository named in the manuscript.</p></div>
+      <a class="arrow-link" href="lens-facets.html">What the study means for the lens <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </section>
+</div>
 
 </main>
 
@@ -549,8 +761,8 @@
         <p class="f-tag">The self-hosted instrument for authority governance.</p>
         <p class="f-pp">Patent pending</p>
       </div>
-      <div class="f-col"><h4>Platform</h4><a href="/authority-governance/">Authority governance</a><a href="/seams">Authority seams</a><a href="/attribution">Attribution</a><a href="lens-facets.html">Lens facets</a><a href="/builders">Builders</a></div>
-      <div class="f-col"><h4>Resources</h4><a href="docs.html">Docs</a><a href="docs.html">Guide</a><a href="glossary.html">Glossary</a><a href="/papers">Research</a><a href="changelog.html">Changelog</a></div>
+      <div class="f-col"><h4>Platform</h4><a href="#authority-governance">Authority governance</a><a href="#seams">Seams</a><a href="#attribution">Attribution</a><a href="#builders">Builders</a><a href="#papers">Research</a></div>
+      <div class="f-col"><h4>Resources</h4><a href="docs.html">Docs</a><a href="docs.html">Guide</a><a href="glossary.html">Glossary</a><a href="changelog.html">Changelog</a></div>
       <div class="f-col"><h4>Company</h4><a href="value.html">Value</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a></div>
     </div>
     <div class="footer-bar">
@@ -583,6 +795,37 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
   var header=document.getElementById('siteHeader');
   function onScroll(){ if(header) header.classList.toggle('scrolled', window.scrollY>8); }
   onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+})();
+</script>
+<script>
+/* mockup router: one view per production page, hash-addressed */
+(function(){
+  var views=[].slice.call(document.querySelectorAll('.view'));
+  var names={home:'Home','authority-governance':'Authority governance',seams:'Seams',attribution:'Attribution',builders:'Builders',papers:'Research'};
+  function viewFor(id){ return views.filter(function(v){return v.dataset.route===id;})[0]; }
+  function show(id, anchor){
+    var v=viewFor(id)||viewFor('home');
+    views.forEach(function(x){ x.hidden = (x!==v); });
+    var r=v.dataset.route;
+    document.getElementById('rbName').textContent=names[r]||r;
+    document.getElementById('rbUrl').textContent=v.dataset.url;
+    [].forEach.call(document.querySelectorAll('[data-rb],[data-nav]'),function(a){
+      a.classList.toggle('on',(a.dataset.rb||a.dataset.nav)===r);
+    });
+    document.querySelector('.stage').style.display = (r==='home') ? '' : 'none';
+    var t = anchor && document.getElementById(anchor);
+    if(t){ t.scrollIntoView({block:'start'}); window.scrollBy(0,-130); }
+    else { window.scrollTo(0,0); }
+  }
+  function route(){
+    var h=(location.hash||'#home').slice(1);
+    if(viewFor(h)) return show(h);
+    var el=document.getElementById(h);
+    if(el){ var host=el.closest('.view'); return show(host?host.dataset.route:'home', h); }
+    show('home');
+  }
+  window.addEventListener('hashchange', route);
+  route();
 })();
 </script>
 <script type="module" src="./holon-light.js?v=15"></script>
