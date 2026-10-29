@@ -741,6 +741,60 @@
     .evb-d b{flex-basis:100%;order:3}
     .evb-go{margin-left:auto}
   }
+
+  /* ── v9: propagation, matrix key, left-aligned content ── */
+  .prop{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px}
+  .pr{position:relative;border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+  .pr:not(:last-child)::after{content:"";position:absolute;top:50%;right:-25px;width:20px;height:2px;background:linear-gradient(90deg,#d6d2e3,var(--sun))}
+  .pr:not(:last-child)::before{content:"";position:absolute;top:calc(50% - 4px);right:-27px;border-left:8px solid var(--sun);border-top:5px solid transparent;border-bottom:5px solid transparent}
+  .pr-k{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+  .pr q{font-size:16px;color:var(--ink);line-height:1.45}
+  .pr p{font-size:14.5px;color:var(--ink-2);line-height:1.5}
+  .pr code{align-self:flex-start;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--sun-ink);background:rgba(233,85,43,.08);border:1px solid rgba(233,85,43,.3);border-radius:7px;padding:5px 10px}
+  .pr-elev{border-color:rgba(233,85,43,.45);background:linear-gradient(180deg,rgba(233,85,43,.06),#fff)}
+  .pr-elev .pr-k{color:var(--sun-ink)}
+  .pr-rec{align-self:flex-start;font-size:14px;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:5px 10px;background:#fff}
+  .pr-rec b{margin-left:8px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--good)}
+  .pr-dp{border:1.5px solid var(--iris);background:var(--iris-soft)}
+  .pr-dp .pr-k{color:var(--iris)}
+  .prop-fn{margin-top:18px;max-width:74ch;font-size:clamp(15.5px,1.4vw,17px);color:var(--ink);font-weight:500;line-height:1.5}
+
+  .matrix + .mx-key{margin-top:clamp(24px,4vh,36px)}
+  .mx-c:not(.mx-h):not(.mx-r):not(.mx-unres){justify-content:center;font-family:var(--mono);font-size:13px;font-weight:600;color:rgba(255,255,255,calc(.42 + var(--v,0) * .8))}
+  .mx-key{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px 30px}
+  .mk{position:relative;padding-left:40px}
+  .mk h3{font-size:15.5px;font-weight:600;color:var(--ink)}
+  .mk p{margin-top:4px;font-size:14.5px;color:var(--ink-2);line-height:1.5}
+  .mk-sw{position:absolute;left:0;top:3px;display:flex;align-items:center;justify-content:center}
+  .sw-row{width:28px;height:12px;border:1.5px solid var(--iris);border-radius:3px}
+  .sw-col{left:8px;width:12px;height:28px;border:1.5px solid var(--iris);border-radius:3px}
+  .sw-cell{gap:2px}
+  .sw-cell i{width:8px;height:16px;border-radius:2px;background:hsl(253 72% 30%)}
+  .sw-cell i:nth-child(2){background:hsl(253 72% 45%)}
+  .sw-cell i:nth-child(3){background:hsl(253 72% 62%)}
+  .sw-cov{width:28px;color:#e9552b;font-size:14px;font-style:normal}
+  .sw-unres{width:28px;height:16px;border-radius:3px;background:repeating-linear-gradient(135deg,rgba(233,85,43,.6) 0 3px,rgba(233,85,43,.12) 3px 6px)}
+  .sw-noise{width:28px;height:16px;border-radius:3px;background:hsl(250 8% 40%)}
+
+  .demo-intro,.close-inner,.method-intro,.readout-intro{text-align:left;margin-left:0;margin-right:0}
+  .demo-intro .sec-eyebrow,.method-intro .sec-eyebrow,.readout-intro .sec-eyebrow{justify-content:flex-start}
+  .close .cta{justify-content:flex-start}
+  .method-intro{max-width:780px}
+  .method-intro .page-h1{font-size:clamp(32px,4.6vw,54px);line-height:1.06}
+  .method-callout{text-align:left;margin-left:0}
+  .readout-fn{margin-left:0}
+  .demo-mobile{text-align:left}
+
+  @media (max-width:900px){
+    .prop{grid-template-columns:1fr;gap:26px}
+    .pr:not(:last-child)::after{top:auto;bottom:-20px;right:auto;left:28px;width:2px;height:14px;background:linear-gradient(180deg,#d6d2e3,var(--sun))}
+    .pr:not(:last-child)::before{top:auto;bottom:-24px;right:auto;left:24px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid var(--sun);border-bottom:0}
+    .mx-key{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:720px){
+    .mx-key{grid-template-columns:1fr}
+    .mx-c:not(.mx-h):not(.mx-r):not(.mx-unres){font-size:12px}
+  }
 </style>
 <link rel="stylesheet" href="mobilenav.css">
 </head>
@@ -806,7 +860,7 @@
   <section class="alarms sec-pad" id="alarms" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Agentic governance</p>
-      <h2>Know when your agent is misbehaving</h2>
+      <h2>What correct-looking behavior can conceal</h2>
       <p class="lead">Agentic systems create an endless stream of <a class="term" href="#risks">interpretive data</a>, often then acting upon their own inferences. This is what makes them both incredibly useful and difficult to validate. A system can be right for the wrong reason, confidently claim no access to data it can reach, answer questions without using the tool intended to provide the answer, and more. Often these pass the casual user as operating normally and would not be reported. These issues can compound, eventually combining to create larger, noticeable system glitches of which the source is notoriously difficult to trace. Holonograph monitors for <a class="term" href="#attention-spine">25 such known issues</a> and alerts both the <a class="term" href="#lens">dashboard</a> and <a class="term" href="#builders">builder agent</a> of issues worthy of attention.</p>
       <div class="board">
         <div class="bd"><span class="bd-n">4</span><h3>Judge behavior</h3><p>A judge score contradicts the record</p><p>An expected verdict never arrives</p></div>
@@ -826,7 +880,7 @@
   <section class="risks sec-pad" id="risks" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>The risks with interpretive data</p>
-      <h2>Confidence in non-determinism</h2>
+      <h2>Where interpretation becomes authority</h2>
       <p class="lead">Much value in software systems comes from the processing and classification of <a class="term" href="#seams">interpretive data</a>. The advent of AI has allowed complex decisions to now be made on inference of that interpretive data, and <a class="term" href="#builders">AI builders</a> create systems which ingest these interpretives and formulate decisions at machine speed.</p>
       <div class="ic">
         <span class="ic-k">Interpretive data creators</span>
@@ -835,10 +889,19 @@
       <div class="ic">
         <span class="ic-k">Examples of interpretive data errors</span>
         <div class="ierr">
-          <div class="ie"><q>I hope your launch is a success!</q><span class="ie-ar" aria-label="becomes"></span><code>task.SUCCESS</code></div>
           <div class="ie"><q>I spoke to my friend September last year.</q><span class="ie-ar" aria-label="becomes"></span><code>09/01/2025</code></div>
           <div class="ie"><q>Cook the steak until well done.</q><span class="ie-ar" aria-label="becomes"></span><code>status.DONE</code></div>
         </div>
+      </div>
+      <div class="ic">
+        <span class="ic-k">How one error reaches a decision point</span>
+        <ol class="prop">
+          <li class="pr"><span class="pr-k">Input</span><q>Cook the steak until well done.</q></li>
+          <li class="pr"><span class="pr-k">Interpreter</span><p>A RegEx matches &ldquo;done&rdquo; and labels the task</p><code>status.DONE</code></li>
+          <li class="pr pr-elev"><span class="pr-k">Elevated to fact</span><p>The task record reads complete. Nothing on it says the status was inferred.</p><span class="pr-rec">Cook the steak <b>DONE</b></span></li>
+          <li class="pr pr-dp"><span class="pr-k">Decision point &middot; LLM call</span><p>The planning call reads the task as finished and moves on. No timer is set, and the agent reports dinner as ready.</p></li>
+        </ol>
+        <p class="prop-fn">Every step ran valid code. An inference reached the decision point with the authority of a recorded fact. Holonograph maps that edge as a <a class="term" href="#seams">seam</a>.</p>
       </div>
       <p class="ic-fn"><sup>*</sup>LLMs are special interpretive creators that also act as <a href="#seams">Decision Points</a>.</p>
     </div>
@@ -857,7 +920,7 @@
       <div class="demo-intro">
         <p class="sec-eyebrow"><span class="dot"></span>See it live</p>
         <h2>The instrument, running</h2>
-        <p class="lead" style="margin-left:auto;margin-right:auto">The attention spine's queue against a live agent: every alarm it raises, the moment it fires.</p>
+        <p class="lead">The attention spine's queue against a live agent: every alarm it raises, the moment it fires.</p>
       </div>
       <div class="dw-frame" id="lens-view">
         <div class="dw-chrome"><span class="dots"><i></i><i></i><i></i></span><span class="live"><span class="pulse"></span>LIVE</span></div>
@@ -887,37 +950,17 @@
 <div class="view" data-route="attention-spine" data-url="/attention-spine" hidden>
   <section class="page-head sec-pad">
     <div class="wrap">
-      <p class="sec-eyebrow"><span class="dot"></span>The attention spine</p>
-      <h2 class="page-h1">Know when your agent is misbehaving</h2>
-      <p class="lead">Twenty-five alarms watch everything an agent's answers depend on: the judges scoring it, the structure of its evaluations, what is and is not being observed, the <a class="term" href="#seams">decisions it reaches</a>, and the record that holds the evidence. They all report into one queue.</p>
+      <p class="sec-eyebrow"><span class="dot"></span>Is your agent behaving properly?</p>
+      <h2 class="page-h1">Correct-looking behavior is not always correct</h2>
+      <p class="lead">An agent can return a plausible answer while the judge scoring it has stopped discriminating, a dimension it depends on goes unobserved, or an interpreted value reaches a <a class="term" href="#seams">decision point</a> without the evidence to justify it. The attention spine reads the record for these conditions: judge behavior, evaluation structure, coverage and reach, surface lifecycle, seams and authority, and the integrity of the store itself. Every finding source reports into one queue, ranked by what needs attention, with its evidence attached.</p>
     </div>
   </section>
 
   <section class="sec-pad" data-reveal>
     <div class="wrap">
-      <h2>What it catches</h2>
-      <div class="catch">
-        <div class="catch-head"><span>What is going wrong</span><span>Alarms that report it</span></div>
-        <div class="catch-row"><span>An evaluator is inconsistent, unavailable, or malfunctioning</span><span><code>verdict-reliability</code><code>judge-liveness</code><code>judge-malfunction</code></span></div>
-        <div class="catch-row"><span>Evaluations may not be adequately grounded</span><span><code>co-groundedness</code></span></div>
-        <div class="catch-row"><span>Evaluation dimensions overlap or fail to discriminate independently</span><span><code>orthogonality-hypothesis</code><code>primary-axis-orthogonality</code><code>redundancy-candidate</code></span></div>
-        <div class="catch-row"><span>Evaluation behavior changes between dimensions or cohorts</span><span><code>pairwise-drift</code><code>contested-cohort</code></span></div>
-        <div class="catch-row"><span>The rubric has holes or broken references</span><span><code>rubric-gap</code><code>rubric-ref-broken</code></span></div>
-        <div class="catch-row"><span>Relevant behavior is not being measured or reached</span><span><code>coverage-gap</code><code>reach-gap</code><code>emission-gap</code><code>dark-mass-blindspot</code></span></div>
-        <div class="catch-row"><span>The evidence is too thin to support a reading</span><span><code>read-window-underpowered</code></span></div>
-        <div class="catch-row"><span>A surface's behavior or provenance changes</span><span><code>trajectory</code><code>hash-provenance</code></span></div>
-        <div class="catch-row"><span>A surface warrants isolation or retirement review</span><span><code>quarantine-candidate</code><code>retirement-candidate</code></span></div>
-        <div class="catch-row"><span>An interpreted value reaches a consequential decision</span><span><code>builder-seam</code></span></div>
-        <div class="catch-row"><span>A registered seam behaves in a way worth investigating</span><span><code>seam-soak</code></span></div>
-        <div class="catch-row"><span>Previously established authority is withdrawn</span><span><code>authority-suspended</code></span></div>
-        <div class="catch-row"><span>Storage or retention could compromise the record</span><span><code>store-capacity</code><code>retention-integrity</code></span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec-pad" data-reveal>
-    <div class="wrap">
-      <h2>The twenty-five alarms</h2>
+      <p class="sec-eyebrow"><span class="dot"></span>25 independent finding sources</p>
+      <h2>The Spine Alarms</h2>
+      <p class="lead">These alerts fire whenever Holonograph maps a discrepancy in any of these categories. Alarms stack across surfaces and cohorts, can be triaged, and eventually phase out if transient. Maintenance of these alarms will reduce them until the surface&rsquo;s full <a class="term" href="#authority-governance">authority</a> is granted.</p>
       <div class="groups">
         <div class="grp"><h3>Judge behavior <span>4</span></h3><dl>
           <dt>verdict-reliability</dt><dd>Unreliable verdicts</dd>
@@ -1139,20 +1182,12 @@
      AI ATTRIBUTION  ·  production route: /ai-attribution
      ════════════════════════════════════════════════════════════════════ -->
 <div class="view" data-route="ai-attribution" data-url="/ai-attribution" hidden>
-  <section class="page-head sec-pad">
-    <div class="wrap">
-      <p class="sec-eyebrow"><span class="dot"></span>AI Attribution</p>
-      <h2 class="page-h1">When a score moves, investigate what moved with it</h2>
-      <p class="lead">A changed score can reflect your deployment, the model that answered, the evaluation, or noise. Holonograph keeps those identities on every observation and reads each declared dimension against all four, across every version. Where the record cannot separate two explanations, the reading says so and names the observation that would.</p>
-    </div>
-  </section>
-
   <section class="method sec-pad" data-anim>
     <div class="wrap">
     <div class="method-intro">
-      <p class="sec-eyebrow"><span class="dot"></span>The method</p>
-      <h2>Identifying the source of the shift</h2>
-      <p class="method-lead"><b class="lead-in">A value changing is not yet an answer.</b> Holonograph decomposes a score by attributing each part to your agent, the model, or custom evaluation system, and separates real change from noise; quantifying how much each source moved with that number. This decomposition is the method under patent application. It turns the changed score into an actionable report. Substrate labeling further identifies which component of your agent&rsquo;s substrate contributed to the agent&rsquo;s part: lessons, skills, code, and prompt are each separated and attributed.</p>
+      <p class="sec-eyebrow"><span class="dot"></span>Observability is not Attribution</p>
+      <h2 class="page-h1">What moved with a changed score?</h2>
+      <p class="method-lead"><b class="lead-in">A value changing is not yet an answer.</b> Holonograph decomposes a score by attributing each part to your agent, the model, or custom evaluation system, and separates real change from noise, quantifying how much each source moved with that number. This decomposition is the method under patent application. It turns the changed score into an actionable report. Substrate labeling further identifies which component of your agent&rsquo;s substrate contributed to the agent&rsquo;s part: lessons, skills, code, and prompt are each separated and attributed.</p>
     </div>
 
     <div class="method-flow">
@@ -1185,12 +1220,32 @@
     </div>
   </section>
 
+  <section class="sec-pad">
+    <div class="wrap substrate">
+    <div class="viz-wrap">
+      <svg id="substrate-viz" data-anim viewBox="0 0 460 380" aria-hidden="true"></svg>
+      <p class="viz-cap"><span class="dot"></span>One behavior tracked across every version</p>
+    </div>
+    <div class="substrate-text">
+      <p class="sec-eyebrow"><span class="dot"></span>The longitudinal substrate</p>
+      <h2>Attribution requires memory</h2>
+      <p><b class="lead-in">A number can move without the behavior moving.</b> When the model is updated, or the lens that scores it is revised, the metric drifts while the underlying behavior does not change. Holonograph versions every lens and keeps the full history, so each reading is checked against the exact lens that produced it. The outcome is a clear behavioral attribution to the model, the substrate, or the judges themselves.</p>
+      <p>The model you asked for and the model that answered are two different facts. A vendor can re-route behind an unchanged alias. Holonograph records both sides, so that change has a name instead of showing up as unexplained drift. The judge has the same two sides.</p>
+      <div class="link-row">
+        <a class="arrow-link" href="guide/drift-attribution.html">Drift attribution <span aria-hidden="true">&rarr;</span></a>
+        <a class="arrow-link" href="guide/variance-isolation.html">Variance isolation <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+    </div>
+  </section>
+
   <section class="sec-pad" data-reveal>
     <div class="wrap">
       <h2>The attribution matrix</h2>
+      <p class="lead">A release changed five scores at once. The matrix splits each score&rsquo;s change across the four sources that could have moved it. Read across a row to see where that score&rsquo;s movement came from. In this release the model moved helpfulness, faithfulness, and grounding, and the deployment moved tool discipline.</p>
       <figure class="matrix">
         <div class="mx-top">
-          <span class="mx-k">Release 0.43 against 0.42 &middot; share of each dimension's change</span>
+          <span class="mx-k">Release 0.43 against 0.42 &middot; share of each score&rsquo;s change</span>
           <span class="mx-tag">Illustrative</span>
         </div>
         <div class="mx-grid">
@@ -1201,26 +1256,29 @@
           <span class="mx-c mx-h"><span class="mx-l">Noise</span><span class="mx-s">Noise</span></span>
 
           <span class="mx-c mx-r">Helpfulness</span>
-          <span class="mx-c" style="--v:.18"></span><span class="mx-c mx-peak" style="--v:.82"></span><span class="mx-c" style="--v:.10"></span><span class="mx-c mx-n" style="--v:.22"></span>
+          <span class="mx-c" style="--v:.14">14%</span><span class="mx-c mx-peak" style="--v:.66">66%</span><span class="mx-c" style="--v:.06">6%</span><span class="mx-c mx-n" style="--v:.14">14%</span>
 
           <span class="mx-c mx-r">Faithfulness <em class="mx-cov">&#9679;</em></span>
-          <span class="mx-c" style="--v:.12"></span><span class="mx-c mx-peak" style="--v:.70"></span><span class="mx-c" style="--v:.26"></span><span class="mx-c mx-n" style="--v:.18"></span>
+          <span class="mx-c" style="--v:.08">8%</span><span class="mx-c mx-peak" style="--v:.56">56%</span><span class="mx-c" style="--v:.22">22%</span><span class="mx-c mx-n" style="--v:.14">14%</span>
 
           <span class="mx-c mx-r">Grounding <em class="mx-cov">&#9679;</em></span>
-          <span class="mx-c" style="--v:.10"></span><span class="mx-c mx-peak" style="--v:.64"></span><span class="mx-c" style="--v:.30"></span><span class="mx-c mx-n" style="--v:.20"></span>
+          <span class="mx-c" style="--v:.06">6%</span><span class="mx-c mx-peak" style="--v:.52">52%</span><span class="mx-c" style="--v:.26">26%</span><span class="mx-c mx-n" style="--v:.16">16%</span>
 
           <span class="mx-c mx-r">Tool discipline</span>
-          <span class="mx-c mx-peak" style="--v:.88"></span><span class="mx-c" style="--v:.12"></span><span class="mx-c" style="--v:.08"></span><span class="mx-c mx-n" style="--v:.14"></span>
+          <span class="mx-c mx-peak" style="--v:.74">74%</span><span class="mx-c" style="--v:.08">8%</span><span class="mx-c" style="--v:.06">6%</span><span class="mx-c mx-n" style="--v:.12">12%</span>
 
           <span class="mx-c mx-r">Tone</span>
-          <span class="mx-c mx-unres">Cannot separate on this record</span><span class="mx-c" style="--v:.16"></span><span class="mx-c mx-n" style="--v:.30"></span>
+          <span class="mx-c mx-unres"><span>70% &middot; <span class="mx-l">deployment or model, </span>not separable</span></span><span class="mx-c" style="--v:.12">12%</span><span class="mx-c mx-n" style="--v:.18">18%</span>
         </div>
-        <div class="mx-notes">
-          <p><em class="mx-cov">&#9679;</em> Faithfulness and grounding move together. The covariance is measured and reported, not assumed away, so one cause is not counted twice.</p>
-          <p><span class="mx-unres-k"></span> Tone changed while the deployment and the model changed in the same window. The record names the run that would separate them.</p>
-        </div>
-        <figcaption class="dg-cap"><span class="dot"></span>Each row is a declared dimension. Each column is a source of change. Brighter cells hold more of the change. Values are illustrative and show the format of a reading.</figcaption>
       </figure>
+      <div class="mx-key">
+        <div class="mk"><span class="mk-sw sw-row" aria-hidden="true"></span><h3>Rows</h3><p>The dimensions you declared and score, such as helpfulness or tool discipline.</p></div>
+        <div class="mk"><span class="mk-sw sw-col" aria-hidden="true"></span><h3>Columns</h3><p>The four sources that can move a score: your deployment, the model that answered, the evaluation scoring it, and noise.</p></div>
+        <div class="mk"><span class="mk-sw sw-cell" aria-hidden="true"><i></i><i></i><i></i></span><h3>Cells</h3><p>The share of that row&rsquo;s change traced to that column&rsquo;s source. Each row totals 100%. Brighter cells hold more of the change.</p></div>
+        <div class="mk"><span class="mk-sw sw-cov" aria-hidden="true">&#9679;</span><h3>Moving together</h3><p>Faithfulness and grounding move together. The covariance is measured and reported, so one cause is not counted twice.</p></div>
+        <div class="mk"><span class="mk-sw sw-unres" aria-hidden="true"></span><h3>Not separable</h3><p>Tone changed in a window where the deployment and the model both changed. The reading assigns 70% to the pair and names the run that would separate them.</p></div>
+        <div class="mk"><span class="mk-sw sw-noise" aria-hidden="true"></span><h3>Noise</h3><p>Per-call variation, measured as a calibrated floor. Change inside the floor is not attributed to any source.</p></div>
+      </div>
     </div>
   </section>
 
@@ -1392,25 +1450,6 @@
     </div>
     </div>
   </section>
-
-  <section class="sec-pad">
-    <div class="wrap substrate">
-    <div class="viz-wrap">
-      <svg id="substrate-viz" data-anim viewBox="0 0 460 380" aria-hidden="true"></svg>
-      <p class="viz-cap"><span class="dot"></span>One behavior tracked across every version</p>
-    </div>
-    <div class="substrate-text">
-      <p class="sec-eyebrow"><span class="dot"></span>The longitudinal substrate</p>
-      <h2>Attribution requires memory</h2>
-      <p><b class="lead-in">A number can move without the behavior moving.</b> When the model is updated, or the lens that scores it is revised, the metric drifts while the underlying behavior does not change. Holonograph versions every lens and keeps the full history, so each reading is checked against the exact lens that produced it. The outcome is a clear behavioral attribution to the model, the substrate, or the judges themselves.</p>
-      <p>The model you asked for and the model that answered are two different facts. A vendor can re-route behind an unchanged alias. Holonograph records both sides, so that change has a name instead of showing up as unexplained drift. The judge has the same two sides.</p>
-      <div class="link-row">
-        <a class="arrow-link" href="guide/drift-attribution.html">Drift attribution <span aria-hidden="true">&rarr;</span></a>
-        <a class="arrow-link" href="guide/variance-isolation.html">Variance isolation <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </div>
-    </div>
-  </section>
 </div>
 
 <!-- ════════════════════════════════════════════════════════════════════
@@ -1516,9 +1555,9 @@
         <p class="f-tag">The self-hosted instrument for authority governance.</p>
         <p class="f-pp">Patent pending</p>
       </div>
-      <div class="f-col"><h4>Platform</h4><a href="#ai-attribution">AI Attribution</a><a href="#attention-spine">Attention Spine</a><a href="#authority-governance">Authority governance</a><a href="#seams">Seams</a><a href="#builders">Builders</a></div>
-      <div class="f-col"><h4>Resources</h4><a href="guide/">Docs</a><a href="glossary.html">Glossary</a><a href="#papers">Research</a><a href="changelog.html">Changelog</a></div>
-      <div class="f-col"><h4>Company</h4><a href="value.html">Value</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a></div>
+      <div class="f-col"><h4>Platform</h4><a href="#ai-attribution">AI Attribution</a><a href="lens-facets.html">Lens facets</a><a href="#attention-spine">Attention Spine</a><a href="#authority-governance">Authority governance</a><a href="#seams">Seams</a><a href="#builders">Builders</a></div>
+      <div class="f-col"><h4>Resources</h4><a href="docs.html">Docs</a><a href="guide/">Guide</a><a href="glossary.html">Glossary</a><a href="#papers">Research</a><a href="changelog.html">Changelog</a></div>
+      <div class="f-col"><h4>Company</h4><a href="value.html">Value</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div>
     </div>
     <div class="footer-bar">
       <span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span>
