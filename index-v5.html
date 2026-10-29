@@ -1003,6 +1003,46 @@
     .ct-out::before{left:24px}
     .isnt{grid-template-columns:1fr}
   }
+
+  /* ── v11: matrix in dashboard terms ── */
+  .mx-grid{grid-template-columns:minmax(150px,1.15fr) repeat(4,minmax(0,1fr))}
+  .mx-h .mx-l i{display:block;margin-top:3px;font-style:normal;text-transform:none;letter-spacing:0;color:#6c6a78;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mx-r{font-family:var(--mono);font-size:13px;font-weight:500}
+  .mx-c.g,.mx-conf{min-height:66px;flex-direction:column;justify-content:center;align-items:center;gap:5px;padding:8px 6px;text-align:center}
+  .mx-c.g b,.mx-conf b{font-family:var(--mono);font-size:13.5px;font-weight:600;color:rgba(255,255,255,calc(.5 + var(--v,0) * .7))}
+  .mx-c .t,.mk-sw.sw-t{font-style:normal;font-family:var(--mono);font-size:12px;border-radius:4px;padding:1px 7px;white-space:nowrap;color:#8d8a9c;border:1px solid transparent}
+  .c-ok .t,.sw-t.c-ok{color:#46c08a;border-color:rgba(70,192,138,.45);background:rgba(70,192,138,.1)}
+  .c-orth .t,.sw-t.c-orth{color:#e0964a;border-color:rgba(224,150,74,.5);background:rgba(224,150,74,.1)}
+  .c-conc .t,.sw-t.c-conc{color:#e3b47c;border-color:rgba(227,180,124,.5);background:rgba(227,180,124,.1)}
+  .c-smooth .t{color:#46c08a;border-color:rgba(70,192,138,.45)}
+  .c-conf .t,.sw-t.c-conf{color:#ffb59c;border-color:rgba(233,85,43,.55);background:rgba(233,85,43,.12)}
+  .c-floor .t{color:#a9a6b8}
+  .mx-conf{grid-column:span 2;border-radius:8px;display:flex;background:repeating-linear-gradient(135deg,rgba(233,85,43,.24) 0 8px,rgba(233,85,43,.08) 8px 16px)}
+  .mx-conf b{color:#fff}
+  .mx-c.c-ok{box-shadow:inset 0 0 0 1.5px rgba(70,192,138,.7),0 0 24px -6px rgba(70,192,138,.6)}
+  .mx-c.c-orth{box-shadow:inset 0 0 0 1.5px rgba(224,150,74,.6)}
+  .mx-wait{margin-top:14px;padding:10px 14px;border-left:3px solid #e0964a;background:rgba(224,150,74,.08);border-radius:0 8px 8px 0;font-size:13.5px;color:#a9a6b8;line-height:1.5}
+  .mx-wait span{color:#f1effa;font-weight:600}
+  .mx-wait b{color:#e0964a;font-weight:500}
+  .mk-sw.sw-t{top:2px;width:28px;height:16px;padding:0}
+  .sw-t.c-noise{border-color:#c9c6d4;background:#fff}
+  .mk .sw-t.c-ok{border:1.5px solid #2f9e73;background:rgba(47,158,115,.22)}
+  .mk .sw-t.c-orth{border:1.5px solid #c47a2c;background:rgba(224,150,74,.25)}
+  .mk .sw-t.c-conf{border:1.5px solid #e9552b;background:repeating-linear-gradient(135deg,rgba(233,85,43,.55) 0 3px,rgba(233,85,43,.12) 3px 6px)}
+  .mk .sw-t.c-conc{border:1.5px solid #b98a4e;background:linear-gradient(90deg,rgba(185,138,78,.35) 50%,rgba(47,158,115,.3) 50%)}
+  .mk .sw-t.c-noise{border:1.5px solid #b5b1c4}
+  .sw-noise{background:hsl(250 8% 40%)}
+  @media (max-width:720px){
+    .mx-grid{grid-template-columns:96px repeat(4,minmax(0,1fr))}
+    .mx-r{font-size:12px;line-height:1.25}
+    .mx-c .u{display:none}
+    .mx-c .t{display:none}
+    .mx-c.g,.mx-conf{min-height:48px;padding:4px 2px}
+    .mx-c.g b,.mx-conf b{font-size:12px}
+    .mx-c.c-conc b,.mx-c.c-smooth b{font-size:12px;line-height:1.2}
+    .mx-c.c-conc{box-shadow:inset 0 -3px 0 #e3b47c}
+    .mx-c.c-smooth{box-shadow:inset 0 -3px 0 #46c08a}
+  }
 </style>
 <link rel="stylesheet" href="mobilenav.css">
 </head>
@@ -1540,42 +1580,39 @@
   <section class="sec-pad bg-a" data-reveal>
     <div class="wrap">
       <h2>The attribution matrix</h2>
-      <p class="lead">A release changed five scores at once. The matrix splits each score&rsquo;s change across the four sources that could have moved it. Read across a row to see where that score&rsquo;s movement came from. In this release the model moved helpfulness, faithfulness, and grounding, and the deployment moved tool discipline.</p>
+      <p class="lead">A release moved several scores. The matrix reads each declared dimension against the axis of each source, in the terms the dashboard uses: the gap in points, whether chance explains it, and what stands in the way of attribution. A gap is a candidate. Attribution holds only where the record separates the sources.</p>
       <figure class="matrix">
         <div class="mx-top">
-          <span class="mx-k">Release 0.43 against 0.42 &middot; share of each score&rsquo;s change</span>
+          <span class="mx-k">Release 0.43 against 0.42 &middot; gap in points, by axis</span>
           <span class="mx-tag">Illustrative</span>
         </div>
         <div class="mx-grid">
-          <span class="mx-c mx-h"></span>
-          <span class="mx-c mx-h"><span class="mx-l">Your deployment</span><span class="mx-s">Deploy</span></span>
-          <span class="mx-c mx-h"><span class="mx-l">The model</span><span class="mx-s">Model</span></span>
-          <span class="mx-c mx-h"><span class="mx-l">The evaluation</span><span class="mx-s">Eval</span></span>
-          <span class="mx-c mx-h"><span class="mx-l">Noise</span><span class="mx-s">Noise</span></span>
-
-          <span class="mx-c mx-r">Helpfulness</span>
-          <span class="mx-c" style="--v:.14">14%</span><span class="mx-c mx-peak" style="--v:.66">66%</span><span class="mx-c" style="--v:.06">6%</span><span class="mx-c mx-n" style="--v:.14">14%</span>
-
-          <span class="mx-c mx-r">Faithfulness <em class="mx-cov">&#9679;</em></span>
-          <span class="mx-c" style="--v:.08">8%</span><span class="mx-c mx-peak" style="--v:.56">56%</span><span class="mx-c" style="--v:.22">22%</span><span class="mx-c mx-n" style="--v:.14">14%</span>
-
-          <span class="mx-c mx-r">Grounding <em class="mx-cov">&#9679;</em></span>
-          <span class="mx-c" style="--v:.06">6%</span><span class="mx-c mx-peak" style="--v:.52">52%</span><span class="mx-c" style="--v:.26">26%</span><span class="mx-c mx-n" style="--v:.16">16%</span>
-
-          <span class="mx-c mx-r">Tool discipline</span>
-          <span class="mx-c mx-peak" style="--v:.74">74%</span><span class="mx-c" style="--v:.08">8%</span><span class="mx-c" style="--v:.06">6%</span><span class="mx-c mx-n" style="--v:.12">12%</span>
-
-          <span class="mx-c mx-r">Tone</span>
-          <span class="mx-c mx-unres"><span>70% &middot; <span class="mx-l">deployment or model, </span>not separable</span></span><span class="mx-c" style="--v:.12">12%</span><span class="mx-c mx-n" style="--v:.18">18%</span>
+          <span class="mx-c mx-h"></span><span class="mx-c mx-h"><span class="mx-l">Your agent<i>substrate</i></span><span class="mx-s">Agent</span></span><span class="mx-c mx-h"><span class="mx-l">The model<i>light_source_served_model</i></span><span class="mx-s">Model</span></span><span class="mx-c mx-h"><span class="mx-l">Your eval<i>judge identity</i></span><span class="mx-s">Judge</span></span><span class="mx-c mx-h"><span class="mx-l">Noise<i>noise floor</i></span><span class="mx-s">Noise</span></span>
+          
+          <span class="mx-c mx-r">title_<wbr>quality</span>
+          <span class="mx-c g c-noise" style="--v:.04"><b>0.1<span class="u"> pts</span></b><em class="t">within noise</em></span><span class="mx-c mx-conf c-conf"><b>1.3<span class="u"> pts</span></b><em class="t">confounded axis</em></span><span class="mx-c mx-n g c-floor" style="--v:.2"><b>&plusmn;0.4</b><em class="t">noise floor</em></span>
+          
+          <span class="mx-c mx-r">hypothesis_<wbr>grounding</span>
+          <span class="mx-c g c-noise" style="--v:.1"><b>0.3<span class="u"> pts</span></b><em class="t">within noise</em></span><span class="mx-c g c-noise" style="--v:.08"><b>0.2<span class="u"> pts</span></b><em class="t">within noise</em></span><span class="mx-c g c-conc" style="--v:.3"><b>51% one value</b><em class="t">concentrated</em></span><span class="mx-c mx-n g c-floor" style="--v:.2"><b>&plusmn;0.5</b><em class="t">noise floor</em></span>
+          
+          <span class="mx-c mx-r">tool_<wbr>discipline</span>
+          <span class="mx-c g c-ok" style="--v:.84"><b>2.1<span class="u"> pts</span></b><em class="t">&check; not chance</em></span><span class="mx-c g c-noise" style="--v:.04"><b>0.1<span class="u"> pts</span></b><em class="t">within noise</em></span><span class="mx-c g c-noise" style="--v:.08"><b>0.2<span class="u"> pts</span></b><em class="t">within noise</em></span><span class="mx-c mx-n g c-floor" style="--v:.2"><b>&plusmn;0.3</b><em class="t">noise floor</em></span>
+          
+          <span class="mx-c mx-r">analysis_<wbr>quality_<wbr>judged</span>
+          <span class="mx-c g c-noise" style="--v:.08"><b>0.2<span class="u"> pts</span></b><em class="t">within noise</em></span><span class="mx-c g c-orth" style="--v:.42"><b>0.9<span class="u"> pts</span></b><em class="t">orthogonality</em></span><span class="mx-c g c-smooth" style="--v:.16"><b>11 distinct</b><em class="t">smooth</em></span><span class="mx-c mx-n g c-floor" style="--v:.2"><b>&plusmn;0.4</b><em class="t">noise floor</em></span>
         </div>
+        <p class="mx-wait"><span>Waiting on</span> <b>Confounded axis &middot; title_quality</b>. This reading is downstream of an open gate. Clear the root cause before trusting it.</p>
       </figure>
       <div class="mx-key">
-        <div class="mk"><span class="mk-sw sw-row" aria-hidden="true"></span><h3>Rows</h3><p>The dimensions you declared and score, such as helpfulness or tool discipline.</p></div>
-        <div class="mk"><span class="mk-sw sw-col" aria-hidden="true"></span><h3>Columns</h3><p>The four sources that can move a score: your deployment, the model that answered, the evaluation scoring it, and noise.</p></div>
-        <div class="mk"><span class="mk-sw sw-cell" aria-hidden="true"><i></i><i></i><i></i></span><h3>Cells</h3><p>The share of that row&rsquo;s change traced to that column&rsquo;s source. Each row totals 100%. Brighter cells hold more of the change.</p></div>
-        <div class="mk"><span class="mk-sw sw-cov" aria-hidden="true">&#9679;</span><h3>Moving together</h3><p>Faithfulness and grounding move together. The covariance is measured and reported, so one cause is not counted twice.</p></div>
-        <div class="mk"><span class="mk-sw sw-unres" aria-hidden="true"></span><h3>Not separable</h3><p>Tone changed in a window where the deployment and the model both changed. The reading assigns 70% to the pair and names the run that would separate them.</p></div>
-        <div class="mk"><span class="mk-sw sw-noise" aria-hidden="true"></span><h3>Noise</h3><p>Per-call variation, measured as a calibrated floor. Change inside the floor is not attributed to any source.</p></div>
+        <div class="mk"><span class="mk-sw sw-row" aria-hidden="true"></span><h3>Rows</h3><p>Dimensions as declared in the lens, such as title_quality or tool_discipline.</p></div>
+        <div class="mk"><span class="mk-sw sw-col" aria-hidden="true"></span><h3>Columns</h3><p>Each source is read on its own axis: the substrate, light_source_served_model, judge identity (rubric &middot; model &middot; scope), and the noise floor.</p></div>
+        <div class="mk"><span class="mk-sw sw-cell" aria-hidden="true"><i></i><i></i><i></i></span><h3>Cells</h3><p>The gap in points between groups on that axis. A gap is a candidate for attribution, not a causal share. Brighter cells hold larger gaps.</p></div>
+        <div class="mk"><span class="mk-sw sw-t c-ok" aria-hidden="true"></span><h3>Not chance</h3><p>A gap this wide would show up by chance less than once in 1,000 samples. Here, tool_discipline moved with the substrate.</p></div>
+        <div class="mk"><span class="mk-sw sw-t c-orth" aria-hidden="true"></span><h3>Orthogonality</h3><p>The axis was declared one that shouldn&rsquo;t move the score at all, and the score moved with it.</p></div>
+        <div class="mk"><span class="mk-sw sw-t c-conf" aria-hidden="true"></span><h3>Confounded axis</h3><p>The light source and the judge changed in the same window, so the title_quality gap cannot be split between them. Separating the two takes its own probe.</p></div>
+        <div class="mk"><span class="mk-sw sw-t c-conc" aria-hidden="true"></span><h3>Concentrated, smooth</h3><p>From the judge transfer curve. Concentrated: most scores land on a single value, and the judge is barely discriminating. Smooth: scores spread across many values, a graded response.</p></div>
+        <div class="mk"><span class="mk-sw sw-t c-noise" aria-hidden="true"></span><h3>Within noise</h3><p>A gap smaller than the noise floor for that dimension.</p></div>
+        <div class="mk"><span class="mk-sw sw-noise" aria-hidden="true"></span><h3>Noise floor</h3><p>Per-call variation, measured as a calibrated floor for each dimension.</p></div>
       </div>
     </div>
   </section>
@@ -1742,7 +1779,7 @@
     </div>
     <div class="facet-text" data-reveal>
       <p class="sec-eyebrow"><span class="dot"></span>Lens facets</p>
-      <h2>A rubric doing too much stops discriminating</h2>
+      <h2>When a rubric stops discriminating</h2>
       <p>When one judge scores many concerns at once, its scale can come to rest at an anchor. A perfect ten and a nine stop being different readings, and a failure no longer tells you how many things went wrong, only that something did. Holonograph reports that condition rather than passing the number through as an ordinary score. Where a rubric resolves into separate facets of rubric, judge, and context scope, each is grouped and attributed on its own, and where two move together the apparatus says so instead of guessing between them.</p>
       <a class="arrow-link" href="lens-facets.html">The science of lens facets <span aria-hidden="true">&rarr;</span></a>
     </div>
