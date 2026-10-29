@@ -704,7 +704,6 @@
   .pills li{font-family:var(--sans);font-size:13.5px;font-weight:500;letter-spacing:0;color:var(--ink)}
   a.term{color:var(--iris);text-decoration:none}
   a.term:hover{color:#4326b8}
-  .alarms .lead,.risks .lead{max-width:74ch}
   .alarms .cta{margin-top:30px}
 
   .risks{border-top:1px solid var(--line)}
@@ -757,7 +756,7 @@
   .pr-rec b{margin-left:8px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--good)}
   .pr-dp{border:1.5px solid var(--iris);background:var(--iris-soft)}
   .pr-dp .pr-k{color:var(--iris)}
-  .prop-fn{margin-top:18px;max-width:74ch;font-size:clamp(15.5px,1.4vw,17px);color:var(--ink);font-weight:500;line-height:1.5}
+  .prop-fn{margin-top:18px;font-size:clamp(15.5px,1.4vw,17px);color:var(--ink);font-weight:500;line-height:1.5}
 
   .matrix + .mx-key{margin-top:clamp(24px,4vh,36px)}
   .mx-c:not(.mx-h):not(.mx-r):not(.mx-unres){justify-content:center;font-family:var(--mono);font-size:13px;font-weight:600;color:rgba(255,255,255,calc(.42 + var(--v,0) * .8))}
@@ -1129,7 +1128,8 @@
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>The risks with interpretive data</p>
       <h2>Where interpretation becomes authority</h2>
-      <p class="lead">Much value in software systems comes from the processing and classification of <a class="term" href="#seams">interpretive data</a>. The advent of AI has allowed complex decisions to now be made on inference of that interpretive data, and <a class="term" href="#builders">AI builders</a> create systems which ingest these interpretives and formulate decisions at machine speed.</p>
+      <p class="lead">Much of software&rsquo;s value comes from interpreting data and acting on the results. Regexes, fuzzy matching, forms, and <a class="term" href="#ai-attribution">language models</a> all contribute interpretations that can influence downstream <a class="term" href="#seams">decisions</a>.</p>
+      <p class="lead">As <a class="term" href="#builders">AI builders</a> accelerate software development, those interpretations can acquire consequential influence at machine speed without first establishing whether the assumptions behind them are justified.</p>
       <div class="ic">
         <span class="ic-k">Interpretive data creators</span>
         <ul class="ic-list"><li>RegEx</li><li>Fuzzy Match</li><li>A Web Form</li><li class="ic-llm"><a href="#ai-attribution">LLMs<sup>*</sup></a></li></ul>
