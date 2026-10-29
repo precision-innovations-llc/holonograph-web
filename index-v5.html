@@ -702,8 +702,8 @@
   .audience-line{margin-top:22px;font-weight:600}
   .audience-line + .sub{margin-top:14px}
   .pills li{font-family:var(--sans);font-size:13.5px;font-weight:500;letter-spacing:0;color:var(--ink)}
-  a.term{color:inherit;text-decoration:underline;text-decoration-color:rgba(95,61,220,.45);text-decoration-thickness:1.5px;text-underline-offset:3px}
-  a.term:hover{color:var(--iris);text-decoration-color:var(--iris)}
+  a.term{color:var(--iris);text-decoration:none}
+  a.term:hover{color:#4326b8}
   .alarms .lead,.risks .lead{max-width:74ch}
   .alarms .cta{margin-top:30px}
 
@@ -795,6 +795,212 @@
     .mx-key{grid-template-columns:1fr}
     .mx-c:not(.mx-h):not(.mx-r):not(.mx-unres){font-size:12px}
   }
+
+  /* ── v10: section rhythm ── */
+  .view > section.bg-a{background:var(--paper);border-top:0}
+  .view > section.bg-b{background:#ecebf3;border-top:0}
+
+  /* ── v10: closing CTA ── */
+  .cta-card{position:relative;overflow:hidden;text-align:center;border-radius:24px;padding:clamp(48px,8vh,84px) 24px;
+    background:
+      radial-gradient(ellipse 60% 70% at 50% -10%,rgba(95,61,220,.55),transparent 70%),
+      radial-gradient(ellipse 40% 50% at 100% 110%,rgba(233,85,43,.22),transparent 70%),
+      repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 48px),
+      repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 48px),
+      #17161d;
+    box-shadow:0 40px 90px -46px rgba(23,22,29,.6)}
+  .cta-cube{width:64px;height:64px;display:block;margin:0 auto 18px;animation:ctaFloat 6s ease-in-out infinite}
+  @keyframes ctaFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(8deg)}}
+  .cta-k{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#a998f0}
+  .cta-card .close-line{margin-top:12px;color:#fff;font-size:clamp(30px,4.4vw,52px)}
+  .cta-card .cta{justify-content:center;margin-top:30px}
+  .cta-card .btn.ghost{color:#fff;border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.06)}
+  .cta-card .btn.ghost:hover{border-color:rgba(255,255,255,.5)}
+  @media (prefers-reduced-motion:reduce){.cta-cube{animation:none}}
+
+  /* ── v10: authority governance ── */
+  .view[data-route="authority-governance"] > section.sec-pad{padding:clamp(48px,8vh,92px) 0}
+  .il-tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#e0964a;border:1px solid rgba(224,150,74,.5);border-radius:6px;padding:3px 8px;white-space:nowrap}
+  .il-tag.il-light{color:var(--catch-ink);border-color:rgba(138,90,18,.35);background:#fff8ec}
+
+  .ag-open{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,360px);gap:clamp(28px,5vw,64px);align-items:start;margin-top:26px}
+  .ag-prop{font-size:clamp(20px,2.2vw,26px);line-height:1.35;font-weight:500;color:var(--ink);letter-spacing:-.01em;max-width:40ch}
+  .ag-open .lead{margin-top:18px;max-width:60ch}
+  .ag-def{border:1px solid var(--line);border-left:3px solid var(--iris);border-radius:12px;background:#fff;padding:18px 20px}
+  .ag-def-k{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--iris);font-weight:600}
+  .ag-def p{margin-top:8px;font-size:15px;color:var(--ink-2);line-height:1.55}
+  .ag-def .arrow-link{margin-top:12px;font-size:14px}
+
+  .lc{margin-top:clamp(26px,4vh,40px);background:#121118;border-radius:20px;padding:clamp(18px,3vw,32px);color:#cfccdb;
+    box-shadow:0 50px 110px -60px rgba(23,22,29,.75)}
+  .lc-top{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:center}
+  .lc-surf{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+  .lc-surf b{font-family:var(--mono);font-size:14px;color:#fff;font-weight:600}
+  .lc-surf span{font-size:14px;color:#8d8a9c}
+  .lc-k{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8d8a9c;font-weight:600}
+
+  .lc-track{list-style:none;padding:0;margin:30px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));row-gap:40px;position:relative}
+  .lc-rail{position:absolute;top:21px;left:12.5%;right:12.5%;height:2px;background:#2e2c3b;border-radius:2px}
+  .lc-fill{position:absolute;left:0;top:0;bottom:0;width:calc(var(--p,0) * 100%);border-radius:2px;
+    background:linear-gradient(90deg,#5f3ddc,#8f7cf0);transition:width .9s var(--anim-ease)}
+  .lc[data-state="granted"] .lc-fill,.lc[data-state="inside"] .lc-fill,.lc[data-state="regranted"] .lc-fill{background:linear-gradient(90deg,#5f3ddc,#46c08a)}
+  .lc-node{position:relative;z-index:1;min-width:0}
+  .lc-node button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px;border-radius:12px}
+  .lc-node button:focus-visible{outline:2px solid #8f7cf0;outline-offset:4px}
+  .lc-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:13px;font-weight:600;color:#8d8a9c;background:#17161d;border:2px solid #3a3848;
+    transition:background .45s ease,border-color .45s ease,color .45s ease,box-shadow .45s ease}
+  .lc-node b{margin-top:10px;font-size:14.5px;color:#f1effa;font-weight:600}
+  .lc-node small{margin-top:2px;font-size:13px;color:#8d8a9c;line-height:1.35}
+  .lc-node.done .lc-dot{border-color:#5f3ddc;background:#251d48;color:#c9bdfb}
+  .lc-node.on .lc-dot{border-color:#8f7cf0;background:#5f3ddc;color:#fff;box-shadow:0 0 0 6px rgba(95,61,220,.22),0 0 28px rgba(143,124,240,.55)}
+  .lc-g.on .lc-dot{border-color:#46c08a;background:#1f7d59;box-shadow:0 0 0 6px rgba(70,192,138,.18),0 0 28px rgba(70,192,138,.5)}
+  .lc-node:not(.on):not(.done) button:hover .lc-dot{border-color:#8f7cf0}
+  .lc-s{grid-column:4;grid-row:2}
+  .lc-s::before{content:"";position:absolute;left:50%;top:-40px;height:40px;border-left:2px dashed #6b3a2c}
+  .lc-s .lc-dot{border-style:dashed;border-color:#6b3a2c;color:#c9765d}
+  .lc-s.on .lc-dot{border-style:solid;border-color:#ff8a65;background:#e9552b;color:#fff;box-shadow:0 0 0 6px rgba(233,85,43,.2),0 0 28px rgba(233,85,43,.55)}
+  .lc-s.on::before,.lc-s.done::before{border-color:#e9552b}
+  .lc-s.done .lc-dot{border-style:solid;border-color:#e9552b;background:#3a1d16;color:#ff9a7a}
+  .lc-ret{grid-column:3 / 5;grid-row:2;align-self:start;position:relative;margin-left:25%;width:calc(50% - 22px);height:62px;margin-top:-40px;
+    border-left:2px dashed #3a3848;border-bottom:2px dashed #3a3848;border-bottom-left-radius:16px;transition:border-color .45s ease}
+  .lc-ret::before{content:"";position:absolute;left:-7px;top:-2px;border-bottom:9px solid #3a3848;border-left:6px solid transparent;border-right:6px solid transparent;transition:border-color .45s ease}
+  .lc-ret span{position:absolute;left:16px;right:8px;bottom:8px;font-family:var(--mono);font-size:12px;color:#6c6a78;line-height:1.35;transition:color .45s ease}
+  .lc.req .lc-ret{border-color:#8f7cf0}
+  .lc.req .lc-ret::before{border-bottom-color:#8f7cf0}
+  .lc.req .lc-ret span{color:#c9bdfb}
+
+  .lc-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:30px}
+  .lc-col{background:#1a1922;border:1px solid #2a2836;border-radius:14px;padding:16px 18px;min-width:0}
+  .lc-stack{list-style:none;padding:0;margin:8px 0 0}
+  .lc-stack li{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n e" "v s";gap:3px 12px;padding:10px 0;border-top:1px solid #2a2836;transition:opacity .4s ease}
+  .lc-stack li:first-child{border-top:0}
+  .d-n{grid-area:n;font-size:14.5px;color:#f1effa;font-weight:500}
+  .d-e{grid-area:e;justify-self:end;font-family:var(--mono);font-size:12px;color:#a998f0;border:1px solid #3d3567;border-radius:5px;padding:1px 7px}
+  .d-v{grid-area:v;font-family:var(--mono);font-size:12.5px;color:#a9a6b8}
+  .d-s{grid-area:s;justify-self:end;font-family:var(--mono);font-size:12px;color:#6c6a78}
+  .lc-stack li[data-st="off"]{opacity:.45}
+  .lc-stack li[data-st="off"] .d-e{border-color:#2e2c3b;color:#6c6a78}
+  .lc-stack li[data-st="hold"] .d-s{color:#46c08a}
+  .lc-stack li[data-st="inside"] .d-s,.lc-stack li[data-st="inside"] .d-v{color:#e0964a}
+  .lc-stack li[data-st="outside"]{background:linear-gradient(90deg,rgba(233,85,43,.12),transparent);margin:0 -18px;padding-left:18px;padding-right:18px}
+  .lc-stack li[data-st="outside"] .d-s,.lc-stack li[data-st="outside"] .d-v{color:#ff8a65}
+  .lc-gates{margin-top:8px;display:grid;gap:14px}
+  .lg{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:baseline}
+  .lg-n{font-size:14.5px;color:#f1effa;font-weight:500}
+  .lg-s{font-family:var(--mono);font-size:12px;color:#8d8a9c;text-align:right}
+  .lg i{grid-column:1 / -1;display:block;height:6px;border-radius:4px;background:#2a2836;overflow:hidden}
+  .lg b{display:block;height:100%;width:calc(var(--w,0) * 100%);border-radius:4px;background:linear-gradient(90deg,#5f3ddc,#8f7cf0);transition:width 1.4s var(--anim-ease),background .4s ease}
+  .lg[data-st="ok"] .lg-s{color:#46c08a}
+  .lg[data-st="ok"] b{background:linear-gradient(90deg,#1f7d59,#46c08a)}
+  .lg[data-st="run"] .lg-s{color:#c9bdfb}
+  .lg[data-st="bad"] .lg-s{color:#ff8a65}
+  .lg[data-st="bad"] i{box-shadow:inset 0 0 0 1px rgba(233,85,43,.6)}
+
+  .lc-record{margin-top:14px}
+  .lc-ticks{display:flex;gap:3px;margin-top:12px;height:26px;align-items:stretch}
+  .lc-ticks i{flex:1;min-width:0;border-radius:2px;background:#22202b;transition:background .35s ease,opacity .35s ease,transform .35s ease}
+  .lc-ticks i.o{background:#4a4858}
+  .lc-ticks i.q{background:#7b60df}
+  .lc-ticks i.n{background:#a998f0}
+  .lc-ticks i.x{background:repeating-linear-gradient(135deg,#5b4a9e 0 2px,#262335 2px 4px)}
+  .lc-ticks i.m{flex:none;width:4px;background:#e9552b;transform:scaleY(1.35);border-radius:2px}
+  .lc-legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-family:var(--mono);font-size:12px;color:#8d8a9c}
+  .lc-legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:-1px}
+  .k-o::before{background:#4a4858}.k-q::before{background:#7b60df}
+  .k-x::before{background:repeating-linear-gradient(135deg,#7b68c4 0 2px,#262335 2px 4px)}
+  .k-m::before{width:4px!important;background:#e9552b}
+
+  .lc-read{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;margin-top:14px;padding:18px;border-radius:14px;border:1px solid #2a2836;background:#17161d}
+  .lc-reading{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+  .lc-state{font-family:var(--mono);font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:6px 12px;border-radius:8px;color:#a9a6b8;background:#24222e;transition:background .4s ease,color .4s ease}
+  .lc[data-read="declared"] .lc-state{color:#c9bdfb;background:#251d48}
+  .lc[data-read="qualifying"] .lc-state{color:#fff;background:#5f3ddc}
+  .lc[data-read="granted"] .lc-state{color:#fff;background:#1f7d59}
+  .lc[data-read="suspended"] .lc-state{color:#fff;background:#e9552b}
+  .lc-msg{transition:opacity .25s ease}
+  .lc-msg.swap{opacity:0}
+  .lc-what{font-size:15.5px;color:#f1effa;line-height:1.5}
+  .lc-why{margin-top:10px;font-family:var(--mono);font-size:12.5px;color:#ff9a7a;border:1px solid rgba(233,85,43,.4);background:rgba(233,85,43,.08);border-radius:7px;padding:5px 10px;display:inline-block}
+  .lc-why:empty{display:none}
+  .lc-next{margin-top:10px;font-size:14px;color:#a9a6b8;line-height:1.5}
+  .lc-next span{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8f7cf0;margin-right:10px}
+  .lc-next em{font-style:normal}
+  .lc-ctl{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .lc-btn{font:inherit;font-size:14px;font-weight:500;color:#f1effa;background:#1a1922;border:1px solid #3a3848;border-radius:9px;padding:10px 16px;cursor:pointer;transition:border-color .2s ease,opacity .2s ease,background .2s ease}
+  .lc-btn:hover:not(:disabled){border-color:#8f7cf0}
+  .lc-btn:disabled{opacity:.38;cursor:default}
+  .lc-out:not(:disabled){border-color:rgba(233,85,43,.6);background:rgba(233,85,43,.1)}
+  .lc-out:not(:disabled):hover{border-color:#ff8a65}
+  .lc-replay{margin-left:auto;color:#a9a6b8}
+  .lc-cap{margin-top:16px;font-size:13px;color:#8d8a9c;line-height:1.5;max-width:90ch}
+
+  .ct{margin-top:clamp(22px,3.5vh,32px);border:1px solid var(--line);border-radius:18px;background:#fff;padding:clamp(18px,3vw,30px);box-shadow:0 30px 70px -50px rgba(23,22,29,.35)}
+  .ct-head{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:center}
+  .ct-k{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+  .ct-k b{color:var(--ink);letter-spacing:.04em;text-transform:none;font-size:13px}
+  .ct-surf{margin-top:10px;font-size:clamp(17px,1.6vw,19px);color:var(--ink);font-weight:500}
+  .ct-flow{position:relative;margin-top:22px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(180px,220px);gap:14px}
+  .ct-c{position:relative;border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:16px 18px}
+  .ct-n{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--iris)}
+  .ct-c h3{margin-top:6px;font-size:16px;font-weight:600}
+  .ct-c p{margin-top:6px;font-size:14.5px;color:var(--ink-2);line-height:1.5}
+  .ct-env{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .ct-env span{font-family:var(--mono);font-size:12px;color:var(--iris);background:var(--iris-soft);border-radius:5px;padding:2px 8px}
+  .ct-out{position:relative;border:1.5px solid var(--good);border-radius:14px;background:linear-gradient(180deg,rgba(31,125,89,.08),#fff);padding:16px 18px;display:flex;flex-direction:column;justify-content:center}
+  .ct-out::before{content:"AND";position:absolute;left:-14px;top:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--good);background:#fff;border:1px solid rgba(31,125,89,.4);border-radius:20px;padding:3px 8px;z-index:1}
+  .ct-out b{margin-top:6px;font-family:var(--mono);font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:var(--good)}
+  .ct-out p{margin-top:6px;font-size:14px;color:var(--ink-2);line-height:1.45}
+  .ct-foot{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:15px;color:var(--ink);font-weight:500}
+  .ag-scope{margin-top:18px;border-left:2px solid var(--sun);padding:4px 0 4px 18px;font-size:15.5px;color:var(--ink-2);line-height:1.55;max-width:72ch}
+
+  .isnt{margin-top:clamp(20px,3vh,28px);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+  .in{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px}
+  .in span{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--ink-3)}
+  .in p{margin-top:6px;font-size:14px;color:var(--ink-2);line-height:1.45}
+  .in-hi{border:1.5px solid var(--iris);background:var(--iris-soft)}
+  .in-hi span{color:var(--iris)}
+  .in-hi p{color:var(--ink)}
+
+  .act{margin-top:clamp(22px,3.5vh,32px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .ac{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:#fff;padding:18px 20px;text-decoration:none;color:inherit;transition:border-color .2s ease,transform .2s ease}
+  .ac:hover{border-color:var(--iris);transform:translateY(-2px)}
+  .ac-k{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--iris);font-weight:600}
+  .ac h3{margin-top:8px;font-size:17px;font-weight:600}
+  .ac p{margin-top:8px;font-size:14.5px;color:var(--ink-2);line-height:1.5;flex:1}
+  .ac-go{margin-top:14px;font-size:14px;font-weight:500;color:var(--iris)}
+  .ac-ref{border-style:dashed;border-color:#c9c3dd;background:linear-gradient(180deg,#faf9fd,#fff)}
+  .ac-ref .ac-k{color:var(--ink-3)}
+  .ac-note{margin-top:12px;align-self:flex-start;font-family:var(--mono);font-size:12px;color:var(--catch-ink);background:#fff8ec;border:1px solid rgba(138,90,18,.25);border-radius:5px;padding:2px 8px}
+  .ag-close{margin-top:clamp(30px,5vh,48px);padding-top:clamp(22px,3.5vh,32px);border-top:1px solid var(--line)}
+  .ag-close p{font-size:clamp(20px,2.3vw,28px);line-height:1.35;font-weight:500;letter-spacing:-.01em;color:var(--ink);max-width:40ch}
+  .ag-close .arrow-link{margin-top:16px}
+
+  @media (max-width:980px){
+    .ct-flow{grid-template-columns:1fr 1fr}
+    .ct-out::before{left:50%;top:-14px}
+    .isnt{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .in-hi{grid-column:1 / -1}
+  }
+  @media (max-width:820px){
+    .ag-open{grid-template-columns:1fr}
+    .lc-body{grid-template-columns:1fr}
+    .act{grid-template-columns:1fr}
+  }
+  @media (max-width:720px){
+    .lc-track{grid-template-columns:1fr;row-gap:10px;margin-top:22px}
+    .lc-rail,.lc-ret,.lc-s::before{display:none}
+    .lc-s{grid-column:auto;grid-row:auto}
+    .lc-node button{flex-direction:row;flex-wrap:wrap;align-items:center;text-align:left;gap:0 12px;padding:4px 0}
+    .lc-dot{width:36px;height:36px;font-size:12px;flex:none}
+    .lc-node b{margin-top:0}
+    .lc-node small{flex-basis:100%;padding-left:48px;margin-top:-4px}
+    .lc-read{grid-template-columns:1fr;gap:12px}
+    .lc-replay{margin-left:0}
+    .ct-flow{grid-template-columns:1fr}
+    .ct-out::before{left:24px}
+    .isnt{grid-template-columns:1fr}
+  }
 </style>
 <link rel="stylesheet" href="mobilenav.css">
 </head>
@@ -857,7 +1063,7 @@
     </div>
   </section>
 
-  <section class="alarms sec-pad" id="alarms" data-reveal>
+  <section class="alarms sec-pad bg-b" id="alarms" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Agentic governance</p>
       <h2>What correct-looking behavior can conceal</h2>
@@ -877,7 +1083,7 @@
     </div>
   </section>
 
-  <section class="risks sec-pad" id="risks" data-reveal>
+  <section class="risks sec-pad bg-a" id="risks" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>The risks with interpretive data</p>
       <h2>Where interpretation becomes authority</h2>
@@ -885,13 +1091,6 @@
       <div class="ic">
         <span class="ic-k">Interpretive data creators</span>
         <ul class="ic-list"><li>RegEx</li><li>Fuzzy Match</li><li>A Web Form</li><li class="ic-llm"><a href="#ai-attribution">LLMs<sup>*</sup></a></li></ul>
-      </div>
-      <div class="ic">
-        <span class="ic-k">Examples of interpretive data errors</span>
-        <div class="ierr">
-          <div class="ie"><q>I spoke to my friend September last year.</q><span class="ie-ar" aria-label="becomes"></span><code>09/01/2025</code></div>
-          <div class="ie"><q>Cook the steak until well done.</q><span class="ie-ar" aria-label="becomes"></span><code>status.DONE</code></div>
-        </div>
       </div>
       <div class="ic">
         <span class="ic-k">How one error reaches a decision point</span>
@@ -915,12 +1114,11 @@
     </div>
   </section>
 
-  <section class="demo" id="lens" data-reveal>
+  <section class="demo bg-b" id="lens" data-reveal>
     <div class="wrap">
       <div class="demo-intro">
-        <p class="sec-eyebrow"><span class="dot"></span>See it live</p>
-        <h2>The instrument, running</h2>
-        <p class="lead">The attention spine's queue against a live agent: every alarm it raises, the moment it fires.</p>
+        <p class="sec-eyebrow"><span class="dot"></span>See under Nigel&rsquo;s hood</p>
+        <h2>The Holonograph Lens dashboard</h2>
       </div>
       <div class="dw-frame" id="lens-view">
         <div class="dw-chrome"><span class="dots"><i></i><i></i><i></i></span><span class="live"><span class="pulse"></span>LIVE</span></div>
@@ -933,12 +1131,23 @@
     </div>
   </section>
 
-  <section class="close sec-pad" data-reveal>
-    <div class="wrap close-inner">
-      <p class="close-line">Authority on evidence</p>
-      <div class="cta">
-        <a class="btn solid" href="guide/">Read the Guide <span aria-hidden="true">&rarr;</span></a>
-        <a class="btn ghost" href="contact.html">Request a demo</a>
+  <section class="close sec-pad bg-a" data-reveal>
+    <div class="wrap">
+      <div class="cta-card">
+        <svg class="cta-cube" viewBox="0 0 96 96" aria-hidden="true">
+          <polygon points="48,48 48,6 84.4,27 84.4,69" fill="#a998f0" opacity="0.12"/>
+          <polygon points="48,48 11.6,69 11.6,27 48,6" fill="#a998f0" opacity="0.2"/>
+          <polygon points="48,48 84.4,69 48,90 11.6,69" fill="#a998f0" opacity="0.3"/>
+          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="none" stroke="#c9bdfb" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M48,48 L48,6 M48,48 L84.4,69 M48,48 L11.6,69" fill="none" stroke="#c9bdfb" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+          <circle cx="48" cy="48" r="6.5" fill="#e9552b"/>
+        </svg>
+        <p class="cta-k">Self-hosted &middot; Runs in your infrastructure</p>
+        <p class="close-line">Authority on evidence</p>
+        <div class="cta">
+          <a class="btn solid" href="guide/">Read the Guide <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn ghost" href="contact.html">Request a demo</a>
+        </div>
       </div>
     </div>
   </section>
@@ -948,7 +1157,7 @@
      ATTENTION SPINE  ·  production route: /attention-spine
      ════════════════════════════════════════════════════════════════════ -->
 <div class="view" data-route="attention-spine" data-url="/attention-spine" hidden>
-  <section class="page-head sec-pad">
+  <section class="page-head sec-pad bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Is your agent behaving properly?</p>
       <h2 class="page-h1">Correct-looking behavior is not always correct</h2>
@@ -956,7 +1165,7 @@
     </div>
   </section>
 
-  <section class="sec-pad" data-reveal>
+  <section class="sec-pad bg-b" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>25 independent finding sources</p>
       <h2>The Spine Alarms</h2>
@@ -1006,7 +1215,7 @@
     </div>
   </section>
 
-  <section class="sec-pad" data-reveal>
+  <section class="sec-pad bg-a" data-reveal>
     <div class="wrap">
       <h2>From agent behavior to the consequential seam</h2>
       <p class="lead">An alarm starts an investigation. The spine holds the evidence; the builder follows it to the decision that went wrong and to what that decision relied on.</p>
@@ -1037,54 +1246,139 @@
      AUTHORITY GOVERNANCE  ·  production route: /authority-governance/
      ════════════════════════════════════════════════════════════════════ -->
 <div class="view" data-route="authority-governance" data-url="/authority-governance/" hidden>
-  <section class="page-head sec-pad">
+  <section class="page-head sec-pad ag-head bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Authority governance</p>
       <h2 class="page-h1">Authority, derived from the record</h2>
-      <p class="lead">Authority is the state, held per decision surface, that the declared prerequisites for a consequential transition are satisfied on the record as it stands. It is granted on evidence, re-derived at every read, and no actor confers it. It sits on top of the <a class="term" href="#attention-spine">attention spine</a> and reads the same record.</p>
+      <div class="ag-open">
+        <div class="ag-open-text">
+          <p class="ag-prop">A decision can be permitted, approved, confidently made, and even correct without having established authority.</p>
+          <p class="lead">Holonograph separates those concepts. It evaluates whether a <a class="term" href="#seams">decision surface</a>&rsquo;s declared prerequisites are satisfied by its recorded evidence, and re-derives that authority whenever the record is read. No actor confers it. It exists only while its conditions hold.</p>
+        </div>
+        <aside class="ag-def">
+          <span class="ag-def-k">Definition</span>
+          <p>Authority is a state held per decision surface: the declared prerequisites for a specified consequential transition are satisfied on the record as it stands.</p>
+          <a class="arrow-link" href="guide/authority.html">Guide, chapter 19 <span aria-hidden="true">&rarr;</span></a>
+        </aside>
+      </div>
     </div>
   </section>
 
-  <section class="sec-pad" data-reveal>
+  <section class="sec-pad ag-life bg-b" data-reveal>
     <div class="wrap">
-      <h2>What authority means</h2>
-      <div class="tbl">
-        <div class="tbl-row"><span class="tbl-k">Permission</span><span>An actor is allowed to act.</span></div>
-        <div class="tbl-row"><span class="tbl-k">Approval</span><span>An actor affirmatively accepts something.</span></div>
-        <div class="tbl-row"><span class="tbl-k">Correctness</span><span>A proposition matches an applicable reference.</span></div>
-        <div class="tbl-row"><span class="tbl-k">Confidence</span><span>A degree of belief, or a measurement's precision.</span></div>
-        <div class="tbl-row tbl-hi"><span class="tbl-k">Authority</span><span>The declared prerequisites for this transition are satisfied on the record.</span></div>
+      <p class="sec-eyebrow"><span class="dot"></span>The authority lifecycle</p>
+      <h2>Authority is established, observed, and revocable</h2>
+      <p class="lead">One decision surface, followed through its record: qualification, a grant, a dependency change, and qualification again. Select any state, or change a dependency once the grant holds.</p>
+
+      <figure class="lc" id="lc">
+        <div class="lc-top">
+          <span class="lc-surf"><b>ticket-routing</b><span>A classification result routes a support ticket</span></span>
+          <span class="il-tag">Illustrative</span>
+        </div>
+
+        <ol class="lc-track">
+          <li class="lc-rail" aria-hidden="true"><span class="lc-fill"></span></li>
+          <li class="lc-node" data-n="0"><button type="button" data-go="mapped"><span class="lc-dot">01</span><b>Mapped</b><small>Discover the decision</small></button></li>
+          <li class="lc-node" data-n="1"><button type="button" data-go="declared"><span class="lc-dot">02</span><b>Declared</b><small>Specify the conditions</small></button></li>
+          <li class="lc-node" data-n="2"><button type="button" data-go="qualifying"><span class="lc-dot">03</span><b>Qualifying</b><small>Observe live behavior</small></button></li>
+          <li class="lc-node lc-g" data-n="3"><button type="button" data-go="granted"><span class="lc-dot">04</span><b>Granted</b><small>Conditions satisfied</small></button></li>
+          <li class="lc-ret" aria-hidden="true"><span>Requalify on the post-change record</span></li>
+          <li class="lc-node lc-s" data-n="4"><button type="button" data-go="suspended"><span class="lc-dot">!</span><b>Suspended</b><small>Grant withdrawn, reason named</small></button></li>
+        </ol>
+
+        <div class="lc-body">
+          <div class="lc-col">
+            <span class="lc-k">Authority stack</span>
+            <ul class="lc-stack">
+              <li data-dep="impl"><span class="d-n">Implementation</span><span class="d-e">identity</span><span class="d-v">hash 7c41e2</span><span class="d-s"></span></li>
+              <li data-dep="model"><span class="d-n">Served model</span><span class="d-e">identity</span><span class="d-v">2026-06 snapshot</span><span class="d-s"></span></li>
+              <li data-dep="rubric"><span class="d-n">Routing rubric</span><span class="d-e">equivalence</span><span class="d-v">v3</span><span class="d-s"></span></li>
+            </ul>
+          </div>
+          <div class="lc-col">
+            <span class="lc-k">Contract gates</span>
+            <div class="lc-gates">
+              <div class="lg" data-g="0"><span class="lg-n">Identity and dependencies</span><span class="lg-s"></span><i><b></b></i></div>
+              <div class="lg" data-g="1"><span class="lg-n">Behavioral evidence</span><span class="lg-s"></span><i><b></b></i></div>
+              <div class="lg" data-g="2"><span class="lg-n">Sufficient observation</span><span class="lg-s"></span><i><b></b></i></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lc-col lc-record">
+          <span class="lc-k">Record</span>
+          <div class="lc-ticks" aria-hidden="true"></div>
+          <div class="lc-legend"><span class="k-o">Observed</span><span class="k-q">Qualifying evidence</span><span class="k-x">Retained, no longer establishing this grant</span><span class="k-m">Dependency change</span></div>
+        </div>
+
+        <div class="lc-read" aria-live="polite">
+          <div class="lc-reading"><span class="lc-k">Reading</span><b class="lc-state">mapped</b></div>
+          <div class="lc-msg">
+            <p class="lc-what"></p>
+            <p class="lc-why"></p>
+            <p class="lc-next"><span>Next</span><em></em></p>
+          </div>
+        </div>
+
+        <div class="lc-ctl">
+          <button type="button" class="lc-btn lc-in" disabled>Change inside its envelope</button>
+          <button type="button" class="lc-btn lc-out" disabled>Change outside its envelope</button>
+          <button type="button" class="lc-btn lc-replay"><span aria-hidden="true">&#8635;</span> Replay</button>
+        </div>
+        <figcaption class="lc-cap">Illustrative scenario. No thresholds or live results are shown. Six states are documented: unmapped, mapped, declared, qualifying, granted, and suspended. Unmapped and mapped share the first step here. What a change does depends on the envelope each dependency declares.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-a" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>An authority contract</p>
+      <h2>What the record must establish</h2>
+      <p class="lead">A contract names the conditions. The record either satisfies them or it does not.</p>
+      <div class="ct">
+        <div class="ct-head"><span class="ct-k">Example decision surface &middot; <b>ticket-routing</b></span><span class="il-tag il-light">Illustrative contract</span></div>
+        <p class="ct-surf">A classification result influences a consequential routing decision.</p>
+        <div class="ct-flow">
+          <div class="ct-c"><span class="ct-n">01</span><h3>Identity and dependencies</h3><p>Implementation and upstream dependencies remain within their declared change envelopes.</p><div class="ct-env"><span>identity</span><span>equivalence</span><span>reach</span><span>band</span></div></div>
+          <div class="ct-c"><span class="ct-n">02</span><h3>Behavioral evidence</h3><p>The decision&rsquo;s outcomes and its abstention path stay within the criteria the contract declares.</p></div>
+          <div class="ct-c"><span class="ct-n">03</span><h3>Sufficient observation</h3><p>The observation the contract requires is met on live traffic. A surface without traffic cannot qualify.</p></div>
+          <div class="ct-out"><span class="ct-k">Derived reading</span><b>granted</b><p>Only while all three hold. Re-derived at every read.</p></div>
+        </div>
+        <p class="ct-foot">The state is derived from these conditions, not from an evaluator&rsquo;s approval or a developer&rsquo;s confidence.</p>
+      </div>
+      <p class="ag-scope">A granted state establishes that this contract is satisfied on this record. It does not certify the decision correct in general.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-b" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Five neighboring words</p>
+      <h2>What authority is, and is not</h2>
+      <div class="isnt">
+        <div class="in"><span>Permission</span><p>An actor is allowed to act.</p></div>
+        <div class="in"><span>Approval</span><p>An actor affirmatively accepts something.</p></div>
+        <div class="in"><span>Correctness</span><p>A proposition matches an applicable reference.</p></div>
+        <div class="in"><span>Confidence</span><p>A degree of belief, or a measurement&rsquo;s precision.</p></div>
+        <div class="in in-hi"><span>Authority</span><p>The declared prerequisites for this transition are satisfied on the record.</p></div>
       </div>
       <p class="body-p">Humans, builders and automated sources all produce events on the record. An operator approving a decision is approval, recorded as such. It does not move the state.</p>
     </div>
   </section>
 
-  <section class="sec-pad" data-reveal>
+  <section class="sec-pad bg-a" data-reveal>
     <div class="wrap">
-      <h2>Six states</h2>
-      <div class="ladder">
-        <div class="rung"><code>unmapped</code><p>No decision here is known to act on an interpreted value yet.</p></div>
-        <div class="rung"><code>mapped</code><p>A decision is identified. Nothing asserts authority over it.</p></div>
-        <div class="rung"><code>declared</code><p>Authority is asserted, but no qualifying evidence is accruing.</p></div>
-        <div class="rung"><code>qualifying</code><p>Live traffic is accumulating the evidence.</p></div>
-        <div class="rung rung-hi"><code>granted</code><p>The condition is established and every dependency holds.</p></div>
-        <div class="rung rung-off"><code>suspended</code><p>A dependency left its declared envelope. The grant is withdrawn.</p></div>
+      <p class="sec-eyebrow"><span class="dot"></span>Connected mechanisms</p>
+      <h2>Qualified authority in action</h2>
+      <p class="lead">Authority reads the same record as the builder hook and the attention spine. Each mechanism stays separate.</p>
+      <div class="act">
+        <a class="ac" href="#builders"><span class="ac-k">Builder seams</span><h3>Where the lifecycle starts</h3><p>The builder-seam finding marks where an interpreted value reaches a decision. Mapping that decision is step one.</p><span class="ac-go">Builders <span aria-hidden="true">&rarr;</span></span></a>
+        <a class="ac" href="#attention-spine"><span class="ac-k">Attention spine</span><h3>Where a withdrawal surfaces</h3><p>A withdrawn grant files as an authority-suspended finding with its reason attached. A triage click never moves the state.</p><span class="ac-go">Attention Spine <span aria-hidden="true">&rarr;</span></span></a>
+        <a class="ac ac-ref" href="guide/reflection.html"><span class="ac-k">Reflection &middot; a separate object</span><h3>What a qualified judge can enable</h3><p>A judge, rubric, facet and surface cell qualifies on its own conditions. Once it does, its critique can return a failing response to the producer for a capped retry. Its verdicts do not grant authority to the decision it evaluates.</p><span class="ac-note">Documented ahead of implementation</span><span class="ac-go">Reflection in the Guide <span aria-hidden="true">&rarr;</span></span></a>
       </div>
-      <p class="body-p">The first five are a ladder. The sixth is a withdrawal branch, never a completion stage. Re-establishing a grant takes the re-satisfaction of every gate over the post-change record, not an acknowledgement.</p>
-      <div class="note-block">
-        <p><span class="emph">Two things never confer authority.</span></p>
-        <p>An approved corrective change is a recorded change. It enters the record; it does not feed a grant. Whether delivery proceeds is operator or CI policy reading the record; the lens never blocks on its own authority.</p>
+      <div class="ag-close">
+        <p>A system can continue to function exactly as designed while the evidence that justified one of its decisions no longer holds. Holonograph makes that observable.</p>
+        <a class="arrow-link" href="guide/authority.html">The full state machine, dependencies, and tears <span aria-hidden="true">&rarr;</span></a>
       </div>
-      <a class="arrow-link" href="guide/authority.html">The full state machine, dependencies, and tears <span aria-hidden="true">&rarr;</span></a>
-    </div>
-  </section>
-
-  <section class="sec-pad" data-reveal>
-    <div class="wrap">
-      <h2>Reflection, once a judge certifies</h2>
-      <p class="lead">When a response fails a certified judge, the judge's grounded critique can go back to the producer for a capped retry. Holonograph grants that per judge, rubric, facet and surface, only after the cell certifies, and revokes it on any change to the identity it was computed on.</p>
-      <p class="body-p">Reflection against an uncertified judge turns the judge into an optimization target, and the cheapest way for a producer to raise a score on a requires-confirmation dimension is to stop being honest about what it does not know. So the loop opens only where authority already stands.</p>
-      <a class="arrow-link" href="guide/reflection.html">Reflection in the Guide <span aria-hidden="true">&rarr;</span></a>
     </div>
   </section>
 </div>
@@ -1093,7 +1387,7 @@
      SEAMS  ·  production route: /seams
      ════════════════════════════════════════════════════════════════════ -->
 <div class="view" data-route="seams" data-url="/seams" hidden>
-  <section class="page-head sec-pad">
+  <section class="page-head sec-pad bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Seams</p>
       <h2 class="page-h1">Where inference becomes a decision</h2>
@@ -1101,7 +1395,7 @@
     </div>
   </section>
 
-  <section class="together sec-pad" id="together" data-reveal>
+  <section class="together sec-pad bg-b" id="together" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>How it comes together</p>
       <h2>One dependency, followed from its source to its consequence</h2>
@@ -1131,7 +1425,7 @@
     </div>
   </section>
 
-  <section class="sec-pad" id="provenance" data-reveal>
+  <section class="sec-pad bg-a" id="provenance" data-reveal>
     <div class="wrap">
       <h2>Provenance survives every hop</h2>
       <figure class="chain-fig">
@@ -1155,7 +1449,7 @@
     </div>
   </section>
 
-  <section class="seams sec-pad" data-reveal>
+  <section class="seams sec-pad bg-b" data-reveal>
     <div class="wrap">
       <h2>A model is a seam whose interpreter moves</h2>
       <p class="lead">A pattern does not rewrite itself between releases. A model can be re-routed behind an unchanged name, and the instrument scoring it is usually <a class="term" href="#ai-attribution">another model</a>. So a model seam carries more variance control. The lifecycle is the same.</p>
@@ -1182,7 +1476,7 @@
      AI ATTRIBUTION  ·  production route: /ai-attribution
      ════════════════════════════════════════════════════════════════════ -->
 <div class="view" data-route="ai-attribution" data-url="/ai-attribution" hidden>
-  <section class="method sec-pad" data-anim>
+  <section class="method sec-pad bg-a" data-anim>
     <div class="wrap">
     <div class="method-intro">
       <p class="sec-eyebrow"><span class="dot"></span>Observability is not Attribution</p>
@@ -1220,7 +1514,7 @@
     </div>
   </section>
 
-  <section class="sec-pad">
+  <section class="sec-pad bg-b">
     <div class="wrap substrate">
     <div class="viz-wrap">
       <svg id="substrate-viz" data-anim viewBox="0 0 460 380" aria-hidden="true"></svg>
@@ -1239,7 +1533,7 @@
     </div>
   </section>
 
-  <section class="sec-pad" data-reveal>
+  <section class="sec-pad bg-a" data-reveal>
     <div class="wrap">
       <h2>The attribution matrix</h2>
       <p class="lead">A release changed five scores at once. The matrix splits each score&rsquo;s change across the four sources that could have moved it. Read across a row to see where that score&rsquo;s movement came from. In this release the model moved helpfulness, faithfulness, and grounding, and the deployment moved tool discipline.</p>
@@ -1282,7 +1576,7 @@
     </div>
   </section>
 
-  <section class="readout sec-pad">
+  <section class="readout sec-pad bg-b">
     <div class="wrap">
     <div class="readout-intro">
       <p class="sec-eyebrow"><span class="dot"></span>The analysis</p>
@@ -1399,7 +1693,7 @@
     </div>
   </section>
 
-  <section class="sec-pad">
+  <section class="sec-pad bg-a">
     <div class="wrap facets">
     <div class="facet-viz" data-reveal>
       <svg class="facet-cube" viewBox="0 0 230 230" aria-hidden="true">
@@ -1456,7 +1750,7 @@
      BUILDERS  ·  production route: /builders
      ════════════════════════════════════════════════════════════════════ -->
 <div class="view" data-route="builders" data-url="/builders" hidden>
-  <section class="page-head sec-pad">
+  <section class="page-head sec-pad bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Builders</p>
       <h2 class="page-h1">Reported in the session that wrote it</h2>
@@ -1464,7 +1758,7 @@
     </div>
   </section>
 
-  <section class="sec-pad" data-reveal>
+  <section class="sec-pad bg-b" data-reveal>
     <div class="wrap">
       <h2>Inside the build loop</h2>
       <figure class="loop">
@@ -1482,7 +1776,7 @@
     </div>
   </section>
 
-  <section class="sec-pad" data-reveal>
+  <section class="sec-pad bg-a" data-reveal>
     <div class="wrap">
       <h2>Why a builder reads the note</h2>
       <p class="lead">Any coding agent can write its own code walker in an afternoon. A note worth reading has to carry what a local walk cannot produce: knowledge of the running system, gathered over time.</p>
@@ -1500,7 +1794,7 @@
     </div>
   </section>
 
-  <section class="sec-pad" id="case-study" data-reveal>
+  <section class="sec-pad bg-b" id="case-study" data-reveal>
     <div class="wrap">
       <span class="ev-tag">Case study</span>
       <h2>A rule-based calendaring agent</h2>
@@ -1525,7 +1819,7 @@
      RESEARCH  ·  production route: /papers   (footer and inline links only)
      ════════════════════════════════════════════════════════════════════ -->
 <div class="view" data-route="papers" data-url="/papers" hidden>
-  <section class="page-head sec-pad">
+  <section class="page-head sec-pad bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Research</p>
       <h2 class="page-h1">What Does an LLM Judge Actually Measure?</h2>
@@ -1533,7 +1827,7 @@
     </div>
   </section>
 
-  <section class="sec-pad" data-reveal>
+  <section class="sec-pad bg-b" data-reveal>
     <div class="wrap">
       <h2>The finding</h2>
       <p class="body-p">An LLM judge can produce a coherent rationale and a stable-looking score without establishing that the score measures the defect the operator intended. Two prospectively governed studies tested controlled defects across three fixed evaluator configurations: 4,800 judgments under ordinary holistic scoring, then 8,640 across three evaluation frames.</p>
@@ -1838,5 +2132,153 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
 </script>
 <script type="module" src="./holon-light.js?v=15"></script>
 <script src="mobilenav.js"></script>
+<script>
+/* authority lifecycle: one illustrative surface, state-selectable, autoplays once on reveal */
+(function(){
+  var lc = document.getElementById('lc'); if(!lc) return;
+  var sec = lc.closest('[data-reveal]');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var N = 52, tickWrap = lc.querySelector('.lc-ticks');
+  for(var i=0;i<N;i++) tickWrap.appendChild(document.createElement('i'));
+  var ticks = tickWrap.children;
+  var nodes = lc.querySelectorAll('.lc-node');
+  var fill = lc.querySelector('.lc-fill');
+  var stateEl = lc.querySelector('.lc-state'), msg = lc.querySelector('.lc-msg');
+  var whatEl = lc.querySelector('.lc-what'), whyEl = lc.querySelector('.lc-why'), nextEl = lc.querySelector('.lc-next em');
+  var bIn = lc.querySelector('.lc-in'), bOut = lc.querySelector('.lc-out'), bReplay = lc.querySelector('.lc-replay');
+  var deps = {}; [].forEach.call(lc.querySelectorAll('.lc-stack li'), function(li){ deps[li.getAttribute('data-dep')] = li; });
+  var gates = lc.querySelectorAll('.lg');
+
+  var SAT = [[1,'satisfied','ok'],[1,'satisfied','ok'],[1,'satisfied','ok']];
+  var S = {
+    mapped:{node:0, read:'mapped', deps:'off', rec:{o:6},
+      gates:[[0,'not declared',''],[0,'not declared',''],[0,'not declared','']],
+      what:'A decision is identified: a classification result routes a support ticket. Nothing asserts authority over it yet. Traffic is observed, but nothing is measured against a contract.',
+      next:'Declare the contract: what the decision concludes, on what evidence, under which prerequisites.'},
+    declared:{node:1, read:'declared', deps:'hold', rec:{o:10},
+      gates:[[0,'pending',''],[0,'pending',''],[0,'pending','']],
+      what:'The contract names its conditions: versioned dependencies, each with a change envelope, behavioral criteria, and an observation requirement. No qualifying evidence is accruing yet.',
+      next:'Live traffic has to exercise the surface. That is why declared and qualifying are separate states.'},
+    qualifying:{node:2, read:'qualifying', deps:'hold', rec:{o:10,q:12},
+      gates:[[1,'holds','ok'],[.58,'accruing','run'],[.44,'accruing','run']],
+      what:'Live traffic exercises the surface. Each observation is read against the contract, and evidence accumulates toward every gate.',
+      next:'Every gate satisfied on the current record.'},
+    granted:{node:3, read:'granted', deps:'hold', rec:{o:10,q:20}, gates:SAT, chg:true,
+      what:'Every gate is satisfied on the current record and every dependency holds. The reading is granted. Nothing is stored: it is re-derived each time the record is read.',
+      next:'Change a dependency to see how the reading responds.'},
+    inside:{node:3, read:'granted', deps:'inside', rec:{o:10,q:20}, gates:SAT, chg:true,
+      what:'The routing rubric moves from v3 to v3.1, a change its contract declares equivalent. The change is inside its envelope: recorded and raised for review, with no transition.',
+      next:'Try a change outside its envelope.'},
+    suspended:{node:4, read:'suspended', deps:'outside', rec:{o:10,x:20,m:1},
+      gates:[[0,'left its envelope','bad'],[0,'restarts','bad'],[0,'restarts','bad']],
+      why:'Reason: implementation hash left its identity envelope',
+      what:'The implementation hash changes outside its identity envelope. Earlier observations remain in the record, but they no longer establish authority for the changed surface. The grant is withdrawn and the reason is named.',
+      next:'Requalification takes every gate again, on the post-change record. An acknowledgement does not restore the grant.'},
+    requal:{node:2, read:'qualifying', deps:'new', req:true, rec:{o:10,x:20,m:1,n:12},
+      gates:[[1,'holds','ok'],[.55,'accruing','run'],[.4,'accruing','run']],
+      what:'The changed surface accumulates its own evidence. Observations from before the change stay in the record, and stay out of this grant.',
+      next:'Every gate satisfied again, on the post-change record alone.'},
+    regranted:{node:3, read:'granted', deps:'new', req:true, rec:{o:10,x:20,m:1,n:20}, gates:SAT, chg:true,
+      what:'Every gate is satisfied again, on the post-change record alone. The grant is new, and so is the identity it was computed on.',
+      next:'The same reading continues to be re-derived at every read.'}
+  };
+  var SEQ = ['mapped','declared','qualifying','granted','suspended','requal','regranted'];
+  var DWELL = {mapped:3200, declared:3600, qualifying:4200, granted:4600, suspended:5400, requal:4200, regranted:4600};
+  var DEP = {
+    off:{impl:['off','hash 7c41e2','not declared'], model:['off','2026-06 snapshot','not declared'], rubric:['off','v3','not declared']},
+    hold:{impl:['hold','hash 7c41e2','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','v3','holds']},
+    inside:{impl:['hold','hash 7c41e2','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['inside','v3 → v3.1','inside envelope · review']},
+    outside:{impl:['outside','7c41e2 → a90d3f','outside envelope'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','v3','holds']},
+    'new':{impl:['hold','hash a90d3f','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','v3','holds']}
+  };
+
+  function recClasses(r){
+    var out = [], k;
+    for(k=0;k<(r.o||0);k++) out.push('o');
+    for(k=0;k<(r.q||0);k++) out.push('q');
+    for(k=0;k<(r.x||0);k++) out.push('x');
+    if(r.m) out.push('m');
+    for(k=0;k<(r.n||0);k++) out.push('n');
+    while(out.length<N) out.push('');
+    return out;
+  }
+
+  var cur = null, timer = null, playing = false;
+  function go(name, fromPlay){
+    var st = S[name]; if(!st) return;
+    if(!fromPlay) stop();
+    cur = name;
+    lc.setAttribute('data-state', name);
+    lc.setAttribute('data-read', st.read);
+    lc.classList.toggle('req', !!st.req);
+    [].forEach.call(nodes, function(n){
+      var i = +n.getAttribute('data-n');
+      n.classList.toggle('on', i===st.node);
+      var done = i===4 ? !!st.req : (i<st.node || (st.node===4 && i<4));
+      n.classList.toggle('done', i!==st.node && done);
+    });
+    fill.style.setProperty('--p', Math.min(st.node,3)/3);
+    var d = DEP[st.deps];
+    Object.keys(deps).forEach(function(k){
+      var li = deps[k], v = d[k];
+      li.setAttribute('data-st', v[0]);
+      li.querySelector('.d-v').textContent = v[1];
+      li.querySelector('.d-s').textContent = v[2];
+    });
+    [].forEach.call(gates, function(g, i){
+      var v = st.gates[i];
+      g.setAttribute('data-st', v[2]);
+      g.querySelector('b').style.setProperty('--w', v[0]);
+      g.querySelector('.lg-s').textContent = v[1];
+    });
+    var cls = recClasses(st.rec), lit = 0;
+    for(var t=0;t<N;t++){
+      var el = ticks[t], c = cls[t];
+      if(el.className !== c){
+        var grow = (c==='q'||c==='n'||c==='o') && !el.className;
+        el.style.transitionDelay = grow ? (lit++ * 70)+'ms' : '0ms';
+        el.className = c;
+      }
+    }
+    msg.classList.add('swap');
+    setTimeout(function(){
+      stateEl.textContent = st.read;
+      whatEl.textContent = st.what;
+      whyEl.textContent = st.why || '';
+      nextEl.textContent = st.next;
+      msg.classList.remove('swap');
+    }, reduce ? 0 : 220);
+    bIn.disabled = bOut.disabled = !st.chg;
+  }
+  function stop(){ playing = false; clearTimeout(timer); }
+  function play(){
+    stop(); playing = true;
+    var i = 0;
+    (function step(){
+      if(!playing) return;
+      go(SEQ[i], true);
+      var wait = DWELL[SEQ[i]];
+      i++;
+      if(i < SEQ.length) timer = setTimeout(step, wait); else playing = false;
+    })();
+  }
+
+  [].forEach.call(lc.querySelectorAll('[data-go]'), function(b){
+    b.addEventListener('click', function(){ go(b.getAttribute('data-go')); });
+  });
+  bIn.addEventListener('click', function(){ go('inside'); });
+  bOut.addEventListener('click', function(){ go('suspended'); });
+  bReplay.addEventListener('click', play);
+
+  go('mapped', true);
+  var started = false;
+  function start(){
+    if(started) return; started = true;
+    if(reduce) go('granted', true); else play();
+  }
+  if(sec) sec.addEventListener('reveal:in', start); else start();
+})();
+
+</script>
 </body>
 </html>
