@@ -801,19 +801,21 @@
   .view > section.bg-b{background:#ecebf3;border-top:0}
 
   /* ── v10: closing CTA ── */
-  .cta-card{position:relative;overflow:hidden;text-align:center;border-radius:24px;padding:clamp(48px,8vh,84px) 24px;
+  .cta-card{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:clamp(18px,3vw,36px);text-align:left;border-radius:20px;padding:clamp(26px,4vh,40px) clamp(24px,4vw,48px);
     background:
-      radial-gradient(ellipse 60% 70% at 50% -10%,rgba(95,61,220,.55),transparent 70%),
+      radial-gradient(ellipse 45% 120% at 30% -30%,rgba(95,61,220,.55),transparent 70%),
       radial-gradient(ellipse 40% 50% at 100% 110%,rgba(233,85,43,.22),transparent 70%),
       repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 48px),
       repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 48px),
       #17161d;
     box-shadow:0 40px 90px -46px rgba(23,22,29,.6)}
-  .cta-cube{width:64px;height:64px;display:block;margin:0 auto 18px;animation:ctaFloat 6s ease-in-out infinite}
+  .cta-cube{width:56px;height:56px;display:block;flex:none;animation:ctaFloat 6s ease-in-out infinite}
   @keyframes ctaFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(8deg)}}
   .cta-k{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#a998f0}
-  .cta-card .close-line{margin-top:12px;color:#fff;font-size:clamp(30px,4.4vw,52px)}
-  .cta-card .cta{justify-content:center;margin-top:30px}
+  .cta-card .close-line{margin-top:6px;color:#fff;font-size:clamp(26px,3.2vw,40px);line-height:1.1}
+  .cta-text{min-width:0}
+  .cta-card .cta{justify-content:flex-end;margin:0 0 0 auto;flex:none}
+  @media (max-width:860px){.cta-card{flex-direction:column;text-align:center}.cta-card .cta{margin:4px 0 0;justify-content:center}}
   .cta-card .btn.ghost{color:#fff;border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.06)}
   .cta-card .btn.ghost:hover{border-color:rgba(255,255,255,.5)}
   @media (prefers-reduced-motion:reduce){.cta-cube{animation:none}}
@@ -1142,8 +1144,10 @@
           <path d="M48,48 L48,6 M48,48 L84.4,69 M48,48 L11.6,69" fill="none" stroke="#c9bdfb" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
           <circle cx="48" cy="48" r="6.5" fill="#e9552b"/>
         </svg>
-        <p class="cta-k">Self-hosted &middot; Runs in your infrastructure</p>
-        <p class="close-line">Authority on evidence</p>
+        <div class="cta-text">
+          <p class="cta-k">Self-hosted licensed binary</p>
+          <p class="close-line">Authority on evidence</p>
+        </div>
         <div class="cta">
           <a class="btn solid" href="guide/">Read the Guide <span aria-hidden="true">&rarr;</span></a>
           <a class="btn ghost" href="contact.html">Request a demo</a>
