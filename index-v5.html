@@ -389,8 +389,9 @@
   .one-spine{margin-top:clamp(26px,4vh,40px)}
   .os-bar{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;justify-content:center;text-align:center;border:1.5px solid var(--iris);border-radius:14px;background:var(--iris-soft);padding:18px 20px;font-size:14.5px;color:var(--ink-2)}
   .os-k{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--iris);font-weight:600}
-  .os-split{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
-  .os-split::before{content:"";position:absolute;top:-28px;left:25%;right:25%;height:16px;border:2px solid var(--iris);border-bottom:0;border-radius:10px 10px 0 0}
+  .os-split{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:40px}
+  .os-split::before{content:"";position:absolute;top:-20px;left:calc((100% - 14px)/4);right:calc((100% - 14px)/4);height:20px;border:2px solid var(--iris);border-bottom:0;border-radius:10px 10px 0 0}
+  .os-split::after{content:"";position:absolute;top:-40px;left:calc(50% - 1px);width:2px;height:20px;background:var(--iris)}
   .os-branch{border:1px solid var(--line);border-radius:14px;background:#fff;padding:18px 20px;text-align:center}
   .os-branch h3{font-size:17px;font-weight:600;margin-bottom:8px}
   .os-branch p{font-size:14px;color:var(--ink-2);line-height:1.5}
@@ -488,7 +489,7 @@
   }
   @media (max-width:720px){
     .board,.groups,.carrot,.checkpoints,.pair,.os-split,.mx-notes{grid-template-columns:1fr}
-    .os-split::before{display:none}
+    .os-split::before,.os-split::after{display:none}
     .catch-head{display:none}
     .catch-row{grid-template-columns:1fr}
     .catch-row span + span{border-left:0;padding-top:0}
@@ -778,9 +779,9 @@
   .demo-intro,.close-inner,.method-intro,.readout-intro{text-align:left;margin-left:0;margin-right:0}
   .demo-intro .sec-eyebrow,.method-intro .sec-eyebrow,.readout-intro .sec-eyebrow{justify-content:flex-start}
   .close .cta{justify-content:flex-start}
-  .method-intro{max-width:780px}
+  .method-intro,.readout-intro{max-width:none}
   .method-intro .page-h1{font-size:clamp(32px,4.6vw,54px);line-height:1.06}
-  .method-callout{text-align:left;margin-left:0}
+  .method-callout{max-width:none;width:fit-content;margin-left:auto;margin-right:auto;text-align:center}
   .readout-fn{margin-left:0}
   .demo-mobile{text-align:left}
 
@@ -1042,6 +1043,97 @@
     .mx-c.c-conc{box-shadow:inset 0 -3px 0 #e3b47c}
     .mx-c.c-smooth{box-shadow:inset 0 -3px 0 #46c08a}
   }
+
+  /* ── v12: spine investigation ── */
+  .si-setup{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .si-setup li{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:#cfccdb;border:1px solid #2a2836;background:#17161d;border-radius:999px;padding:5px 12px 5px 10px;transition:border-color .4s ease,color .4s ease,background .4s ease}
+  .si-setup li::before{content:"";width:7px;height:7px;border-radius:50%;background:#46c08a;box-shadow:0 0 8px rgba(70,192,138,.6);transition:background .4s ease,box-shadow .4s ease}
+  .si-setup li.gap{border-color:rgba(224,150,74,.6);color:#f0b878;background:rgba(224,150,74,.08)}
+  .si-setup li.gap::before{background:#e0964a;box-shadow:0 0 8px rgba(224,150,74,.8)}
+  .si-setup .si-pre{border:0;background:none;padding:0 4px 0 0;color:#8d8a9c;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+  .si-setup .si-pre::before{display:none}
+  .si-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}
+  .si-tab{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:12px;border:1px solid #2a2836;background:#17161d;transition:border-color .25s ease,background .25s ease,box-shadow .25s ease}
+  .si-tab span{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8d8a9c}
+  .si-tab b{font-size:14.5px;color:#f1effa;font-weight:600}
+  .si-tab:hover{border-color:#8f7cf0}
+  .si-tab:focus-visible{outline:2px solid #8f7cf0;outline-offset:3px}
+  .si-tab[aria-selected="true"]{border-color:#8f7cf0;background:#211b3d;box-shadow:inset 0 -2px 0 #8f7cf0}
+  .si-tab[aria-selected="true"] span{color:#c9bdfb}
+  .si .lc-track{margin-top:28px}
+  .si-fill2{position:absolute;top:0;bottom:0;left:33.333%;width:calc(var(--p2,0) * 100%);
+    background:repeating-linear-gradient(90deg,#e9552b 0 6px,transparent 6px 11px);transition:width .9s var(--anim-ease)}
+  .si .lc-rail{background:linear-gradient(90deg,#2e2c3b 33.333%,transparent 33.333%),repeating-linear-gradient(90deg,#2e2c3b 0 6px,transparent 6px 11px)}
+
+  .si-body{display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);gap:14px;margin-top:28px}
+  .si-card{border:1px solid #2a2836;border-radius:14px;background:#17161d;padding:16px 18px;transition:opacity .45s ease,border-color .45s ease}
+  .si-card > .lc-k{display:block;margin-bottom:10px}
+  .si-grp{font-size:13px;color:#a9a6b8;line-height:1.4}
+  .si-metric{margin-top:8px;font-family:var(--mono);font-size:14px;color:#fff;overflow-wrap:anywhere}
+  .si-delta{margin-top:2px;font-size:clamp(32px,3.4vw,42px);font-weight:600;letter-spacing:-.02em;color:#ff8a65;font-variant-numeric:tabular-nums;transition:color .4s ease}
+  .si-delta small{font-size:14px;font-weight:500;color:#8d8a9c;margin-left:6px;letter-spacing:0}
+  .si[data-dir="up"] .si-delta{color:#a998f0}
+  .si-spark{display:block;width:100%;height:60px;margin-top:8px;overflow:visible}
+  .si-spark path{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  .si-spark .base{stroke:#2a2836;stroke-width:1}
+  .si-spark .ln{stroke:#ff8a65;stroke-dasharray:var(--len,600);stroke-dashoffset:var(--len,600)}
+  .si[data-dir="up"] .si-spark .ln{stroke:#a998f0}
+  .si-spark.draw .ln{stroke-dashoffset:0;transition:stroke-dashoffset 1.2s var(--anim-ease)}
+
+  .si-attr{opacity:.4}
+  .si.s-attr .si-attr{opacity:1}
+  .si-rows{display:grid;gap:4px}
+  .si-row{display:grid;grid-template-columns:190px minmax(0,1fr) 44px 128px;gap:12px;align-items:center;padding:8px 10px;border-radius:10px;border:1px solid transparent;transition:background .45s ease,border-color .45s ease,opacity .45s ease}
+  .si-l b{display:block;font-size:14px;color:#f1effa;font-weight:600}
+  .si-l small{display:block;font-family:var(--mono);font-size:12px;color:#8d8a9c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .si-bar{height:10px;border-radius:5px;background:#22202b;overflow:hidden}
+  .si-bar i{display:block;height:100%;width:0;border-radius:5px;background:#4a4858;transition:width .9s var(--anim-ease)}
+  .si.s-attr .si-bar i{width:calc(var(--w,0) * 100%)}
+  .si-v{font-family:var(--mono);font-size:13px;color:#cfccdb;text-align:right;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .4s ease .3s}
+  .si-t{font-family:var(--mono);font-size:12px;letter-spacing:.03em;color:#8d8a9c;border:1px solid #2e2c3b;border-radius:6px;padding:2px 7px;justify-self:start;white-space:nowrap;opacity:0;transition:opacity .4s ease .45s}
+  .si.s-attr .si-v,.si.s-attr .si-t{opacity:1}
+  .si-row.k-chance .si-bar i{background:linear-gradient(90deg,#5f3ddc,#a998f0)}
+  .si-row.k-chance .si-t{color:#c9bdfb;border-color:rgba(143,124,240,.5)}
+  .si-row.k-floor .si-bar i{background:repeating-linear-gradient(135deg,#5a5868 0 3px,#2a2836 3px 6px)}
+  .si-row.k-conf .si-bar i{background:repeating-linear-gradient(135deg,rgba(233,85,43,.9) 0 3px,rgba(233,85,43,.22) 3px 6px)}
+  .si-row.k-conf .si-t{color:#ff9a7a;border-color:rgba(233,85,43,.5)}
+  .si.s-pt .si-row:not(.pt){opacity:.42}
+  .si.s-pt .si-row.pt{background:rgba(95,61,220,.13);border-color:rgba(143,124,240,.55)}
+  .si.s-pt .si-row.pt.k-conf{background:rgba(233,85,43,.08);border-color:rgba(233,85,43,.45)}
+
+  .si-read{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;margin-top:14px;padding:18px;border-radius:14px;border:1px solid #2a2836;background:#17161d;opacity:.3;transition:opacity .45s ease,border-color .45s ease}
+  .si.s-pt .si-read{opacity:1;border-color:#3a3848}
+  .si-to{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+  .si-src{font-family:var(--mono);font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:6px 12px;border-radius:8px;color:#fff;background:#5f3ddc;transition:background .4s ease}
+  .si[data-src="vis"] .si-src{background:#a8611f}
+  .si-msg{transition:opacity .25s ease}
+  .si-msg.swap{opacity:0}
+  .si-why{margin-top:10px;font-family:var(--mono);font-size:12.5px;color:#c9bdfb;border:1px solid rgba(143,124,240,.45);background:rgba(95,61,220,.1);border-radius:7px;padding:5px 10px;display:inline-block}
+  .si[data-src="vis"] .si-why{color:#f0b878;border-color:rgba(224,150,74,.5);background:rgba(224,150,74,.08)}
+  .si-fix{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+  .si-fix .lc-k{margin-right:4px}
+  .si-fix b{font-weight:500;font-size:13.5px;color:#fff;border:1px solid rgba(70,192,138,.5);background:rgba(31,125,89,.2);border-radius:999px;padding:5px 12px;opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease}
+  .si-fix b:nth-of-type(2){transition-delay:.12s}
+  .si-fix b:nth-of-type(3){transition-delay:.24s}
+  .si.s-fix .si-fix b{opacity:1;transform:none}
+  .si-replay{margin-left:auto}
+  .sf-seams{margin-top:22px;font-size:15px;color:var(--ink-2)}
+
+  @media (max-width:900px){
+    .si-body{grid-template-columns:1fr}
+    .si-row{grid-template-columns:150px minmax(0,1fr) 40px auto}
+  }
+  @media (max-width:720px){
+    .si-tabs{grid-template-columns:1fr 1fr}
+    .si-row{grid-template-columns:minmax(0,1fr) 36px auto;gap:6px 10px}
+    .si-l{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px}
+    .si-l small{white-space:normal}
+    .si-read{grid-template-columns:1fr;gap:12px}
+    .si-replay{margin-left:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .si-bar i,.si-fix b,.si-spark.draw .ln,.si-v,.si-t{transition:none}
+  }
 </style>
 <link rel="stylesheet" href="mobilenav.css">
 </head>
@@ -1261,20 +1353,69 @@
 
   <section class="sec-pad bg-a" data-reveal>
     <div class="wrap">
-      <h2>From agent behavior to the consequential seam</h2>
-      <p class="lead">An alarm starts an investigation. The spine holds the evidence; the builder follows it to the decision that went wrong and to what that decision relied on.</p>
-      <figure class="spine-flow">
-        <div class="sf-band sf-src"><span class="sf-k">Agent activity</span><span>Model calls &middot; tool use &middot; evaluations &middot; code changes</span></div>
-        <div class="sf-arrow" aria-hidden="true"></div>
-        <div class="sf-band sf-concerns"><span class="sf-k">Concerns</span><span class="sf-cards"><b>Unreliable evaluations</b><b>Grounding concerns</b><b>Blind spots and missing coverage</b><b>Drift and anomalous behavior</b></span></div>
-        <div class="sf-arrow" aria-hidden="true"></div>
-        <div class="sf-band sf-spine"><span class="sf-k">Attention spine</span><span>Examine findings &middot; inspect evidence &middot; find candidate dependencies</span></div>
-        <div class="sf-arrow sf-dashed" aria-hidden="true"></div>
-        <div class="sf-band sf-invest"><span class="sf-k">Investigate the seam</span><span>What interpretation influenced the decision, and what justified that influence?</span></div>
-        <div class="sf-arrow sf-dashed" aria-hidden="true"></div>
-        <div class="sf-band sf-act"><span class="sf-k">Corrective action</span><span>Proposed change &middot; independent approval &middot; renewed observation</span></div>
-        <figcaption class="dg-cap"><span class="dot"></span>Solid steps are recorded data flow. Dashed steps are investigation, which the spine supports and does not perform on its own.</figcaption>
+      <h2>From an alarm to a corrective change</h2>
+      <p class="lead">Attribution depends on setup. Surfaces are declared, set up orthogonally, variance controlled, and cohort tagged with relevant substrate columns. Each alarm then arrives with its attributed source: what moved with it, and by how much.</p>
+      <figure class="lc si" id="si">
+        <div class="lc-top">
+          <span class="lc-surf"><b>support-agent</b><span>Four alarms on one declared surface</span></span>
+          <span class="il-tag">Illustrative</span>
+        </div>
+        <ul class="si-setup" aria-label="Setup">
+          <li class="si-pre">Setup</li>
+          <li data-c="decl">Declared</li>
+          <li data-c="orth">Orthogonal</li>
+          <li data-c="var">Variance controlled</li>
+          <li data-c="tag">Cohort tagged &middot; substrate columns</li>
+        </ul>
+        <div class="si-tabs" role="tablist" aria-label="Example alarms">
+          <button type="button" class="si-tab" role="tab" data-i="0"><span>Alarm 01</span><b>Agent change</b></button>
+          <button type="button" class="si-tab" role="tab" data-i="1"><span>Alarm 02</span><b>Model change</b></button>
+          <button type="button" class="si-tab" role="tab" data-i="2"><span>Alarm 03</span><b>Eval change</b></button>
+          <button type="button" class="si-tab" role="tab" data-i="3"><span>Alarm 04</span><b>Visibility gap</b></button>
+        </div>
+
+        <ol class="lc-track">
+          <li class="lc-rail" aria-hidden="true"><span class="lc-fill"></span><span class="si-fill2"></span></li>
+          <li class="lc-node" data-n="0"><button type="button" data-k="0"><span class="lc-dot">01</span><b>Alarm</b><small>A score moves</small></button></li>
+          <li class="lc-node" data-n="1"><button type="button" data-k="1"><span class="lc-dot">02</span><b>What moved</b><small>Attribution, in pts</small></button></li>
+          <li class="lc-node" data-n="2"><button type="button" data-k="2"><span class="lc-dot">03</span><b>Where it points</b><small>The attributed source</small></button></li>
+          <li class="lc-node lc-g" data-n="3"><button type="button" data-k="3"><span class="lc-dot">04</span><b>Correction</b><small>Proposed, approved, observed</small></button></li>
+        </ol>
+
+        <div class="si-body">
+          <div class="si-card si-alarm">
+            <span class="lc-k">Alarm</span>
+            <div class="si-grp"></div>
+            <div class="si-metric"></div>
+            <div class="si-delta"><span></span><small>pts</small></div>
+            <svg class="si-spark" viewBox="0 0 280 60" preserveAspectRatio="none" aria-hidden="true"><path class="base" d="M0 59.5H280"/><path class="ln" d=""/></svg>
+          </div>
+          <div class="si-card si-attr">
+            <span class="lc-k">What moved with it</span>
+            <div class="si-rows">
+              <div class="si-row" data-ax="agent"><span class="si-l"><b>Your agent</b><small>substrate</small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
+              <div class="si-row" data-ax="model"><span class="si-l"><b>The model</b><small>light_source_served_model</small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
+              <div class="si-row" data-ax="eval"><span class="si-l"><b>Your eval</b><small>judge identity</small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
+              <div class="si-row" data-ax="noise"><span class="si-l"><b>Noise</b><small>noise floor</small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="si-read">
+          <div class="si-to"><span class="lc-k">Points to</span><span class="si-src"></span></div>
+          <div class="si-msg">
+            <p class="lc-what"></p>
+            <span class="si-why"></span>
+            <div class="si-fix"><span class="lc-k">Candidate corrections</span></div>
+            <p class="lc-next"><span>Next</span><em></em></p>
+          </div>
+        </div>
+        <div class="lc-ctl">
+          <button type="button" class="lc-btn lc-replay si-replay"><span aria-hidden="true">&#8635;</span> Replay</button>
+        </div>
+        <figcaption class="lc-cap">Illustrative scenarios in dashboard terms. Values are examples, not results. The alarm and its attribution are recorded; where it points and the correction are investigation, which the spine supports and does not perform on its own. Every correction is a proposal a person approves.</figcaption>
       </figure>
+      <p class="sf-seams">Seams are mapped from the other direction, during the build. Once mapped, a seam reports into the same spine. <a class="term" href="#seams">Seams &rarr;</a></p>
       <div class="together-grid">
         <div class="tg"><h3>Findings keep their name</h3><p>The same identity across every rescan, so last week's annotation is still attached today.</p></div>
         <div class="tg"><h3>Triage stays beside the record</h3><p>No status click changes a threshold, a prompt, or a hash.</p></div>
@@ -2320,6 +2461,135 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
   if(sec) sec.addEventListener('reveal:in', start); else start();
 })();
 
+</script>
+<script>
+/* spine investigation: four illustrative alarms, staged alarm, attribution, source, correction */
+(function(){
+  var si = document.getElementById('si'); if(!si) return;
+  var sec = si.closest('[data-reveal]');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function q(s){ return si.querySelector(s); }
+  var tabs = si.querySelectorAll('.si-tab'), nodes = si.querySelectorAll('.lc-node');
+  var rows = {}; [].forEach.call(si.querySelectorAll('.si-row'), function(r){ rows[r.getAttribute('data-ax')] = r; });
+  var chips = {}; [].forEach.call(si.querySelectorAll('.si-setup li[data-c]'), function(c){ chips[c.getAttribute('data-c')] = c; });
+  var fill = q('.lc-fill'), fill2 = q('.si-fill2'), msg = q('.si-msg'), spark = q('.si-spark'), line = q('.si-spark .ln');
+  var fixEl = q('.si-fix'), MAX = 5.5;
+  var KIND = {chance:'not chance', noise:'within noise', floor:'noise floor', conf:'confounded axis'};
+  var SC = [
+    {src:'agent', to:'Your agent', grp:'Drift and anomalous behavior', metric:'tool_discipline', d:-3.8,
+      ax:{agent:[3.1,'chance'], model:[0.2,'noise'], eval:[0.1,'noise'], noise:[0.4,'floor']}, pt:['agent'],
+      what:'The drop moved with your agent’s substrate. The model and judge identity columns did not move.',
+      why:'substrate column: prompt · v14 → v15',
+      fix:['Prompt change','Code change'],
+      next:'A person approves the proposal. The change enters the record and the surface is observed again.'},
+    {src:'model', to:'The model', grp:'Drift and anomalous behavior', metric:'analysis_quality_judged', d:-5.2,
+      ax:{agent:[0.3,'noise'], model:[4.4,'chance'], eval:[0.2,'noise'], noise:[0.3,'floor']}, pt:['model'],
+      what:'The served model changed under the same name: a vendor switch, or your own update. Your code and prompt did not move.',
+      why:'light_source_served_model · 2026-06 → 2026-09 snapshot',
+      fix:['Prompt change','Code change','Model revert'],
+      next:'Each option is a proposal. A revert is recorded and observed like any other change.'},
+    {src:'eval', to:'Your eval', grp:'Unreliable evaluations', metric:'hypothesis_grounding', d:2.9,
+      ax:{agent:[0.1,'noise'], model:[0.2,'noise'], eval:[2.6,'chance'], noise:[0.3,'floor']}, pt:['eval'],
+      what:'The score rose with a rubric revision. The agent and model columns did not move, so the gain sits with the judge.',
+      why:'judge identity · rubric v4 → v5 · same model · same scope',
+      fix:['Rubric review','Judge review'],
+      next:'Settle the rubric change before the gain is read as an improvement.'},
+    {src:'vis', to:'Visibility', grp:'Blind spots and missing coverage', metric:'title_quality', d:-2.2, gap:'tag',
+      ax:{agent:[1.6,'conf'], model:[1.6,'conf'], eval:[0.1,'noise'], noise:[0.5,'floor']}, pt:['agent','model'],
+      what:'Your agent and the model changed in the same window, and no substrate column separates them. The record cannot attribute the drop to either.',
+      why:'Waiting on Confounded axis · title_quality',
+      fix:['Add a substrate column','Cohort tag the change','Separate the changes'],
+      next:'No code fix is indicated yet. With the columns in place, the next change is attributable.'}
+  ];
+  var W = [0,1.2,-.8,.6,-1.4,.9,-.3,1.1,-1,.4,-.6,1.3,-.9,.2,.8,-1.2,.5,  -.7,1,-.4,.9,-1.1,.3,.7,-.5,1.2,-.8,.4];
+  function sparkPath(d){
+    var n = W.length, step = 17, amp = Math.abs(d) * 6.2, up = d > 0;
+    var a = up ? 44 : 16, b = up ? a - amp : a + amp, out = [];
+    for(var i=0;i<n;i++){
+      var x = i * 280 / (n - 1), t = i < step ? 0 : Math.min(1, (i - step + 1) / 3);
+      var y = a + (b - a) * t + W[i] * 1.6;
+      out.push((i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1));
+    }
+    return out.join('');
+  }
+
+  var cur = 0, stage = 0, timer = null;
+  function setStage(k){
+    stage = k;
+    si.setAttribute('data-stage', k);
+    si.classList.toggle('s-attr', k >= 1);
+    si.classList.toggle('s-pt', k >= 2);
+    si.classList.toggle('s-fix', k >= 3);
+    [].forEach.call(nodes, function(n){
+      var i = +n.getAttribute('data-n');
+      n.classList.toggle('on', i === k);
+      n.classList.toggle('done', i < k);
+    });
+    fill.style.setProperty('--p', Math.min(k, 1) / 3);
+    fill2.style.setProperty('--p2', Math.max(k - 1, 0) / 3);
+  }
+  function load(i){
+    var s = SC[i]; cur = i;
+    [].forEach.call(tabs, function(t, j){ t.setAttribute('aria-selected', j === i ? 'true' : 'false'); });
+    si.setAttribute('data-src', s.src);
+    si.setAttribute('data-dir', s.d > 0 ? 'up' : 'down');
+    Object.keys(chips).forEach(function(k){ chips[k].classList.toggle('gap', s.gap === k); });
+    q('.si-grp').textContent = s.grp;
+    q('.si-metric').textContent = s.metric;
+    q('.si-delta span').textContent = (s.d > 0 ? '+' : '−') + Math.abs(s.d).toFixed(1);
+    Object.keys(rows).forEach(function(k){
+      var r = rows[k], v = s.ax[k];
+      r.className = 'si-row k-' + v[1] + (s.pt.indexOf(k) > -1 ? ' pt' : '');
+      r.querySelector('.si-bar i').style.setProperty('--w', Math.min(v[0] / MAX, 1));
+      r.querySelector('.si-v').textContent = v[0].toFixed(1);
+      r.querySelector('.si-t').textContent = KIND[v[1]];
+    });
+    spark.classList.remove('draw');
+    line.setAttribute('d', sparkPath(s.d));
+    var len = line.getTotalLength ? Math.ceil(line.getTotalLength()) + 2 : 600;
+    line.style.setProperty('--len', len);
+    void spark.getBoundingClientRect();
+    spark.classList.add('draw');
+    msg.classList.add('swap');
+    setTimeout(function(){
+      q('.si-src').textContent = s.to;
+      q('.lc-what').textContent = s.what;
+      q('.si-why').textContent = s.why;
+      [].forEach.call(fixEl.querySelectorAll('b'), function(b){ b.remove(); });
+      s.fix.forEach(function(f){ var b = document.createElement('b'); b.textContent = f; fixEl.appendChild(b); });
+      q('.lc-next em').textContent = s.next;
+      msg.classList.remove('swap');
+    }, reduce ? 0 : 220);
+  }
+  function stop(){ clearTimeout(timer); timer = null; }
+  function run(i, dt, hold, then){
+    stop(); load(i); setStage(0);
+    var k = 0;
+    (function step(){
+      timer = setTimeout(function(){
+        k++; setStage(k);
+        if(k < 3) step(); else if(then) timer = setTimeout(then, hold);
+      }, dt);
+    })();
+  }
+  function playAll(i){ run(i, 1300, 2800, i < SC.length - 1 ? function(){ playAll(i + 1); } : null); }
+
+  [].forEach.call(tabs, function(t){
+    t.addEventListener('click', function(){
+      var i = +t.getAttribute('data-i');
+      if(reduce){ stop(); load(i); setStage(3); } else run(i, 520, 0, null);
+    });
+  });
+  [].forEach.call(si.querySelectorAll('.lc-node button'), function(b){
+    b.addEventListener('click', function(){ stop(); setStage(+b.getAttribute('data-k')); });
+  });
+  q('.si-replay').addEventListener('click', function(){ if(reduce){ load(0); setStage(3); } else playAll(0); });
+
+  load(0); setStage(reduce ? 3 : 0);
+  var started = false;
+  function start(){ if(started || reduce) return; started = true; playAll(0); }
+  if(sec) sec.addEventListener('reveal:in', start); else start();
+})();
 </script>
 </body>
 </html>
