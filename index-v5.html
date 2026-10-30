@@ -1117,6 +1117,7 @@
   .si-fix b:nth-of-type(3){transition-delay:.24s}
   .si.s-fix .si-fix b{opacity:1;transform:none}
   .si-replay{margin-left:auto}
+  .sp-cta{margin-top:clamp(48px,8vh,84px)}
   .sf-seams{margin-top:22px;font-size:15px;color:var(--ink-2)}
 
   @media (max-width:900px){
@@ -1416,13 +1417,24 @@
         <figcaption class="lc-cap">Illustrative scenarios in dashboard terms. Values are examples, not results. The alarm and its attribution are recorded; where it points and the correction are investigation, which the spine supports and does not perform on its own. Every correction is a proposal a person approves.</figcaption>
       </figure>
       <p class="sf-seams">Seams are mapped from the other direction, during the build. Once mapped, a seam reports into the same spine. <a class="term" href="#seams">Seams &rarr;</a></p>
-      <div class="together-grid">
-        <div class="tg"><h3>Findings keep their name</h3><p>The same identity across every rescan, so last week's annotation is still attached today.</p></div>
-        <div class="tg"><h3>Triage stays beside the record</h3><p>No status click changes a threshold, a prompt, or a hash.</p></div>
-        <div class="tg"><h3>Ranked by what needs attention</h3><p>A grant withdrawn under a live decision sits at the top; a coverage note at the bottom.</p></div>
-        <div class="tg"><h3>Every alarm on the same terms</h3><p>A code seam and a model call file into the same queue and read the same way.</p></div>
+      <div class="cta-card sp-cta">
+        <svg class="cta-cube" viewBox="0 0 96 96" aria-hidden="true">
+          <polygon points="48,48 48,6 84.4,27 84.4,69" fill="#a998f0" opacity="0.12"/>
+          <polygon points="48,48 11.6,69 11.6,27 48,6" fill="#a998f0" opacity="0.2"/>
+          <polygon points="48,48 84.4,69 48,90 11.6,69" fill="#a998f0" opacity="0.3"/>
+          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="none" stroke="#c9bdfb" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M48,48 L48,6 M48,48 L84.4,69 M48,48 L11.6,69" fill="none" stroke="#c9bdfb" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+          <circle cx="48" cy="48" r="6.5" fill="#e9552b"/>
+        </svg>
+        <div class="cta-text">
+          <p class="cta-k">The attention spine in the Guide</p>
+          <p class="close-line">How to read an alarm</p>
+        </div>
+        <div class="cta">
+          <a class="btn solid" href="guide/attention-spine.html">Read the Guide <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn ghost" href="#authority-governance">Next: Authority <span aria-hidden="true">&rarr;</span></a>
+        </div>
       </div>
-      <a class="arrow-link" href="guide/attention-spine.html">The attention spine in the Guide <span aria-hidden="true">&rarr;</span></a>
     </div>
   </section>
 </div>
