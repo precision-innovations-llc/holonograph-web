@@ -161,6 +161,26 @@ Content-Type: application/json
           </table>
         </div>
 
+        <p>Every read returns the same projection:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>What it tells you</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code></td><td>string</td><td>Server-minted. The handle for read and delete.</td></tr>
+              <tr><td><code>agentId</code></td><td>string</td><td>Derived from the contract at create time.</td></tr>
+              <tr><td><code>predicate</code></td><td>object</td><td>The predicate as registered.</td></tr>
+              <tr><td><code>windowMs</code></td><td>number</td><td>The dedupe window.</td></tr>
+              <tr><td><code>webhook</code></td><td><code>{ url }</code></td><td>URL only. The signing secret is write-only.</td></tr>
+              <tr><td><code>createdAt</code></td><td>ISO 8601</td><td>When it was registered.</td></tr>
+              <tr><td><code>createdBy</code></td><td>string</td><td>The approver identity that created it.</td></tr>
+              <tr><td><code>disabled</code></td><td>boolean (opt)</td><td>Paused: retained but never fires. Absent means enabled. No endpoint sets it on this release, so in practice a read returns it absent.</td></tr>
+              <tr><td><code>lastFiredAt</code></td><td>ISO 8601 (opt)</td><td>When it last fired. Absent until the first fire.</td></tr>
+              <tr><td><code>lastFiredFingerprint</code></td><td>string (opt)</td><td>The fingerprint of the last-fired match: the dedupe key the window is measured against. Compare it with the <code>fingerprint</code> on a webhook body to see whether an alert you received was the one that reset the window.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
         <div class="guide-callout">
           <span class="callout-label">There is no update</span>
           Subscriptions are create / read / delete. To change a predicate, window, or webhook, <strong>delete and recreate</strong>. There is no edit or pause endpoint on this release.

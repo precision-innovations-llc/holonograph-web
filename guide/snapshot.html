@@ -151,19 +151,49 @@ x-holonograph-run-mode: production
 Content-Type: application/json
 
 {
+  "eventId": "evt_01H...",
+  "occurredAt": "2026-07-05T18:22:14.812Z",
   "surfaceId": "classify-intent",
   "correlationId": "corr_01H...",
-  "dimensions": [{
-    "dimensionId": "correctness",
+  "lensVersion": "lv_2026_07_01",
+
+  "light": { "rawResponse": { /* the vendor response as returned */ } },
+
+  "substrate": {
+    "lensVersion": "lv_2026_07_01",
+    "lightSourceIdentifier": "anthropic/claude-sonnet/5",
+    "runMode": "production",
+    "correlationId": "corr_01H...",
+    "provenance": "scheduled_production_eval",
+    "timestamp": "2026-07-05T18:22:14.812Z",
+    "columns": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" }
+  },
+
+  "surface": {
+    "surfaceId": "classify-intent",
+    "fixtureId": "fx-intent-replacement-order",
     "passed": true,
-    "expected": "a correct answer to the user's question",
-    "actual": "offered to open a replacement order"
-  }],
-  "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
-  "substrate": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" },
-  "lightSourceId": "anthropic/claude-sonnet-5",
-  "timestamp": "2026-07-05T18:22:14.812Z"
+    "dimensions": [{
+      "dimensionId": "correctness",
+      "passed": true,
+      "expected": "a correct answer to the user's question",
+      "actual": "offered to open a replacement order"
+    }],
+    "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
+    "sideEffects": []
+  }
 }</code></pre>
+
+        <p>
+          The endpoint validates the whole <code>EvaluationEvent</code>, so the layers arrive assembled rather than flat. Four things to note if you are posting by hand:
+        </p>
+
+        <ul>
+          <li><code>eventId</code> is yours to mint and the write is idempotent on it. Re-posting the same id is a no-op, which is what makes a backfill safely restartable.</li>
+          <li><code>lensVersion</code> appears twice, at the top level and inside the substrate, and a placeholder is rejected. Take a ledger-issued value from <code>GET /lens/version</code> or register a snapshot first; <code>'unknown'</code> and the boot sentinel would both seed a phantom lens-variance bucket.</li>
+          <li>Operator columns live under <code>substrate.columns</code>. The substrate's own fields (<code>lightSourceIdentifier</code>, <code>runMode</code>, <code>provenance</code>) are apparatus-owned and sit alongside, not inside.</li>
+          <li><code>surface.fixtureId</code> is required on the raw event even though the SDK's <code>reportOutcome</code> treats it as optional. The SDK supplies one; a hand-built event has to name it.</li>
+        </ul>
 
         <p>Response:</p>
 
@@ -223,7 +253,7 @@ x-holonograph-run-mode: production</code></pre>
             <thead><tr><th>Param</th><th>Shape</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td><code>surfaceId</code></td><td>string (opt)</td><td>Restrict to one surface.</td></tr>
-              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>Restrict to events produced by one fixture (Conformance, Chapter 10).</td></tr>
+              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>Restrict to events produced by one fixture (Conformance, Chapter 14).</td></tr>
               <tr><td><code>provenance</code></td><td>enum (opt)</td><td><code>production-state</code> (default), <code>exploratory-state</code>, or <code>all</code>.</td></tr>
               <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on <code>timestamp</code>.</td></tr>
               <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound on <code>timestamp</code>.</td></tr>

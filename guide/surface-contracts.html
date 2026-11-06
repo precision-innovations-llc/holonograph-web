@@ -103,15 +103,23 @@
         </p>
 
         <p>
-          Contracts declare four things per surface:
+          Contracts declare three things per surface:
         </p>
 
         <ul>
           <li><strong>Dimensions</strong>: the scoring axes an evaluation returns (e.g. <code>correctness</code>, <code>tone</code>, <code>schema-conformance</code>).</li>
           <li><strong>Cohort tags</strong>: the discrete labels you use to slice results (e.g. <code>customer-tier=enterprise</code>, <code>fix_tier=tool-input-schema</code>).</li>
           <li><strong>Substrate columns</strong>: the named columns Holonograph captures with every call, so a later reading can be attributed to <em>what changed about your deployment</em>. See <a href="./substrate-columns">Substrate columns</a>.</li>
-          <li><strong>Routings</strong>: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See <a href="./multiplexer">The multiplexer</a>.</li>
         </ul>
+
+        <p>
+          <strong>Routings</strong> are declared once at the contract <em>root</em>, not inside a surface. Each entry names the surface it applies to by <code>surfaceId</code>, and may carry a multiplex array for head-to-head comparison. See <a href="./multiplexer">The multiplexer</a>.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A nested routing is dropped</span>
+          A <code>routings</code> array placed inside a surface object is stripped at registration rather than rejected. The contract registers, the surface has no light source, and the first mediated call fails with <code>no_routing_for_surface</code>. Declare routings at the root.
+        </div>
 
         <p>
           A handful of column ids are <strong>reserved</strong> to the apparatus; declaring one is a contract error. These are values Holonograph observes and stamps for you (see <a href="./substrate-columns">Substrate columns → apparatus-owned columns</a>) — you read them, you do not write them.
@@ -151,20 +159,24 @@ const summary = await client.contract.register({
     {
       id: "classify-intent",
       dimensions: [
-        { id: "correctness", type: "score" },
-        { id: "schema-conformance", type: "boolean" }
+        { id: "correctness", scoring: "llm-judge" },
+        { id: "schema-conformance", scoring: "exact-match" }
       ],
       cohortTags: ["customer-tier", "fix_tier"],
       substrateColumns: [
         { id: "prompt_hash", control: "operator", visibility: "transparent", semantic: "deployment-state" },
         { id: "tool_schema_version", control: "operator", visibility: "transparent", semantic: "deployment-state" }
-      ],
-      routings: [
-        { surfaceId: "classify-intent", lightSourceId: "anthropic/claude-sonnet-5" }
       ]
     }
+  ],
+  routings: [
+    { surfaceId: "classify-intent", lightSourceId: "anthropic/claude-sonnet/5" }
   ]
 });</code></pre>
+
+        <p>
+          <code>scoring</code> is required on every dimension and is one of <code>exact-match</code>, <code>llm-judge</code> or <code>custom</code>. It sets the score codomain, so it also fixes the scale a <code>passThreshold</code> is read against: <code>llm-judge</code> emits 0&ndash;10, <code>exact-match</code> emits 0 or 1. Registration rejects a threshold outside the declared strategy's range.
+        </p>
 
         <p>
           Or over HTTP:
@@ -175,7 +187,7 @@ Authorization: Bearer &lt;token&gt;
 x-holonograph-run-mode: production
 Content-Type: application/json
 
-{ "agentId": "billing-triage", "surfaces": [ ... ] }</code></pre>
+{ "agentId": "billing-triage", "surfaces": [ ... ], "routings": [ ... ] }</code></pre>
 
         <h3>Read back the active contract</h3>
         <p>

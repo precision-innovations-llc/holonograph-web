@@ -336,7 +336,7 @@ Chapter 02
 
         A **surface** is the operator's unit of evaluation: one addressable thing your agent calls, with a stable id and a shape you expect it to satisfy. A **contract** is the versioned declaration of that shape.
 
-        Contracts declare four things per surface:
+        Contracts declare three things per surface:
 
           - **Dimensions**: the scoring axes an evaluation returns (e.g. `correctness`, `tone`, `schema-conformance`).
 
@@ -344,7 +344,10 @@ Chapter 02
 
           - **Substrate columns**: the named columns Holonograph captures with every call, so a later reading can be attributed to *what changed about your deployment*. See [Substrate columns](./substrate-columns).
 
-          - **Routings**: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See [The multiplexer](./multiplexer).
+        **Routings** are declared once at the contract *root*, not inside a surface. Each entry names the surface it applies to by `surfaceId`, and may carry a multiplex array for head-to-head comparison. See [The multiplexer](./multiplexer).
+
+          A nested routing is dropped
+          A `routings` array placed inside a surface object is stripped at registration rather than rejected. The contract registers, the surface has no light source, and the first mediated call fails with `no_routing_for_surface`. Declare routings at the root.
 
         A handful of column ids are **reserved** to the apparatus; declaring one is a contract error. These are values Holonograph observes and stamps for you (see [Substrate columns → apparatus-owned columns](./substrate-columns)) — you read them, you do not write them.
 
@@ -375,21 +378,23 @@ const summary = await client.contract.register({
     {
       id: "classify-intent",
       dimensions: [
-        { id: "correctness", type: "score" },
-        { id: "schema-conformance", type: "boolean" }
+        { id: "correctness", scoring: "llm-judge" },
+        { id: "schema-conformance", scoring: "exact-match" }
       ],
       cohortTags: ["customer-tier", "fix_tier"],
       substrateColumns: [
         { id: "prompt_hash", control: "operator", visibility: "transparent", semantic: "deployment-state" },
         { id: "tool_schema_version", control: "operator", visibility: "transparent", semantic: "deployment-state" }
-      ],
-      routings: [
-        { surfaceId: "classify-intent", lightSourceId: "anthropic/claude-sonnet-5" }
       ]
     }
+  ],
+  routings: [
+    { surfaceId: "classify-intent", lightSourceId: "anthropic/claude-sonnet/5" }
   ]
 });
 ```
+
+        `scoring` is required on every dimension and is one of `exact-match`, `llm-judge` or `custom`. It sets the score codomain, so it also fixes the scale a `passThreshold` is read against: `llm-judge` emits 0–10, `exact-match` emits 0 or 1. Registration rejects a threshold outside the declared strategy's range.
 
         Or over HTTP:
 
@@ -399,7 +404,7 @@ Authorization: Bearer
 x-holonograph-run-mode: production
 Content-Type: application/json
 
-{ "agentId": "billing-triage", "surfaces": [ ... ] }
+{ "agentId": "billing-triage", "surfaces": [ ... ], "routings": [ ... ] }
 ```
 
 ### Read back the active contract
@@ -526,20 +531,49 @@ x-holonograph-run-mode: production
 Content-Type: application/json
 
 {
+  "eventId": "evt_01H...",
+  "occurredAt": "2026-07-05T18:22:14.812Z",
   "surfaceId": "classify-intent",
   "correlationId": "corr_01H...",
-  "dimensions": [{
-    "dimensionId": "correctness",
+  "lensVersion": "lv_2026_07_01",
+
+  "light": { "rawResponse": { /* the vendor response as returned */ } },
+
+  "substrate": {
+    "lensVersion": "lv_2026_07_01",
+    "lightSourceIdentifier": "anthropic/claude-sonnet/5",
+    "runMode": "production",
+    "correlationId": "corr_01H...",
+    "provenance": "scheduled_production_eval",
+    "timestamp": "2026-07-05T18:22:14.812Z",
+    "columns": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" }
+  },
+
+  "surface": {
+    "surfaceId": "classify-intent",
+    "fixtureId": "fx-intent-replacement-order",
     "passed": true,
-    "expected": "a correct answer to the user's question",
-    "actual": "offered to open a replacement order"
-  }],
-  "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
-  "substrate": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" },
-  "lightSourceId": "anthropic/claude-sonnet-5",
-  "timestamp": "2026-07-05T18:22:14.812Z"
+    "dimensions": [{
+      "dimensionId": "correctness",
+      "passed": true,
+      "expected": "a correct answer to the user's question",
+      "actual": "offered to open a replacement order"
+    }],
+    "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
+    "sideEffects": []
+  }
 }
 ```
+
+        The endpoint validates the whole `EvaluationEvent`, so the layers arrive assembled rather than flat. Four things to note if you are posting by hand:
+
+          - `eventId` is yours to mint and the write is idempotent on it. Re-posting the same id is a no-op, which is what makes a backfill safely restartable.
+
+          - `lensVersion` appears twice, at the top level and inside the substrate, and a placeholder is rejected. Take a ledger-issued value from `GET /lens/version` or register a snapshot first; `'unknown'` and the boot sentinel would both seed a phantom lens-variance bucket.
+
+          - Operator columns live under `substrate.columns`. The substrate's own fields (`lightSourceIdentifier`, `runMode`, `provenance`) are apparatus-owned and sit alongside, not inside.
+
+          - `surface.fixtureId` is required on the raw event even though the SDK's `reportOutcome` treats it as optional. The SDK supplies one; a hand-built event has to name it.
 
         Response:
 
@@ -593,7 +627,7 @@ Param	Shape	Notes
 
 `surfaceId`	string (opt)	Restrict to one surface.
 
-`fixtureId`	string (opt)	Restrict to events produced by one fixture (Conformance, Chapter 10).
+`fixtureId`	string (opt)	Restrict to events produced by one fixture (Conformance, Chapter 14).
 
 `provenance`	enum (opt)	`production-state` (default), `exploratory-state`, or `all`.
 
@@ -776,7 +810,7 @@ Chapter 05
 
 # SDK reference
 
-        The `HolonographClient` is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (`messages.create → handle → reportOutcome`), and, when you want the lens to check the judge for you, attach a structured `claim` to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (`contract`, `availability`) declare shape and gaps. This chapter documents every method.
+        The `HolonographClient` is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (`messages.create → handle → reportOutcome`), and, when you want the lens to check the judge for you, attach a structured `claim` to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (`contract`, `availability`) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in [Sidecar / OTel integration](./sidecar).
 
 ## Install
 
@@ -832,7 +866,7 @@ Field	Shape	Notes
 
 `lensVersion`	string	Which lens configuration was in effect.
 
-`lightSourceIdentifier`	string	Which model produced the output, as `vendor/model/version`.
+`lightSourceIdentifier`	string	Which model produced the output, as `vendor/family/version`, with an optional fourth `keyId` segment. A two-segment value is rejected.
 
 `runMode`	enum	Which run mode the evaluation ran under.
 
@@ -978,7 +1012,7 @@ const handle = await client.messages.create({
 const answer = handle.result;             // read/act on the model's response
 const isCorrect = grade(answer);          // your evaluation logic
 
-await handle.reportOutcome({
+const eventId = await handle.reportOutcome({
   dimensions: [{
     dimensionId: "correctness",
     passed: isCorrect,
@@ -986,10 +1020,10 @@ await handle.reportOutcome({
     actual: summarize(answer)
   }],
   cohortTags: ["customer-tier=enterprise"]
-});
+});                                       // the primary event's id
 ```
 
-        `messages.create()` mediates the model call and returns a handle. `handle.result` is the response you use in your agent. `handle.reportOutcome()` closes the loop; it persists the evaluation event that binds this call into your history.
+        `messages.create()` mediates the model call and returns a handle. `handle.result` is the response you use in your agent. `handle.reportOutcome()` closes the loop; it persists the evaluation event that binds this call into your history and returns that event's id. Discard the id for a synchronous judge; keep it when a verdict arrives later and has to name its subject.
 
 ### messages.create(req)
 
@@ -1033,7 +1067,7 @@ Member	Shape	Notes
 
 `.observerRecords[]`	array	Under multiplex routing, the observer vendors' captured records. Empty when not multiplexing.
 
-`.reportOutcome(outcome)`	method	Persist the evaluation event that closes this call.
+`.reportOutcome(outcome)`	method &rarr; `Promise`	Persist the evaluation event that closes this call. Resolves to the **primary event's id**: the event carrying the light snapshot, the dimensions and any `judge.pending` tag. Observer-event ids are not returned.
 
 `.gradeObserver(recordOrId, outcome)`	method	Attach grades to a cross-vendor observer call before reporting, when the lens returned observer records. Call this *before* `reportOutcome`.
 
@@ -1047,7 +1081,13 @@ Field	Shape	Notes
 
 `sideEffects[]`	array (opt)	Any downstream actions this call triggered; useful for correlated fixtures and lessons later.
 
-`fixtureId`	string (opt)	The fixture this call satisfied, when the call was run as part of a conformance check.
+`fixtureId`	string (opt)	The fixture this call satisfied, when the call was run as part of a conformance check. Omit it on a production call and the client derives a synthetic id from the correlation id.
+
+`eventId`	string (opt)	Pre-generate the primary event's id instead of letting `reportOutcome` mint one. Format it with `newEventId` from the types package. Use it to hand an async judge worker the subject-event id before the event is written, or to keep a client-side fail-open landing under a known id. The store is keep-first, so re-posting the same id is a no-op. Observer events always mint their own.
+
+`judgeIdentity`	object (opt)	The judge lens that produced this outcome, for `llm-judge` dimensions. Take it from the scorer's `ScoringResult.judgeIdentity`; the SDK stamps it into the reserved `judge.*` substrate columns so variance analyses can separate a judge change from a producer change. A `lensVersion` string alone under-specifies it. Omit for `exact-match`.
+
+`rubricDispatch`	object (opt)	The resolved facet-scoped rubric for this outcome, when the dimension declares `rubricDispatch`. Take it from the scorer's `ScoringResult.rubricDispatch`; the SDK stamps `judge.rubric_source`, `judge.rubric_facet` and `judge.rubric_default_reason`, which is what makes the default-versus-bespoke split countable. Omit for single-rubric dimensions.
 
 #### Dimension entry shape
 
@@ -1063,7 +1103,7 @@ Field	Shape	Notes
 
 `claim`	object (opt)	What the judge *asserted*, as fields the lens can verify — for the verdict-reliability layer to check (see below). A `JudgeClaimReport`; omit it and the dimension is simply not claim-instrumented.
 
-        Calling `reportOutcome` persists the evaluation event to Holonograph's substrate: one row, four layers bound (see [The four-layer snapshot](./snapshot)). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+        Calling `reportOutcome` persists the evaluation event to Holonograph's substrate: one row, four layers bound (see [The four-layer snapshot](./snapshot)). It resolves to that event's id, which is the handle an asynchronous judge needs: a verdict minted later references it as its subject event. What Holonograph does with the event afterwards is the subject of the analysis chapters.
 
 ## Verdict reliability — let the lens check your judge
 
@@ -1316,7 +1356,7 @@ Content-Type: application/json
   "callId": "call_01H...",
   "correlationId": "corr_01H...",
   "surfaceId": "classify-intent",
-  "lightSourceId": "anthropic/claude-sonnet-5",
+  "lightSourceId": "anthropic/claude-sonnet/5",
   "result": { /* the primary model's response */ },
   "observerRecords": [ /* multiplex observers, if any */ ],
   "gateOutcome": null,
@@ -1989,7 +2029,7 @@ Chapter 10
 
 ### Declare a multiplex in the contract
 
-        Register a contract whose routing for the surface uses an array for `lightSourceId`:
+        Register a contract whose routing for the surface uses an array for `lightSourceId`. Routings sit at the contract root and name their surface by `surfaceId`; see [Surface contracts](./surface-contracts).
 
 ```
 await client.contract.register({
@@ -1997,18 +2037,18 @@ await client.contract.register({
   surfaces: [
     {
       id: "classify-intent",
-      dimensions: [ /* ... */ ],
-      routings: [
-        {
-          surfaceId: "classify-intent",
-          lightSourceId: [
-            "anthropic/claude-sonnet-5",
-            "openai/gpt-5",
-            "google/gemini-2-pro"
-          ],
-          activeRunModes: ["eval", "production"]
-        }
-      ]
+      dimensions: [ /* ... */ ]
+    }
+  ],
+  routings: [
+    {
+      surfaceId: "classify-intent",
+      lightSourceId: [
+        "anthropic/claude-sonnet/5",
+        "openai/gpt/5",
+        "google/gemini/2-pro"
+      ],
+      activeRunModes: ["eval", "production"]
     }
   ]
 });
@@ -3612,6 +3652,30 @@ Method & path	Returns
 `GET /lens/subscriptions/:id`	One subscription, or `404`.
 
 `DELETE /lens/subscriptions/:id?approverId=`	Deletes it. `approverId` is a required query param. Returns `{ deleted: true, id }`.
+
+        Every read returns the same projection:
+
+Field	Shape	What it tells you
+
+`id`	string	Server-minted. The handle for read and delete.
+
+`agentId`	string	Derived from the contract at create time.
+
+`predicate`	object	The predicate as registered.
+
+`windowMs`	number	The dedupe window.
+
+`webhook`	`{ url }`	URL only. The signing secret is write-only.
+
+`createdAt`	ISO 8601	When it was registered.
+
+`createdBy`	string	The approver identity that created it.
+
+`disabled`	boolean (opt)	Paused: retained but never fires. Absent means enabled. No endpoint sets it on this release, so in practice a read returns it absent.
+
+`lastFiredAt`	ISO 8601 (opt)	When it last fired. Absent until the first fire.
+
+`lastFiredFingerprint`	string (opt)	The fingerprint of the last-fired match: the dedupe key the window is measured against. Compare it with the `fingerprint` on a webhook body to see whether an alert you received was the one that reset the window.
 
           There is no update
           Subscriptions are create / read / delete. To change a predicate, window, or webhook, **delete and recreate**. There is no edit or pause endpoint on this release.

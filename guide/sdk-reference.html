@@ -95,7 +95,7 @@
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method.
+          The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in <a href="./sidecar">Sidecar / OTel integration</a>.
         </p>
 
         <h2>Install</h2>
@@ -151,7 +151,7 @@ const client = new HolonographClient({
             <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td><code>lensVersion</code></td><td>string</td><td>Which lens configuration was in effect.</td></tr>
-              <tr><td><code>lightSourceIdentifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/model/version</code>.</td></tr>
+              <tr><td><code>lightSourceIdentifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/family/version</code>, with an optional fourth <code>keyId</code> segment. A two-segment value is rejected.</td></tr>
               <tr><td><code>runMode</code></td><td>enum</td><td>Which run mode the evaluation ran under.</td></tr>
               <tr><td><code>provenance</code></td><td>string</td><td>Origin category of the run; see <a href="./substrate-columns">Substrate columns</a>.</td></tr>
               <tr><td><code>operatorColumns</code></td><td>object</td><td>The operator-declared deployment-state columns, keyed by column id. For example: <code>{ prompt_hash: "v2-sha256-…", tool_schema_version: "3.1.0" }</code>.</td></tr>
@@ -296,7 +296,7 @@ if (window?.biasFlag) {
 const answer = handle.result;             // read/act on the model's response
 const isCorrect = grade(answer);          // your evaluation logic
 
-await handle.reportOutcome({
+const eventId = await handle.reportOutcome({
   dimensions: [{
     dimensionId: "correctness",
     passed: isCorrect,
@@ -304,10 +304,10 @@ await handle.reportOutcome({
     actual: summarize(answer)
   }],
   cohortTags: ["customer-tier=enterprise"]
-});</code></pre>
+});                                       // the primary event's id</code></pre>
 
         <p>
-          <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop; it persists the evaluation event that binds this call into your history.
+          <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop; it persists the evaluation event that binds this call into your history and returns that event's id. Discard the id for a synchronous judge; keep it when a verdict arrives later and has to name its subject.
         </p>
 
         <h3><code>messages.create(req)</code></h3>
@@ -347,7 +347,7 @@ await handle.reportOutcome({
             <tbody>
               <tr><td><code>.result</code></td><td>object</td><td>The primary model's response. Use this as the answer in your agent.</td></tr>
               <tr><td><code>.observerRecords[]</code></td><td>array</td><td>Under multiplex routing, the observer vendors' captured records. Empty when not multiplexing.</td></tr>
-              <tr><td><code>.reportOutcome(outcome)</code></td><td>method</td><td>Persist the evaluation event that closes this call.</td></tr>
+              <tr><td><code>.reportOutcome(outcome)</code></td><td>method &rarr; <code>Promise&lt;string&gt;</code></td><td>Persist the evaluation event that closes this call. Resolves to the <strong>primary event's id</strong>: the event carrying the light snapshot, the dimensions and any <code>judge.pending</code> tag. Observer-event ids are not returned.</td></tr>
               <tr><td><code>.gradeObserver(recordOrId, outcome)</code></td><td>method</td><td>Attach grades to a cross-vendor observer call before reporting, when the lens returned observer records. Call this <em>before</em> <code>reportOutcome</code>.</td></tr>
             </tbody>
           </table>
@@ -362,7 +362,10 @@ await handle.reportOutcome({
               <tr><td><code>dimensions[]</code></td><td>array (req)</td><td>One entry per dimension declared on the surface. Each entry: <code>{ dimensionId, passed, expected, actual }</code>.</td></tr>
               <tr><td><code>cohortTags[]</code></td><td>string[] (opt)</td><td>Discrete labels to slice on later. For diagnostic substrate columns, use the <code>&lt;column.id&gt;=&lt;value&gt;</code> form.</td></tr>
               <tr><td><code>sideEffects[]</code></td><td>array (opt)</td><td>Any downstream actions this call triggered; useful for correlated fixtures and lessons later.</td></tr>
-              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>The fixture this call satisfied, when the call was run as part of a conformance check.</td></tr>
+              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>The fixture this call satisfied, when the call was run as part of a conformance check. Omit it on a production call and the client derives a synthetic id from the correlation id.</td></tr>
+              <tr><td><code>eventId</code></td><td>string (opt)</td><td>Pre-generate the primary event's id instead of letting <code>reportOutcome</code> mint one. Format it with <code>newEventId</code> from the types package. Use it to hand an async judge worker the subject-event id before the event is written, or to keep a client-side fail-open landing under a known id. The store is keep-first, so re-posting the same id is a no-op. Observer events always mint their own.</td></tr>
+              <tr><td><code>judgeIdentity</code></td><td>object (opt)</td><td>The judge lens that produced this outcome, for <code>llm-judge</code> dimensions. Take it from the scorer's <code>ScoringResult.judgeIdentity</code>; the SDK stamps it into the reserved <code>judge.*</code> substrate columns so variance analyses can separate a judge change from a producer change. A <code>lensVersion</code> string alone under-specifies it. Omit for <code>exact-match</code>.</td></tr>
+              <tr><td><code>rubricDispatch</code></td><td>object (opt)</td><td>The resolved facet-scoped rubric for this outcome, when the dimension declares <code>rubricDispatch</code>. Take it from the scorer's <code>ScoringResult.rubricDispatch</code>; the SDK stamps <code>judge.rubric_source</code>, <code>judge.rubric_facet</code> and <code>judge.rubric_default_reason</code>, which is what makes the default-versus-bespoke split countable. Omit for single-rubric dimensions.</td></tr>
             </tbody>
           </table>
         </div>
@@ -383,7 +386,7 @@ await handle.reportOutcome({
         </div>
 
         <p>
-          Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+          Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). It resolves to that event's id, which is the handle an asynchronous judge needs: a verdict minted later references it as its subject event. What Holonograph does with the event afterwards is the subject of the analysis chapters.
         </p>
 
         <h2>Verdict reliability — let the lens check your judge</h2>

@@ -232,15 +232,23 @@
         </p>
 
         <p>
-          Contracts declare four things per surface:
+          Contracts declare three things per surface:
         </p>
 
         <ul>
           <li><strong>Dimensions</strong>: the scoring axes an evaluation returns (e.g. <code>correctness</code>, <code>tone</code>, <code>schema-conformance</code>).</li>
           <li><strong>Cohort tags</strong>: the discrete labels you use to slice results (e.g. <code>customer-tier=enterprise</code>, <code>fix_tier=tool-input-schema</code>).</li>
           <li><strong>Substrate columns</strong>: the named columns Holonograph captures with every call, so a later reading can be attributed to <em>what changed about your deployment</em>. See <a href="./substrate-columns">Substrate columns</a>.</li>
-          <li><strong>Routings</strong>: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See <a href="./multiplexer">The multiplexer</a>.</li>
         </ul>
+
+        <p>
+          <strong>Routings</strong> are declared once at the contract <em>root</em>, not inside a surface. Each entry names the surface it applies to by <code>surfaceId</code>, and may carry a multiplex array for head-to-head comparison. See <a href="./multiplexer">The multiplexer</a>.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A nested routing is dropped</span>
+          A <code>routings</code> array placed inside a surface object is stripped at registration rather than rejected. The contract registers, the surface has no light source, and the first mediated call fails with <code>no_routing_for_surface</code>. Declare routings at the root.
+        </div>
 
         <p>
           A handful of column ids are <strong>reserved</strong> to the apparatus; declaring one is a contract error. These are values Holonograph observes and stamps for you (see <a href="./substrate-columns">Substrate columns → apparatus-owned columns</a>) — you read them, you do not write them.
@@ -280,20 +288,24 @@ const summary = await client.contract.register({
     {
       id: "classify-intent",
       dimensions: [
-        { id: "correctness", type: "score" },
-        { id: "schema-conformance", type: "boolean" }
+        { id: "correctness", scoring: "llm-judge" },
+        { id: "schema-conformance", scoring: "exact-match" }
       ],
       cohortTags: ["customer-tier", "fix_tier"],
       substrateColumns: [
         { id: "prompt_hash", control: "operator", visibility: "transparent", semantic: "deployment-state" },
         { id: "tool_schema_version", control: "operator", visibility: "transparent", semantic: "deployment-state" }
-      ],
-      routings: [
-        { surfaceId: "classify-intent", lightSourceId: "anthropic/claude-sonnet-5" }
       ]
     }
+  ],
+  routings: [
+    { surfaceId: "classify-intent", lightSourceId: "anthropic/claude-sonnet/5" }
   ]
 });</code></pre>
+
+        <p>
+          <code>scoring</code> is required on every dimension and is one of <code>exact-match</code>, <code>llm-judge</code> or <code>custom</code>. It sets the score codomain, so it also fixes the scale a <code>passThreshold</code> is read against: <code>llm-judge</code> emits 0&ndash;10, <code>exact-match</code> emits 0 or 1. Registration rejects a threshold outside the declared strategy's range.
+        </p>
 
         <p>
           Or over HTTP:
@@ -304,7 +316,7 @@ Authorization: Bearer &lt;token&gt;
 x-holonograph-run-mode: production
 Content-Type: application/json
 
-{ "agentId": "billing-triage", "surfaces": [ ... ] }</code></pre>
+{ "agentId": "billing-triage", "surfaces": [ ... ], "routings": [ ... ] }</code></pre>
 
         <h5>Read back the active contract</h5>
         <p>
@@ -447,19 +459,49 @@ x-holonograph-run-mode: production
 Content-Type: application/json
 
 {
+  "eventId": "evt_01H...",
+  "occurredAt": "2026-07-05T18:22:14.812Z",
   "surfaceId": "classify-intent",
   "correlationId": "corr_01H...",
-  "dimensions": [{
-    "dimensionId": "correctness",
+  "lensVersion": "lv_2026_07_01",
+
+  "light": { "rawResponse": { /* the vendor response as returned */ } },
+
+  "substrate": {
+    "lensVersion": "lv_2026_07_01",
+    "lightSourceIdentifier": "anthropic/claude-sonnet/5",
+    "runMode": "production",
+    "correlationId": "corr_01H...",
+    "provenance": "scheduled_production_eval",
+    "timestamp": "2026-07-05T18:22:14.812Z",
+    "columns": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" }
+  },
+
+  "surface": {
+    "surfaceId": "classify-intent",
+    "fixtureId": "fx-intent-replacement-order",
     "passed": true,
-    "expected": "a correct answer to the user's question",
-    "actual": "offered to open a replacement order"
-  }],
-  "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
-  "substrate": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" },
-  "lightSourceId": "anthropic/claude-sonnet-5",
-  "timestamp": "2026-07-05T18:22:14.812Z"
+    "dimensions": [{
+      "dimensionId": "correctness",
+      "passed": true,
+      "expected": "a correct answer to the user's question",
+      "actual": "offered to open a replacement order"
+    }],
+    "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
+    "sideEffects": []
+  }
 }</code></pre>
+
+        <p>
+          The endpoint validates the whole <code>EvaluationEvent</code>, so the layers arrive assembled rather than flat. Four things to note if you are posting by hand:
+        </p>
+
+        <ul>
+          <li><code>eventId</code> is yours to mint and the write is idempotent on it. Re-posting the same id is a no-op, which is what makes a backfill safely restartable.</li>
+          <li><code>lensVersion</code> appears twice, at the top level and inside the substrate, and a placeholder is rejected. Take a ledger-issued value from <code>GET /lens/version</code> or register a snapshot first; <code>'unknown'</code> and the boot sentinel would both seed a phantom lens-variance bucket.</li>
+          <li>Operator columns live under <code>substrate.columns</code>. The substrate's own fields (<code>lightSourceIdentifier</code>, <code>runMode</code>, <code>provenance</code>) are apparatus-owned and sit alongside, not inside.</li>
+          <li><code>surface.fixtureId</code> is required on the raw event even though the SDK's <code>reportOutcome</code> treats it as optional. The SDK supplies one; a hand-built event has to name it.</li>
+        </ul>
 
         <p>Response:</p>
 
@@ -519,7 +561,7 @@ x-holonograph-run-mode: production</code></pre>
             <thead><tr><th>Param</th><th>Shape</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td><code>surfaceId</code></td><td>string (opt)</td><td>Restrict to one surface.</td></tr>
-              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>Restrict to events produced by one fixture (Conformance, Chapter 10).</td></tr>
+              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>Restrict to events produced by one fixture (Conformance, Chapter 14).</td></tr>
               <tr><td><code>provenance</code></td><td>enum (opt)</td><td><code>production-state</code> (default), <code>exploratory-state</code>, or <code>all</code>.</td></tr>
               <tr><td><code>since</code></td><td>ISO 8601 (opt)</td><td>Inclusive lower bound on <code>timestamp</code>.</td></tr>
               <tr><td><code>until</code></td><td>ISO 8601 (opt)</td><td>Exclusive upper bound on <code>timestamp</code>.</td></tr>
@@ -716,7 +758,7 @@ x-holonograph-run-mode: production</code></pre>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method.
+          The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in <a href="./sidecar">Sidecar / OTel integration</a>.
         </p>
 
         <h4>Install</h4>
@@ -772,7 +814,7 @@ const client = new HolonographClient({
             <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td><code>lensVersion</code></td><td>string</td><td>Which lens configuration was in effect.</td></tr>
-              <tr><td><code>lightSourceIdentifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/model/version</code>.</td></tr>
+              <tr><td><code>lightSourceIdentifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/family/version</code>, with an optional fourth <code>keyId</code> segment. A two-segment value is rejected.</td></tr>
               <tr><td><code>runMode</code></td><td>enum</td><td>Which run mode the evaluation ran under.</td></tr>
               <tr><td><code>provenance</code></td><td>string</td><td>Origin category of the run; see <a href="./substrate-columns">Substrate columns</a>.</td></tr>
               <tr><td><code>operatorColumns</code></td><td>object</td><td>The operator-declared deployment-state columns, keyed by column id. For example: <code>{ prompt_hash: "v2-sha256-…", tool_schema_version: "3.1.0" }</code>.</td></tr>
@@ -917,7 +959,7 @@ if (window?.biasFlag) {
 const answer = handle.result;             // read/act on the model's response
 const isCorrect = grade(answer);          // your evaluation logic
 
-await handle.reportOutcome({
+const eventId = await handle.reportOutcome({
   dimensions: [{
     dimensionId: "correctness",
     passed: isCorrect,
@@ -925,10 +967,10 @@ await handle.reportOutcome({
     actual: summarize(answer)
   }],
   cohortTags: ["customer-tier=enterprise"]
-});</code></pre>
+});                                       // the primary event's id</code></pre>
 
         <p>
-          <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop; it persists the evaluation event that binds this call into your history.
+          <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop; it persists the evaluation event that binds this call into your history and returns that event's id. Discard the id for a synchronous judge; keep it when a verdict arrives later and has to name its subject.
         </p>
 
         <h5><code>messages.create(req)</code></h5>
@@ -968,7 +1010,7 @@ await handle.reportOutcome({
             <tbody>
               <tr><td><code>.result</code></td><td>object</td><td>The primary model's response. Use this as the answer in your agent.</td></tr>
               <tr><td><code>.observerRecords[]</code></td><td>array</td><td>Under multiplex routing, the observer vendors' captured records. Empty when not multiplexing.</td></tr>
-              <tr><td><code>.reportOutcome(outcome)</code></td><td>method</td><td>Persist the evaluation event that closes this call.</td></tr>
+              <tr><td><code>.reportOutcome(outcome)</code></td><td>method &rarr; <code>Promise&lt;string&gt;</code></td><td>Persist the evaluation event that closes this call. Resolves to the <strong>primary event's id</strong>: the event carrying the light snapshot, the dimensions and any <code>judge.pending</code> tag. Observer-event ids are not returned.</td></tr>
               <tr><td><code>.gradeObserver(recordOrId, outcome)</code></td><td>method</td><td>Attach grades to a cross-vendor observer call before reporting, when the lens returned observer records. Call this <em>before</em> <code>reportOutcome</code>.</td></tr>
             </tbody>
           </table>
@@ -983,7 +1025,10 @@ await handle.reportOutcome({
               <tr><td><code>dimensions[]</code></td><td>array (req)</td><td>One entry per dimension declared on the surface. Each entry: <code>{ dimensionId, passed, expected, actual }</code>.</td></tr>
               <tr><td><code>cohortTags[]</code></td><td>string[] (opt)</td><td>Discrete labels to slice on later. For diagnostic substrate columns, use the <code>&lt;column.id&gt;=&lt;value&gt;</code> form.</td></tr>
               <tr><td><code>sideEffects[]</code></td><td>array (opt)</td><td>Any downstream actions this call triggered; useful for correlated fixtures and lessons later.</td></tr>
-              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>The fixture this call satisfied, when the call was run as part of a conformance check.</td></tr>
+              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>The fixture this call satisfied, when the call was run as part of a conformance check. Omit it on a production call and the client derives a synthetic id from the correlation id.</td></tr>
+              <tr><td><code>eventId</code></td><td>string (opt)</td><td>Pre-generate the primary event's id instead of letting <code>reportOutcome</code> mint one. Format it with <code>newEventId</code> from the types package. Use it to hand an async judge worker the subject-event id before the event is written, or to keep a client-side fail-open landing under a known id. The store is keep-first, so re-posting the same id is a no-op. Observer events always mint their own.</td></tr>
+              <tr><td><code>judgeIdentity</code></td><td>object (opt)</td><td>The judge lens that produced this outcome, for <code>llm-judge</code> dimensions. Take it from the scorer's <code>ScoringResult.judgeIdentity</code>; the SDK stamps it into the reserved <code>judge.*</code> substrate columns so variance analyses can separate a judge change from a producer change. A <code>lensVersion</code> string alone under-specifies it. Omit for <code>exact-match</code>.</td></tr>
+              <tr><td><code>rubricDispatch</code></td><td>object (opt)</td><td>The resolved facet-scoped rubric for this outcome, when the dimension declares <code>rubricDispatch</code>. Take it from the scorer's <code>ScoringResult.rubricDispatch</code>; the SDK stamps <code>judge.rubric_source</code>, <code>judge.rubric_facet</code> and <code>judge.rubric_default_reason</code>, which is what makes the default-versus-bespoke split countable. Omit for single-rubric dimensions.</td></tr>
             </tbody>
           </table>
         </div>
@@ -1004,7 +1049,7 @@ await handle.reportOutcome({
         </div>
 
         <p>
-          Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+          Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). It resolves to that event's id, which is the handle an asynchronous judge needs: a verdict minted later references it as its subject event. What Holonograph does with the event afterwards is the subject of the analysis chapters.
         </p>
 
         <h4>Verdict reliability — let the lens check your judge</h4>
@@ -1283,7 +1328,7 @@ Content-Type: application/json
   "callId": "call_01H...",
   "correlationId": "corr_01H...",
   "surfaceId": "classify-intent",
-  "lightSourceId": "anthropic/claude-sonnet-5",
+  "lightSourceId": "anthropic/claude-sonnet/5",
   "result": { /* the primary model's response */ },
   "observerRecords": [ /* multiplex observers, if any */ ],
   "gateOutcome": null,
@@ -2024,25 +2069,25 @@ Content-Type: application/json
 
         <h5>Declare a multiplex in the contract</h5>
 
-        <p>Register a contract whose routing for the surface uses an array for <code>lightSourceId</code>:</p>
+        <p>Register a contract whose routing for the surface uses an array for <code>lightSourceId</code>. Routings sit at the contract root and name their surface by <code>surfaceId</code>; see <a href="./surface-contracts">Surface contracts</a>.</p>
 
         <pre><code>await client.contract.register({
   agentId: "billing-triage",
   surfaces: [
     {
       id: "classify-intent",
-      dimensions: [ /* ... */ ],
-      routings: [
-        {
-          surfaceId: "classify-intent",
-          lightSourceId: [
-            "anthropic/claude-sonnet-5",
-            "openai/gpt-5",
-            "google/gemini-2-pro"
-          ],
-          activeRunModes: ["eval", "production"]
-        }
-      ]
+      dimensions: [ /* ... */ ]
+    }
+  ],
+  routings: [
+    {
+      surfaceId: "classify-intent",
+      lightSourceId: [
+        "anthropic/claude-sonnet/5",
+        "openai/gpt/5",
+        "google/gemini/2-pro"
+      ],
+      activeRunModes: ["eval", "production"]
     }
   ]
 });</code></pre>
@@ -3905,6 +3950,26 @@ Content-Type: application/json
               <tr><td><code>GET /lens/subscriptions</code></td><td>All subscriptions (optional <code>?surfaceId=</code> filter), each with <code>webhook: { url }</code> only.</td></tr>
               <tr><td><code>GET /lens/subscriptions/:id</code></td><td>One subscription, or <code>404</code>.</td></tr>
               <tr><td><code>DELETE /lens/subscriptions/:id?approverId=&lt;id&gt;</code></td><td>Deletes it. <code>approverId</code> is a required query param. Returns <code>{ deleted: true, id }</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Every read returns the same projection:</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>What it tells you</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code></td><td>string</td><td>Server-minted. The handle for read and delete.</td></tr>
+              <tr><td><code>agentId</code></td><td>string</td><td>Derived from the contract at create time.</td></tr>
+              <tr><td><code>predicate</code></td><td>object</td><td>The predicate as registered.</td></tr>
+              <tr><td><code>windowMs</code></td><td>number</td><td>The dedupe window.</td></tr>
+              <tr><td><code>webhook</code></td><td><code>{ url }</code></td><td>URL only. The signing secret is write-only.</td></tr>
+              <tr><td><code>createdAt</code></td><td>ISO 8601</td><td>When it was registered.</td></tr>
+              <tr><td><code>createdBy</code></td><td>string</td><td>The approver identity that created it.</td></tr>
+              <tr><td><code>disabled</code></td><td>boolean (opt)</td><td>Paused: retained but never fires. Absent means enabled. No endpoint sets it on this release, so in practice a read returns it absent.</td></tr>
+              <tr><td><code>lastFiredAt</code></td><td>ISO 8601 (opt)</td><td>When it last fired. Absent until the first fire.</td></tr>
+              <tr><td><code>lastFiredFingerprint</code></td><td>string (opt)</td><td>The fingerprint of the last-fired match: the dedupe key the window is measured against. Compare it with the <code>fingerprint</code> on a webhook body to see whether an alert you received was the one that reset the window.</td></tr>
             </tbody>
           </table>
         </div>

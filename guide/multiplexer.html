@@ -119,25 +119,25 @@
 
         <h3>Declare a multiplex in the contract</h3>
 
-        <p>Register a contract whose routing for the surface uses an array for <code>lightSourceId</code>:</p>
+        <p>Register a contract whose routing for the surface uses an array for <code>lightSourceId</code>. Routings sit at the contract root and name their surface by <code>surfaceId</code>; see <a href="./surface-contracts">Surface contracts</a>.</p>
 
         <pre><code>await client.contract.register({
   agentId: "billing-triage",
   surfaces: [
     {
       id: "classify-intent",
-      dimensions: [ /* ... */ ],
-      routings: [
-        {
-          surfaceId: "classify-intent",
-          lightSourceId: [
-            "anthropic/claude-sonnet-5",
-            "openai/gpt-5",
-            "google/gemini-2-pro"
-          ],
-          activeRunModes: ["eval", "production"]
-        }
-      ]
+      dimensions: [ /* ... */ ]
+    }
+  ],
+  routings: [
+    {
+      surfaceId: "classify-intent",
+      lightSourceId: [
+        "anthropic/claude-sonnet/5",
+        "openai/gpt/5",
+        "google/gemini/2-pro"
+      ],
+      activeRunModes: ["eval", "production"]
     }
   ]
 });</code></pre>
