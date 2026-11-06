@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./_assets/guide.css?v=5" />
+<link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -58,19 +58,23 @@
         <li><span class="s-num">11</span><a href="#drift-attribution" class="s-ttl">Drift attribution</a></li>
         <li><span class="s-num">12</span><a href="#variance-isolation" class="s-ttl">Variance isolation</a></li>
         <li><span class="s-num">13</span><a href="#lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li class="s-part">Judge validity and authority</li>
+        <li class="s-part">Judge validity</li>
         <li><span class="s-num">14</span><a href="#conformance" class="s-ttl">Conformance & fixtures</a></li>
         <li><span class="s-num">15</span><a href="#rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
         <li><span class="s-num">16</span><a href="#facet-separability" class="s-ttl">Facet separability</a></li>
         <li><span class="s-num">17</span><a href="#judge-modes" class="s-ttl">Judge modes and reflection</a></li>
-        <li class="s-part">Seams, soak, and authority</li>
+        <li class="s-part">Seams and soak</li>
         <li><span class="s-num">18</span><a href="#seams" class="s-ttl">Seams</a></li>
         <li><span class="s-num">19</span><a href="#seam-monitor" class="s-ttl">The seam monitor</a></li>
         <li><span class="s-num">20</span><a href="#attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
         <li><span class="s-num">21</span><a href="#authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">22</span><a href="#authority-governance" class="s-ttl">Authority governance</a></li>
         <li class="s-part">Operational utilities</li>
-        <li><span class="s-num">22</span><a href="#subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li><span class="s-num">23</span><a href="#compaction" class="s-ttl">Compaction & husking</a></li>
+        <li><span class="s-num">23</span><a href="#subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">24</span><a href="#outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">25</span><a href="#compaction" class="s-ttl">Compaction & husking</a></li>
+        <li><span class="s-num">26</span><a href="#dashboard" class="s-ttl">The dashboard</a></li>
       </ol>
     </aside>
 
@@ -79,7 +83,7 @@
 
         <p class="guide-eyebrow">The Guide · one-page view</p>
         <h1 class="guide-h1">The Guide Mark II</h1>
-        <p class="guide-meta">Reflects Holonograph v0.43.6 <span class="dot">·</span> <code>@holonograph/client</code> 0.17.0 <span class="dot">·</span> all 23 chapters in 5 parts, one URL</p>
+        <p class="guide-meta">Reflects Holonograph v0.43.6 <span class="dot">·</span> <code>@holonograph/client</code> 0.17.0 <span class="dot">·</span> all 26 chapters in 6 parts, one URL</p>
 
         <p class="guide-lede">
           This page is the entire Holonograph guide in a single scrolling document. Every chapter that lives at its own permalink is included here in full, in reading order, without the per-page prev/next chrome. Use the sidebar to jump to a chapter, or read straight through.
@@ -1907,7 +1911,7 @@ async function handleJob(job) {
         </p>
 
         <p>
-          The buffer is <strong>bounded</strong>, drops the oldest events when full, and <strong>counts every drop</strong>. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full <a href="./sdk-reference.html#delivery-modes"><code>emit</code> option shape</a>; this section is about the wire.
+          The buffer is <strong>bounded</strong>, drops the oldest events when full, and <strong>counts every drop</strong>. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full <a href="./sdk-reference#delivery-modes"><code>emit</code> option shape</a>; this section is about the wire.
         </p>
 
         <h5 id="the-four-delivery-modes">The four delivery modes</h5>
@@ -2005,7 +2009,7 @@ async function handleJob(job) {
           <li><strong>Push</strong>: <code>emit.onWindow(window)</code> fires once per completed window.</li>
         </ul>
 
-        <p>The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so <code>http</code> loss and <code>otlp</code> loss are distinguishable), a <code>completenessLowerBound</code> ratio, and a <code>biasFlag</code> that goes <code>true</code> whenever drops occurred. Downstream analyses read <code>biasFlag</code> and treat the affected interval as potentially non-random. See <a href="./sdk-reference.html#delivery-modes">SDK reference § Delivery modes</a> for the full <code>CompletenessWindow</code> shape.</p>
+        <p>The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so <code>http</code> loss and <code>otlp</code> loss are distinguishable), a <code>completenessLowerBound</code> ratio, and a <code>biasFlag</code> that goes <code>true</code> whenever drops occurred. Downstream analyses read <code>biasFlag</code> and treat the affected interval as potentially non-random. See <a href="./sdk-reference#delivery-modes">SDK reference § Delivery modes</a> for the full <code>CompletenessWindow</code> shape.</p>
 
         <h5 id="extreme-sustained-load">Extreme sustained load</h5>
 
@@ -3120,7 +3124,7 @@ Content-Type: application/json
 
         <div class="guide-part-divider" id="part-iii">
           <p class="guide-part-k">Part III</p>
-          <h2 class="guide-part-t">Judge validity and authority</h2>
+          <h2 class="guide-part-t">Judge validity</h2>
         </div>
 
         <section id="conformance" class="guide-chapter-block" aria-label="Chapter 14">
@@ -3990,7 +3994,7 @@ Content-Type: application/json
 
         <div class="guide-part-divider" id="part-iv">
           <p class="guide-part-k">Part IV</p>
-          <h2 class="guide-part-t">Seams, soak, and authority</h2>
+          <h2 class="guide-part-t">Seams and soak</h2>
         </div>
 
         <section id="seams" class="guide-chapter-block" aria-label="Chapter 18">
@@ -4559,6 +4563,11 @@ Content-Type: application/json
         </section>
 
 
+        <div class="guide-part-divider" id="part-v">
+          <p class="guide-part-k">Part V</p>
+          <h2 class="guide-part-t">Authority and governance</h2>
+        </div>
+
         <section id="authority" class="guide-chapter-block" aria-label="Chapter 21">
 <p class="guide-eyebrow">Chapter 21</p>
         <h3 class="guide-h1">Authority</h3>
@@ -4668,9 +4677,9 @@ Content-Type: application/json
         </p>
 
         <p>
-          Acknowledgements apply oldest first. Acknowledging a tear while an older one on the same surface
-          is still open is refused. The operator's authority policy sets whether one acknowledgement covers
-          a per-surface watermark, the default, or only the single tear.
+          Releasing a tear, and setting what one release covers, are the operator's two standing dispositions
+          over authority. Both are gated and both leave a record. See
+          <a href="./authority-governance">Authority governance</a>.
         </p>
 
         <h4 id="how-to-use-it">How to use it</h4>
@@ -4690,35 +4699,20 @@ Content-Type: application/json
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>GET /lens/authority</code></td><td>One reading per gated dimension, plus an honest <code>unmapped</code> reading for every gate-less surface. Re-derived per read.</td></tr>
-              <tr><td><code>GET /lens/authority/tears</code></td><td>The open tears on each surface, the acknowledgement records, and the granularity in force.</td></tr>
-              <tr><td><code>POST /lens/authority/tear/acknowledge</code></td><td>Acknowledge one tear. Body: <code>surfaceId</code>, <code>approverId</code>, optional <code>tearEventId</code> and <code>note</code>.</td></tr>
-              <tr><td><code>GET /lens/authority/policy</code></td><td>The policy in force, its source, and whether this deployment can write one.</td></tr>
-              <tr><td><code>PUT /lens/authority/policy</code></td><td>Replace it. Approver-gated, compare-and-swap on <code>basePolicyId</code>. <code>501</code> without a durable policy store.</td></tr>
-              <tr><td><code>GET /lens/authority/policy/history</code></td><td>The append-only record of every policy that has been in force.</td></tr>
             </tbody>
           </table>
         </div>
+
+        <p>
+          The five governance routes, the tears read and the policy desk among them, are in
+          <a href="./authority-governance#endpoints">the next chapter</a>.
+        </p>
 
         <h5 id="a-reading">A reading</h5>
 
         <p>
           Each entry carries <code>surfaceId</code> and <code>dimensionId</code>, the <code>state</code>, the <code>interpretation</code> that identifies the sink, the <code>contract</code> and its <code>preconditions</code>, the statistical <code>power</code>, any <code>accuracyHold</code> or <code>reSoak</code>, the <code>suspension</code> when there is one, and the <code>basis</code> the state was derived from. A reading is always present, so an absent surface cannot pass for a healthy one.
         </p>
-
-        <h5 id="the-policy">The policy</h5>
-
-        <p>
-          One field today, <code>tearAckGranularity</code>: <code>watermark</code> means an acknowledgement covers every tear up to it, <code>per-tear</code> means one acknowledgement per tear, applied oldest first. Unknown keys are refused rather than ignored, so a typo cannot read as a policy that silently does not apply.
-        </p>
-
-        <p>
-          Resolution order is the operator's persisted policy, then the file seed, then the defaults. The lens never changes it: the <code>PUT</code> is the only writer and an approver gates it.
-        </p>
-
-        <div class="guide-callout">
-          <span class="callout-label">Compare-and-swap, not last-write-wins</span>
-          The <code>PUT</code> carries the <code>basePolicyId</code> the operator reviewed. If the policy moved since, the write is refused with <code>authority_policy_conflict</code> rather than overwriting someone else's change. Reload, re-review, re-submit. The retention policy works the same way.
-        </div>
 
         <p>
           The state ontology, the dependency-condition kinds, the stack and contract shapes and the pure
@@ -4728,13 +4722,215 @@ Content-Type: application/json
         </section>
 
 
-        <div class="guide-part-divider" id="part-v">
-          <p class="guide-part-k">Part V</p>
+        <section id="authority-governance" class="guide-chapter-block" aria-label="Chapter 22">
+<p class="guide-eyebrow">Chapter 22</p>
+        <h3 class="guide-h1">Authority governance</h3>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          Authority is a reading the lens derives and never writes. Two dispositions over it belong to the operator: releasing the hold a tear puts on a surface&rsquo;s soak window, and setting what one release covers. Both are gated, both are attributed to a named operator, and both leave a record the compactor will not touch.
+        </p>
+
+        <h4 id="what-it-is">What it is</h4>
+
+        <p>
+          Three parts: the gate every privileged write passes through, the acknowledgement that releases a tear, and the standing policy that says what an acknowledgement covers.
+        </p>
+
+        <h5 id="the-approver-gate">The approver gate</h5>
+
+        <p>
+          Every privileged write on the lens carries an <code>approverId</code> and is refused without one. A self-asserted id that disagrees with the verified operator on the request is refused too, so the stamped identity is not the caller&rsquo;s claim about itself.
+        </p>
+
+        <p>
+          Who <em>may</em> act is a separate question, and the lens is honest about not owning the answer. Tier policy lives in the operator&rsquo;s identity system, so authorization is a pluggable resolver, absent by default. With none wired, any identified operator may proceed and the action is stamped with their id. Wire one and the same endpoints enforce its decision, denying with <code>403</code>. The lens records who acts before it constrains who may act.
+        </p>
+
+        <p>
+          The resolver is asked about one action at a time, and the action vocabulary is deliberately fine-grained, so an identity system can grant the cheap dispositions widely and the expensive ones narrowly.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Action</th><th>Gates</th></tr></thead>
+            <tbody>
+              <tr><td><code>multiplex.run</code></td><td>A live, billable cross-vendor fan-out.</td></tr>
+              <tr><td><code>subscriptions.write</code></td><td>Standing config that fires outbound webhooks.</td></tr>
+              <tr><td><code>retention.compact</code></td><td>Executing one reviewed compaction plan, or undoing an archive seal.</td></tr>
+              <tr><td><code>retention.policy</code></td><td>The standing retention disposition, which can compact unattended.</td></tr>
+              <tr><td><code>authority.acknowledge-tear</code></td><td>Releasing the soak-window anchor one tear holds.</td></tr>
+              <tr><td><code>authority.policy</code></td><td>Changing what an acknowledgement covers.</td></tr>
+              <tr><td><code>archive.rehydrate</code></td><td>Mounting a read-only overlay of archived payload.</td></tr>
+              <tr><td><code>data.erase</code></td><td>An irreversible erasure about a data subject.</td></tr>
+              <tr><td><code>seam.judge</code></td><td>Running the offline value-efficacy judge, which spends money.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Two of the nine are authority&rsquo;s, and they are separate on purpose. More people can reasonably be trusted to release one tear than to change how every future release is recorded.
+        </p>
+
+        <h5 id="what-a-tear-holds">What a tear holds</h5>
+
+        <p>
+          A tear is a served or judge model value appearing on a gated surface for the first time. The surface&rsquo;s authority soak window anchors at the previous stack change, held back to the segment before the latest unacknowledged tear, and a tear never self-clears.
+        </p>
+
+        <p>
+          So a tear is not a notification. Releasing it moves the window forward, which can let a torn surface re-qualify and let its pre-tear span be summarised. That is a disposition over authority, which is why it has a gate of its own and an audit record rather than a dismiss button.
+        </p>
+
+        <h4 id="why-it-matters">Why it matters</h4>
+
+        <p>
+          The authority reading is only worth what its evidence window is worth. A window that slid forward over a model change on its own would be reporting one instrument&rsquo;s record as another&rsquo;s, and nothing downstream could tell. Holding the window and making an operator say, on the record, that the span is still one subject is the property that keeps the reading meaningful.
+        </p>
+
+        <p>
+          The mode that governs those releases is a standing disposition, not a per-call choice. Under the default, one acknowledgement covers every earlier open tear on the surface. Under <code>per-tear</code>, each tear takes its own, oldest first. An identity system can only express the distinction between releasing a tear and changing that mode if the two are separate actions.
+        </p>
+
+        <h4 id="how-to-use-it">How to use it</h4>
+
+        <h5 id="read-the-open-tears">Read the open tears</h5>
+
+        <pre><code>GET /lens/authority/tears?surfaceId=classify-intent</code></pre>
+
+        <p>
+          Every tear on the authority-read surfaces, newest first, each with the instant and event id of the tear, the stack members whose value changed, the stack tuple before and at the tear, and whether an acknowledgement covers it. Beside them the acknowledgement log, also newest first, and the granularity a new acknowledgement would take now. <code>surfaceId</code> narrows the read.
+        </p>
+
+        <h5 id="release-one">Release one</h5>
+
+        <pre><code>POST /lens/authority/tear/acknowledge
+{
+  "surfaceId": "classify-intent",
+  "approverId": "ops.rivera",
+  "tearEventId": "evt_01H...",
+  "note": "same family, re-validated against the fixture set"
+}</code></pre>
+
+        <p>
+          <code>201</code> with the minted event id and the record. Omit <code>tearEventId</code> and the lens picks for you: the surface&rsquo;s latest unacknowledged tear under <code>watermark</code>, its oldest under <code>per-tear</code>.
+        </p>
+
+        <p>
+          A surface with no gated decision in the current contract is not an authority-read surface, and acknowledging on it is a <code>404</code> rather than a silent no-op. So is naming an event that is not a tear.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A retry is not a second record</span>
+          The acknowledgement&rsquo;s event id is derived from the surface and the tear, so resubmitting the same acknowledgement is a keep-first no-op in the store. Acknowledging a tear that is already covered is a <code>409</code>, and under <code>per-tear</code>, acknowledging out of order is a <code>409</code> that names the older open tear.
+        </div>
+
+        <h5 id="set-what-a-release-covers">Set what a release covers</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Granularity</th><th>One acknowledgement covers</th></tr></thead>
+            <tbody>
+              <tr><td><code>watermark</code></td><td>The acknowledged tear and every earlier tear on the surface, in one log record. The default.</td></tr>
+              <tr><td><code>per-tear</code></td><td>Only the acknowledged tear, one log record each, applied oldest first.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <pre><code>PUT /lens/authority/policy
+{
+  "policy": { "tearAckGranularity": "per-tear" },
+  "approverId": "ops.rivera",
+  "basePolicyId": "ap-9c21f0b47de3a815",
+  "note": "audit asked for one record per tear"
+}</code></pre>
+
+        <p>
+          <code>basePolicyId</code> is the record the operator reviewed, and <code>null</code> when the policy in force came from the file seed or the defaults. The schema is strict: an unknown key is refused rather than ignored, so a typo cannot read as a policy that does not apply.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Compare-and-swap, not last-write-wins</span>
+          If the policy moved since the operator reviewed it, the write is refused with <code>authority_policy_conflict</code> rather than overwriting someone else&rsquo;s change. Reload, re-review, re-submit. The retention policy works the same way.
+        </div>
+
+        <p>
+          <code>GET /lens/authority/policy</code> returns the policy in force, its source, the operator record behind it or <code>null</code>, whether this backend can write one at all, and whether a configured file seed is being ignored because an operator policy exists. Resolution order is the operator&rsquo;s persisted policy, then the file seed, then the defaults.
+        </p>
+
+        <p>
+          A backend that keeps no durable authority-policy store answers the <code>PUT</code> with <code>501</code> and says so in <code>writable</code>. The filesystem backend keeps one. There the policy in force is the file seed at <code>APERTURE_AUTHORITY_POLICY_PATH</code>, or the defaults.
+        </p>
+
+        <h5 id="where-the-operator-does-this">Where the operator does this</h5>
+
+        <p>
+          The authority-policy desk in Curate holds the editor, the diff against the policy in force, and the history. The tears card in the Lens Health panel holds the open tears and the acknowledgement. Both go through the same gate as the API, and the desk is read-only on a backend that cannot persist a policy. See <a href="./dashboard">The dashboard</a>.
+        </p>
+
+        <h4 id="reading-the-output">Reading the output</h4>
+
+        <p>
+          <code>acknowledged</code> on a tear is derived rather than stored: true when a <code>watermark</code> acknowledgement at or after it exists on the surface, or a <code>per-tear</code> acknowledgement of exactly it. The log sits beside the tears rather than inside them, so who released what, when, under which mode, and with what note is readable on its own.
+        </p>
+
+        <p>
+          Each record keeps the granularity in force when it was made. Changing the mode changes what the next acknowledgement covers and never reinterprets a past one.
+        </p>
+
+        <p>
+          Acknowledgements are appended as <code>analysis.authority-tear-acknowledged</code> events: server-stamped, append-only, and exempt from compaction. The history behind the policy is append-only too, each record naming the policy it replaced, the operator who approved it, and when.
+        </p>
+
+        <h4 id="reference">Reference</h4>
+
+        <h5 id="endpoints">Endpoints</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/authority/tears</code></td><td>The open and covered tears on each surface, the acknowledgement log, and the granularity in force.</td></tr>
+              <tr><td><code>POST /lens/authority/tear/acknowledge</code></td><td>Release one tear. Gated by <code>authority.acknowledge-tear</code>. Body: <code>surfaceId</code>, <code>approverId</code>, optional <code>tearEventId</code> and <code>note</code>.</td></tr>
+              <tr><td><code>GET /lens/authority/policy</code></td><td>The policy in force, its source, the operator record, <code>writable</code>, and <code>seedIgnored</code>.</td></tr>
+              <tr><td><code>PUT /lens/authority/policy</code></td><td>Replace it. Gated by <code>authority.policy</code>, compare-and-swap on <code>basePolicyId</code>. <code>501</code> without a durable policy store.</td></tr>
+              <tr><td><code>GET /lens/authority/policy/history</code></td><td>Every operator policy that has been in force, oldest first.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5 id="refusals">Refusals</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Code</th><th>Status</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>authority_tear_already_acknowledged</code></td><td><code>409</code></td><td>An acknowledgement at or after this tear exists on the surface.</td></tr>
+              <tr><td><code>authority_tear_ack_out_of_order</code></td><td><code>409</code></td><td>Under <code>per-tear</code>, an older tear on the surface is still open. The error names it.</td></tr>
+              <tr><td><code>authority_policy_conflict</code></td><td><code>409</code></td><td>The policy changed since the operator reviewed it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5 id="where-this-sits">Where this sits</h5>
+
+        <p>
+          <a href="./authority">Authority</a> is the reading: the six states, the stack, and what withdraws a grant. This chapter is the disposition over it. The gate and its action vocabulary are shared with the retention desk in <a href="./compaction">Compaction &amp; husking</a> and the multiplex run in <a href="./multiplexer">The multiplexer</a>, which is why the table above reaches past authority.
+        </p>
+
+        <p>
+          The state ontology, the record shapes, the policy schema and the action identifiers are public contract. Which spans a released window then covers, and how the states are derived from it, lives in the lens.
+        </p>
+        </section>
+
+
+        <div class="guide-part-divider" id="part-vi">
+          <p class="guide-part-k">Part VI</p>
           <h2 class="guide-part-t">Operational utilities</h2>
         </div>
 
-        <section id="subscriptions" class="guide-chapter-block" aria-label="Chapter 22">
-<p class="guide-eyebrow">Chapter 22</p>
+        <section id="subscriptions" class="guide-chapter-block" aria-label="Chapter 23">
+<p class="guide-eyebrow">Chapter 23</p>
         <h3 class="guide-h1">Route a verdict to a human</h3>
         <p class="guide-meta"></p>
 
@@ -4951,8 +5147,205 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         </section>
 
 
-        <section id="compaction" class="guide-chapter-block" aria-label="Chapter 23">
-<p class="guide-eyebrow">Chapter 23</p>
+        <section id="outcome-delivery" class="guide-chapter-block" aria-label="Chapter 24">
+<p class="guide-eyebrow">Chapter 24</p>
+        <h3 class="guide-h1">Outcome delivery</h3>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          The trip this chapter is about is the outcome&rsquo;s trip to the user, after scoring, not the event&rsquo;s trip into the lens. A surface can be green on quality and still never reach anyone, and the two facts are measured separately. The feature is called declare-your-reach, and its discipline is that the lens reports delivery only as far as it can observe it.
+        </p>
+
+        <h4 id="what-it-is">What it is</h4>
+
+        <p>
+          The contract declares the post-outcome stages an outcome traverses between the lens&rsquo;s scoring point and the user. Stages fan in across surfaces, so each is declared once at the contract root and referenced by the surfaces that route through it.
+        </p>
+
+        <pre><code>{
+  "postOutcomeStages": {
+    "digest-batch":  { "kind": "deferred-delivery", "observability": "declared" },
+    "policy-filter": { "kind": "filter", "observability": "declared" },
+    "inbox": {
+      "kind": "other",
+      "observability": "reconciled",
+      "settleMs": 3600000
+    }
+  },
+  "surfaces": [
+    {
+      "surfaceId": "draft-reply",
+      "postOutcomeStages": ["digest-batch", "policy-filter", "inbox"]
+    }
+  ]
+}</code></pre>
+
+        <p>
+          A surface with no <code>postOutcomeStages</code> makes no delivery claim, and the lens says nothing about its reach. A reference that does not resolve in the map is ignored by the reach reader rather than failing registration, which keeps a stale ref from taking down a contract.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Kind</th><th>What it does to an outcome</th></tr></thead>
+            <tbody>
+              <tr><td><code>deferred-delivery</code></td><td>Held for a schedule or batch window, delivered later.</td></tr>
+              <tr><td><code>filter</code></td><td>May suppress it. A rule can drop it before the user.</td></tr>
+              <tr><td><code>cache</code></td><td>Served from or written to a cache layer.</td></tr>
+              <tr><td><code>rate-limit</code></td><td>Throttled. May coalesce or shed under load.</td></tr>
+              <tr><td><code>fan-in</code></td><td>Merges outcomes from several surfaces into one delivery.</td></tr>
+              <tr><td><code>other</code></td><td>Declared and uncategorized.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          <code>filter</code> is the only kind that can suppress an outcome. The rest delay it. The distinction changes what a verdict on the surface is worth, which is why the kind is declared rather than inferred.
+        </p>
+
+        <p>
+          Each stage also declares whether the lens can see traversal. <code>declared</code> means the operator is telling the lens the stage exists while it emits nothing: the lens cannot verify delivery through it, so every verdict on that surface covers scoring only and the lens says so. <code>reconciled</code> means the stage emits a footprint per outcome, so the lens observes traversal and derives each outcome&rsquo;s fate.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">The lens never accepts a reported disposition</span>
+          An operator may not tell the lens that an outcome was delivered. A delivery pipeline broken enough to drop outcomes is exactly the pipeline whose self-report cannot be trusted. The operator declares the topology, which is static, and emits observations of traversal. The verdict on each outcome is derived, and a scored outcome with no terminal footprint past its settle window is read off the absence: the pipeline that drops the outcome drops its footprint too.
+        </div>
+
+        <h4 id="why-it-matters">Why it matters</h4>
+
+        <p>
+          A verdict is a claim about what the agent produced. Treating it as a claim about what the user received is the substitution this chapter exists to block. On a surface with a declared <code>filter</code> downstream, a clean verdict and a user who never saw the output are fully compatible, and nothing in the scoring record would show it.
+        </p>
+
+        <p>
+          So the attention spine carries both halves of the finding under one source, <code>reach-gap</code>, with different weight. The <code>horizon</code> variant is a declared scope limit rather than a detected failure, so it rides the quiet coverage band. The <code>shortfall</code> variant is a detected failure, with severity scaled to the observed dark rate.
+        </p>
+
+        <h4 id="how-to-use-it">How to use it</h4>
+
+        <h5 id="emit-footprints">Emit footprints</h5>
+
+        <pre><code>POST /lens/reach/footprint
+{
+  "correlationId": "corr_01H...",
+  "surfaceId": "draft-reply",
+  "stageId": "inbox",
+  "occurredAt": "2026-11-06T18:22:14.812Z"
+}</code></pre>
+
+        <p>
+          One observation: the outcome for this correlation id was seen reaching this stage at this time. Nothing about whether that was good. <code>202</code> with the count accepted, and the body also takes <code>{ "footprints": [ ... ] }</code> for the high-volume path.
+        </p>
+
+        <p>
+          The store dedups by correlation id and stage, keep-first, so retries are safe. The strongest footprint is the user&rsquo;s own return, a reply or a read receipt, emitted on the terminal stage. Without a footprint store wired, or without a contract registry to scope the write, the endpoint answers <code>501</code>.
+        </p>
+
+        <h5 id="read-the-rate">Read the rate</h5>
+
+        <pre><code>GET /lens/reach?surfaceId=draft-reply&amp;since=2026-10-01T00:00:00Z</code></pre>
+
+        <p>
+          One entry per surface that declares stages. Surfaces that make no claim are omitted rather than reported empty. Each entry names the terminal stage and its kind, and classifies the read:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>State</th><th>Meaning</th><th>Report</th></tr></thead>
+            <tbody>
+              <tr><td><code>measured</code></td><td>The terminal stage is <code>reconciled</code> and outcomes have settled.</td><td>Present.</td></tr>
+              <tr><td><code>horizon</code></td><td>The terminal stage is <code>declared</code>. The lens is told it exists and cannot observe it.</td><td><code>null</code>. No rate is invented.</td></tr>
+              <tr><td><code>no-outcomes</code></td><td>Reconciled, but nothing was scored on the surface in the window.</td><td><code>null</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Omitting <code>since</code> applies the operator&rsquo;s default read window, echoed back as <code>readWindow</code> so the denominator is never implicit.
+        </p>
+
+        <h5 id="the-five-dispositions">The five dispositions</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Disposition</th><th>Derived from</th></tr></thead>
+            <tbody>
+              <tr><td><code>in-flight</code></td><td>Scored, no terminal footprint, still within the settle window. An honest unknown.</td></tr>
+              <tr><td><code>delivered</code></td><td>A footprint at the terminal reconciled stage.</td></tr>
+              <tr><td><code>dark</code></td><td>Past the settle window with no terminal footprint. Observed absence.</td></tr>
+              <tr><td><code>superseded</code></td><td>A newer outcome for the same target replaced it.</td></tr>
+              <tr><td><code>expired</code></td><td>A declared freshness deadline passed before delivery.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The first three are derived today. The last two are declared in the enum so the vocabulary is whole and the fuller model arrives without a wire change. <code>settleMs</code> on the terminal stage sets the boundary between <code>in-flight</code> and <code>dark</code>; absent, the reader&rsquo;s default applies.
+        </p>
+
+        <h4 id="reading-the-output">Reading the output</h4>
+
+        <p>
+          <code>darkRate</code> is <code>dark / settled</code>, where <code>settled</code> is <code>delivered + dark</code>. In-flight outcomes are excluded from both sides, so an outcome whose fate is genuinely unknown is never counted as either. With nothing settled the rate is <code>null</code> rather than zero.
+        </p>
+
+        <p>
+          <code>byLastStage</code> groups the dark outcomes by the furthest stage a footprint was seen at, which is the useful read: where they stopped. A <code>stageId</code> of <code>null</code> means the outcome was never seen past scoring. <code>medianDarkAgeMs</code> says how old the dark ones are, which separates a broken stage from a slow one.
+        </p>
+
+        <p>
+          The <code>reach-gap</code> exemplar in the spine carries the declared topology in order, each stage with its kind and observability, the scored-outcome count as the denominator, and a flag when a suppressing stage sits among the unobserved ones. For the <code>horizon</code> variant the sample list is empty by construction: the proof is the declaration, not a representative call.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Footprints are not substrate</span>
+          The footprint store is append-only and separate from the canonical event store, and it is never an input to the lens hash. Footprints are transient observations, so a backend may fold settled outcomes into per-surface, per-day tallies and prune past the rate window. The derived rate is what persists. Growth is bounded by the in-flight outcomes plus surfaces times days in window, never by every footprint ever emitted.
+        </div>
+
+        <h4 id="reference">Reference</h4>
+
+        <h5 id="endpoints">Endpoints</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/reach</code></td><td>The per-surface delivery read: <code>measured</code> rate, or an honest <code>horizon</code>. Takes <code>surfaceId</code>, <code>since</code>, <code>until</code>. Re-derived per read.</td></tr>
+              <tr><td><code>POST /lens/reach/footprint</code></td><td>Emit one observed footprint or a batch. Idempotent. <code>202</code> with the count accepted.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5 id="contract-fields">Contract fields</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Where</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>postOutcomeStages</code></td><td>Contract root</td><td>The stage topology, keyed by stage id.</td></tr>
+              <tr><td><code>postOutcomeStages</code></td><td>Surface</td><td>The stage ids this surface routes through, in order.</td></tr>
+              <tr><td><code>kind</code></td><td>Stage</td><td>One of the six kinds. Drives how the reach caveat is phrased.</td></tr>
+              <tr><td><code>observability</code></td><td>Stage</td><td><code>declared</code> or <code>reconciled</code>. Defaults to <code>declared</code>.</td></tr>
+              <tr><td><code>settleMs</code></td><td>Stage</td><td>How long after scoring a footprint is still awaited. Meaningful on a reconciled terminal stage.</td></tr>
+              <tr><td><code>description</code></td><td>Stage</td><td>Optional operator note, carried into the drill.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5 id="where-this-sits">Where this sits</h5>
+
+        <p>
+          <a href="./sidecar">Sidecar / OTel integration</a> covers the other direction: the event&rsquo;s trip into the lens, and what happens when a drain channel is unreachable. <a href="./attention-spine">The attention spine</a> carries the <code>reach-gap</code> source and its two bands. The Trust tab in <a href="./dashboard">The dashboard</a> renders this read beside rubric coverage, since both answer whether a green verdict can be believed.
+        </p>
+
+        <p>
+          The stage vocabulary, the disposition enum, the footprint shape and the report shape are public contract. The pairing, the disposition derivation and the rate aggregation live in the lens.
+        </p>
+        </section>
+
+
+        <section id="compaction" class="guide-chapter-block" aria-label="Chapter 25">
+<p class="guide-eyebrow">Chapter 25</p>
         <h3 class="guide-h1">Compaction &amp; husking</h3>
         <p class="guide-meta"></p>
 
@@ -5105,6 +5498,178 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
           <li>The judge-verdict linking model is husk-invariant: a husked event resolves the same verdict a whole one does.</li>
           <li>Retention policy and schedule are stored durably and are operator-owned.</li>
         </ul>
+        </section>
+
+
+        <section id="dashboard" class="guide-chapter-block" aria-label="Chapter 26">
+<p class="guide-eyebrow">Chapter 26</p>
+        <h3 class="guide-h1">The dashboard</h3>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          An operator interface ships in the binary. It is a thin client over the reads in the rest of this Guide: every number on it comes from a documented endpoint, so this chapter is an index from the panel you are looking at to the chapter that explains it, not a second account of the instrument.
+        </p>
+
+        <h4 id="what-it-is">What it is</h4>
+
+        <p>
+          The server mounts it when asked, at <code>/dashboard</code> or a configured base path. With it mounted, a request to <code>/</code> redirects there, so an operator who browses the server&rsquo;s URL with no path lands on the interface instead of an error about the run mode.
+        </p>
+
+        <p>
+          The bundle is served ahead of the authenticated router, so its HTML, JS and CSS load without a bearer token. Every <code>/lens/*</code> fetch the page then makes goes through the same auth as any other client. Optional HTTP Basic credentials gate the bundle path itself, which a production deploy should set; local development usually leaves it unset.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Two credentials, two jobs</span>
+          Basic auth on the dashboard path gates the UI bundle and nothing else. The bearer token in the settings dialog is what reads the lens. Setting the first does not protect the API, and setting the second does not hide the page.
+        </div>
+
+        <p>
+          Settings holds three things: the lens endpoint, the bearer token, and whether to poll. They persist in the browser. Three URL parameters change the mode without being saved: <code>?mock=true</code> renders canned data for a demo, <code>?embed=1</code> hides the operator chrome for an iframed lens and defaults the palette to dark, and <code>?theme=light</code> or <code>dark</code> pins the palette for that load only.
+        </p>
+
+        <p>
+          The header carries a version chip. It shows the active contract version when one is registered, and falls back to the binary&rsquo;s own stamp, labelled as such, when none is.
+        </p>
+
+        <h4 id="why-it-matters">Why it matters</h4>
+
+        <p>
+          The interface is organized by the four questions an operator actually arrives with, not by the shape of the API. Each tab owns one, and the deeper instruments open over the tab that owns them, so a ceremony has one home.
+        </p>
+
+        <p>
+          Nothing on it writes the lens. The exceptions are the gated ceremonies, and each goes through the one shared approver gate described in <a href="./authority-governance">Authority governance</a>: a triage annotation, a conformance approval, a retention or authority policy, a multiplex run. The apparatus proposes and the operator disposes, on the interface exactly as on the API.
+        </p>
+
+        <h4 id="how-to-use-it">How to use it</h4>
+
+        <h5 id="the-four-tabs">The four tabs</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Tab</th><th>The question</th><th>Reads</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Act</strong></td><td>What needs attention now.</td><td><code>GET /lens/attention</code>, <code>GET /lens/attention/evidence</code>, <code>POST /lens/attention/triage</code></td></tr>
+              <tr><td><strong>Trust</strong></td><td>Can I believe the numbers, and where am I blind.</td><td><code>GET /lens/reach</code>, <code>GET /lens/facet-coverage</code>, <code>GET /lens/judge-claim-coverage</code>, <code>POST /lens/co-groundedness/screen</code></td></tr>
+              <tr><td><strong>Curate</strong></td><td>What change should I propose and approve.</td><td><code>GET /aperture/contract</code>, <code>GET /lens/facet-coverage</code>, plus the desk cards below</td></tr>
+              <tr><td><strong>Explore</strong></td><td>What do the raw events say.</td><td><code>GET /lens/events</code>, <code>GET /lens/events/{id}</code>, <code>GET /aperture/contract</code>, <code>GET /lens/availability</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Act is the landing. It is one severity-ranked queue over every finding source, with the jargon moved into the drawer: a row reads &ldquo;Judge check,&rdquo; opens into the driver and the sample calls, and takes a disposition with a required rationale. A confirmed defect mints a proposal into Curate. Trust is the standing-health counterpart: the readouts you check before believing a clean verdict. Explore is the bench the other three route down into, scoped by whatever row sent you there.
+        </p>
+
+        <h5 id="the-slide-overs">The slide-overs</h5>
+
+        <p>
+          Fourteen instruments open over a tab rather than competing with it for a tab of their own.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Panel</th><th>Reads</th><th>Chapter</th></tr></thead>
+            <tbody>
+              <tr><td>Lens Health <code>#lens-health</code></td><td><code>/aperture/contract</code>, <code>/lens/topology/scan</code>, <code>/lens/events</code>, <code>/lens/snapshots</code></td><td><a href="./topology-scanner">Topology scanner</a></td></tr>
+              <tr><td>Lens Health operations</td><td><code>/aperture/health</code>, <code>/lens/availability</code>, <code>/lens/authority/tears</code>, <code>/lens/attribute</code></td><td><a href="./authority-governance">Authority governance</a></td></tr>
+              <tr><td>Multiplexer</td><td><code>/lens/events</code>, <code>POST /lens/multiplex/run</code> (gated)</td><td><a href="./multiplexer">Multiplexer</a></td></tr>
+              <tr><td>Eval workbench</td><td><code>/lens/events</code>, <code>POST /lens/decomposition/evaluate</code>, <code>POST /lens/decomposition/lifecycle</code></td><td><a href="./variance-isolation">Variance isolation</a></td></tr>
+              <tr><td>Lessons pipeline</td><td><code>/aperture/contract</code>, <code>/lens/events</code></td><td><a href="./lessons-pipeline">Lessons pipeline</a></td></tr>
+              <tr><td>Conformance authoring</td><td><code>POST /lens/conformance/derive</code>, <code>/lens/conformance/check</code>, <code>/lens/conformance/fixtures</code></td><td><a href="./conformance">Conformance</a></td></tr>
+              <tr><td>Judge transfer curve</td><td><code>/lens/events</code></td><td>below</td></tr>
+              <tr><td>Verdict reliability</td><td><code>/lens/verdict-reliability</code></td><td><a href="./sdk-reference#verdict-reliability">SDK reference</a></td></tr>
+              <tr><td>Trajectory</td><td><code>/lens/trajectory-findings</code></td><td><a href="./attention-spine">Attention spine</a></td></tr>
+              <tr><td>Seam-soak monitor <code>#seam-soak</code></td><td><code>/lens/attention?surfaceId=system.seam-soak</code></td><td><a href="./seam-monitor">Seam monitor</a></td></tr>
+              <tr><td>Builder-seam monitor <code>#builder-seam</code></td><td><code>/lens/attention?surfaceId=system.builder-seam</code></td><td><a href="./seam-monitor">Seam monitor</a></td></tr>
+              <tr><td>Seam to call analysis <code>#seam-call-analysis</code></td><td><code>/lens/seam-call-analysis</code></td><td><a href="./seam-monitor">Seam monitor</a></td></tr>
+              <tr><td>Retention desk <code>#curate?desk=retention</code></td><td><code>/lens/retention/policy</code>, <code>/plan</code>, <code>/compact</code>, <code>/unseal</code>, <code>/schedule</code>, the archive routes</td><td><a href="./compaction">Compaction</a></td></tr>
+              <tr><td>Authority policy desk</td><td><code>/lens/authority/policy</code>, <code>/policy/history</code>, <code>PUT /lens/authority/policy</code></td><td><a href="./authority-governance">Authority governance</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The three monitors are deliberately outside the Act queue. A seam backlog is a coverage list to work through, not a firefighting queue, and the evidence rides inline on each item, so opening one costs a single read.
+        </p>
+
+        <h5 id="the-judge-transfer-curve">The judge transfer curve</h5>
+
+        <p>
+          One panel has no endpoint of its own. It asks whether a surface&rsquo;s judge is a graded transfer function or a step function, and it answers from the score distribution the lens already captured, with no new calls to the judge.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Characterization</th><th>What a bad reading looks like</th></tr></thead>
+            <tbody>
+              <tr><td>Quantization</td><td>A handful of distinct scores over a decent sample. The judge is stepping, not grading.</td></tr>
+              <tr><td>Dead zones</td><td>Large gaps between consecutive achieved scores. Ranges the judge never lands in.</td></tr>
+              <tr><td>Concentration</td><td>The most common score holds most of the mass. Barely discriminating.</td></tr>
+              <tr><td>Saturation</td><td>Events piled at the low or high end of the observed range.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          What it cannot see is stated on the panel: the perturbation-response cliffs. Finding those means feeding the judge altered inputs, which is a live call and not an observation, so the lens declines. The distribution behind the characterization is in <code>GET /lens/events</code>, and the adjacent question of whether a rubric still discriminates at all is the saturation audit in <a href="./rubric-coverage#the-saturation-audit">Rubric coverage and de-saturation</a>.
+        </p>
+
+        <h5 id="deep-links">Deep links</h5>
+
+        <p>
+          The hash is a route and carries a query string, so a finding, a facet or a desk can be linked directly. An unrecognized tab name falls back to Act.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Link</th><th>Opens</th></tr></thead>
+            <tbody>
+              <tr><td><code>#act?severity=&amp;state=&amp;surface=&amp;source=</code></td><td>The queue, filtered.</td></tr>
+              <tr><td><code>#explore?surface=&amp;facet=&amp;dimension=</code></td><td>The rubric drill for one facet.</td></tr>
+              <tr><td><code>#explore?event=</code></td><td>One event.</td></tr>
+              <tr><td><code>#curate?desk=retention&amp;preset=</code></td><td>The retention desk, preset applied.</td></tr>
+              <tr><td><code>#lens-health</code> · <code>#seam-soak</code> · <code>#builder-seam</code> · <code>#seam-call-analysis</code></td><td>The named monitor, over the tab beneath it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 id="reading-the-output">Reading the output</h4>
+
+        <p>
+          Where a read is an honest null, the panel says which null it is rather than rendering a zero. Trust shows <code>horizon</code> on a surface whose delivery the lens cannot observe, instead of a reach rate. Trajectory puts its unmeasured accounting first, so events with no boundary key are never read as clean. Verdict reliability shows its review tier separately, labelled as no deterministic check applied, which is not the same as a pass.
+        </p>
+
+        <p>
+          The same discipline governs the version chip: with no contract registered it says <code>binary</code> rather than inventing a contract version.
+        </p>
+
+        <h4 id="reference">Reference</h4>
+
+        <h5 id="serving-it">Serving it</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Route</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /dashboard</code></td><td>The bundle. Served ahead of auth; optional HTTP Basic gates this path only.</td></tr>
+              <tr><td><code>GET /</code></td><td>A <code>302</code> to the dashboard when it is mounted. Unprotected, so the browser follows it into the credential prompt.</td></tr>
+              <tr><td><code>GET /lens/version</code></td><td>The header chip&rsquo;s read: the active contract version, or the binary stamp.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5 id="where-this-sits">Where this sits</h5>
+
+        <p>
+          Every panel above is a rendering, and the chapter column is where the measurement itself is explained. Two ceremonies on the interface are the only writes an operator makes often: the triage disposition in Act, covered in <a href="./attention-spine">The attention spine</a>, and the policy desks, covered in <a href="./authority-governance">Authority governance</a> and <a href="./compaction">Compaction &amp; husking</a>.
+        </p>
+
+        <p>
+          The interface ships with the binary and tracks it. Where this chapter and a panel disagree, the panel is newer.
+        </p>
         </section>
 
 

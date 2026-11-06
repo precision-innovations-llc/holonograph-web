@@ -172,28 +172,57 @@ Holonograph itself is a patent-pending commercial product of Precision Innovatio
 
 ### Where can I read more?
 
-Full operator documentation lives at https://holonograph.ai/guide/ — fourteen chapters across three arcs (integration, workflow, attribution), capability-only by design. The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
+Full operator documentation lives at https://holonograph.ai/guide/ — 26 chapters in 6 parts, capability-only by design. The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
 
 ---
 
 ## The Guide
 
-The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface — how to call the lens, declare surfaces, populate substrate columns, and read attribution. Fourteen chapters across three arcs: integration (how to wire the lens in), workflow (day-to-day operation), and attribution (the analyses that answer *which layer changed?* and *how much of this movement is real?*).
+The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, read attribution, and govern authority. 26 chapters in 6 parts, with the complete text of every one of them below.
 
-- Overview & first principles: https://holonograph.ai/guide/overview
-- Surface contracts: https://holonograph.ai/guide/surface-contracts
-- The four-layer snapshot: https://holonograph.ai/guide/snapshot
-- Substrate columns: https://holonograph.ai/guide/substrate-columns
-- SDK reference: https://holonograph.ai/guide/sdk-reference
-- The mediating lens — placement & call flow: https://holonograph.ai/guide/mediating-lens
-- Run modes: https://holonograph.ai/guide/run-modes
-- Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
-- Surface topology scanner: https://holonograph.ai/guide/topology-scanner
-- Conformance & fixtures: https://holonograph.ai/guide/conformance
-- The multiplexer: https://holonograph.ai/guide/multiplexer
-- The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
-- Drift attribution: https://holonograph.ai/guide/drift-attribution
-- Variance isolation: https://holonograph.ai/guide/variance-isolation
+**Overview**
+
+- 01 Overview & first principles: https://holonograph.ai/guide/overview
+
+**Operating the lens**
+
+- 02 Surface contracts: https://holonograph.ai/guide/surface-contracts
+- 03 The four-layer snapshot: https://holonograph.ai/guide/snapshot
+- 04 Substrate columns: https://holonograph.ai/guide/substrate-columns
+- 05 SDK reference: https://holonograph.ai/guide/sdk-reference
+- 06 The mediating lens: https://holonograph.ai/guide/mediating-lens
+- 07 Run modes: https://holonograph.ai/guide/run-modes
+- 08 Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
+- 09 Surface topology scanner: https://holonograph.ai/guide/topology-scanner
+- 10 The multiplexer: https://holonograph.ai/guide/multiplexer
+- 11 Drift attribution: https://holonograph.ai/guide/drift-attribution
+- 12 Variance isolation: https://holonograph.ai/guide/variance-isolation
+- 13 The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
+
+**Judge validity**
+
+- 14 Conformance & fixtures: https://holonograph.ai/guide/conformance
+- 15 Rubric coverage and de-saturation: https://holonograph.ai/guide/rubric-coverage
+- 16 Facet separability: https://holonograph.ai/guide/facet-separability
+- 17 Judge modes and reflection: https://holonograph.ai/guide/judge-modes
+
+**Seams and soak**
+
+- 18 Seams: https://holonograph.ai/guide/seams
+- 19 The seam monitor: https://holonograph.ai/guide/seam-monitor
+- 20 The attention spine: https://holonograph.ai/guide/attention-spine
+
+**Authority and governance**
+
+- 21 Authority: https://holonograph.ai/guide/authority
+- 22 Authority governance: https://holonograph.ai/guide/authority-governance
+
+**Operational utilities**
+
+- 23 Route a verdict to a human: https://holonograph.ai/guide/subscriptions
+- 24 Outcome delivery: https://holonograph.ai/guide/outcome-delivery
+- 25 Compaction & husking: https://holonograph.ai/guide/compaction
+- 26 The dashboard: https://holonograph.ai/guide/dashboard
 
 The Guide is capability-only by design. It documents *what* the operator does with each feature — the endpoints, the SDK methods, the labels the analyses return — and stops at the SDK boundary. Deeper technical validation of the underlying methodology (the variance model, the confidence-interval math, the calibration mechanism) is deliberately absent from the public pages; that layer is available under NDA.
 
@@ -640,7 +669,7 @@ x-holonograph-run-mode: production
 
           - **Filter on cohort tags at read time**, not at write time. Cohort tags are the query keys; write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.
 
-          - **Default reads to `production-state`**. When you're diagnosing something unusual, pass `provenance=all`. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports `hiddenByProvenanceScope` — how many events the current scope filtered out — so a `count: 0` with a non-zero hidden count reads as &ldquo;wrong scope, add `?provenance=all`&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.
+          - **Default reads to `production-state`**. When you're diagnosing something unusual, pass `provenance=all`. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports `hiddenByProvenanceScope` — how many events the current scope filtered out — so a `count: 0` with a non-zero hidden count reads as “wrong scope, add `?provenance=all`”, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.
 
           Not the other snapshot
           This chapter is about the four-layer snapshot: one evaluation, one row. A *lens snapshot* is a different object, a versioned record of the lens configuration in force, and it has its own endpoints under `/lens/snapshots`. See [Lens versioning and snapshots](./sdk-reference#lens-snapshots).
@@ -1129,7 +1158,7 @@ Member	Shape	Notes
 
 `.observerRecords[]`	array	Under multiplex routing, the observer vendors' captured records. Empty when not multiplexing.
 
-`.reportOutcome(outcome)`	method &rarr; `Promise`	Persist the evaluation event that closes this call. Resolves to the **primary event's id**: the event carrying the light snapshot, the dimensions and any `judge.pending` tag. Observer-event ids are not returned.
+`.reportOutcome(outcome)`	method → `Promise`	Persist the evaluation event that closes this call. Resolves to the **primary event's id**: the event carrying the light snapshot, the dimensions and any `judge.pending` tag. Observer-event ids are not returned.
 
 `.gradeObserver(recordOrId, outcome)`	method	Attach grades to a cross-vendor observer call before reporting, when the lens returned observer records. Call this *before* `reportOutcome`.
 
@@ -1899,7 +1928,7 @@ await queue.publish({
 
         Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The `@holonograph/client` 0.3.0 release adds a bounded emit buffer with three drain modes — direct HTTP, OpenTelemetry OTLP spans, or both — so operators can move evaluation events off the request path when synchronous `POST /lens/events` is too expensive to await.
 
-        The buffer is **bounded**, drops the oldest events when full, and **counts every drop**. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full [`emit` option shape](./sdk-reference.html#delivery-modes); this section is about the wire.
+        The buffer is **bounded**, drops the oldest events when full, and **counts every drop**. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full [`emit` option shape](./sdk-reference#delivery-modes); this section is about the wire.
 
 ### The four delivery modes
 
@@ -1991,7 +2020,7 @@ Attribute	Notes
 
           - **Push**: `emit.onWindow(window)` fires once per completed window.
 
-        The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so `http` loss and `otlp` loss are distinguishable), a `completenessLowerBound` ratio, and a `biasFlag` that goes `true` whenever drops occurred. Downstream analyses read `biasFlag` and treat the affected interval as potentially non-random. See [SDK reference § Delivery modes](./sdk-reference.html#delivery-modes) for the full `CompletenessWindow` shape.
+        The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so `http` loss and `otlp` loss are distinguishable), a `completenessLowerBound` ratio, and a `biasFlag` that goes `true` whenever drops occurred. Downstream analyses read `biasFlag` and treat the affected interval as potentially non-random. See [SDK reference § Delivery modes](./sdk-reference#delivery-modes) for the full `CompletenessWindow` shape.
 
 ### Extreme sustained load
 
@@ -3646,7 +3675,7 @@ Chapter 17
 
 ## What has to hold before a cell reflects
 
-        Reflection unlocks for a `judge &times; rubric &times; facet &times; surface` cell when
+        Reflection unlocks for a `judge × rubric × facet × surface` cell when
           all of the following hold. The gate is dual: Holonograph computes the statistical pass, then a
           human confirms.
 
@@ -3725,7 +3754,7 @@ Chapter 18
 ## What it is
 
         A seam is an edge: the path a value travels from where it is produced to the decision that
-          consumes it. Write it `I &rarr; DP`, interpretive source to decision point.
+          consumes it. Write it `I → DP`, interpretive source to decision point.
 
         Whether an input is interpreted is a property of that edge, not of the field and not of whether
           the code is deterministic. The same field can lie on a deterministic edge to one consumer and an
@@ -3754,7 +3783,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority
 
           The enum is not a sanitizer. It is the decision's codomain. `action` is a first-class
           interpretive value, deterministic in what it holds and interpreted in where it came from. The
-          chain runs `I0 &rarr; DP &rarr; I1 &rarr; DP1` and onward, and the provenance rides
+          chain runs `I0 → DP → I1 → DP1` and onward, and the provenance rides
           through every hop. Relocating the decision upstream moves the decision point; it does not escape
           anything. The next scan finds it in its new place.
 
@@ -3816,8 +3845,8 @@ Shape	Form
 
 ## Reference
 
-        The shape is the lens's own `judge &rarr; verdict &rarr; gate &rarr; action` model
-          applied inside ordinary code: `decide &rarr; enum &rarr; dispatch &rarr; sink` is the
+        The shape is the lens's own `judge → verdict → gate → action` model
+          applied inside ordinary code: `decide → enum → dispatch → sink` is the
           same structure. The enum is a verdict, carrying light from an interpreted source, and a dispatch
           acting on it is governed by that light.
 
@@ -4261,9 +4290,9 @@ Condition	Envelope
           window then starts no earlier than the acknowledged tear, and the acknowledgement leaves an
           append-only, server-minted audit record that is never compacted.
 
-        Acknowledgements apply oldest first. Acknowledging a tear while an older one on the same surface
-          is still open is refused. The operator's authority policy sets whether one acknowledgement covers
-          a per-surface watermark, the default, or only the single tear.
+        Releasing a tear, and setting what one release covers, are the operator's two standing dispositions
+          over authority. Both are gated and both leave a record. See
+          [Authority governance](./authority-governance).
 
 ## How to use it
 
@@ -4281,28 +4310,12 @@ Method & path	Purpose
 
 `GET /lens/authority`	One reading per gated dimension, plus an honest `unmapped` reading for every gate-less surface. Re-derived per read.
 
-`GET /lens/authority/tears`	The open tears on each surface, the acknowledgement records, and the granularity in force.
-
-`POST /lens/authority/tear/acknowledge`	Acknowledge one tear. Body: `surfaceId`, `approverId`, optional `tearEventId` and `note`.
-
-`GET /lens/authority/policy`	The policy in force, its source, and whether this deployment can write one.
-
-`PUT /lens/authority/policy`	Replace it. Approver-gated, compare-and-swap on `basePolicyId`. `501` without a durable policy store.
-
-`GET /lens/authority/policy/history`	The append-only record of every policy that has been in force.
+        The five governance routes, the tears read and the policy desk among them, are in
+          [the next chapter](./authority-governance#endpoints).
 
 ### A reading
 
         Each entry carries `surfaceId` and `dimensionId`, the `state`, the `interpretation` that identifies the sink, the `contract` and its `preconditions`, the statistical `power`, any `accuracyHold` or `reSoak`, the `suspension` when there is one, and the `basis` the state was derived from. A reading is always present, so an absent surface cannot pass for a healthy one.
-
-### The policy
-
-        One field today, `tearAckGranularity`: `watermark` means an acknowledgement covers every tear up to it, `per-tear` means one acknowledgement per tear, applied oldest first. Unknown keys are refused rather than ignored, so a typo cannot read as a policy that silently does not apply.
-
-        Resolution order is the operator's persisted policy, then the file seed, then the defaults. The lens never changes it: the `PUT` is the only writer and an approver gates it.
-
-          Compare-and-swap, not last-write-wins
-          The `PUT` carries the `basePolicyId` the operator reviewed. If the policy moved since, the write is refused with `authority_policy_conflict` rather than overwriting someone else's change. Reload, re-review, re-submit. The retention policy works the same way.
 
         The state ontology, the dependency-condition kinds, the stack and contract shapes and the pure
           state machine are public contract. Signal extraction, turning gate composition, floors, versions
@@ -4310,11 +4323,169 @@ Method & path	Purpose
 
 ---
 
-### Chapter 22 — Route a verdict to a human
+### Chapter 22 — Authority governance
+
+_Permalink: https://holonograph.ai/guide/authority-governance_
+
+Chapter 22
+
+# Authority governance
+
+        Authority is a reading the lens derives and never writes. Two dispositions over it belong to the operator: releasing the hold a tear puts on a surface’s soak window, and setting what one release covers. Both are gated, both are attributed to a named operator, and both leave a record the compactor will not touch.
+
+## What it is
+
+        Three parts: the gate every privileged write passes through, the acknowledgement that releases a tear, and the standing policy that says what an acknowledgement covers.
+
+### The approver gate
+
+        Every privileged write on the lens carries an `approverId` and is refused without one. A self-asserted id that disagrees with the verified operator on the request is refused too, so the stamped identity is not the caller’s claim about itself.
+
+        Who *may* act is a separate question, and the lens is honest about not owning the answer. Tier policy lives in the operator’s identity system, so authorization is a pluggable resolver, absent by default. With none wired, any identified operator may proceed and the action is stamped with their id. Wire one and the same endpoints enforce its decision, denying with `403`. The lens records who acts before it constrains who may act.
+
+        The resolver is asked about one action at a time, and the action vocabulary is deliberately fine-grained, so an identity system can grant the cheap dispositions widely and the expensive ones narrowly.
+
+Action	Gates
+
+`multiplex.run`	A live, billable cross-vendor fan-out.
+
+`subscriptions.write`	Standing config that fires outbound webhooks.
+
+`retention.compact`	Executing one reviewed compaction plan, or undoing an archive seal.
+
+`retention.policy`	The standing retention disposition, which can compact unattended.
+
+`authority.acknowledge-tear`	Releasing the soak-window anchor one tear holds.
+
+`authority.policy`	Changing what an acknowledgement covers.
+
+`archive.rehydrate`	Mounting a read-only overlay of archived payload.
+
+`data.erase`	An irreversible erasure about a data subject.
+
+`seam.judge`	Running the offline value-efficacy judge, which spends money.
+
+        Two of the nine are authority’s, and they are separate on purpose. More people can reasonably be trusted to release one tear than to change how every future release is recorded.
+
+### What a tear holds
+
+        A tear is a served or judge model value appearing on a gated surface for the first time. The surface’s authority soak window anchors at the previous stack change, held back to the segment before the latest unacknowledged tear, and a tear never self-clears.
+
+        So a tear is not a notification. Releasing it moves the window forward, which can let a torn surface re-qualify and let its pre-tear span be summarised. That is a disposition over authority, which is why it has a gate of its own and an audit record rather than a dismiss button.
+
+## Why it matters
+
+        The authority reading is only worth what its evidence window is worth. A window that slid forward over a model change on its own would be reporting one instrument’s record as another’s, and nothing downstream could tell. Holding the window and making an operator say, on the record, that the span is still one subject is the property that keeps the reading meaningful.
+
+        The mode that governs those releases is a standing disposition, not a per-call choice. Under the default, one acknowledgement covers every earlier open tear on the surface. Under `per-tear`, each tear takes its own, oldest first. An identity system can only express the distinction between releasing a tear and changing that mode if the two are separate actions.
+
+## How to use it
+
+### Read the open tears
+
+```
+GET /lens/authority/tears?surfaceId=classify-intent
+```
+
+        Every tear on the authority-read surfaces, newest first, each with the instant and event id of the tear, the stack members whose value changed, the stack tuple before and at the tear, and whether an acknowledgement covers it. Beside them the acknowledgement log, also newest first, and the granularity a new acknowledgement would take now. `surfaceId` narrows the read.
+
+### Release one
+
+```
+POST /lens/authority/tear/acknowledge
+{
+  "surfaceId": "classify-intent",
+  "approverId": "ops.rivera",
+  "tearEventId": "evt_01H...",
+  "note": "same family, re-validated against the fixture set"
+}
+```
+
+        `201` with the minted event id and the record. Omit `tearEventId` and the lens picks for you: the surface’s latest unacknowledged tear under `watermark`, its oldest under `per-tear`.
+
+        A surface with no gated decision in the current contract is not an authority-read surface, and acknowledging on it is a `404` rather than a silent no-op. So is naming an event that is not a tear.
+
+          A retry is not a second record
+          The acknowledgement’s event id is derived from the surface and the tear, so resubmitting the same acknowledgement is a keep-first no-op in the store. Acknowledging a tear that is already covered is a `409`, and under `per-tear`, acknowledging out of order is a `409` that names the older open tear.
+
+### Set what a release covers
+
+Granularity	One acknowledgement covers
+
+`watermark`	The acknowledged tear and every earlier tear on the surface, in one log record. The default.
+
+`per-tear`	Only the acknowledged tear, one log record each, applied oldest first.
+
+```
+PUT /lens/authority/policy
+{
+  "policy": { "tearAckGranularity": "per-tear" },
+  "approverId": "ops.rivera",
+  "basePolicyId": "ap-9c21f0b47de3a815",
+  "note": "audit asked for one record per tear"
+}
+```
+
+        `basePolicyId` is the record the operator reviewed, and `null` when the policy in force came from the file seed or the defaults. The schema is strict: an unknown key is refused rather than ignored, so a typo cannot read as a policy that does not apply.
+
+          Compare-and-swap, not last-write-wins
+          If the policy moved since the operator reviewed it, the write is refused with `authority_policy_conflict` rather than overwriting someone else’s change. Reload, re-review, re-submit. The retention policy works the same way.
+
+        `GET /lens/authority/policy` returns the policy in force, its source, the operator record behind it or `null`, whether this backend can write one at all, and whether a configured file seed is being ignored because an operator policy exists. Resolution order is the operator’s persisted policy, then the file seed, then the defaults.
+
+        A backend that keeps no durable authority-policy store answers the `PUT` with `501` and says so in `writable`. The filesystem backend keeps one. There the policy in force is the file seed at `APERTURE_AUTHORITY_POLICY_PATH`, or the defaults.
+
+### Where the operator does this
+
+        The authority-policy desk in Curate holds the editor, the diff against the policy in force, and the history. The tears card in the Lens Health panel holds the open tears and the acknowledgement. Both go through the same gate as the API, and the desk is read-only on a backend that cannot persist a policy. See [The dashboard](./dashboard).
+
+## Reading the output
+
+        `acknowledged` on a tear is derived rather than stored: true when a `watermark` acknowledgement at or after it exists on the surface, or a `per-tear` acknowledgement of exactly it. The log sits beside the tears rather than inside them, so who released what, when, under which mode, and with what note is readable on its own.
+
+        Each record keeps the granularity in force when it was made. Changing the mode changes what the next acknowledgement covers and never reinterprets a past one.
+
+        Acknowledgements are appended as `analysis.authority-tear-acknowledged` events: server-stamped, append-only, and exempt from compaction. The history behind the policy is append-only too, each record naming the policy it replaced, the operator who approved it, and when.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/authority/tears`	The open and covered tears on each surface, the acknowledgement log, and the granularity in force.
+
+`POST /lens/authority/tear/acknowledge`	Release one tear. Gated by `authority.acknowledge-tear`. Body: `surfaceId`, `approverId`, optional `tearEventId` and `note`.
+
+`GET /lens/authority/policy`	The policy in force, its source, the operator record, `writable`, and `seedIgnored`.
+
+`PUT /lens/authority/policy`	Replace it. Gated by `authority.policy`, compare-and-swap on `basePolicyId`. `501` without a durable policy store.
+
+`GET /lens/authority/policy/history`	Every operator policy that has been in force, oldest first.
+
+### Refusals
+
+Code	Status	Meaning
+
+`authority_tear_already_acknowledged`	`409`	An acknowledgement at or after this tear exists on the surface.
+
+`authority_tear_ack_out_of_order`	`409`	Under `per-tear`, an older tear on the surface is still open. The error names it.
+
+`authority_policy_conflict`	`409`	The policy changed since the operator reviewed it.
+
+### Where this sits
+
+        [Authority](./authority) is the reading: the six states, the stack, and what withdraws a grant. This chapter is the disposition over it. The gate and its action vocabulary are shared with the retention desk in [Compaction & husking](./compaction) and the multiplex run in [The multiplexer](./multiplexer), which is why the table above reaches past authority.
+
+        The state ontology, the record shapes, the policy schema and the action identifiers are public contract. Which spans a released window then covers, and how the states are derived from it, lives in the lens.
+
+---
+
+### Chapter 23 — Route a verdict to a human
 
 _Permalink: https://holonograph.ai/guide/subscriptions_
 
-Chapter 22
+Chapter 23
 
 # Route a verdict to a human
 
@@ -4514,11 +4685,171 @@ Method & path	Purpose
 
 ---
 
-### Chapter 23 — Compaction & husking
+### Chapter 24 — Outcome delivery
+
+_Permalink: https://holonograph.ai/guide/outcome-delivery_
+
+Chapter 24
+
+# Outcome delivery
+
+        The trip this chapter is about is the outcome’s trip to the user, after scoring, not the event’s trip into the lens. A surface can be green on quality and still never reach anyone, and the two facts are measured separately. The feature is called declare-your-reach, and its discipline is that the lens reports delivery only as far as it can observe it.
+
+## What it is
+
+        The contract declares the post-outcome stages an outcome traverses between the lens’s scoring point and the user. Stages fan in across surfaces, so each is declared once at the contract root and referenced by the surfaces that route through it.
+
+```
+{
+  "postOutcomeStages": {
+    "digest-batch":  { "kind": "deferred-delivery", "observability": "declared" },
+    "policy-filter": { "kind": "filter", "observability": "declared" },
+    "inbox": {
+      "kind": "other",
+      "observability": "reconciled",
+      "settleMs": 3600000
+    }
+  },
+  "surfaces": [
+    {
+      "surfaceId": "draft-reply",
+      "postOutcomeStages": ["digest-batch", "policy-filter", "inbox"]
+    }
+  ]
+}
+```
+
+        A surface with no `postOutcomeStages` makes no delivery claim, and the lens says nothing about its reach. A reference that does not resolve in the map is ignored by the reach reader rather than failing registration, which keeps a stale ref from taking down a contract.
+
+Kind	What it does to an outcome
+
+`deferred-delivery`	Held for a schedule or batch window, delivered later.
+
+`filter`	May suppress it. A rule can drop it before the user.
+
+`cache`	Served from or written to a cache layer.
+
+`rate-limit`	Throttled. May coalesce or shed under load.
+
+`fan-in`	Merges outcomes from several surfaces into one delivery.
+
+`other`	Declared and uncategorized.
+
+        `filter` is the only kind that can suppress an outcome. The rest delay it. The distinction changes what a verdict on the surface is worth, which is why the kind is declared rather than inferred.
+
+        Each stage also declares whether the lens can see traversal. `declared` means the operator is telling the lens the stage exists while it emits nothing: the lens cannot verify delivery through it, so every verdict on that surface covers scoring only and the lens says so. `reconciled` means the stage emits a footprint per outcome, so the lens observes traversal and derives each outcome’s fate.
+
+          The lens never accepts a reported disposition
+          An operator may not tell the lens that an outcome was delivered. A delivery pipeline broken enough to drop outcomes is exactly the pipeline whose self-report cannot be trusted. The operator declares the topology, which is static, and emits observations of traversal. The verdict on each outcome is derived, and a scored outcome with no terminal footprint past its settle window is read off the absence: the pipeline that drops the outcome drops its footprint too.
+
+## Why it matters
+
+        A verdict is a claim about what the agent produced. Treating it as a claim about what the user received is the substitution this chapter exists to block. On a surface with a declared `filter` downstream, a clean verdict and a user who never saw the output are fully compatible, and nothing in the scoring record would show it.
+
+        So the attention spine carries both halves of the finding under one source, `reach-gap`, with different weight. The `horizon` variant is a declared scope limit rather than a detected failure, so it rides the quiet coverage band. The `shortfall` variant is a detected failure, with severity scaled to the observed dark rate.
+
+## How to use it
+
+### Emit footprints
+
+```
+POST /lens/reach/footprint
+{
+  "correlationId": "corr_01H...",
+  "surfaceId": "draft-reply",
+  "stageId": "inbox",
+  "occurredAt": "2026-11-06T18:22:14.812Z"
+}
+```
+
+        One observation: the outcome for this correlation id was seen reaching this stage at this time. Nothing about whether that was good. `202` with the count accepted, and the body also takes `{ "footprints": [ ... ] }` for the high-volume path.
+
+        The store dedups by correlation id and stage, keep-first, so retries are safe. The strongest footprint is the user’s own return, a reply or a read receipt, emitted on the terminal stage. Without a footprint store wired, or without a contract registry to scope the write, the endpoint answers `501`.
+
+### Read the rate
+
+```
+GET /lens/reach?surfaceId=draft-reply&since=2026-10-01T00:00:00Z
+```
+
+        One entry per surface that declares stages. Surfaces that make no claim are omitted rather than reported empty. Each entry names the terminal stage and its kind, and classifies the read:
+
+State	Meaning	Report
+
+`measured`	The terminal stage is `reconciled` and outcomes have settled.	Present.
+
+`horizon`	The terminal stage is `declared`. The lens is told it exists and cannot observe it.	`null`. No rate is invented.
+
+`no-outcomes`	Reconciled, but nothing was scored on the surface in the window.	`null`.
+
+        Omitting `since` applies the operator’s default read window, echoed back as `readWindow` so the denominator is never implicit.
+
+### The five dispositions
+
+Disposition	Derived from
+
+`in-flight`	Scored, no terminal footprint, still within the settle window. An honest unknown.
+
+`delivered`	A footprint at the terminal reconciled stage.
+
+`dark`	Past the settle window with no terminal footprint. Observed absence.
+
+`superseded`	A newer outcome for the same target replaced it.
+
+`expired`	A declared freshness deadline passed before delivery.
+
+        The first three are derived today. The last two are declared in the enum so the vocabulary is whole and the fuller model arrives without a wire change. `settleMs` on the terminal stage sets the boundary between `in-flight` and `dark`; absent, the reader’s default applies.
+
+## Reading the output
+
+        `darkRate` is `dark / settled`, where `settled` is `delivered + dark`. In-flight outcomes are excluded from both sides, so an outcome whose fate is genuinely unknown is never counted as either. With nothing settled the rate is `null` rather than zero.
+
+        `byLastStage` groups the dark outcomes by the furthest stage a footprint was seen at, which is the useful read: where they stopped. A `stageId` of `null` means the outcome was never seen past scoring. `medianDarkAgeMs` says how old the dark ones are, which separates a broken stage from a slow one.
+
+        The `reach-gap` exemplar in the spine carries the declared topology in order, each stage with its kind and observability, the scored-outcome count as the denominator, and a flag when a suppressing stage sits among the unobserved ones. For the `horizon` variant the sample list is empty by construction: the proof is the declaration, not a representative call.
+
+          Footprints are not substrate
+          The footprint store is append-only and separate from the canonical event store, and it is never an input to the lens hash. Footprints are transient observations, so a backend may fold settled outcomes into per-surface, per-day tallies and prune past the rate window. The derived rate is what persists. Growth is bounded by the in-flight outcomes plus surfaces times days in window, never by every footprint ever emitted.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/reach`	The per-surface delivery read: `measured` rate, or an honest `horizon`. Takes `surfaceId`, `since`, `until`. Re-derived per read.
+
+`POST /lens/reach/footprint`	Emit one observed footprint or a batch. Idempotent. `202` with the count accepted.
+
+### Contract fields
+
+Field	Where	Meaning
+
+`postOutcomeStages`	Contract root	The stage topology, keyed by stage id.
+
+`postOutcomeStages`	Surface	The stage ids this surface routes through, in order.
+
+`kind`	Stage	One of the six kinds. Drives how the reach caveat is phrased.
+
+`observability`	Stage	`declared` or `reconciled`. Defaults to `declared`.
+
+`settleMs`	Stage	How long after scoring a footprint is still awaited. Meaningful on a reconciled terminal stage.
+
+`description`	Stage	Optional operator note, carried into the drill.
+
+### Where this sits
+
+        [Sidecar / OTel integration](./sidecar) covers the other direction: the event’s trip into the lens, and what happens when a drain channel is unreachable. [The attention spine](./attention-spine) carries the `reach-gap` source and its two bands. The Trust tab in [The dashboard](./dashboard) renders this read beside rubric coverage, since both answer whether a green verdict can be believed.
+
+        The stage vocabulary, the disposition enum, the footprint shape and the report shape are public contract. The pairing, the disposition derivation and the rate aggregation live in the lens.
+
+---
+
+### Chapter 25 — Compaction & husking
 
 _Permalink: https://holonograph.ai/guide/compaction_
 
-Chapter 23
+Chapter 25
 
 # Compaction & husking
 
@@ -4641,6 +4972,145 @@ Method & path	Purpose
           - The judge-verdict linking model is husk-invariant: a husked event resolves the same verdict a whole one does.
 
           - Retention policy and schedule are stored durably and are operator-owned.
+
+---
+
+### Chapter 26 — The dashboard
+
+_Permalink: https://holonograph.ai/guide/dashboard_
+
+Chapter 26
+
+# The dashboard
+
+        An operator interface ships in the binary. It is a thin client over the reads in the rest of this Guide: every number on it comes from a documented endpoint, so this chapter is an index from the panel you are looking at to the chapter that explains it, not a second account of the instrument.
+
+## What it is
+
+        The server mounts it when asked, at `/dashboard` or a configured base path. With it mounted, a request to `/` redirects there, so an operator who browses the server’s URL with no path lands on the interface instead of an error about the run mode.
+
+        The bundle is served ahead of the authenticated router, so its HTML, JS and CSS load without a bearer token. Every `/lens/*` fetch the page then makes goes through the same auth as any other client. Optional HTTP Basic credentials gate the bundle path itself, which a production deploy should set; local development usually leaves it unset.
+
+          Two credentials, two jobs
+          Basic auth on the dashboard path gates the UI bundle and nothing else. The bearer token in the settings dialog is what reads the lens. Setting the first does not protect the API, and setting the second does not hide the page.
+
+        Settings holds three things: the lens endpoint, the bearer token, and whether to poll. They persist in the browser. Three URL parameters change the mode without being saved: `?mock=true` renders canned data for a demo, `?embed=1` hides the operator chrome for an iframed lens and defaults the palette to dark, and `?theme=light` or `dark` pins the palette for that load only.
+
+        The header carries a version chip. It shows the active contract version when one is registered, and falls back to the binary’s own stamp, labelled as such, when none is.
+
+## Why it matters
+
+        The interface is organized by the four questions an operator actually arrives with, not by the shape of the API. Each tab owns one, and the deeper instruments open over the tab that owns them, so a ceremony has one home.
+
+        Nothing on it writes the lens. The exceptions are the gated ceremonies, and each goes through the one shared approver gate described in [Authority governance](./authority-governance): a triage annotation, a conformance approval, a retention or authority policy, a multiplex run. The apparatus proposes and the operator disposes, on the interface exactly as on the API.
+
+## How to use it
+
+### The four tabs
+
+Tab	The question	Reads
+
+**Act**	What needs attention now.	`GET /lens/attention`, `GET /lens/attention/evidence`, `POST /lens/attention/triage`
+
+**Trust**	Can I believe the numbers, and where am I blind.	`GET /lens/reach`, `GET /lens/facet-coverage`, `GET /lens/judge-claim-coverage`, `POST /lens/co-groundedness/screen`
+
+**Curate**	What change should I propose and approve.	`GET /aperture/contract`, `GET /lens/facet-coverage`, plus the desk cards below
+
+**Explore**	What do the raw events say.	`GET /lens/events`, `GET /lens/events/{id}`, `GET /aperture/contract`, `GET /lens/availability`
+
+        Act is the landing. It is one severity-ranked queue over every finding source, with the jargon moved into the drawer: a row reads “Judge check,” opens into the driver and the sample calls, and takes a disposition with a required rationale. A confirmed defect mints a proposal into Curate. Trust is the standing-health counterpart: the readouts you check before believing a clean verdict. Explore is the bench the other three route down into, scoped by whatever row sent you there.
+
+### The slide-overs
+
+        Fourteen instruments open over a tab rather than competing with it for a tab of their own.
+
+Panel	Reads	Chapter
+
+Lens Health `#lens-health`	`/aperture/contract`, `/lens/topology/scan`, `/lens/events`, `/lens/snapshots`	[Topology scanner](./topology-scanner)
+
+Lens Health operations	`/aperture/health`, `/lens/availability`, `/lens/authority/tears`, `/lens/attribute`	[Authority governance](./authority-governance)
+
+Multiplexer	`/lens/events`, `POST /lens/multiplex/run` (gated)	[Multiplexer](./multiplexer)
+
+Eval workbench	`/lens/events`, `POST /lens/decomposition/evaluate`, `POST /lens/decomposition/lifecycle`	[Variance isolation](./variance-isolation)
+
+Lessons pipeline	`/aperture/contract`, `/lens/events`	[Lessons pipeline](./lessons-pipeline)
+
+Conformance authoring	`POST /lens/conformance/derive`, `/lens/conformance/check`, `/lens/conformance/fixtures`	[Conformance](./conformance)
+
+Judge transfer curve	`/lens/events`	below
+
+Verdict reliability	`/lens/verdict-reliability`	[SDK reference](./sdk-reference#verdict-reliability)
+
+Trajectory	`/lens/trajectory-findings`	[Attention spine](./attention-spine)
+
+Seam-soak monitor `#seam-soak`	`/lens/attention?surfaceId=system.seam-soak`	[Seam monitor](./seam-monitor)
+
+Builder-seam monitor `#builder-seam`	`/lens/attention?surfaceId=system.builder-seam`	[Seam monitor](./seam-monitor)
+
+Seam to call analysis `#seam-call-analysis`	`/lens/seam-call-analysis`	[Seam monitor](./seam-monitor)
+
+Retention desk `#curate?desk=retention`	`/lens/retention/policy`, `/plan`, `/compact`, `/unseal`, `/schedule`, the archive routes	[Compaction](./compaction)
+
+Authority policy desk	`/lens/authority/policy`, `/policy/history`, `PUT /lens/authority/policy`	[Authority governance](./authority-governance)
+
+        The three monitors are deliberately outside the Act queue. A seam backlog is a coverage list to work through, not a firefighting queue, and the evidence rides inline on each item, so opening one costs a single read.
+
+### The judge transfer curve
+
+        One panel has no endpoint of its own. It asks whether a surface’s judge is a graded transfer function or a step function, and it answers from the score distribution the lens already captured, with no new calls to the judge.
+
+Characterization	What a bad reading looks like
+
+Quantization	A handful of distinct scores over a decent sample. The judge is stepping, not grading.
+
+Dead zones	Large gaps between consecutive achieved scores. Ranges the judge never lands in.
+
+Concentration	The most common score holds most of the mass. Barely discriminating.
+
+Saturation	Events piled at the low or high end of the observed range.
+
+        What it cannot see is stated on the panel: the perturbation-response cliffs. Finding those means feeding the judge altered inputs, which is a live call and not an observation, so the lens declines. The distribution behind the characterization is in `GET /lens/events`, and the adjacent question of whether a rubric still discriminates at all is the saturation audit in [Rubric coverage and de-saturation](./rubric-coverage#the-saturation-audit).
+
+### Deep links
+
+        The hash is a route and carries a query string, so a finding, a facet or a desk can be linked directly. An unrecognized tab name falls back to Act.
+
+Link	Opens
+
+`#act?severity=&state=&surface=&source=`	The queue, filtered.
+
+`#explore?surface=&facet=&dimension=`	The rubric drill for one facet.
+
+`#explore?event=`	One event.
+
+`#curate?desk=retention&preset=`	The retention desk, preset applied.
+
+`#lens-health` · `#seam-soak` · `#builder-seam` · `#seam-call-analysis`	The named monitor, over the tab beneath it.
+
+## Reading the output
+
+        Where a read is an honest null, the panel says which null it is rather than rendering a zero. Trust shows `horizon` on a surface whose delivery the lens cannot observe, instead of a reach rate. Trajectory puts its unmeasured accounting first, so events with no boundary key are never read as clean. Verdict reliability shows its review tier separately, labelled as no deterministic check applied, which is not the same as a pass.
+
+        The same discipline governs the version chip: with no contract registered it says `binary` rather than inventing a contract version.
+
+## Reference
+
+### Serving it
+
+Route	Behavior
+
+`GET /dashboard`	The bundle. Served ahead of auth; optional HTTP Basic gates this path only.
+
+`GET /`	A `302` to the dashboard when it is mounted. Unprotected, so the browser follows it into the credential prompt.
+
+`GET /lens/version`	The header chip’s read: the active contract version, or the binary stamp.
+
+### Where this sits
+
+        Every panel above is a rendering, and the chapter column is where the measurement itself is explained. Two ceremonies on the interface are the only writes an operator makes often: the triage disposition in Act, covered in [The attention spine](./attention-spine), and the policy desks, covered in [Authority governance](./authority-governance) and [Compaction & husking](./compaction).
+
+        The interface ships with the binary and tracks it. Where this chapter and a panel disagree, the panel is newer.
 <!-- END-GENERATED-GUIDE-COMPLETE -->
 
 ## Links

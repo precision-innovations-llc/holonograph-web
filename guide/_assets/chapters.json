@@ -111,7 +111,7 @@
       "num": "14",
       "slug": "conformance",
       "title": "Conformance & fixtures",
-      "group": "Judge validity and authority",
+      "group": "Judge validity",
       "status": "live",
       "blurb": "Whether a judge actually ran against its fixtures, or silently defaulted."
     },
@@ -119,7 +119,7 @@
       "num": "15",
       "slug": "rubric-coverage",
       "title": "Rubric coverage and de-saturation",
-      "group": "Judge validity and authority",
+      "group": "Judge validity",
       "status": "live",
       "blurb": "A rubric per facet, a worklist of the facets without one, and a check that what you wrote still discriminates."
     },
@@ -127,7 +127,7 @@
       "num": "16",
       "slug": "facet-separability",
       "title": "Facet separability",
-      "group": "Judge validity and authority",
+      "group": "Judge validity",
       "status": "live",
       "blurb": "Whether a decomposition is a real topology, one axis wearing two names, or a prerequisite dressed as a peer."
     },
@@ -135,7 +135,7 @@
       "num": "17",
       "slug": "judge-modes",
       "title": "Judge modes and reflection",
-      "group": "Judge validity and authority",
+      "group": "Judge validity",
       "status": "design",
       "blurb": "Four modes on two axes, and the third cell: a capped retry granted per cell, never defaulted."
     },
@@ -143,7 +143,7 @@
       "num": "18",
       "slug": "seams",
       "title": "Seams",
-      "group": "Seams, soak, and authority",
+      "group": "Seams and soak",
       "status": "live",
       "blurb": "An interpreted value driving a decision. Permanent, closeable, not removable."
     },
@@ -151,7 +151,7 @@
       "num": "19",
       "slug": "seam-monitor",
       "title": "The seam monitor",
-      "group": "Seams, soak, and authority",
+      "group": "Seams and soak",
       "status": "live",
       "blurb": "Finding seams in source, adjudicating them, registering them, and soaking them."
     },
@@ -159,7 +159,7 @@
       "num": "20",
       "slug": "attention-spine",
       "title": "The attention spine",
-      "group": "Seams, soak, and authority",
+      "group": "Seams and soak",
       "status": "live",
       "blurb": "One operator lifecycle over twenty-six sources of findings."
     },
@@ -167,12 +167,20 @@
       "num": "21",
       "slug": "authority",
       "title": "Authority",
-      "group": "Seams, soak, and authority",
+      "group": "Authority and governance",
       "status": "live",
       "blurb": "The per-surface state that the declared prerequisites are satisfied on the record."
     },
     {
       "num": "22",
+      "slug": "authority-governance",
+      "title": "Authority governance",
+      "group": "Authority and governance",
+      "status": "live",
+      "blurb": "The approver gate, the acknowledgement that releases a tear, and the policy that sets what one release covers."
+    },
+    {
+      "num": "23",
       "slug": "subscriptions",
       "title": "Route a verdict to a human",
       "group": "Operational utilities",
@@ -180,12 +188,28 @@
       "blurb": "Fire a signed webhook when a predicate over the lens’s own verdicts crosses a line."
     },
     {
-      "num": "23",
+      "num": "24",
+      "slug": "outcome-delivery",
+      "title": "Outcome delivery",
+      "group": "Operational utilities",
+      "status": "live",
+      "blurb": "Whether a scored outcome ever reached the user, and the horizon past which the lens refuses to imply it did."
+    },
+    {
+      "num": "25",
       "slug": "compaction",
       "title": "Compaction & husking",
       "group": "Operational utilities",
       "status": "live",
       "blurb": "Removing bulky payload from an aging event while structured fields stay."
+    },
+    {
+      "num": "26",
+      "slug": "dashboard",
+      "title": "The dashboard",
+      "group": "Operational utilities",
+      "status": "live",
+      "blurb": "Four tabs, fourteen slide-overs, and the documented read behind every panel."
     }
   ]
 }

@@ -77,6 +77,14 @@ function htmlToPlain(html) {
       .replace(/<[^>]+>/g, "")
       // decode entities
       .replace(/&nbsp;/g, " ")
+      .replace(/&rsquo;/g, "\u2019")
+      .replace(/&lsquo;/g, "\u2018")
+      .replace(/&ldquo;/g, "\u201c")
+      .replace(/&rdquo;/g, "\u201d")
+      .replace(/&hellip;/g, "\u2026")
+      .replace(/&middot;/g, "\u00b7")
+      .replace(/&times;/g, "\u00d7")
+      .replace(/&rarr;/g, "\u2192")
       .replace(/&mdash;/g, "—")
       .replace(/&ndash;/g, "–")
       .replace(/&amp;/g, "&")
@@ -97,6 +105,14 @@ function stripTags(s) {
 function decode(s) {
   return s
     .replace(/&nbsp;/g, " ")
+    .replace(/&rsquo;/g, "\u2019")
+    .replace(/&lsquo;/g, "\u2018")
+    .replace(/&ldquo;/g, "\u201c")
+    .replace(/&rdquo;/g, "\u201d")
+    .replace(/&hellip;/g, "\u2026")
+    .replace(/&middot;/g, "\u00b7")
+    .replace(/&times;/g, "\u00d7")
+    .replace(/&rarr;/g, "\u2192")
     .replace(/&mdash;/g, "—")
     .replace(/&ndash;/g, "–")
     .replace(/&lt;/g, "<")
@@ -178,7 +194,7 @@ const allHtml = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./_assets/guide.css?v=5" />
+<link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>

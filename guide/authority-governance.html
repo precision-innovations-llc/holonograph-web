@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f6f5f9" />
+<title>Authority governance — The Guide — Holonograph</title>
+<meta name="description" content="The approver gate, the acknowledgement that releases a tear, and the standing policy that sets what one release covers." />
+<meta name="discloses" content="capability-only" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/authority-governance" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="Authority governance — The Guide" />
+<meta property="og:description" content="The approver gate, the acknowledgement that releases a tear, and the standing policy that sets what one release covers." />
+<meta property="og:url" content="https://holonograph.ai/guide/authority-governance" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="Authority governance — The Guide" />
+<meta name="twitter:description" content="The approver gate, the acknowledgement that releases a tear, and the standing policy that sets what one release covers." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
+<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
+</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
+      <a class="pill" href="../pricing.html">Get started</a>
+    </nav></div>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
+      <ol>
+        <li class="s-part">Overview</li>
+        <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li class="s-part">Operating the lens</li>
+        <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity</li>
+        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">15</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">16</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">17</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams and soak</li>
+        <li><span class="s-num">18</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">19</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">20</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
+        <li><span class="s-num">21</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li class="current"><span class="s-num">22</span><a href="./authority-governance" class="s-ttl">Authority governance</a></li>
+        <li class="s-part">Operational utilities</li>
+        <li><span class="s-num">23</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">24</span><a href="./outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">25</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">26</span><a href="./dashboard" class="s-ttl">The dashboard</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+
+
+        <p class="guide-eyebrow">Chapter 22</p>
+        <h1 class="guide-h1">Authority governance</h1>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          Authority is a reading the lens derives and never writes. Two dispositions over it belong to the operator: releasing the hold a tear puts on a surface&rsquo;s soak window, and setting what one release covers. Both are gated, both are attributed to a named operator, and both leave a record the compactor will not touch.
+        </p>
+
+        <h2 id="what-it-is">What it is</h2>
+
+        <p>
+          Three parts: the gate every privileged write passes through, the acknowledgement that releases a tear, and the standing policy that says what an acknowledgement covers.
+        </p>
+
+        <h3 id="the-approver-gate">The approver gate</h3>
+
+        <p>
+          Every privileged write on the lens carries an <code>approverId</code> and is refused without one. A self-asserted id that disagrees with the verified operator on the request is refused too, so the stamped identity is not the caller&rsquo;s claim about itself.
+        </p>
+
+        <p>
+          Who <em>may</em> act is a separate question, and the lens is honest about not owning the answer. Tier policy lives in the operator&rsquo;s identity system, so authorization is a pluggable resolver, absent by default. With none wired, any identified operator may proceed and the action is stamped with their id. Wire one and the same endpoints enforce its decision, denying with <code>403</code>. The lens records who acts before it constrains who may act.
+        </p>
+
+        <p>
+          The resolver is asked about one action at a time, and the action vocabulary is deliberately fine-grained, so an identity system can grant the cheap dispositions widely and the expensive ones narrowly.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Action</th><th>Gates</th></tr></thead>
+            <tbody>
+              <tr><td><code>multiplex.run</code></td><td>A live, billable cross-vendor fan-out.</td></tr>
+              <tr><td><code>subscriptions.write</code></td><td>Standing config that fires outbound webhooks.</td></tr>
+              <tr><td><code>retention.compact</code></td><td>Executing one reviewed compaction plan, or undoing an archive seal.</td></tr>
+              <tr><td><code>retention.policy</code></td><td>The standing retention disposition, which can compact unattended.</td></tr>
+              <tr><td><code>authority.acknowledge-tear</code></td><td>Releasing the soak-window anchor one tear holds.</td></tr>
+              <tr><td><code>authority.policy</code></td><td>Changing what an acknowledgement covers.</td></tr>
+              <tr><td><code>archive.rehydrate</code></td><td>Mounting a read-only overlay of archived payload.</td></tr>
+              <tr><td><code>data.erase</code></td><td>An irreversible erasure about a data subject.</td></tr>
+              <tr><td><code>seam.judge</code></td><td>Running the offline value-efficacy judge, which spends money.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Two of the nine are authority&rsquo;s, and they are separate on purpose. More people can reasonably be trusted to release one tear than to change how every future release is recorded.
+        </p>
+
+        <h3 id="what-a-tear-holds">What a tear holds</h3>
+
+        <p>
+          A tear is a served or judge model value appearing on a gated surface for the first time. The surface&rsquo;s authority soak window anchors at the previous stack change, held back to the segment before the latest unacknowledged tear, and a tear never self-clears.
+        </p>
+
+        <p>
+          So a tear is not a notification. Releasing it moves the window forward, which can let a torn surface re-qualify and let its pre-tear span be summarised. That is a disposition over authority, which is why it has a gate of its own and an audit record rather than a dismiss button.
+        </p>
+
+        <h2 id="why-it-matters">Why it matters</h2>
+
+        <p>
+          The authority reading is only worth what its evidence window is worth. A window that slid forward over a model change on its own would be reporting one instrument&rsquo;s record as another&rsquo;s, and nothing downstream could tell. Holding the window and making an operator say, on the record, that the span is still one subject is the property that keeps the reading meaningful.
+        </p>
+
+        <p>
+          The mode that governs those releases is a standing disposition, not a per-call choice. Under the default, one acknowledgement covers every earlier open tear on the surface. Under <code>per-tear</code>, each tear takes its own, oldest first. An identity system can only express the distinction between releasing a tear and changing that mode if the two are separate actions.
+        </p>
+
+        <h2 id="how-to-use-it">How to use it</h2>
+
+        <h3 id="read-the-open-tears">Read the open tears</h3>
+
+        <pre><code>GET /lens/authority/tears?surfaceId=classify-intent</code></pre>
+
+        <p>
+          Every tear on the authority-read surfaces, newest first, each with the instant and event id of the tear, the stack members whose value changed, the stack tuple before and at the tear, and whether an acknowledgement covers it. Beside them the acknowledgement log, also newest first, and the granularity a new acknowledgement would take now. <code>surfaceId</code> narrows the read.
+        </p>
+
+        <h3 id="release-one">Release one</h3>
+
+        <pre><code>POST /lens/authority/tear/acknowledge
+{
+  "surfaceId": "classify-intent",
+  "approverId": "ops.rivera",
+  "tearEventId": "evt_01H...",
+  "note": "same family, re-validated against the fixture set"
+}</code></pre>
+
+        <p>
+          <code>201</code> with the minted event id and the record. Omit <code>tearEventId</code> and the lens picks for you: the surface&rsquo;s latest unacknowledged tear under <code>watermark</code>, its oldest under <code>per-tear</code>.
+        </p>
+
+        <p>
+          A surface with no gated decision in the current contract is not an authority-read surface, and acknowledging on it is a <code>404</code> rather than a silent no-op. So is naming an event that is not a tear.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A retry is not a second record</span>
+          The acknowledgement&rsquo;s event id is derived from the surface and the tear, so resubmitting the same acknowledgement is a keep-first no-op in the store. Acknowledging a tear that is already covered is a <code>409</code>, and under <code>per-tear</code>, acknowledging out of order is a <code>409</code> that names the older open tear.
+        </div>
+
+        <h3 id="set-what-a-release-covers">Set what a release covers</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Granularity</th><th>One acknowledgement covers</th></tr></thead>
+            <tbody>
+              <tr><td><code>watermark</code></td><td>The acknowledged tear and every earlier tear on the surface, in one log record. The default.</td></tr>
+              <tr><td><code>per-tear</code></td><td>Only the acknowledged tear, one log record each, applied oldest first.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <pre><code>PUT /lens/authority/policy
+{
+  "policy": { "tearAckGranularity": "per-tear" },
+  "approverId": "ops.rivera",
+  "basePolicyId": "ap-9c21f0b47de3a815",
+  "note": "audit asked for one record per tear"
+}</code></pre>
+
+        <p>
+          <code>basePolicyId</code> is the record the operator reviewed, and <code>null</code> when the policy in force came from the file seed or the defaults. The schema is strict: an unknown key is refused rather than ignored, so a typo cannot read as a policy that does not apply.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Compare-and-swap, not last-write-wins</span>
+          If the policy moved since the operator reviewed it, the write is refused with <code>authority_policy_conflict</code> rather than overwriting someone else&rsquo;s change. Reload, re-review, re-submit. The retention policy works the same way.
+        </div>
+
+        <p>
+          <code>GET /lens/authority/policy</code> returns the policy in force, its source, the operator record behind it or <code>null</code>, whether this backend can write one at all, and whether a configured file seed is being ignored because an operator policy exists. Resolution order is the operator&rsquo;s persisted policy, then the file seed, then the defaults.
+        </p>
+
+        <p>
+          A backend that keeps no durable authority-policy store answers the <code>PUT</code> with <code>501</code> and says so in <code>writable</code>. The filesystem backend keeps one. There the policy in force is the file seed at <code>APERTURE_AUTHORITY_POLICY_PATH</code>, or the defaults.
+        </p>
+
+        <h3 id="where-the-operator-does-this">Where the operator does this</h3>
+
+        <p>
+          The authority-policy desk in Curate holds the editor, the diff against the policy in force, and the history. The tears card in the Lens Health panel holds the open tears and the acknowledgement. Both go through the same gate as the API, and the desk is read-only on a backend that cannot persist a policy. See <a href="./dashboard">The dashboard</a>.
+        </p>
+
+        <h2 id="reading-the-output">Reading the output</h2>
+
+        <p>
+          <code>acknowledged</code> on a tear is derived rather than stored: true when a <code>watermark</code> acknowledgement at or after it exists on the surface, or a <code>per-tear</code> acknowledgement of exactly it. The log sits beside the tears rather than inside them, so who released what, when, under which mode, and with what note is readable on its own.
+        </p>
+
+        <p>
+          Each record keeps the granularity in force when it was made. Changing the mode changes what the next acknowledgement covers and never reinterprets a past one.
+        </p>
+
+        <p>
+          Acknowledgements are appended as <code>analysis.authority-tear-acknowledged</code> events: server-stamped, append-only, and exempt from compaction. The history behind the policy is append-only too, each record naming the policy it replaced, the operator who approved it, and when.
+        </p>
+
+        <h2 id="reference">Reference</h2>
+
+        <h3 id="endpoints">Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/authority/tears</code></td><td>The open and covered tears on each surface, the acknowledgement log, and the granularity in force.</td></tr>
+              <tr><td><code>POST /lens/authority/tear/acknowledge</code></td><td>Release one tear. Gated by <code>authority.acknowledge-tear</code>. Body: <code>surfaceId</code>, <code>approverId</code>, optional <code>tearEventId</code> and <code>note</code>.</td></tr>
+              <tr><td><code>GET /lens/authority/policy</code></td><td>The policy in force, its source, the operator record, <code>writable</code>, and <code>seedIgnored</code>.</td></tr>
+              <tr><td><code>PUT /lens/authority/policy</code></td><td>Replace it. Gated by <code>authority.policy</code>, compare-and-swap on <code>basePolicyId</code>. <code>501</code> without a durable policy store.</td></tr>
+              <tr><td><code>GET /lens/authority/policy/history</code></td><td>Every operator policy that has been in force, oldest first.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="refusals">Refusals</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Code</th><th>Status</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>authority_tear_already_acknowledged</code></td><td><code>409</code></td><td>An acknowledgement at or after this tear exists on the surface.</td></tr>
+              <tr><td><code>authority_tear_ack_out_of_order</code></td><td><code>409</code></td><td>Under <code>per-tear</code>, an older tear on the surface is still open. The error names it.</td></tr>
+              <tr><td><code>authority_policy_conflict</code></td><td><code>409</code></td><td>The policy changed since the operator reviewed it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="where-this-sits">Where this sits</h3>
+
+        <p>
+          <a href="./authority">Authority</a> is the reading: the six states, the stack, and what withdraws a grant. This chapter is the disposition over it. The gate and its action vocabulary are shared with the retention desk in <a href="./compaction">Compaction &amp; husking</a> and the multiplex run in <a href="./multiplexer">The multiplexer</a>, which is why the table above reaches past authority.
+        </p>
+
+        <p>
+          The state ontology, the record shapes, the policy schema and the action identifiers are public contract. Which spans a released window then covers, and how the states are derived from it, lives in the lens.
+        </p>
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./authority" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Authority</span>
+          </a>
+          <a href="./subscriptions" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Route a verdict to a human</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 22 · Authority governance</span>
+    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
+  </footer>
+<script src="./_assets/guide-search.js"></script>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
+</body>
+</html>
