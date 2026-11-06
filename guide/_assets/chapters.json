@@ -94,10 +94,10 @@
     {
       "num": "12",
       "slug": "variance-isolation",
-      "title": "Variance isolation",
+      "title": "Variance isolation and declared axes",
       "group": "Operating the lens",
       "status": "live",
-      "blurb": "Telling real change apart from sampling and chance."
+      "blurb": "Telling real change apart from sampling and chance, then grading the axes you declared to explain it."
     },
     {
       "num": "13",

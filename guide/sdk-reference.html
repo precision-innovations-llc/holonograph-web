@@ -75,7 +75,7 @@
         <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
         <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
         <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
         <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
         <li class="s-part">Judge validity</li>
         <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
@@ -318,6 +318,10 @@ const eventId = await handle.reportOutcome({
 
         <p>
           <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop; it persists the evaluation event that binds this call into your history and returns that event's id. Discard the id for a synchronous judge; keep it when a verdict arrives later and has to name its subject.
+        </p>
+
+        <p>
+          On the wire those are two endpoints: <code>POST /aperture/messages</code>, which mediates the call and returns the record, and <code>POST /lens/events</code>, which commits the event the client assembles from it. The server holds nothing between them. That is why outcome reporting is a post of a complete event rather than a write against a call the server is remembering, and why a client in another language needs only those two paths.
         </p>
 
         <h3 id="messages-create-req"><code>messages.create(req)</code></h3>
@@ -575,7 +579,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
         <h2 id="reads-the-client-does-not-wrap">Reads the client does not wrap</h2>
 
         <p>
-          Five endpoints an integration reaches for that have no client method. Call them over HTTP; each is also served under the <code>/holonograph</code> alias.
+          The reads an integration reaches for that have no client method. Call them over HTTP; each is also served under the <code>/holonograph</code> alias.
         </p>
 
         <div class="guide-table-wrap">

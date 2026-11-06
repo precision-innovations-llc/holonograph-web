@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Variance isolation — The Guide — Holonograph</title>
-<meta name="description" content="Separating real movement in your scores from the noise of measuring with a language model. A cleaned reading, a confidence verdict, and governance actions to hold one still." />
+<title>Variance isolation and declared axes — The Guide — Holonograph</title>
+<meta name="description" content="Separating real movement in your scores from the noise of measuring with a language model, then grading the substrate columns you declared to explain it." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="true" />
@@ -14,8 +14,8 @@
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
-<meta property="og:title" content="Variance isolation · Holonograph Guide" />
-<meta property="og:description" content="Separating real movement in your scores from the noise of measuring with a language model. A cleaned reading, a confidence verdict, and governance actions to hold one still." />
+<meta property="og:title" content="Variance isolation and declared axes · Holonograph Guide" />
+<meta property="og:description" content="Separating real movement in your scores from the noise of measuring with a language model, then grading the substrate columns you declared to explain it." />
 <meta property="og:url" content="https://holonograph.ai/guide/variance-isolation" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
 <meta property="og:image:width" content="2752" />
@@ -23,8 +23,8 @@
 <meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
-<meta name="twitter:title" content="Variance isolation · Holonograph Guide" />
-<meta name="twitter:description" content="Separating real movement in your scores from the noise of measuring with a language model. A cleaned reading, a confidence verdict, and governance actions to hold one still." />
+<meta name="twitter:title" content="Variance isolation and declared axes · Holonograph Guide" />
+<meta name="twitter:description" content="Separating real movement in your scores from the noise of measuring with a language model, then grading the substrate columns you declared to explain it." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -74,7 +74,7 @@
         <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
         <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
         <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li class="current"><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li class="current"><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
         <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
         <li class="s-part">Judge validity</li>
         <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
@@ -100,7 +100,7 @@
       <article>
 
         <p class="guide-eyebrow">Chapter 12</p>
-        <h1 class="guide-h1">Variance isolation</h1>
+        <h1 class="guide-h1">Variance isolation and declared axes</h1>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
@@ -222,6 +222,72 @@ Content-Type: application/json
           </table>
         </div>
 
+        <h2 id="declared-axes">Declared axes</h2>
+
+        <p>
+          The decomposition says how much of the movement is real. The next question is which of your declared substrate columns explains any of it. An axis is a column you declared because you believed it accounted for outcome variance; an audit says whether the record agrees.
+        </p>
+
+        <h3 id="audit-what-you-declared">Audit what you declared</h3>
+
+        <pre><code>POST /lens/orthogonality/audit
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
+
+        <p>
+          A one-way analysis of variance per declared axis against the dimension, returning <code>confirmed</code>, <code>inert</code>, <code>insufficient-data</code> or <code>excluded</code>. A pure read: no calibration, no gate, no model call.
+        </p>
+
+        <p>
+          The <code>confirmed</code> decision is false-discovery controlled across the whole axis family by Benjamini-Yekutieli, so testing twelve axes does not manufacture one. Each axis carries its <code>pValue</code> and the adjusted one, and the <code>fdr</code> summary reports what the less conservative Benjamini-Hochberg instrument would have said, so the cost of the choice is visible rather than hidden.
+        </p>
+
+        <p>
+          The audit is lifecycle-aware, which is the axis-altitude twin of surface retirement. A <code>forward-declared</code> or <code>deprecated</code> axis is <code>excluded</code>, since a deliberate stub is not a failure. An <code>inert</code> active axis carries a <code>recommendedStatus</code> of <code>forward-declared</code>, which defers it and excludes it from evaluation, and is reversible. The lens recommends; the operator decides.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">An axis with a consumer is not demoted</span>
+          The demotion hint fires only where an axis has no observed consumer. Two count. Every active axis is tested against all dimensions in the window, so one that explains a different dimension is protected. So is one a live conformance fixture references in a guard, an assertion or its required markers: a state-conditional guard that explains no scored dimension is still doing work for a deterministic check.
+        </div>
+
+        <h3 id="propose-the-ones-you-did-not">Propose the ones you did not</h3>
+
+        <pre><code>POST /lens/orthogonality/propose
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
+
+        <p>
+          The mirror of the audit. Where the audit grades what you declared, this looks for what you are already emitting and have not declared, and proposes it as a candidate axis.
+        </p>
+
+        <p>
+          It needs a noise floor for the pair first, so calibrate before calling it. Then it decomposes the window, aggregates substrate emission over those same events, and takes the emitted-but-undeclared columns as the candidate set. Three gates have to pass: enough scored data, a lower bound on the agent-variance confidence interval above zero, and at least one undeclared column. Zero candidates is a <code>200</code> with a diagnostics block naming the gate that held, not an error.
+        </p>
+
+        <p>
+          Each candidate is narrated and enqueued on the approver gate. The narration is prose only: the evidence and the target ids are copied verbatim from the deterministic candidate, and the narrator has no channel through which to emit a number. The lens never declares the axis. Declaring the column and re-decomposing is the operator's.
+        </p>
+
+        <h3 id="tell-an-axis-from-a-confound">Tell an axis from a confound</h3>
+
+        <pre><code>POST /lens/orthogonality/audit/compare
+{
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness",
+  "correlationIdPrefix": "replay:nov-panel:"
+}</code></pre>
+
+        <p>
+          The audit run twice: once over all production, once over the input-constant panel the prefix selects, then diffed per axis. An axis confirmed on production that collapses under input constancy was never explaining the outcome; its effect size was entanglement between the lens and the input mix. One confirmed in both is robust.
+        </p>
+
+        <p>
+          The response names the confounded columns and the robust ones, with a per-axis diff carrying each read's verdict, its effect size, and the delta between them. The panel has to exist in the substrate already, as a replay whose scores you re-posted under that prefix. An empty panel reads as insufficient per axis rather than failing.
+        </p>
+
+        <p>
+          Orthogonality is symmetric: it can say an axis explains variance, never that breaking A degrades B while B leaves A intact. That asymmetry is a different instrument at a lower altitude, in <a href="./facet-separability">Facet separability</a>.
+        </p>
+
         <h2 id="reference">Reference</h2>
 
         <h3 id="endpoints">Endpoints</h3>
@@ -235,6 +301,9 @@ Content-Type: application/json
               <tr><td><code>POST /lens/replay</code></td><td>Re-issue captured requests through a target lens, window-stamped so the paired-window read works. Holds the input constant and varies the lens. Source events by <code>sourceEventIds</code> or <code>sourceCorrelationIdPrefix</code>; events carrying no stored raw request are reported skipped rather than silently dropped. Every replay is a real model call, so the count is capped.</td></tr>
               <tr><td><code>POST /lens/decomposition/evaluate</code></td><td>Return the confidence verdict for the analysis record.</td></tr>
               <tr><td><code>POST /lens/decomposition/lifecycle</code></td><td>Govern the reading: <code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/audit</code></td><td>Grade every declared axis against one dimension. One-way analysis of variance per axis, Benjamini-Yekutieli controlled across the family, lifecycle-aware and consumer-aware.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/propose</code></td><td>Find emitted-but-undeclared columns worth declaring and enqueue each as a narrated candidate on the approver gate. Needs a calibrated floor. Zero candidates is an answer, with the gate that held.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/audit/compare</code></td><td>The audit over production against the audit over an input-constant panel, diffed per axis. Separates a robust axis from a sampling confound.</td></tr>
             </tbody>
           </table>
         </div>
@@ -268,6 +337,12 @@ Content-Type: application/json
           </table>
         </div>
 
+        <h3 id="where-this-sits">Where this sits</h3>
+
+        <p>
+          Two of the attention spine's sources file from the axis reads: <code>orthogonality-hypothesis</code>, which proposes declaring a column, and <code>primary-axis-orthogonality</code>, reported as a confounded axis. Both are partitioned per source, because pooling two agents' score populations manufactures correlation neither of them shows. See <a href="./attention-spine">The attention spine</a>.
+        </p>
+
         <nav class="guide-nav" aria-label="Chapter navigation">
           <a href="./drift-attribution" class="nav-prev">
             <span class="nav-label">Previous</span>
@@ -285,7 +360,7 @@ Content-Type: application/json
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>Chapter 12 · Variance isolation</span>
+    <span>Chapter 12 · Variance isolation and declared axes</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
 <script src="./_assets/guide-search.js"></script>

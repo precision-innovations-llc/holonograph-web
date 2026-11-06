@@ -56,7 +56,7 @@
         <li><span class="s-num">09</span><a href="#topology-scanner" class="s-ttl">Surface topology scanner</a></li>
         <li><span class="s-num">10</span><a href="#multiplexer" class="s-ttl">The multiplexer</a></li>
         <li><span class="s-num">11</span><a href="#drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">12</span><a href="#variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">12</span><a href="#variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
         <li><span class="s-num">13</span><a href="#lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
         <li class="s-part">Judge validity</li>
         <li><span class="s-num">14</span><a href="#conformance" class="s-ttl">Conformance & fixtures</a></li>
@@ -1059,6 +1059,10 @@ const eventId = await handle.reportOutcome({
           <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop; it persists the evaluation event that binds this call into your history and returns that event's id. Discard the id for a synchronous judge; keep it when a verdict arrives later and has to name its subject.
         </p>
 
+        <p>
+          On the wire those are two endpoints: <code>POST /aperture/messages</code>, which mediates the call and returns the record, and <code>POST /lens/events</code>, which commits the event the client assembles from it. The server holds nothing between them. That is why outcome reporting is a post of a complete event rather than a write against a call the server is remembering, and why a client in another language needs only those two paths.
+        </p>
+
         <h5 id="messages-create-req"><code>messages.create(req)</code></h5>
 
         <p>
@@ -1314,7 +1318,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
         <h4 id="reads-the-client-does-not-wrap">Reads the client does not wrap</h4>
 
         <p>
-          Five endpoints an integration reaches for that have no client method. Call them over HTTP; each is also served under the <code>/holonograph</code> alias.
+          The reads an integration reaches for that have no client method. Call them over HTTP; each is also served under the <code>/holonograph</code> alias.
         </p>
 
         <div class="guide-table-wrap">
@@ -2011,6 +2015,29 @@ async function handleJob(job) {
 
         <p>The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so <code>http</code> loss and <code>otlp</code> loss are distinguishable), a <code>completenessLowerBound</code> ratio, and a <code>biasFlag</code> that goes <code>true</code> whenever drops occurred. Downstream analyses read <code>biasFlag</code> and treat the affected interval as potentially non-random. See <a href="./sdk-reference#delivery-modes">SDK reference § Delivery modes</a> for the full <code>CompletenessWindow</code> shape.</p>
 
+        <h5 id="the-server-side-read">The server-side read</h5>
+
+        <p>
+          The window above is the emitter's own account of what it sent. The lens reads the same quantity from the other end, over what actually arrived, which is the account that does not depend on a healthy emitter to be true.
+        </p>
+
+        <pre><code>GET /lens/delivery-completeness</code></pre>
+
+        <p>
+          Per stream: the persisted coverage observations folded together and scored by a gap-and-sentinel oracle, plus the fleet summary over all of them. The session sentinels above are what make a gap visible; a stream that has gone quiet past the stale threshold reports an honest dark-region floor rather than a clean score, since a dead emitter and a silent one look identical from here.
+        </p>
+
+        <pre><code>GET /lens/reconciliation?since=2026-11-01T00:00:00Z&amp;emissionStreamId=orders-worker-7</code></pre>
+
+        <p>
+          Per-emitter completeness for stateless emitters, as <code>persisted / (persisted + dark)</code> over the window. Raw facts rather than a baked view, so a poller, the dashboard or your own tool assembles what it needs. <code>emissionStreamId</code> scopes it to one emitter.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A race is not a loss</span>
+          A dual-mode span that arrives with no stored payload records a delivery-orphan candidate. The reconciliation read re-reconciles every candidate against the store before counting it, so an HTTP payload that landed after its OTLP span resolves rather than counting as dark. What remains dark is what is still missing after that check.
+        </div>
+
         <h5 id="extreme-sustained-load">Extreme sustained load</h5>
 
         <p>
@@ -2050,6 +2077,23 @@ async function handleJob(job) {
         <h5 id="message-attribute-keys">Message-attribute keys</h5>
 
         <p>Same keys as above, used verbatim as message attributes when Baggage propagation isn't available on the transport.</p>
+
+        <h5 id="endpoints">Endpoints</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /v1/traces</code></td><td>The OTLP ingest. Rejected spans come back in <code>partialSuccess</code> with the count and the reason rather than failing the batch.</td></tr>
+              <tr><td><code>GET /lens/delivery-completeness</code></td><td>Per-stream completeness with the fleet summary. Scored by the gap-and-sentinel oracle, with a dark-region floor for a stream past the stale threshold.</td></tr>
+              <tr><td><code>GET /lens/reconciliation</code></td><td>Per-emitter completeness over a window, as raw facts. Takes <code>since</code>, <code>until</code>, <code>emissionStreamId</code>. Orphan candidates are re-reconciled before they count as dark.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          These two read whether an event reached the store. Whether the agent's <em>outcome</em> reached the user is a different question, measured separately in <a href="./outcome-delivery">Outcome delivery</a>.
+        </p>
         </section>
 
 
@@ -2727,7 +2771,7 @@ Content-Type: application/json
 
         <section id="variance-isolation" class="guide-chapter-block" aria-label="Chapter 12">
 <p class="guide-eyebrow">Chapter 12</p>
-        <h3 class="guide-h1">Variance isolation</h3>
+        <h3 class="guide-h1">Variance isolation and declared axes</h3>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
@@ -2849,6 +2893,72 @@ Content-Type: application/json
           </table>
         </div>
 
+        <h4 id="declared-axes">Declared axes</h4>
+
+        <p>
+          The decomposition says how much of the movement is real. The next question is which of your declared substrate columns explains any of it. An axis is a column you declared because you believed it accounted for outcome variance; an audit says whether the record agrees.
+        </p>
+
+        <h5 id="audit-what-you-declared">Audit what you declared</h5>
+
+        <pre><code>POST /lens/orthogonality/audit
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
+
+        <p>
+          A one-way analysis of variance per declared axis against the dimension, returning <code>confirmed</code>, <code>inert</code>, <code>insufficient-data</code> or <code>excluded</code>. A pure read: no calibration, no gate, no model call.
+        </p>
+
+        <p>
+          The <code>confirmed</code> decision is false-discovery controlled across the whole axis family by Benjamini-Yekutieli, so testing twelve axes does not manufacture one. Each axis carries its <code>pValue</code> and the adjusted one, and the <code>fdr</code> summary reports what the less conservative Benjamini-Hochberg instrument would have said, so the cost of the choice is visible rather than hidden.
+        </p>
+
+        <p>
+          The audit is lifecycle-aware, which is the axis-altitude twin of surface retirement. A <code>forward-declared</code> or <code>deprecated</code> axis is <code>excluded</code>, since a deliberate stub is not a failure. An <code>inert</code> active axis carries a <code>recommendedStatus</code> of <code>forward-declared</code>, which defers it and excludes it from evaluation, and is reversible. The lens recommends; the operator decides.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">An axis with a consumer is not demoted</span>
+          The demotion hint fires only where an axis has no observed consumer. Two count. Every active axis is tested against all dimensions in the window, so one that explains a different dimension is protected. So is one a live conformance fixture references in a guard, an assertion or its required markers: a state-conditional guard that explains no scored dimension is still doing work for a deterministic check.
+        </div>
+
+        <h5 id="propose-the-ones-you-did-not">Propose the ones you did not</h5>
+
+        <pre><code>POST /lens/orthogonality/propose
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
+
+        <p>
+          The mirror of the audit. Where the audit grades what you declared, this looks for what you are already emitting and have not declared, and proposes it as a candidate axis.
+        </p>
+
+        <p>
+          It needs a noise floor for the pair first, so calibrate before calling it. Then it decomposes the window, aggregates substrate emission over those same events, and takes the emitted-but-undeclared columns as the candidate set. Three gates have to pass: enough scored data, a lower bound on the agent-variance confidence interval above zero, and at least one undeclared column. Zero candidates is a <code>200</code> with a diagnostics block naming the gate that held, not an error.
+        </p>
+
+        <p>
+          Each candidate is narrated and enqueued on the approver gate. The narration is prose only: the evidence and the target ids are copied verbatim from the deterministic candidate, and the narrator has no channel through which to emit a number. The lens never declares the axis. Declaring the column and re-decomposing is the operator's.
+        </p>
+
+        <h5 id="tell-an-axis-from-a-confound">Tell an axis from a confound</h5>
+
+        <pre><code>POST /lens/orthogonality/audit/compare
+{
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness",
+  "correlationIdPrefix": "replay:nov-panel:"
+}</code></pre>
+
+        <p>
+          The audit run twice: once over all production, once over the input-constant panel the prefix selects, then diffed per axis. An axis confirmed on production that collapses under input constancy was never explaining the outcome; its effect size was entanglement between the lens and the input mix. One confirmed in both is robust.
+        </p>
+
+        <p>
+          The response names the confounded columns and the robust ones, with a per-axis diff carrying each read's verdict, its effect size, and the delta between them. The panel has to exist in the substrate already, as a replay whose scores you re-posted under that prefix. An empty panel reads as insufficient per axis rather than failing.
+        </p>
+
+        <p>
+          Orthogonality is symmetric: it can say an axis explains variance, never that breaking A degrades B while B leaves A intact. That asymmetry is a different instrument at a lower altitude, in <a href="./facet-separability">Facet separability</a>.
+        </p>
+
         <h4 id="reference">Reference</h4>
 
         <h5 id="endpoints">Endpoints</h5>
@@ -2862,6 +2972,9 @@ Content-Type: application/json
               <tr><td><code>POST /lens/replay</code></td><td>Re-issue captured requests through a target lens, window-stamped so the paired-window read works. Holds the input constant and varies the lens. Source events by <code>sourceEventIds</code> or <code>sourceCorrelationIdPrefix</code>; events carrying no stored raw request are reported skipped rather than silently dropped. Every replay is a real model call, so the count is capped.</td></tr>
               <tr><td><code>POST /lens/decomposition/evaluate</code></td><td>Return the confidence verdict for the analysis record.</td></tr>
               <tr><td><code>POST /lens/decomposition/lifecycle</code></td><td>Govern the reading: <code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/audit</code></td><td>Grade every declared axis against one dimension. One-way analysis of variance per axis, Benjamini-Yekutieli controlled across the family, lifecycle-aware and consumer-aware.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/propose</code></td><td>Find emitted-but-undeclared columns worth declaring and enqueue each as a narrated candidate on the approver gate. Needs a calibrated floor. Zero candidates is an answer, with the gate that held.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/audit/compare</code></td><td>The audit over production against the audit over an input-constant panel, diffed per axis. Separates a robust axis from a sampling confound.</td></tr>
             </tbody>
           </table>
         </div>
@@ -2894,6 +3007,12 @@ Content-Type: application/json
             </tbody>
           </table>
         </div>
+
+        <h5 id="where-this-sits">Where this sits</h5>
+
+        <p>
+          Two of the attention spine's sources file from the axis reads: <code>orthogonality-hypothesis</code>, which proposes declaring a column, and <code>primary-axis-orthogonality</code>, reported as a confounded axis. Both are partitioned per source, because pooling two agents' score populations manufactures correlation neither of them shows. See <a href="./attention-spine">The attention spine</a>.
+        </p>
         </section>
 
 
@@ -4276,6 +4395,60 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           rides in the payload and husks away like a judge rationale.
         </p>
 
+        <h4 id="three-layers-three-claims">Three layers, three claims</h4>
+
+        <p>
+          The scan and the soak are the first two layers of one instrument. Both sit above a question neither answers: when a call went wrong, which seam on its path was involved?
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Layer</th><th>Where it runs</th><th>The claim it can make</th></tr></thead>
+            <tbody>
+              <tr><td>Definition</td><td>The scanner, over source</td><td>This seam <em>could</em> influence that call.</td></tr>
+              <tr><td>Observation</td><td>The lens, at its own boundary</td><td>This call happened, and this is what crossed the boundary.</td></tr>
+              <tr><td>Analysis</td><td>The lens, over the observations</td><td>This seam's appearance is associated with failure, confound-controlled.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">The lens trusts only what it observes at its own boundary</span>
+          One invariant discharges two constraints at once. Nothing is added to your code, because the evidence is the mediated traffic the lens already sees. And the subject never narrates itself: a seam's resolved arm counts only when it was recovered from the request and response bytes. An arm the builder asserts has its own grade, <code>self-reported</code>, which exists so the lens can refuse it rather than fold it silently into observed evidence.
+        </div>
+
+        <h5 id="occurrence-is-not-participation">Occurrence is not participation</h5>
+
+        <p>
+          Joining a call to a candidate seam through the call site proves the call site executed. It does not prove the seam took part. Every linkage from that join is graded <code>static-only</code>, including when the call itself was observed, and a deterministic join never promotes a candidate to <code>observed</code>. Only independent boundary evidence does, such as an arm value recovered injectively from the call's own bytes. A call-site frame that resolves to no node in the scan is <code>unknown</code>.
+        </p>
+
+        <p>
+          Because every linkage is a candidate, this read is monitor-only evidence and deliberately does not feed the attention queue. A separability signal that filed as a finding would be an attribution claim the evidence does not support.
+        </p>
+
+        <pre><code>GET /lens/seam-call-observations?surfaceId=classify-intent</code></pre>
+
+        <p>
+          Re-derived per read from the stored call events joined against the candidate map, with nothing stored as an observation and no new event kind. Honest-empty until call sites are captured and a map is pushed, never a <code>501</code>: a read with no candidates is an answer.
+        </p>
+
+        <h5 id="the-analysis-layer">The analysis layer</h5>
+
+        <pre><code>GET /lens/seam-call-analysis?since=2026-10-01T00:00:00Z</code></pre>
+
+        <p>
+          Over those observations: the judge fail-rate on calls where a seam node appears against the rest of the panel, as a two-by-two chi-square per node, with the family under false-discovery control. A row reads the seam as a whole or conditions on one resolved arm.
+        </p>
+
+        <p>
+          Each association is then conditioned on a confound, the model, the version or the input cohort, and carries the verdict: <code>robust</code> where it survives within the strata, <code>sampling-confound</code> where it collapses once the confound is held constant, <code>insufficient</code> where the stratified cells are too thin to say. The last is reported rather than rounded to robust.
+        </p>
+
+        <p>
+          Alongside the associations: each seam's structural reach, its arm distribution, and the pre-registered pools of related nodes. Every number is a separability signal, never a causal claim.
+        </p>
+
         <h4 id="reading-the-output">Reading the output</h4>
 
         <p>
@@ -4283,6 +4456,10 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           individual seams as loci inside it. Findings from both reach the attention spine as
           <code>builder-seam</code> and <code>seam-soak</code> sources, alongside every other finding the
           instrument produces.
+        </p>
+
+        <p>
+          An abstention observed at the boundary is a first-class value rather than an absence, so a surfaced no-match path is distinguishable from an arm the lens could not see. An arm that never manifests in mediated traffic is <code>unknown</code>, paired with a null resolved arm, and stays that way.
         </p>
 
         <h4 id="reference">Reference</h4>
@@ -4295,6 +4472,8 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
             <tbody>
               <tr><td><code>POST /lens/builder-seams</code></td><td>The scanner pushes its current registered-seam set. Replace-current: a scan run is a complete re-derivation of the code's interpreted seams, so the newest push is the truth and a seam that no longer appears is gone. Writes the evidence registry only, never the contract registry. Returns <code>202 { accepted }</code> once the write is durable and visible to other instances. <code>501</code> where the registry is not wired, which is the only opt-in.</td></tr>
               <tr><td><code>GET /lens/builder-seams</code></td><td>Confirm an ingest landed and is visible cross-instance before its call events start carrying a call-site id. A per-source summary by default; <code>?full=1</code> returns the held scans.</td></tr>
+              <tr><td><code>GET /lens/seam-call-observations</code></td><td>The re-derived seam-to-call linkages, each graded <code>observed</code>, <code>static-only</code> or <code>unknown</code>. Monitor-only evidence; never a finding. Takes <code>surfaceId</code>, <code>since</code>, <code>until</code>.</td></tr>
+              <tr><td><code>GET /lens/seam-call-analysis</code></td><td>Confound-controlled failure associations per seam node, with structural reach, arm distribution, related-node pools and the false-discovery summary. Caveats carry the honest nulls.</td></tr>
               <tr><td><code>POST /lens/seam-soak/judge</code></td><td>Run the offline value-efficacy judge over a seam's stored raw-output corpus. Operator-invoked, approver and cost gated. The judge runs over the stored corpus, never the live stream, and verdicts are minted server-side on the judge surface. <code>501</code> where no judge scorer is wired.</td></tr>
             </tbody>
           </table>

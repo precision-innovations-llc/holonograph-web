@@ -75,7 +75,7 @@
         <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
         <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
         <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
         <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
         <li class="s-part">Judge validity</li>
         <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
@@ -331,6 +331,29 @@ async function handleJob(job) {
 
         <p>The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so <code>http</code> loss and <code>otlp</code> loss are distinguishable), a <code>completenessLowerBound</code> ratio, and a <code>biasFlag</code> that goes <code>true</code> whenever drops occurred. Downstream analyses read <code>biasFlag</code> and treat the affected interval as potentially non-random. See <a href="./sdk-reference#delivery-modes">SDK reference § Delivery modes</a> for the full <code>CompletenessWindow</code> shape.</p>
 
+        <h3 id="the-server-side-read">The server-side read</h3>
+
+        <p>
+          The window above is the emitter's own account of what it sent. The lens reads the same quantity from the other end, over what actually arrived, which is the account that does not depend on a healthy emitter to be true.
+        </p>
+
+        <pre><code>GET /lens/delivery-completeness</code></pre>
+
+        <p>
+          Per stream: the persisted coverage observations folded together and scored by a gap-and-sentinel oracle, plus the fleet summary over all of them. The session sentinels above are what make a gap visible; a stream that has gone quiet past the stale threshold reports an honest dark-region floor rather than a clean score, since a dead emitter and a silent one look identical from here.
+        </p>
+
+        <pre><code>GET /lens/reconciliation?since=2026-11-01T00:00:00Z&amp;emissionStreamId=orders-worker-7</code></pre>
+
+        <p>
+          Per-emitter completeness for stateless emitters, as <code>persisted / (persisted + dark)</code> over the window. Raw facts rather than a baked view, so a poller, the dashboard or your own tool assembles what it needs. <code>emissionStreamId</code> scopes it to one emitter.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A race is not a loss</span>
+          A dual-mode span that arrives with no stored payload records a delivery-orphan candidate. The reconciliation read re-reconciles every candidate against the store before counting it, so an HTTP payload that landed after its OTLP span resolves rather than counting as dark. What remains dark is what is still missing after that check.
+        </div>
+
         <h3 id="extreme-sustained-load">Extreme sustained load</h3>
 
         <p>
@@ -370,6 +393,23 @@ async function handleJob(job) {
         <h3 id="message-attribute-keys">Message-attribute keys</h3>
 
         <p>Same keys as above, used verbatim as message attributes when Baggage propagation isn't available on the transport.</p>
+
+        <h3 id="endpoints">Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /v1/traces</code></td><td>The OTLP ingest. Rejected spans come back in <code>partialSuccess</code> with the count and the reason rather than failing the batch.</td></tr>
+              <tr><td><code>GET /lens/delivery-completeness</code></td><td>Per-stream completeness with the fleet summary. Scored by the gap-and-sentinel oracle, with a dark-region floor for a stream past the stale threshold.</td></tr>
+              <tr><td><code>GET /lens/reconciliation</code></td><td>Per-emitter completeness over a window, as raw facts. Takes <code>since</code>, <code>until</code>, <code>emissionStreamId</code>. Orphan candidates are re-reconciled before they count as dark.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          These two read whether an event reached the store. Whether the agent's <em>outcome</em> reached the user is a different question, measured separately in <a href="./outcome-delivery">Outcome delivery</a>.
+        </p>
 
         <nav class="guide-nav" aria-label="Chapter navigation">
           <a href="./run-modes" class="nav-prev">

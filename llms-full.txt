@@ -1116,6 +1116,8 @@ const eventId = await handle.reportOutcome({
 
         `messages.create()` mediates the model call and returns a handle. `handle.result` is the response you use in your agent. `handle.reportOutcome()` closes the loop; it persists the evaluation event that binds this call into your history and returns that event's id. Discard the id for a synchronous judge; keep it when a verdict arrives later and has to name its subject.
 
+        On the wire those are two endpoints: `POST /aperture/messages`, which mediates the call and returns the record, and `POST /lens/events`, which commits the event the client assembles from it. The server holds nothing between them. That is why outcome reporting is a post of a complete event rather than a write against a call the server is remembering, and why a client in another language needs only those two paths.
+
 ### messages.create(req)
 
         Every field on the request is optional except `surfaceId` and `messages`. The rest are passed through to the model when relevant, or interpreted by the lens.
@@ -1352,7 +1354,7 @@ const result = await client.callDirectly(rawRequest);
 
 ## Reads the client does not wrap
 
-        Five endpoints an integration reaches for that have no client method. Call them over HTTP; each is also served under the `/holonograph` alias.
+        The reads an integration reaches for that have no client method. Call them over HTTP; each is also served under the `/holonograph` alias.
 
 Method & path	Purpose
 
@@ -2022,6 +2024,25 @@ Attribute	Notes
 
         The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so `http` loss and `otlp` loss are distinguishable), a `completenessLowerBound` ratio, and a `biasFlag` that goes `true` whenever drops occurred. Downstream analyses read `biasFlag` and treat the affected interval as potentially non-random. See [SDK reference § Delivery modes](./sdk-reference#delivery-modes) for the full `CompletenessWindow` shape.
 
+### The server-side read
+
+        The window above is the emitter's own account of what it sent. The lens reads the same quantity from the other end, over what actually arrived, which is the account that does not depend on a healthy emitter to be true.
+
+```
+GET /lens/delivery-completeness
+```
+
+        Per stream: the persisted coverage observations folded together and scored by a gap-and-sentinel oracle, plus the fleet summary over all of them. The session sentinels above are what make a gap visible; a stream that has gone quiet past the stale threshold reports an honest dark-region floor rather than a clean score, since a dead emitter and a silent one look identical from here.
+
+```
+GET /lens/reconciliation?since=2026-11-01T00:00:00Z&emissionStreamId=orders-worker-7
+```
+
+        Per-emitter completeness for stateless emitters, as `persisted / (persisted + dark)` over the window. Raw facts rather than a baked view, so a poller, the dashboard or your own tool assembles what it needs. `emissionStreamId` scopes it to one emitter.
+
+          A race is not a loss
+          A dual-mode span that arrives with no stored payload records a delivery-orphan candidate. The reconciliation read re-reconciles every candidate against the store before counting it, so an HTTP payload that landed after its OTLP span resolves rather than counting as dark. What remains dark is what is still missing after that check.
+
 ### Extreme sustained load
 
         The buffer is designed for occasional overflow, not sustained overrun. When the drop rate exceeds `emit.extremeSustainedLoad.dropRateThreshold` (default 1%) for longer than `emit.extremeSustainedLoad.sustainedForMs` (default 60s), the client fires `onExtremeSustainedLoad` with a summary event. Route it to your alerting; that is the signal to raise the `bufferSize`, add drain workers, or step down evaluation coverage rather than let the sample bias grow silently.
@@ -2053,6 +2074,18 @@ Key	Value
 ### Message-attribute keys
 
         Same keys as above, used verbatim as message attributes when Baggage propagation isn't available on the transport.
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /v1/traces`	The OTLP ingest. Rejected spans come back in `partialSuccess` with the count and the reason rather than failing the batch.
+
+`GET /lens/delivery-completeness`	Per-stream completeness with the fleet summary. Scored by the gap-and-sentinel oracle, with a dark-region floor for a stream past the stale threshold.
+
+`GET /lens/reconciliation`	Per-emitter completeness over a window, as raw facts. Takes `since`, `until`, `emissionStreamId`. Orphan candidates are re-reconciled before they count as dark.
+
+        These two read whether an event reached the store. Whether the agent's *outcome* reached the user is a different question, measured separately in [Outcome delivery](./outcome-delivery).
 
 ---
 
@@ -2640,13 +2673,13 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 12 — Variance isolation
+### Chapter 12 — Variance isolation and declared axes
 
 _Permalink: https://holonograph.ai/guide/variance-isolation_
 
 Chapter 12
 
-# Variance isolation
+# Variance isolation and declared axes
 
         When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a **cleaned** reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
 
@@ -2755,6 +2788,56 @@ Verdict	Next action
                 `instrument-limited`
                 Measurement noise dominates whatever real movement is present. Don't trust the reading yet; if the reading matters, `quarantine` it while you widen the window or reduce input variability.
 
+## Declared axes
+
+        The decomposition says how much of the movement is real. The next question is which of your declared substrate columns explains any of it. An axis is a column you declared because you believed it accounted for outcome variance; an audit says whether the record agrees.
+
+### Audit what you declared
+
+```
+POST /lens/orthogonality/audit
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }
+```
+
+        A one-way analysis of variance per declared axis against the dimension, returning `confirmed`, `inert`, `insufficient-data` or `excluded`. A pure read: no calibration, no gate, no model call.
+
+        The `confirmed` decision is false-discovery controlled across the whole axis family by Benjamini-Yekutieli, so testing twelve axes does not manufacture one. Each axis carries its `pValue` and the adjusted one, and the `fdr` summary reports what the less conservative Benjamini-Hochberg instrument would have said, so the cost of the choice is visible rather than hidden.
+
+        The audit is lifecycle-aware, which is the axis-altitude twin of surface retirement. A `forward-declared` or `deprecated` axis is `excluded`, since a deliberate stub is not a failure. An `inert` active axis carries a `recommendedStatus` of `forward-declared`, which defers it and excludes it from evaluation, and is reversible. The lens recommends; the operator decides.
+
+          An axis with a consumer is not demoted
+          The demotion hint fires only where an axis has no observed consumer. Two count. Every active axis is tested against all dimensions in the window, so one that explains a different dimension is protected. So is one a live conformance fixture references in a guard, an assertion or its required markers: a state-conditional guard that explains no scored dimension is still doing work for a deterministic check.
+
+### Propose the ones you did not
+
+```
+POST /lens/orthogonality/propose
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }
+```
+
+        The mirror of the audit. Where the audit grades what you declared, this looks for what you are already emitting and have not declared, and proposes it as a candidate axis.
+
+        It needs a noise floor for the pair first, so calibrate before calling it. Then it decomposes the window, aggregates substrate emission over those same events, and takes the emitted-but-undeclared columns as the candidate set. Three gates have to pass: enough scored data, a lower bound on the agent-variance confidence interval above zero, and at least one undeclared column. Zero candidates is a `200` with a diagnostics block naming the gate that held, not an error.
+
+        Each candidate is narrated and enqueued on the approver gate. The narration is prose only: the evidence and the target ids are copied verbatim from the deterministic candidate, and the narrator has no channel through which to emit a number. The lens never declares the axis. Declaring the column and re-decomposing is the operator's.
+
+### Tell an axis from a confound
+
+```
+POST /lens/orthogonality/audit/compare
+{
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness",
+  "correlationIdPrefix": "replay:nov-panel:"
+}
+```
+
+        The audit run twice: once over all production, once over the input-constant panel the prefix selects, then diffed per axis. An axis confirmed on production that collapses under input constancy was never explaining the outcome; its effect size was entanglement between the lens and the input mix. One confirmed in both is robust.
+
+        The response names the confounded columns and the robust ones, with a per-axis diff carrying each read's verdict, its effect size, and the delta between them. The panel has to exist in the substrate already, as a replay whose scores you re-posted under that prefix. An empty panel reads as insufficient per axis rather than failing.
+
+        Orthogonality is symmetric: it can say an axis explains variance, never that breaking A degrades B while B leaves A intact. That asymmetry is a different instrument at a lower altitude, in [Facet separability](./facet-separability).
+
 ## Reference
 
 ### Endpoints
@@ -2770,6 +2853,12 @@ Method & path	Purpose
 `POST /lens/decomposition/evaluate`	Return the confidence verdict for the analysis record.
 
 `POST /lens/decomposition/lifecycle`	Govern the reading: `quarantine`, `approve`, `lock`, or `reject`.
+
+`POST /lens/orthogonality/audit`	Grade every declared axis against one dimension. One-way analysis of variance per axis, Benjamini-Yekutieli controlled across the family, lifecycle-aware and consumer-aware.
+
+`POST /lens/orthogonality/propose`	Find emitted-but-undeclared columns worth declaring and enqueue each as a narrated candidate on the approver gate. Needs a calibrated floor. Zero candidates is an answer, with the gate that held.
+
+`POST /lens/orthogonality/audit/compare`	The audit over production against the audit over an input-constant panel, diffed per axis. Separates a robust axis from a sampling confound.
 
 ### POST /lens/decomposeVariance: request
 
@@ -2796,6 +2885,10 @@ Field	Shape	Notes
 `comment`	string (opt)	Free-form explanation. Required for `reject`.
 
 `pinnedLabel`	string	Required for `lock`. The label under which this reading is held as a reference.
+
+### Where this sits
+
+        Two of the attention spine's sources file from the axis reads: `orthogonality-hypothesis`, which proposes declaring a column, and `primary-axis-orthogonality`, reported as a confounded axis. Both are partitioned per source, because pooling two agents' score populations manufactures correlation neither of them shows. See [The attention spine](./attention-spine).
 
 ---
 
@@ -3962,12 +4055,53 @@ Axis	Value
           ride in the surface dimension, the substrate columns and the cohort tags. A raw decided value
           rides in the payload and husks away like a judge rationale.
 
+## Three layers, three claims
+
+        The scan and the soak are the first two layers of one instrument. Both sit above a question neither answers: when a call went wrong, which seam on its path was involved?
+
+Layer	Where it runs	The claim it can make
+
+Definition	The scanner, over source	This seam *could* influence that call.
+
+Observation	The lens, at its own boundary	This call happened, and this is what crossed the boundary.
+
+Analysis	The lens, over the observations	This seam's appearance is associated with failure, confound-controlled.
+
+          The lens trusts only what it observes at its own boundary
+          One invariant discharges two constraints at once. Nothing is added to your code, because the evidence is the mediated traffic the lens already sees. And the subject never narrates itself: a seam's resolved arm counts only when it was recovered from the request and response bytes. An arm the builder asserts has its own grade, `self-reported`, which exists so the lens can refuse it rather than fold it silently into observed evidence.
+
+### Occurrence is not participation
+
+        Joining a call to a candidate seam through the call site proves the call site executed. It does not prove the seam took part. Every linkage from that join is graded `static-only`, including when the call itself was observed, and a deterministic join never promotes a candidate to `observed`. Only independent boundary evidence does, such as an arm value recovered injectively from the call's own bytes. A call-site frame that resolves to no node in the scan is `unknown`.
+
+        Because every linkage is a candidate, this read is monitor-only evidence and deliberately does not feed the attention queue. A separability signal that filed as a finding would be an attribution claim the evidence does not support.
+
+```
+GET /lens/seam-call-observations?surfaceId=classify-intent
+```
+
+        Re-derived per read from the stored call events joined against the candidate map, with nothing stored as an observation and no new event kind. Honest-empty until call sites are captured and a map is pushed, never a `501`: a read with no candidates is an answer.
+
+### The analysis layer
+
+```
+GET /lens/seam-call-analysis?since=2026-10-01T00:00:00Z
+```
+
+        Over those observations: the judge fail-rate on calls where a seam node appears against the rest of the panel, as a two-by-two chi-square per node, with the family under false-discovery control. A row reads the seam as a whole or conditions on one resolved arm.
+
+        Each association is then conditioned on a confound, the model, the version or the input cohort, and carries the verdict: `robust` where it survives within the strata, `sampling-confound` where it collapses once the confound is held constant, `insufficient` where the stratified cells are too thin to say. The last is reported rather than rounded to robust.
+
+        Alongside the associations: each seam's structural reach, its arm distribution, and the pre-registered pools of related nodes. Every number is a separability signal, never a causal claim.
+
 ## Reading the output
 
         Soaks file under one reserved surface, adjacent to the surface registered seams file under, with
           individual seams as loci inside it. Findings from both reach the attention spine as
           `builder-seam` and `seam-soak` sources, alongside every other finding the
           instrument produces.
+
+        An abstention observed at the boundary is a first-class value rather than an absence, so a surfaced no-match path is distinguishable from an arm the lens could not see. An arm that never manifests in mediated traffic is `unknown`, paired with a null resolved arm, and stays that way.
 
 ## Reference
 
@@ -3978,6 +4112,10 @@ Method & path	Purpose
 `POST /lens/builder-seams`	The scanner pushes its current registered-seam set. Replace-current: a scan run is a complete re-derivation of the code's interpreted seams, so the newest push is the truth and a seam that no longer appears is gone. Writes the evidence registry only, never the contract registry. Returns `202 { accepted }` once the write is durable and visible to other instances. `501` where the registry is not wired, which is the only opt-in.
 
 `GET /lens/builder-seams`	Confirm an ingest landed and is visible cross-instance before its call events start carrying a call-site id. A per-source summary by default; `?full=1` returns the held scans.
+
+`GET /lens/seam-call-observations`	The re-derived seam-to-call linkages, each graded `observed`, `static-only` or `unknown`. Monitor-only evidence; never a finding. Takes `surfaceId`, `since`, `until`.
+
+`GET /lens/seam-call-analysis`	Confound-controlled failure associations per seam node, with structural reach, arm distribution, related-node pools and the false-discovery summary. Caveats carry the honest nulls.
 
 `POST /lens/seam-soak/judge`	Run the offline value-efficacy judge over a seam's stored raw-output corpus. Operator-invoked, approver and cost gated. The judge runs over the stored corpus, never the live stream, and verdicts are minted server-side on the judge surface. `501` where no judge scorer is wired.
 

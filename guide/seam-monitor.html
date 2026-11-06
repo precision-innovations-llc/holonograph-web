@@ -73,7 +73,7 @@
         <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
         <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
         <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
         <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
         <li class="s-part">Judge validity</li>
         <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
@@ -232,6 +232,60 @@
           rides in the payload and husks away like a judge rationale.
         </p>
 
+        <h2 id="three-layers-three-claims">Three layers, three claims</h2>
+
+        <p>
+          The scan and the soak are the first two layers of one instrument. Both sit above a question neither answers: when a call went wrong, which seam on its path was involved?
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Layer</th><th>Where it runs</th><th>The claim it can make</th></tr></thead>
+            <tbody>
+              <tr><td>Definition</td><td>The scanner, over source</td><td>This seam <em>could</em> influence that call.</td></tr>
+              <tr><td>Observation</td><td>The lens, at its own boundary</td><td>This call happened, and this is what crossed the boundary.</td></tr>
+              <tr><td>Analysis</td><td>The lens, over the observations</td><td>This seam's appearance is associated with failure, confound-controlled.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">The lens trusts only what it observes at its own boundary</span>
+          One invariant discharges two constraints at once. Nothing is added to your code, because the evidence is the mediated traffic the lens already sees. And the subject never narrates itself: a seam's resolved arm counts only when it was recovered from the request and response bytes. An arm the builder asserts has its own grade, <code>self-reported</code>, which exists so the lens can refuse it rather than fold it silently into observed evidence.
+        </div>
+
+        <h3 id="occurrence-is-not-participation">Occurrence is not participation</h3>
+
+        <p>
+          Joining a call to a candidate seam through the call site proves the call site executed. It does not prove the seam took part. Every linkage from that join is graded <code>static-only</code>, including when the call itself was observed, and a deterministic join never promotes a candidate to <code>observed</code>. Only independent boundary evidence does, such as an arm value recovered injectively from the call's own bytes. A call-site frame that resolves to no node in the scan is <code>unknown</code>.
+        </p>
+
+        <p>
+          Because every linkage is a candidate, this read is monitor-only evidence and deliberately does not feed the attention queue. A separability signal that filed as a finding would be an attribution claim the evidence does not support.
+        </p>
+
+        <pre><code>GET /lens/seam-call-observations?surfaceId=classify-intent</code></pre>
+
+        <p>
+          Re-derived per read from the stored call events joined against the candidate map, with nothing stored as an observation and no new event kind. Honest-empty until call sites are captured and a map is pushed, never a <code>501</code>: a read with no candidates is an answer.
+        </p>
+
+        <h3 id="the-analysis-layer">The analysis layer</h3>
+
+        <pre><code>GET /lens/seam-call-analysis?since=2026-10-01T00:00:00Z</code></pre>
+
+        <p>
+          Over those observations: the judge fail-rate on calls where a seam node appears against the rest of the panel, as a two-by-two chi-square per node, with the family under false-discovery control. A row reads the seam as a whole or conditions on one resolved arm.
+        </p>
+
+        <p>
+          Each association is then conditioned on a confound, the model, the version or the input cohort, and carries the verdict: <code>robust</code> where it survives within the strata, <code>sampling-confound</code> where it collapses once the confound is held constant, <code>insufficient</code> where the stratified cells are too thin to say. The last is reported rather than rounded to robust.
+        </p>
+
+        <p>
+          Alongside the associations: each seam's structural reach, its arm distribution, and the pre-registered pools of related nodes. Every number is a separability signal, never a causal claim.
+        </p>
+
         <h2 id="reading-the-output">Reading the output</h2>
 
         <p>
@@ -239,6 +293,10 @@
           individual seams as loci inside it. Findings from both reach the attention spine as
           <code>builder-seam</code> and <code>seam-soak</code> sources, alongside every other finding the
           instrument produces.
+        </p>
+
+        <p>
+          An abstention observed at the boundary is a first-class value rather than an absence, so a surfaced no-match path is distinguishable from an arm the lens could not see. An arm that never manifests in mediated traffic is <code>unknown</code>, paired with a null resolved arm, and stays that way.
         </p>
 
         <h2 id="reference">Reference</h2>
@@ -251,6 +309,8 @@
             <tbody>
               <tr><td><code>POST /lens/builder-seams</code></td><td>The scanner pushes its current registered-seam set. Replace-current: a scan run is a complete re-derivation of the code's interpreted seams, so the newest push is the truth and a seam that no longer appears is gone. Writes the evidence registry only, never the contract registry. Returns <code>202 { accepted }</code> once the write is durable and visible to other instances. <code>501</code> where the registry is not wired, which is the only opt-in.</td></tr>
               <tr><td><code>GET /lens/builder-seams</code></td><td>Confirm an ingest landed and is visible cross-instance before its call events start carrying a call-site id. A per-source summary by default; <code>?full=1</code> returns the held scans.</td></tr>
+              <tr><td><code>GET /lens/seam-call-observations</code></td><td>The re-derived seam-to-call linkages, each graded <code>observed</code>, <code>static-only</code> or <code>unknown</code>. Monitor-only evidence; never a finding. Takes <code>surfaceId</code>, <code>since</code>, <code>until</code>.</td></tr>
+              <tr><td><code>GET /lens/seam-call-analysis</code></td><td>Confound-controlled failure associations per seam node, with structural reach, arm distribution, related-node pools and the false-discovery summary. Caveats carry the honest nulls.</td></tr>
               <tr><td><code>POST /lens/seam-soak/judge</code></td><td>Run the offline value-efficacy judge over a seam's stored raw-output corpus. Operator-invoked, approver and cost gated. The judge runs over the stored corpus, never the live stream, and verdicts are minted server-side on the judge surface. <code>501</code> where no judge scorer is wired.</td></tr>
             </tbody>
           </table>
