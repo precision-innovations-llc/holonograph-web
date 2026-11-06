@@ -172,13 +172,13 @@ Holonograph itself is a patent-pending commercial product of Precision Innovatio
 
 ### Where can I read more?
 
-Full operator documentation lives at https://holonograph.ai/guide/ — 26 chapters in 6 parts, capability-only by design. The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
+Full operator documentation lives at https://holonograph.ai/guide/ — 27 chapters in 6 parts, capability-only by design. The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
 
 ---
 
 ## The Guide
 
-The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, read attribution, and govern authority. 26 chapters in 6 parts, with the complete text of every one of them below.
+The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, read attribution, and govern authority. 27 chapters in 6 parts, with the complete text of every one of them below.
 
 **Overview**
 
@@ -191,38 +191,39 @@ The operator's manual lives at https://holonograph.ai/guide/. It documents the c
 - 04 Substrate columns: https://holonograph.ai/guide/substrate-columns
 - 05 SDK reference: https://holonograph.ai/guide/sdk-reference
 - 06 The mediating lens: https://holonograph.ai/guide/mediating-lens
-- 07 Run modes: https://holonograph.ai/guide/run-modes
-- 08 Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
-- 09 Surface topology scanner: https://holonograph.ai/guide/topology-scanner
-- 10 The multiplexer: https://holonograph.ai/guide/multiplexer
-- 11 Drift attribution: https://holonograph.ai/guide/drift-attribution
-- 12 Variance isolation: https://holonograph.ai/guide/variance-isolation
-- 13 The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
+- 07 Swarms and sources: https://holonograph.ai/guide/swarms-and-sources
+- 08 Run modes: https://holonograph.ai/guide/run-modes
+- 09 Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
+- 10 Surface topology scanner: https://holonograph.ai/guide/topology-scanner
+- 11 The multiplexer: https://holonograph.ai/guide/multiplexer
+- 12 Drift attribution: https://holonograph.ai/guide/drift-attribution
+- 13 Variance isolation and declared axes: https://holonograph.ai/guide/variance-isolation
+- 14 The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
 
 **Judge validity**
 
-- 14 Conformance & fixtures: https://holonograph.ai/guide/conformance
-- 15 Rubric coverage and de-saturation: https://holonograph.ai/guide/rubric-coverage
-- 16 Facet separability: https://holonograph.ai/guide/facet-separability
-- 17 Judge modes and reflection: https://holonograph.ai/guide/judge-modes
+- 15 Conformance & fixtures: https://holonograph.ai/guide/conformance
+- 16 Rubric coverage and de-saturation: https://holonograph.ai/guide/rubric-coverage
+- 17 Facet separability: https://holonograph.ai/guide/facet-separability
+- 18 Judge modes and reflection: https://holonograph.ai/guide/judge-modes
 
 **Seams and soak**
 
-- 18 Seams: https://holonograph.ai/guide/seams
-- 19 The seam monitor: https://holonograph.ai/guide/seam-monitor
-- 20 The attention spine: https://holonograph.ai/guide/attention-spine
+- 19 Seams: https://holonograph.ai/guide/seams
+- 20 The seam monitor: https://holonograph.ai/guide/seam-monitor
+- 21 The attention spine: https://holonograph.ai/guide/attention-spine
 
 **Authority and governance**
 
-- 21 Authority: https://holonograph.ai/guide/authority
-- 22 Authority governance: https://holonograph.ai/guide/authority-governance
+- 22 Authority: https://holonograph.ai/guide/authority
+- 23 Authority governance: https://holonograph.ai/guide/authority-governance
 
 **Operational utilities**
 
-- 23 Route a verdict to a human: https://holonograph.ai/guide/subscriptions
-- 24 Outcome delivery: https://holonograph.ai/guide/outcome-delivery
-- 25 Compaction & husking: https://holonograph.ai/guide/compaction
-- 26 The dashboard: https://holonograph.ai/guide/dashboard
+- 24 Route a verdict to a human: https://holonograph.ai/guide/subscriptions
+- 25 Outcome delivery: https://holonograph.ai/guide/outcome-delivery
+- 26 Compaction & husking: https://holonograph.ai/guide/compaction
+- 27 The dashboard: https://holonograph.ai/guide/dashboard
 
 The Guide is capability-only by design. It documents *what* the operator does with each feature — the endpoints, the SDK methods, the labels the analyses return — and stops at the SDK boundary. Deeper technical validation of the underlying methodology (the variance model, the confidence-interval math, the calibration mechanism) is deliberately absent from the public pages; that layer is available under NDA.
 
@@ -388,7 +389,7 @@ Chapter 02
 
           - **The lens knows what to expect.** Ingested events are validated against the contract's declared dimensions and columns; anything that doesn't match is flagged, not silently accepted.
 
-          - **Coverage becomes measurable.** The topology scanner (Chapter 09) compares what you *declared* against what the lens *observed* and surfaces the gaps: declared-but-never-observed dimensions, observed-but-never-declared ones, retirement candidates. That whole comparison exists because there is a contract to compare against.
+          - **Coverage becomes measurable.** The [topology scanner](./topology-scanner) compares what you *declared* against what the lens *observed* and surfaces the gaps: declared-but-never-observed dimensions, observed-but-never-declared ones, retirement candidates. That whole comparison exists because there is a contract to compare against.
 
           When to re-version
           Adding a dimension, removing a cohort tag, splitting one surface into two, changing routings: any of these should ship as a new contract version, not an in-place edit. The prior version's events remain queryable and attributable against the shape they were captured under.
@@ -576,7 +577,7 @@ Chapter 03
 
           - **Every reading can be traced to the exact deployment, model, and evaluation config that produced it.** When you look at last week's numbers, you're not looking at a lossy summary. You're looking at the substrate that was in effect for each specific call.
 
-          - **Changes at any layer are attributable independently.** Because each layer is captured on its own and versioned on its own schedule, downstream analyses (Chapter 13, Chapter 14) can talk about *which layer changed*, not just *that the number moved*.
+          - **Changes at any layer are attributable independently.** Because each layer is captured on its own and versioned on its own schedule, downstream analyses ([Drift attribution](./drift-attribution), [Variance isolation](./variance-isolation)) can talk about *which layer changed*, not just *that the number moved*.
 
 ## How to use it
 
@@ -690,7 +691,7 @@ Param	Shape	Notes
 
 `surfaceId`	string (opt)	Restrict to one surface.
 
-`fixtureId`	string (opt)	Restrict to events produced by one fixture (Conformance, Chapter 14).
+`fixtureId`	string (opt)	Restrict to events produced by one fixture (see [Conformance & fixtures](./conformance)).
 
 `provenance`	enum (opt)	`production-state` (default), `exploratory-state`, or `all`.
 
@@ -1373,7 +1374,7 @@ Method & path	Purpose
 ## Lens versioning and snapshots
 
           Two different snapshots
-          A *four-layer snapshot* is one evaluation event, the subject of [Chapter 03](./snapshot). A *lens snapshot* is a versioned record of the lens configuration itself: which lessons, fixtures and composition were in force. The endpoints below are the second kind.
+          A *four-layer snapshot* is one evaluation event, the subject of [The four-layer snapshot](./snapshot). A *lens snapshot* is a versioned record of the lens configuration itself: which lessons, fixtures and composition were in force. The endpoints below are the second kind.
 
 Method & path	Purpose
 
@@ -1688,11 +1689,110 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 07 — Run modes
+### Chapter 07 — Swarms and sources
+
+_Permalink: https://holonograph.ai/guide/swarms-and-sources_
+
+Chapter 07
+
+# Swarms and sources
+
+        One lens reads a whole swarm. Several agents emit into the same record, often running the same code, and the instrument has to keep them distinguishable without splitting every measurement by agent, because pooling is right in some places and fabricates a statistic in others.
+
+## What it is
+
+        The source is which agent’s code emitted. It rides on the event as `sourceId` and is the partition key everything downstream reads.
+
+        Two identities are in play and they are not the same one. The agent id is the subject: whose behavior is under evaluation. The source is the emitter: which agent made this call. In a single-agent deployment they collapse into the same thing, which is why the distinction only shows up once a swarm is running.
+
+          A surface is not an agent
+          A surface may span several agents in a swarm. The lens identifies a surface by what is being evaluated, never by the agent boundary the data crosses. Two agents doing the same job share a surface and stay separable by source, rather than becoming two surfaces that cannot be compared.
+
+### Stamped, not claimed
+
+        The source is apparatus-owned. The lens stamps it at ingest from the authenticated operator, overriding any value the client sent. A client cannot attribute its events to another agent by asking.
+
+        Where no operator identity is established, the single-operator default, the event is left as it came and a client-supplied value stands as plain attribution. The absence of a source means one source, never a fabricated id.
+
+        That default is also what keeps a single-agent deployment unchanged. Nothing is stamped, nothing is partitioned, and every identity key is byte-identical to what it was before the swarm model existed.
+
+## Why it matters
+
+        Three things break without it, and they break in different directions.
+
+        **Statistics.** Pooling two agents’ score populations manufactures correlation that neither agent shows, and a pooled mean can hide one agent’s drift behind another’s stability. Splitting is not uniformly safer: where the instrument is shared, a judge or a global contract, splitting shrinks the sample and asserts a difference that is not there.
+
+        **Collisions.** Swarm agents run the same code. The same seam id, the same call site, the same finding, in several agents at once. Without a partition in the identity, one agent’s evidence silently overwrites another’s and the merged picture is of whichever wrote last.
+
+        **Authorization.** Evidence about one agent’s code is a thing another agent should not be able to replace.
+
+## How to use it
+
+### Push a scan per agent
+
+```
+POST /lens/builder-seams
+{ "source": "orders-agent", "seams": [ ... ], "candidateMap": { ... } }
+```
+
+        The declared source is bound to the authenticated identity. A verified operator handing a source that names a different operator is refused with `403`, so a scanner cannot replace another agent’s map. Omit it and the lens uses the verified operator’s own id, or the reserved default source where there is no operator identity at all.
+
+        The registry holds replace-current *per source* rather than globally, so several agents’ scans coexist and a push from one never clears another. In the merged read, node identity is the call site, the seam, its version, the direction and the source together, so two agents’ same-string loci stay distinct.
+
+### Hold the agent constant
+
+```
+POST /lens/decomposeVariance
+{ "surfaceId": "classify-intent", "dimensionId": "correctness", "sourceId": "orders-agent" }
+```
+
+        Scoping a decomposition to one source isolates that agent’s subject events, so a mean shift between agents cannot contaminate the variance when one surface is exercised by many. It is the complement of scoping by fixture, which holds the input constant instead.
+
+        The judge pool stays unscoped on purpose. A judge call carries the judge’s own source, not the subject agent’s, and is tied to the subject by its linkage rather than by a shared source. Like a replay window, a source scope isolates a diagnostic panel, so the read is ephemeral and is not recorded as the production trajectory.
+
+### Read findings that know their agent
+
+        A finding’s key carries a tagged `src=` segment, and only where the finding is genuinely multi-source, so single-source keys are unchanged. Two agents’ identical seam in shared or templated code produce two findings that triage separately instead of colliding into one.
+
+        The same composite identity runs through the analysis layer: two agents’ identical templated seam are tested as separate nodes and never pooled into one association, because each agent’s runtime context differs. See [The seam monitor](./seam-monitor#the-analysis-layer).
+
+## Reading the output
+
+        Every finding source in the attention spine declares how it partitions, so a new producer cannot pool two agents by omission: `per-source` where pooling corrupts the statistic, `pooled-examine` where pooling is correct and a hidden split is worth watching for, `pooled` where the question is global or keyed on another axis entirely. The `source-conflation` alarm reads the pooled ones and reports where one number is hiding two populations. It points rather than repartitions, because whether a grouping is right is the operator’s call. [The attention spine](./attention-spine#one-surface-several-agents) carries the table.
+
+        Merged reads preserve composite identity rather than flattening it, so a call site that several agents share keeps every source’s nodes.
+
+## Reference
+
+### Where a source appears
+
+Where	As	Set by
+
+The event	`sourceId`	The lens, from the authenticated operator at ingest.
+
+`POST /lens/builder-seams`	`source`	The caller, bound to its authenticated identity. `403` on a mismatch.
+
+`POST /lens/decomposeVariance`	`sourceId`	The caller, as a diagnostic scope. Forces an ephemeral read.
+
+A finding key	`src=`	The lens, only where the finding is multi-source.
+
+A seam-to-call node	Part of the composite id	The lens, stamped from the owning scan.
+
+A spine source	Its declared partition	Fixed per finding source in the public contract.
+
+### Where this sits
+
+        [The mediating lens](./mediating-lens) is where a call is captured; this chapter is whose call it was. [Run modes](./run-modes) is the other envelope on the same event, and the two are independent: a source says which agent, a run mode says under what conditions.
+
+        The partition vocabulary, the stamped field and the key format are public contract. Which reads scope by source, and how a merged view is assembled, lives in the lens.
+
+---
+
+### Chapter 08 — Run modes
 
 _Permalink: https://holonograph.ai/guide/run-modes_
 
-Chapter 07
+Chapter 08
 
 # Run modes
 
@@ -1819,11 +1919,11 @@ Baggage key	Carries
 
 ---
 
-### Chapter 08 — Sidecar / OTel integration
+### Chapter 09 — Sidecar / OTel integration
 
 _Permalink: https://holonograph.ai/guide/sidecar_
 
-Chapter 08
+Chapter 09
 
 # Sidecar / OTel integration
 
@@ -2089,11 +2189,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 09 — Surface topology scanner
+### Chapter 10 — Surface topology scanner
 
 _Permalink: https://holonograph.ai/guide/topology-scanner_
 
-Chapter 09
+Chapter 10
 
 # Surface topology scanner
 
@@ -2280,11 +2380,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 10 — The multiplexer
+### Chapter 11 — The multiplexer
 
 _Permalink: https://holonograph.ai/guide/multiplexer_
 
-Chapter 10
+Chapter 11
 
 # The multiplexer
 
@@ -2484,11 +2584,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 11 — Drift attribution
+### Chapter 12 — Drift attribution
 
 _Permalink: https://holonograph.ai/guide/drift-attribution_
 
-Chapter 11
+Chapter 12
 
 # Drift attribution
 
@@ -2561,7 +2661,7 @@ Label	What it means	What to do
 
                 `substrate`
                 The change tracks something you changed about your deployment.
-                Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your substrate columns (Chapter 04) are where you look first.
+                Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your [substrate columns](./substrate-columns) are where you look first.
 
                 `light source`
                 The vendor moved under you: a model was silently re-routed, updated, or its behavior shifted.
@@ -2673,11 +2773,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 12 — Variance isolation and declared axes
+### Chapter 13 — Variance isolation and declared axes
 
 _Permalink: https://holonograph.ai/guide/variance-isolation_
 
-Chapter 12
+Chapter 13
 
 # Variance isolation and declared axes
 
@@ -2892,11 +2992,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 13 — The lessons pipeline
+### Chapter 14 — The lessons pipeline
 
 _Permalink: https://holonograph.ai/guide/lessons-pipeline_
 
-Chapter 13
+Chapter 14
 
 # The lessons pipeline
 
@@ -3123,11 +3223,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 14 — Conformance & fixtures
+### Chapter 15 — Conformance & fixtures
 
 _Permalink: https://holonograph.ai/guide/conformance_
 
-Chapter 14
+Chapter 15
 
 # Conformance & fixtures
 
@@ -3350,11 +3450,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 15 — Rubric coverage and de-saturation
+### Chapter 16 — Rubric coverage and de-saturation
 
 _Permalink: https://holonograph.ai/guide/rubric-coverage_
 
-Chapter 15
+Chapter 16
 
 # Rubric coverage and de-saturation
 
@@ -3557,11 +3657,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 16 — Facet separability
+### Chapter 17 — Facet separability
 
 _Permalink: https://holonograph.ai/guide/facet-separability_
 
-Chapter 16
+Chapter 17
 
 # Facet separability
 
@@ -3685,11 +3785,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 17 — Judge modes and reflection
+### Chapter 18 — Judge modes and reflection
 
 _Permalink: https://holonograph.ai/guide/judge-modes_
 
-Chapter 17
+Chapter 18
 
 # Judge modes and reflection
 
@@ -3834,11 +3934,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 18 — Seams
+### Chapter 19 — Seams
 
 _Permalink: https://holonograph.ai/guide/seams_
 
-Chapter 18
+Chapter 19
 
 # Seams
 
@@ -3945,11 +4045,11 @@ Shape	Form
 
 ---
 
-### Chapter 19 — The seam monitor
+### Chapter 20 — The seam monitor
 
 _Permalink: https://holonograph.ai/guide/seam-monitor_
 
-Chapter 19
+Chapter 20
 
 # The seam monitor
 
@@ -4125,11 +4225,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 20 — The attention spine
+### Chapter 21 — The attention spine
 
 _Permalink: https://holonograph.ai/guide/attention-spine_
 
-Chapter 20
+Chapter 21
 
 # The attention spine
 
@@ -4340,11 +4440,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 21 — Authority
+### Chapter 22 — Authority
 
 _Permalink: https://holonograph.ai/guide/authority_
 
-Chapter 21
+Chapter 22
 
 # Authority
 
@@ -4461,11 +4561,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 22 — Authority governance
+### Chapter 23 — Authority governance
 
 _Permalink: https://holonograph.ai/guide/authority-governance_
 
-Chapter 22
+Chapter 23
 
 # Authority governance
 
@@ -4619,11 +4719,11 @@ Code	Status	Meaning
 
 ---
 
-### Chapter 23 — Route a verdict to a human
+### Chapter 24 — Route a verdict to a human
 
 _Permalink: https://holonograph.ai/guide/subscriptions_
 
-Chapter 23
+Chapter 24
 
 # Route a verdict to a human
 
@@ -4823,11 +4923,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 24 — Outcome delivery
+### Chapter 25 — Outcome delivery
 
 _Permalink: https://holonograph.ai/guide/outcome-delivery_
 
-Chapter 24
+Chapter 25
 
 # Outcome delivery
 
@@ -4983,11 +5083,11 @@ Field	Where	Meaning
 
 ---
 
-### Chapter 25 — Compaction & husking
+### Chapter 26 — Compaction & husking
 
 _Permalink: https://holonograph.ai/guide/compaction_
 
-Chapter 25
+Chapter 26
 
 # Compaction & husking
 
@@ -5113,11 +5213,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 26 — The dashboard
+### Chapter 27 — The dashboard
 
 _Permalink: https://holonograph.ai/guide/dashboard_
 
-Chapter 26
+Chapter 27
 
 # The dashboard
 

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f6f5f9" />
+<title>Swarms and sources — The Guide — Holonograph</title>
+<meta name="description" content="Reading several agents through one lens: the source that keeps them distinguishable, where pooling is right, and why the lens stamps the source rather than accepting it." />
+<meta name="discloses" content="capability-only" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/swarms-and-sources" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="Swarms and sources — The Guide" />
+<meta property="og:description" content="Reading several agents through one lens: the source that keeps them distinguishable, where pooling is right, and why the lens stamps the source rather than accepting it." />
+<meta property="og:url" content="https://holonograph.ai/guide/swarms-and-sources" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="Swarms and sources — The Guide" />
+<meta name="twitter:description" content="Reading several agents through one lens: the source that keeps them distinguishable, where pooling is right, and why the lens stamps the source rather than accepting it." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
+<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
+</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
+      <a class="pill" href="../pricing.html">Get started</a>
+    </nav></div>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
+      <ol>
+        <li class="s-part">Overview</li>
+        <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li class="s-part">Operating the lens</li>
+        <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
+        <li class="current"><span class="s-num">07</span><a href="./swarms-and-sources" class="s-ttl">Swarms and sources</a></li>
+        <li><span class="s-num">08</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">09</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">10</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">13</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
+        <li><span class="s-num">14</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity</li>
+        <li><span class="s-num">15</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">16</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">17</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">18</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams and soak</li>
+        <li><span class="s-num">19</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">20</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">21</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
+        <li><span class="s-num">22</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">23</span><a href="./authority-governance" class="s-ttl">Authority governance</a></li>
+        <li class="s-part">Operational utilities</li>
+        <li><span class="s-num">24</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">25</span><a href="./outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">26</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">27</span><a href="./dashboard" class="s-ttl">The dashboard</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+
+
+        <p class="guide-eyebrow">Chapter 07</p>
+        <h1 class="guide-h1">Swarms and sources</h1>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          One lens reads a whole swarm. Several agents emit into the same record, often running the same code, and the instrument has to keep them distinguishable without splitting every measurement by agent, because pooling is right in some places and fabricates a statistic in others.
+        </p>
+
+        <h2 id="what-it-is">What it is</h2>
+
+        <p>
+          The source is which agent&rsquo;s code emitted. It rides on the event as <code>sourceId</code> and is the partition key everything downstream reads.
+        </p>
+
+        <p>
+          Two identities are in play and they are not the same one. The agent id is the subject: whose behavior is under evaluation. The source is the emitter: which agent made this call. In a single-agent deployment they collapse into the same thing, which is why the distinction only shows up once a swarm is running.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A surface is not an agent</span>
+          A surface may span several agents in a swarm. The lens identifies a surface by what is being evaluated, never by the agent boundary the data crosses. Two agents doing the same job share a surface and stay separable by source, rather than becoming two surfaces that cannot be compared.
+        </div>
+
+        <h3 id="stamped-not-claimed">Stamped, not claimed</h3>
+
+        <p>
+          The source is apparatus-owned. The lens stamps it at ingest from the authenticated operator, overriding any value the client sent. A client cannot attribute its events to another agent by asking.
+        </p>
+
+        <p>
+          Where no operator identity is established, the single-operator default, the event is left as it came and a client-supplied value stands as plain attribution. The absence of a source means one source, never a fabricated id.
+        </p>
+
+        <p>
+          That default is also what keeps a single-agent deployment unchanged. Nothing is stamped, nothing is partitioned, and every identity key is byte-identical to what it was before the swarm model existed.
+        </p>
+
+        <h2 id="why-it-matters">Why it matters</h2>
+
+        <p>
+          Three things break without it, and they break in different directions.
+        </p>
+
+        <p>
+          <strong>Statistics.</strong> Pooling two agents&rsquo; score populations manufactures correlation that neither agent shows, and a pooled mean can hide one agent&rsquo;s drift behind another&rsquo;s stability. Splitting is not uniformly safer: where the instrument is shared, a judge or a global contract, splitting shrinks the sample and asserts a difference that is not there.
+        </p>
+
+        <p>
+          <strong>Collisions.</strong> Swarm agents run the same code. The same seam id, the same call site, the same finding, in several agents at once. Without a partition in the identity, one agent&rsquo;s evidence silently overwrites another&rsquo;s and the merged picture is of whichever wrote last.
+        </p>
+
+        <p>
+          <strong>Authorization.</strong> Evidence about one agent&rsquo;s code is a thing another agent should not be able to replace.
+        </p>
+
+        <h2 id="how-to-use-it">How to use it</h2>
+
+        <h3 id="push-a-scan-per-agent">Push a scan per agent</h3>
+
+        <pre><code>POST /lens/builder-seams
+{ "source": "orders-agent", "seams": [ ... ], "candidateMap": { ... } }</code></pre>
+
+        <p>
+          The declared source is bound to the authenticated identity. A verified operator handing a source that names a different operator is refused with <code>403</code>, so a scanner cannot replace another agent&rsquo;s map. Omit it and the lens uses the verified operator&rsquo;s own id, or the reserved default source where there is no operator identity at all.
+        </p>
+
+        <p>
+          The registry holds replace-current <em>per source</em> rather than globally, so several agents&rsquo; scans coexist and a push from one never clears another. In the merged read, node identity is the call site, the seam, its version, the direction and the source together, so two agents&rsquo; same-string loci stay distinct.
+        </p>
+
+        <h3 id="hold-the-agent-constant">Hold the agent constant</h3>
+
+        <pre><code>POST /lens/decomposeVariance
+{ "surfaceId": "classify-intent", "dimensionId": "correctness", "sourceId": "orders-agent" }</code></pre>
+
+        <p>
+          Scoping a decomposition to one source isolates that agent&rsquo;s subject events, so a mean shift between agents cannot contaminate the variance when one surface is exercised by many. It is the complement of scoping by fixture, which holds the input constant instead.
+        </p>
+
+        <p>
+          The judge pool stays unscoped on purpose. A judge call carries the judge&rsquo;s own source, not the subject agent&rsquo;s, and is tied to the subject by its linkage rather than by a shared source. Like a replay window, a source scope isolates a diagnostic panel, so the read is ephemeral and is not recorded as the production trajectory.
+        </p>
+
+        <h3 id="read-findings-that-know-their-agent">Read findings that know their agent</h3>
+
+        <p>
+          A finding&rsquo;s key carries a tagged <code>src=</code> segment, and only where the finding is genuinely multi-source, so single-source keys are unchanged. Two agents&rsquo; identical seam in shared or templated code produce two findings that triage separately instead of colliding into one.
+        </p>
+
+        <p>
+          The same composite identity runs through the analysis layer: two agents&rsquo; identical templated seam are tested as separate nodes and never pooled into one association, because each agent&rsquo;s runtime context differs. See <a href="./seam-monitor#the-analysis-layer">The seam monitor</a>.
+        </p>
+
+        <h2 id="reading-the-output">Reading the output</h2>
+
+        <p>
+          Every finding source in the attention spine declares how it partitions, so a new producer cannot pool two agents by omission: <code>per-source</code> where pooling corrupts the statistic, <code>pooled-examine</code> where pooling is correct and a hidden split is worth watching for, <code>pooled</code> where the question is global or keyed on another axis entirely. The <code>source-conflation</code> alarm reads the pooled ones and reports where one number is hiding two populations. It points rather than repartitions, because whether a grouping is right is the operator&rsquo;s call. <a href="./attention-spine#one-surface-several-agents">The attention spine</a> carries the table.
+        </p>
+
+        <p>
+          Merged reads preserve composite identity rather than flattening it, so a call site that several agents share keeps every source&rsquo;s nodes.
+        </p>
+
+        <h2 id="reference">Reference</h2>
+
+        <h3 id="where-a-source-appears">Where a source appears</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Where</th><th>As</th><th>Set by</th></tr></thead>
+            <tbody>
+              <tr><td>The event</td><td><code>sourceId</code></td><td>The lens, from the authenticated operator at ingest.</td></tr>
+              <tr><td><code>POST /lens/builder-seams</code></td><td><code>source</code></td><td>The caller, bound to its authenticated identity. <code>403</code> on a mismatch.</td></tr>
+              <tr><td><code>POST /lens/decomposeVariance</code></td><td><code>sourceId</code></td><td>The caller, as a diagnostic scope. Forces an ephemeral read.</td></tr>
+              <tr><td>A finding key</td><td><code>src=&lt;id&gt;</code></td><td>The lens, only where the finding is multi-source.</td></tr>
+              <tr><td>A seam-to-call node</td><td>Part of the composite id</td><td>The lens, stamped from the owning scan.</td></tr>
+              <tr><td>A spine source</td><td>Its declared partition</td><td>Fixed per finding source in the public contract.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="where-this-sits">Where this sits</h3>
+
+        <p>
+          <a href="./mediating-lens">The mediating lens</a> is where a call is captured; this chapter is whose call it was. <a href="./run-modes">Run modes</a> is the other envelope on the same event, and the two are independent: a source says which agent, a run mode says under what conditions.
+        </p>
+
+        <p>
+          The partition vocabulary, the stamped field and the key format are public contract. Which reads scope by source, and how a merged view is assembled, lives in the lens.
+        </p>
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./mediating-lens" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">The mediating lens</span>
+          </a>
+          <a href="./run-modes" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Run modes</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 07 · Swarms and sources</span>
+    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
+  </footer>
+<script src="./_assets/guide-search.js"></script>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
+</body>
+</html>

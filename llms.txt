@@ -86,7 +86,7 @@ These terms have specific Holonograph meanings that may differ from generic LLM/
 
 ## The Guide
 
-The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, read attribution, and govern authority. 26 chapters in 6 parts. The whole Guide as one document: https://holonograph.ai/guide/all. Machine-readable full text: https://holonograph.ai/llms-full.txt
+The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, read attribution, and govern authority. 27 chapters in 6 parts. The whole Guide as one document: https://holonograph.ai/guide/all. Machine-readable full text: https://holonograph.ai/llms-full.txt
 
 **Overview**
 
@@ -99,38 +99,39 @@ The operator's manual lives at https://holonograph.ai/guide/. It documents the c
 - 04 Substrate columns: https://holonograph.ai/guide/substrate-columns
 - 05 SDK reference: https://holonograph.ai/guide/sdk-reference
 - 06 The mediating lens: https://holonograph.ai/guide/mediating-lens
-- 07 Run modes: https://holonograph.ai/guide/run-modes
-- 08 Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
-- 09 Surface topology scanner: https://holonograph.ai/guide/topology-scanner
-- 10 The multiplexer: https://holonograph.ai/guide/multiplexer
-- 11 Drift attribution: https://holonograph.ai/guide/drift-attribution
-- 12 Variance isolation: https://holonograph.ai/guide/variance-isolation
-- 13 The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
+- 07 Swarms and sources: https://holonograph.ai/guide/swarms-and-sources
+- 08 Run modes: https://holonograph.ai/guide/run-modes
+- 09 Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
+- 10 Surface topology scanner: https://holonograph.ai/guide/topology-scanner
+- 11 The multiplexer: https://holonograph.ai/guide/multiplexer
+- 12 Drift attribution: https://holonograph.ai/guide/drift-attribution
+- 13 Variance isolation and declared axes: https://holonograph.ai/guide/variance-isolation
+- 14 The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
 
 **Judge validity**
 
-- 14 Conformance & fixtures: https://holonograph.ai/guide/conformance
-- 15 Rubric coverage and de-saturation: https://holonograph.ai/guide/rubric-coverage
-- 16 Facet separability: https://holonograph.ai/guide/facet-separability
-- 17 Judge modes and reflection: https://holonograph.ai/guide/judge-modes
+- 15 Conformance & fixtures: https://holonograph.ai/guide/conformance
+- 16 Rubric coverage and de-saturation: https://holonograph.ai/guide/rubric-coverage
+- 17 Facet separability: https://holonograph.ai/guide/facet-separability
+- 18 Judge modes and reflection: https://holonograph.ai/guide/judge-modes
 
 **Seams and soak**
 
-- 18 Seams: https://holonograph.ai/guide/seams
-- 19 The seam monitor: https://holonograph.ai/guide/seam-monitor
-- 20 The attention spine: https://holonograph.ai/guide/attention-spine
+- 19 Seams: https://holonograph.ai/guide/seams
+- 20 The seam monitor: https://holonograph.ai/guide/seam-monitor
+- 21 The attention spine: https://holonograph.ai/guide/attention-spine
 
 **Authority and governance**
 
-- 21 Authority: https://holonograph.ai/guide/authority
-- 22 Authority governance: https://holonograph.ai/guide/authority-governance
+- 22 Authority: https://holonograph.ai/guide/authority
+- 23 Authority governance: https://holonograph.ai/guide/authority-governance
 
 **Operational utilities**
 
-- 23 Route a verdict to a human: https://holonograph.ai/guide/subscriptions
-- 24 Outcome delivery: https://holonograph.ai/guide/outcome-delivery
-- 25 Compaction & husking: https://holonograph.ai/guide/compaction
-- 26 The dashboard: https://holonograph.ai/guide/dashboard
+- 24 Route a verdict to a human: https://holonograph.ai/guide/subscriptions
+- 25 Outcome delivery: https://holonograph.ai/guide/outcome-delivery
+- 26 Compaction & husking: https://holonograph.ai/guide/compaction
+- 27 The dashboard: https://holonograph.ai/guide/dashboard
 
 The Guide is capability-only by design. Deeper technical validation of the underlying methodology is available under NDA.
 

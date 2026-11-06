@@ -53,6 +53,14 @@
     },
     {
       "num": "07",
+      "slug": "swarms-and-sources",
+      "title": "Swarms and sources",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Reading several agents through one lens: the source that keeps them apart, and where pooling them is still right."
+    },
+    {
+      "num": "08",
       "slug": "run-modes",
       "title": "Run modes",
       "group": "Operating the lens",
@@ -60,7 +68,7 @@
       "blurb": "Separating evaluation from production with an enforced, fail-closed envelope."
     },
     {
-      "num": "08",
+      "num": "09",
       "slug": "sidecar",
       "title": "Sidecar / OTel integration",
       "group": "Operating the lens",
@@ -68,7 +76,7 @@
       "blurb": "Emitting to the lens without changing your request path."
     },
     {
-      "num": "09",
+      "num": "10",
       "slug": "topology-scanner",
       "title": "Surface topology scanner",
       "group": "Operating the lens",
@@ -76,7 +84,7 @@
       "blurb": "Declared surfaces, observed coverage, and the size of the blind spot."
     },
     {
-      "num": "10",
+      "num": "11",
       "slug": "multiplexer",
       "title": "The multiplexer",
       "group": "Operating the lens",
@@ -84,7 +92,7 @@
       "blurb": "Comparing vendors on identical terms, routed or run on demand."
     },
     {
-      "num": "11",
+      "num": "12",
       "slug": "drift-attribution",
       "title": "Drift attribution",
       "group": "Operating the lens",
@@ -92,7 +100,7 @@
       "blurb": "Assigning a change to one source, and recording both sides of the model identity."
     },
     {
-      "num": "12",
+      "num": "13",
       "slug": "variance-isolation",
       "title": "Variance isolation and declared axes",
       "group": "Operating the lens",
@@ -100,7 +108,7 @@
       "blurb": "Telling real change apart from sampling and chance, then grading the axes you declared to explain it."
     },
     {
-      "num": "13",
+      "num": "14",
       "slug": "lessons-pipeline",
       "title": "The lessons pipeline",
       "group": "Operating the lens",
@@ -108,7 +116,7 @@
       "blurb": "Captured overrides and approvals becoming drafted, human-gated artifacts."
     },
     {
-      "num": "14",
+      "num": "15",
       "slug": "conformance",
       "title": "Conformance & fixtures",
       "group": "Judge validity",
@@ -116,7 +124,7 @@
       "blurb": "Whether a judge actually ran against its fixtures, or silently defaulted."
     },
     {
-      "num": "15",
+      "num": "16",
       "slug": "rubric-coverage",
       "title": "Rubric coverage and de-saturation",
       "group": "Judge validity",
@@ -124,7 +132,7 @@
       "blurb": "A rubric per facet, a worklist of the facets without one, and a check that what you wrote still discriminates."
     },
     {
-      "num": "16",
+      "num": "17",
       "slug": "facet-separability",
       "title": "Facet separability",
       "group": "Judge validity",
@@ -132,7 +140,7 @@
       "blurb": "Whether a decomposition is a real topology, one axis wearing two names, or a prerequisite dressed as a peer."
     },
     {
-      "num": "17",
+      "num": "18",
       "slug": "judge-modes",
       "title": "Judge modes and reflection",
       "group": "Judge validity",
@@ -140,7 +148,7 @@
       "blurb": "Four modes on two axes, and the third cell: a capped retry granted per cell, never defaulted."
     },
     {
-      "num": "18",
+      "num": "19",
       "slug": "seams",
       "title": "Seams",
       "group": "Seams and soak",
@@ -148,7 +156,7 @@
       "blurb": "An interpreted value driving a decision. Permanent, closeable, not removable."
     },
     {
-      "num": "19",
+      "num": "20",
       "slug": "seam-monitor",
       "title": "The seam monitor",
       "group": "Seams and soak",
@@ -156,7 +164,7 @@
       "blurb": "Finding seams in source, adjudicating them, registering them, and soaking them."
     },
     {
-      "num": "20",
+      "num": "21",
       "slug": "attention-spine",
       "title": "The attention spine",
       "group": "Seams and soak",
@@ -164,7 +172,7 @@
       "blurb": "One operator lifecycle over twenty-six sources of findings."
     },
     {
-      "num": "21",
+      "num": "22",
       "slug": "authority",
       "title": "Authority",
       "group": "Authority and governance",
@@ -172,7 +180,7 @@
       "blurb": "The per-surface state that the declared prerequisites are satisfied on the record."
     },
     {
-      "num": "22",
+      "num": "23",
       "slug": "authority-governance",
       "title": "Authority governance",
       "group": "Authority and governance",
@@ -180,7 +188,7 @@
       "blurb": "The approver gate, the acknowledgement that releases a tear, and the policy that sets what one release covers."
     },
     {
-      "num": "23",
+      "num": "24",
       "slug": "subscriptions",
       "title": "Route a verdict to a human",
       "group": "Operational utilities",
@@ -188,7 +196,7 @@
       "blurb": "Fire a signed webhook when a predicate over the lens’s own verdicts crosses a line."
     },
     {
-      "num": "24",
+      "num": "25",
       "slug": "outcome-delivery",
       "title": "Outcome delivery",
       "group": "Operational utilities",
@@ -196,7 +204,7 @@
       "blurb": "Whether a scored outcome ever reached the user, and the horizon past which the lens refuses to imply it did."
     },
     {
-      "num": "25",
+      "num": "26",
       "slug": "compaction",
       "title": "Compaction & husking",
       "group": "Operational utilities",
@@ -204,7 +212,7 @@
       "blurb": "Removing bulky payload from an aging event while structured fields stay."
     },
     {
-      "num": "26",
+      "num": "27",
       "slug": "dashboard",
       "title": "The dashboard",
       "group": "Operational utilities",
