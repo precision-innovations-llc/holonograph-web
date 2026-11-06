@@ -232,6 +232,11 @@ x-holonograph-run-mode: production</code></pre>
           <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code>. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports <code>hiddenByProvenanceScope</code> &mdash; how many events the current scope filtered out &mdash; so a <code>count: 0</code> with a non-zero hidden count reads as &ldquo;wrong scope, add <code>?provenance=all</code>&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.</li>
         </ul>
 
+        <div class="guide-callout">
+          <span class="callout-label">Not the other snapshot</span>
+          This chapter is about the four-layer snapshot: one evaluation, one row. A <em>lens snapshot</em> is a different object, a versioned record of the lens configuration in force, and it has its own endpoints under <code>/lens/snapshots</code>. See <a href="./sdk-reference#lens-snapshots">Lens versioning and snapshots</a>.
+        </div>
+
         <h2>Reference</h2>
 
         <h3>Endpoints</h3>

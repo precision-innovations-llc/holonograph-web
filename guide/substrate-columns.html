@@ -222,7 +222,53 @@
           Substrate columns come back on every event via <code>GET /lens/events</code>. Filter queries on them the same way you filter on cohort tags: a slice is a set of column-value pairs, and the values you didn't declare aren't queryable. That's the whole point of declaring them ahead of time.
         </p>
 
+        <h2>Is the column actually emitting?</h2>
+
+        <p>
+          Declaring a column does not populate it, and a column that never populates reads as a clean one. <code>GET /lens/emission</code> is the audit: per declared column on a surface, the in-window emission rate, per-day tallies, and a verdict. An <code>always</code> column at 0% reads <code>missing</code>, which means broken; a <code>conditional</code> one reads <code>absent</code>, which may be legitimately sparse.
+        </p>
+
+        <p>
+          Two fields on the column shape set what the audit measures against:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>What it declares</th></tr></thead>
+            <tbody>
+              <tr><td><code>emissionExpectation</code></td><td><code>always</code>, <code>conditional</code>, or <code>{ whenever }</code> (opt)</td><td>Omit it and the expectation is derived from <code>semantic</code>, so existing contracts are unaffected. The co-occurrence form <code>{ whenever }</code> resolves to <code>conditional</code> and carries a predicate the audit scopes its denominator to, which turns a conditional column's silence from unverifiable into testable.</td></tr>
+              <tr><td><code>expectationMismatchMaxRate</code></td><td>number in (0, 1) (opt)</td><td>For an <code>always</code> column, the rate below which it is behaving <code>conditional</code>. The audit runs a one-sided binomial test and reports <code>expectation-mismatch</code> only when it rejects. Defaults to 0.05. Set it where the sparsity is known: a column legitimately present on a fifth of events can declare 0.25 rather than arguing with the general default.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The audit's set-difference runs both ways. <code>undeclaredObserved</code> catches the reverse case: a key arriving on events that no contract declares.
+        </p>
+
+        <h2>Promote what you are already emitting</h2>
+
+        <p>
+          The usual loop is declare, deploy, audit, fix. <code>GET /lens/contract-promotion</code> inverts it. For every emitted-but-undeclared key the emission audit already found, it proposes a mergeable <code>SubstrateColumn</code> skeleton, with <code>semantic</code> inferred from the observed emission rate.
+        </p>
+
+        <p>
+          The operator-judgment fields, <code>control</code> and <code>visibility</code>, carry a conservative default and are listed in <code>operatorMustConfirm</code>. Nothing is merged: the read proposes a stub and the operator reviews it and posts the contract. Reversing the loop this way means a column you have been emitting for a month becomes queryable without first guessing what to declare.
+        </p>
+
         <h2>Reference</h2>
+
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/emission</code></td><td>Per-column emission rate, per-day tallies, verdict, and the undeclared-but-observed set.</td></tr>
+              <tr><td><code>GET /lens/contract-promotion</code></td><td>A mergeable column stub per undeclared key, with the fields needing operator judgment flagged.</td></tr>
+            </tbody>
+          </table>
+        </div>
 
         <h3>Common diagnostic columns</h3>
 

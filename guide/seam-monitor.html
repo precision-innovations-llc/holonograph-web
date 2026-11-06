@@ -233,6 +233,19 @@
 
         <h2>Reference</h2>
 
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/builder-seams</code></td><td>The scanner pushes its current registered-seam set. Replace-current: a scan run is a complete re-derivation of the code's interpreted seams, so the newest push is the truth and a seam that no longer appears is gone. Writes the evidence registry only, never the contract registry. Returns <code>202 { accepted }</code> once the write is durable and visible to other instances. <code>501</code> where the registry is not wired, which is the only opt-in.</td></tr>
+              <tr><td><code>GET /lens/builder-seams</code></td><td>Confirm an ingest landed and is visible cross-instance before its call events start carrying a call-site id. A per-source summary by default; <code>?full=1</code> returns the held scans.</td></tr>
+              <tr><td><code>POST /lens/seam-soak/judge</code></td><td>Run the offline value-efficacy judge over a seam's stored raw-output corpus. Operator-invoked, approver and cost gated. The judge runs over the stored corpus, never the live stream, and verdicts are minted server-side on the judge surface. <code>501</code> where no judge scorer is wired.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
         <p>
           The shared vocabulary, the four sink shapes, the default-path forms and the sink kinds, lives in
           the public contract package so the build-time scanner and the run-time producer name the same

@@ -238,6 +238,7 @@ Content-Type: application/json
             <tbody>
               <tr><td><code>POST /lens/topology/structural-inventory</code></td><td>Declare what your codebase enumerates.</td></tr>
               <tr><td><code>POST /lens/topology/scan</code></td><td>Compare declared vs observed vs enumerated, return the coverage report.</td></tr>
+              <tr><td><code>POST /lens/topology/refresh</code></td><td>Recompute the cacheable topology view and repopulate the cache. Body: optional <code>{ agentId }</code>. Returns the fresh scan plus its <code>computedAt</code>. A recomputed read, not a write; <code>501</code> where no cache is wired, since the plain scan already computes live.</td></tr>
               <tr><td><code>POST /lens/topology/bootstrap</code></td><td>Propose candidate dimensions for a surface based on recent traffic.</td></tr>
             </tbody>
           </table>

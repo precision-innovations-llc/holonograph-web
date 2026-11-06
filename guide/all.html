@@ -307,6 +307,36 @@ const summary = await client.contract.register({
           <code>scoring</code> is required on every dimension and is one of <code>exact-match</code>, <code>llm-judge</code> or <code>custom</code>. It sets the score codomain, so it also fixes the scale a <code>passThreshold</code> is read against: <code>llm-judge</code> emits 0&ndash;10, <code>exact-match</code> emits 0 or 1. Registration rejects a threshold outside the declared strategy's range.
         </p>
 
+        <h5>What a dimension declares</h5>
+
+        <p>
+          The example above declares the minimum. A dimension carries eleven fields, and most of the lens's judge-side analysis keys on them: the rubric it scores against, the threshold it passes at, the gate it drives, the grounding it claims to depend on, and the judge surface that produces its verdict.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>What it declares</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code></td><td>string (req)</td><td>The dimension identifier within this surface.</td></tr>
+              <tr><td><code>description</code></td><td>string (opt)</td><td>Shown in operator interfaces.</td></tr>
+              <tr><td><code>scoring</code></td><td>enum (req)</td><td><code>exact-match</code>, <code>llm-judge</code> or <code>custom</code>. Sets the score codomain, and gates which of the fields below are legal.</td></tr>
+              <tr><td><code>rubricRef</code></td><td>string (opt)</td><td>Path to the rubric, for <code>llm-judge</code>. When the dimension is a live gate, registration <em>resolves and reads</em> the file: an unresolvable gate rubric is rejected at <code>POST</code>, not warned about at runtime. A relative path resolves against the daemon's rubric root. A non-gated ref is left to your own eval pipeline and is not resolved.</td></tr>
+              <tr><td><code>passThreshold</code></td><td>number (opt)</td><td>Where this dimension passes, on the <code>scoring</code> strategy's scale. Omit for pass/fail-only dimensions. Registration rejects an out-of-range value, which is what catches a <code>0.5</code> meant as a probability on a 0&ndash;10 judge.</td></tr>
+              <tr><td><code>gatePolicy</code></td><td>object (opt)</td><td>Makes this dimension a live gate: the gateway grades the response inline in the declared <code>activeRunModes</code> and takes <code>failureAction</code>, one of <code>retry</code>, <code>flag</code> or <code>block</code>, when the score falls below the gate's own <code>passThreshold</code>. Absent, or <code>enabled: false</code>, leaves the dimension drift-monitoring only. See <a href="./judge-modes">Judge modes</a>.</td></tr>
+              <tr><td><code>valueDomain</code></td><td>object (opt)</td><td>The legal value set, checked before any scorer runs. An out-of-domain value is forced to <code>passed: false</code> with a structured rationale, so a hallucinated-brand check costs nothing and never reaches a judge call. <code>kind: 'enum'</code> is the only variant today.</td></tr>
+              <tr><td><code>rubricDispatch</code></td><td>object (opt)</td><td>Facet-scoped rubric selection for <code>llm-judge</code>: <code>facet</code> names a declared cohort-tag key, <code>refsFrom</code> the bucket a per-facet rubric resolves from by convention, <code>refs</code> optional pins. <code>rubricRef</code> then becomes the required default an unmatched facet falls back to, so a judge never silently skips. Requires <code>rubricRef</code>; rejected on any other strategy.</td></tr>
+              <tr><td><code>judgeClaimContract</code></td><td>object (opt)</td><td>Declares the judge claim-instrumented: it owes the structured assertions named in <code>assertionKinds</code> as fields rather than prose. Its presence is what flips the deterministic reliability checks from honest-null to reading the field. Valid only on <code>llm-judge</code>. See <a href="./sdk-reference#verdict-reliability">Verdict reliability</a>.</td></tr>
+              <tr><td><code>judgeSurfaceId</code></td><td>string or string[] (opt)</td><td>Which <code>role: 'judge'</code> surface grades this dimension. The operator-legible half of a pair: <code>role</code> on a surface says it <em>is</em> a judge, this says the subject is graded <em>by</em> it. Many-to-many, so an array holds a holistic judge alongside focused ones. Each id is checked at registration to name a declared judge surface, and not this dimension's own.</td></tr>
+              <tr><td><code>expectsGrounding</code></td><td>array (opt)</td><td>Declare-your-reach for judgment fidelity. Each entry names a substrate <code>column</code> and the <code>misuseValues</code> of it the judge must penalize. A value can sit in the judge's sight and go unused, and the score then saturates: visible, blind to its meaning. Each <code>column</code> must be a declared substrate column.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">A misuse value is an output correlate, not a situation label</span>
+          A <code>misuseValues</code> entry has to be a value the producer consumed that correlates with the <em>wrong output</em>. A label of the grounding situation, which a correct output could carry just as easily, admits both a faithful and a faulty output under one value and reads as false saturation.
+        </div>
+
         <p>
           Or over HTTP:
         </p>
@@ -540,6 +570,11 @@ x-holonograph-run-mode: production</code></pre>
           <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code>. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports <code>hiddenByProvenanceScope</code> &mdash; how many events the current scope filtered out &mdash; so a <code>count: 0</code> with a non-zero hidden count reads as &ldquo;wrong scope, add <code>?provenance=all</code>&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.</li>
         </ul>
 
+        <div class="guide-callout">
+          <span class="callout-label">Not the other snapshot</span>
+          This chapter is about the four-layer snapshot: one evaluation, one row. A <em>lens snapshot</em> is a different object, a versioned record of the lens configuration in force, and it has its own endpoints under <code>/lens/snapshots</code>. See <a href="./sdk-reference#lens-snapshots">Lens versioning and snapshots</a>.
+        </div>
+
         <h4>Reference</h4>
 
         <h5>Endpoints</h5>
@@ -716,7 +751,53 @@ x-holonograph-run-mode: production</code></pre>
           Substrate columns come back on every event via <code>GET /lens/events</code>. Filter queries on them the same way you filter on cohort tags: a slice is a set of column-value pairs, and the values you didn't declare aren't queryable. That's the whole point of declaring them ahead of time.
         </p>
 
+        <h4>Is the column actually emitting?</h4>
+
+        <p>
+          Declaring a column does not populate it, and a column that never populates reads as a clean one. <code>GET /lens/emission</code> is the audit: per declared column on a surface, the in-window emission rate, per-day tallies, and a verdict. An <code>always</code> column at 0% reads <code>missing</code>, which means broken; a <code>conditional</code> one reads <code>absent</code>, which may be legitimately sparse.
+        </p>
+
+        <p>
+          Two fields on the column shape set what the audit measures against:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>What it declares</th></tr></thead>
+            <tbody>
+              <tr><td><code>emissionExpectation</code></td><td><code>always</code>, <code>conditional</code>, or <code>{ whenever }</code> (opt)</td><td>Omit it and the expectation is derived from <code>semantic</code>, so existing contracts are unaffected. The co-occurrence form <code>{ whenever }</code> resolves to <code>conditional</code> and carries a predicate the audit scopes its denominator to, which turns a conditional column's silence from unverifiable into testable.</td></tr>
+              <tr><td><code>expectationMismatchMaxRate</code></td><td>number in (0, 1) (opt)</td><td>For an <code>always</code> column, the rate below which it is behaving <code>conditional</code>. The audit runs a one-sided binomial test and reports <code>expectation-mismatch</code> only when it rejects. Defaults to 0.05. Set it where the sparsity is known: a column legitimately present on a fifth of events can declare 0.25 rather than arguing with the general default.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The audit's set-difference runs both ways. <code>undeclaredObserved</code> catches the reverse case: a key arriving on events that no contract declares.
+        </p>
+
+        <h4>Promote what you are already emitting</h4>
+
+        <p>
+          The usual loop is declare, deploy, audit, fix. <code>GET /lens/contract-promotion</code> inverts it. For every emitted-but-undeclared key the emission audit already found, it proposes a mergeable <code>SubstrateColumn</code> skeleton, with <code>semantic</code> inferred from the observed emission rate.
+        </p>
+
+        <p>
+          The operator-judgment fields, <code>control</code> and <code>visibility</code>, carry a conservative default and are listed in <code>operatorMustConfirm</code>. Nothing is merged: the read proposes a stub and the operator reviews it and posts the contract. Reversing the loop this way means a column you have been emitting for a month becomes queryable without first guessing what to declare.
+        </p>
+
         <h4>Reference</h4>
+
+        <h5>Endpoints</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/emission</code></td><td>Per-column emission rate, per-day tallies, verdict, and the undeclared-but-observed set.</td></tr>
+              <tr><td><code>GET /lens/contract-promotion</code></td><td>A mergeable column stub per undeclared key, with the fields needing operator judgment flagged.</td></tr>
+            </tbody>
+          </table>
+        </div>
 
         <h5>Common diagnostic columns</h5>
 
@@ -1052,7 +1133,7 @@ const eventId = await handle.reportOutcome({
           Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). It resolves to that event's id, which is the handle an asynchronous judge needs: a verdict minted later references it as its subject event. What Holonograph does with the event afterwards is the subject of the analysis chapters.
         </p>
 
-        <h4>Verdict reliability — let the lens check your judge</h4>
+        <h4 id="verdict-reliability">Verdict reliability — let the lens check your judge</h4>
 
         <p>
           A verdict does not have to come back in-request. Which timings are available to a judge, and what
@@ -1225,6 +1306,48 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
         <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is an escape hatch, not the everyday path.</p>
 
+        <h4>Reads the client does not wrap</h4>
+
+        <p>
+          Five endpoints an integration reaches for that have no client method. Call them over HTTP; each is also served under the <code>/holonograph</code> alias.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/version</code></td><td>The ledger-issued <code>lensVersion</code> in force. Stamp this into an event you build by hand; a placeholder is refused at ingest.</td></tr>
+              <tr><td><code>GET /aperture/health</code></td><td><code>{ status, lessons }</code>, where <code>lessons</code> is the boot-resolved capability state: available, unavailable or degraded, with a reason. A degrade is retrievable here as a first-class state rather than having gone to a log line at boot. Exempt from the run-mode header gate, still bearer-authed.</td></tr>
+              <tr><td><code>POST /lens/availability/mark</code></td><td>The HTTP form of <code>availability.mark</code>, for operator-side uptime automation that posts markers without the SDK.</td></tr>
+              <tr><td><code>GET /lens/availability</code></td><td>The read twin of <code>availability.mark</code>: the bracketed unreachable windows and the pairing summary over the whole marker history, so the summary covers the store rather than one write.</td></tr>
+              <tr><td><code>GET /lens/judge-claim-coverage</code></td><td>Declared against observed, per dimension declaring a <code>judgeClaimContract</code>: <code>emitted</code>, <code>malformed</code>, or <code>absent</code>. The third is the gap that matters, a judge that declared a claim contract and is not emitting one. Empty when no dimension declares one.</td></tr>
+              <tr><td><code>GET /lens/events/:eventId</code><br /><code>GET /lens/events/:eventId/judge-verdicts</code></td><td>One event, and the verdicts linked to it. The id is what <code>reportOutcome</code> returned.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 id="lens-snapshots">Lens versioning and snapshots</h4>
+
+        <div class="guide-callout">
+          <span class="callout-label">Two different snapshots</span>
+          A <em>four-layer snapshot</em> is one evaluation event, the subject of <a href="./snapshot">Chapter 03</a>. A <em>lens snapshot</em> is a versioned record of the lens configuration itself: which lessons, fixtures and composition were in force. The endpoints below are the second kind.
+        </div>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/snapshots</code></td><td>The version history with per-version metadata: <code>versionId</code>, <code>capturedAt</code>, <code>curatedBy</code>, <code>changeSummary</code>, <code>predecessorVersionId</code>, and lesson and fixture counts. The bodies are excluded so a timeline renders without paging.</td></tr>
+              <tr><td><code>GET /lens/snapshots/:versionId</code></td><td>The full composition for one version.</td></tr>
+              <tr><td><code>POST /lens/snapshots</code></td><td>Publish one. Append-only: re-publishing an existing <code>versionId</code> is a no-op and the original is preserved. Returns the assigned id.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          All three answer <code>501</code> where no lens-snapshot store is wired.
+        </p>
+
         <h4>Errors</h4>
 
         <p>Errors from the lens surface as <code>HolonographHttpError</code>, which carries the HTTP status, an error code, and any details the lens returned. There are additional typed error classes for the grading and availability flows so a catch block can discriminate on class.</p>
@@ -1254,6 +1377,98 @@ try {
         <p>
           <code>4xx</code> covers validation, auth, and not-found. <code>5xx</code> is internal. <code>501</code> means the feature isn't wired on the given deployment.
         </p>
+
+        <h5>Typed error classes</h5>
+
+        <p>Four classes beyond <code>HolonographHttpError</code>, so a catch block can discriminate without reading a message string. The first three are ordering and shape errors in the multiplex grading flow; they are raised client-side and never reach the wire.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Class</th><th>Raised when</th></tr></thead>
+            <tbody>
+              <tr><td><code>HolonographGradeAfterReportError</code></td><td><code>gradeObserver</code> was called after <code>reportOutcome</code> already flushed. Grade every observer first, then report once.</td></tr>
+              <tr><td><code>HolonographObserverNotFoundError</code></td><td><code>gradeObserver</code> was given a <code>lightSourceId</code> matching no record in <code>observerRecords</code>. Iterate the array rather than naming ids.</td></tr>
+              <tr><td><code>HolonographNoObserversError</code></td><td><code>gradeObserver</code> was called on a single-vendor routing, where there is nothing to grade.</td></tr>
+              <tr><td><code>HolonographMarkerPairingWarningError</code></td><td><code>availability.mark(req, { strict: true })</code> and the server's pairing feedback came back with a severity other than <code>ok</code>, such as a closer that paired no open window. The default posture warns and returns the response instead, since a marker write is best-effort; the error carries the full pairing summary.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5>Error codes</h5>
+
+        <p>Every <code>code</code> the lens emits, with its default status. A handler may override the status per call, so read the code rather than the number.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Code</th><th>Status</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td colspan="3"><strong>Request validation</strong></td></tr>
+              <tr><td><code>invalid_request</code></td><td>400</td><td>Body or query failed schema validation. <code>details</code> carries the flattened field errors.</td></tr>
+              <tr><td><code>not_implemented</code></td><td>501</td><td>The endpoint exists but is not wired on this deployment.</td></tr>
+              <tr><td><code>streaming_not_yet_implemented</code></td><td>501</td><td>The endpoint exists but its feature flag is off.</td></tr>
+
+              <tr><td colspan="3"><strong>Auth</strong></td></tr>
+              <tr><td><code>unauthenticated</code></td><td>401</td><td>Missing or invalid bearer token.</td></tr>
+              <tr><td><code>forbidden</code></td><td>403</td><td>Token valid, scope insufficient for the action.</td></tr>
+
+              <tr><td colspan="3"><strong>Not found</strong></td></tr>
+              <tr><td><code>not_found</code></td><td>404</td><td>The named correlationId, surfaceId, draftId, lessonId or eventId does not exist.</td></tr>
+
+              <tr><td colspan="3"><strong>runMode discipline</strong></td></tr>
+              <tr><td><code>runmode_mismatch</code></td><td>403</td><td>The active run mode does not authorize this action against the targeted resource class. See <a href="./run-modes">Run modes</a>.</td></tr>
+              <tr><td><code>missing_runmode</code></td><td>400</td><td>No run mode, or an invalid one, at the entry boundary.</td></tr>
+
+              <tr><td colspan="3"><strong>Lens-side guards</strong></td></tr>
+              <tr><td><code>validation_required</code></td><td>409</td><td>The surface is in validation-required state; declaration is blocked.</td></tr>
+              <tr><td><code>baseline_gate</code></td><td>409</td><td>A baseline declaration failed a gate: a missing annotation, unlabeled fixtures.</td></tr>
+              <tr><td><code>lens_incompatible</code></td><td>409</td><td>A lens-snapshot composition reference is incompatible with the current substrate.</td></tr>
+
+              <tr><td colspan="3"><strong>Gateway and mediation</strong></td></tr>
+              <tr><td><code>no_routing_for_surface</code></td><td>404</td><td>No routing is configured for the surface. The usual cause is a <code>routings</code> array declared inside a surface instead of at the contract root; see <a href="./surface-contracts">Surface contracts</a>.</td></tr>
+              <tr><td><code>gate_blocked</code></td><td>200</td><td>A gate executed and blocked delivery; the canned message is returned. A 200 because the call completed: the block is the outcome, not a failure. See <a href="./judge-modes">Judge modes</a>.</td></tr>
+              <tr><td><code>light_source_error</code></td><td>502</td><td>The vendor returned an error.</td></tr>
+
+              <tr><td colspan="3"><strong>Curation and lessons</strong></td></tr>
+              <tr><td><code>invalid_gate_transition</code></td><td>409</td><td>The draft is not in a state that permits this transition.</td></tr>
+              <tr><td><code>duplicate_enqueue</code></td><td>409</td><td>The draft is already enqueued, or already in the requested state.</td></tr>
+              <tr><td><code>missing_decision_comment</code></td><td>400</td><td>An approver decision arrived without its required annotation.</td></tr>
+              <tr><td><code>missing_existing_lesson</code></td><td>404</td><td>The publisher could not find the lesson the draft claimed to update.</td></tr>
+              <tr><td><code>duplicate_publish</code></td><td>409</td><td>Publish was called with a stable artifact id that already exists in the destination store. <code>details</code> carries the existing <code>artifactId</code>, so an idempotent re-publish is distinguishable from a fault.</td></tr>
+              <tr><td><code>invalid_seed_event</code></td><td>400</td><td>The pinned seed event's surface does not match the fixture's parent surface.</td></tr>
+              <tr><td><code>seed_event_not_seedable</code></td><td>409</td><td>The pinned seed event exists but carries no usable <code>rawRequest</code>, having been size-stripped or written by an older client.</td></tr>
+              <tr><td><code>runmode_seed_bypass_forbidden</code></td><td>403</td><td>A non-production <code>seedRawRequest</code> bypass was supplied under <code>production</code>.</td></tr>
+
+              <tr><td colspan="3"><strong>Live multiplex run</strong></td></tr>
+              <tr><td><code>multiplex_raw_request_missing</code></td><td>409</td><td>The resolved source run carries no <code>light.rawRequest</code>, so there is nothing to re-issue across vendors. The dashboard's run button is gated on a stored payload for the same reason.</td></tr>
+
+              <tr><td colspan="3"><strong>Resource limits</strong></td></tr>
+              <tr><td><code>rate_limited</code></td><td>429</td><td>Request rate exceeded for the caller's key. Carries <code>Retry-After</code>.</td></tr>
+              <tr><td><code>payload_too_large</code></td><td>413</td><td>Body exceeds the JSON cap, 1&nbsp;MB per request by default.</td></tr>
+              <tr><td><code>request_timeout</code></td><td>408</td><td>The body did not finish arriving within the read timeout.</td></tr>
+              <tr><td><code>store_insufficient_storage</code></td><td>507</td><td>The event store is out of space. Writes are temp-and-rename, so nothing partial landed and retrying the same <code>eventId</code> is safe.</td></tr>
+              <tr><td><code>store_unavailable</code></td><td>503</td><td>The store refused the write: read-only mount, or permission denied. Retry once write access is restored.</td></tr>
+
+              <tr><td colspan="3"><strong>Compaction</strong></td></tr>
+              <tr><td><code>compaction_plan_stale</code></td><td>409</td><td>The store changed since the plan was reviewed: new or sealed events, pins, a day rollover. Re-plan. See <a href="./compaction">Compaction &amp; husking</a>.</td></tr>
+              <tr><td><code>compaction_conflict</code></td><td>409</td><td>The compaction cannot proceed as asked: already unsealed, a delete-mode unseal, a member gone.</td></tr>
+              <tr><td><code>compaction_verification_failed</code></td><td>500</td><td>A seal's per-day verification found a consumer that differs on husks. Nothing was sealed or moved.</td></tr>
+
+              <tr><td colspan="3"><strong>Retention and authority</strong></td></tr>
+              <tr><td><code>retention_policy_conflict</code></td><td>409</td><td>The retention policy changed since the operator reviewed it; <code>basePolicyId</code> is stale. Reload and re-review.</td></tr>
+              <tr><td><code>authority_tear_already_acknowledged</code></td><td>409</td><td>An acknowledgement at or after this tear already exists on the surface.</td></tr>
+              <tr><td><code>authority_tear_ack_out_of_order</code></td><td>409</td><td>Acknowledgements apply oldest first and an older tear is still open. The error names it. See <a href="./authority">Authority</a>.</td></tr>
+              <tr><td><code>authority_policy_conflict</code></td><td>409</td><td>The authority policy changed since review; <code>basePolicyId</code> is stale.</td></tr>
+
+              <tr><td colspan="3"><strong>Catch-all</strong></td></tr>
+              <tr><td><code>internal</code></td><td>500</td><td>An uncaught exception. Report it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">Read the code, not the status</span>
+          Fourteen of the thirty-six share <code>409</code> and two share <code>501</code>, so the status alone does not identify the condition. <code>gate_blocked</code> is the sharpest case: it carries a <code>200</code>, because a blocked delivery is a completed call with a canned response, not a transport failure.
+        </div>
 
         <h4>Advanced: <code>HttpTransport</code></h4>
 
@@ -1984,6 +2199,7 @@ Content-Type: application/json
             <tbody>
               <tr><td><code>POST /lens/topology/structural-inventory</code></td><td>Declare what your codebase enumerates.</td></tr>
               <tr><td><code>POST /lens/topology/scan</code></td><td>Compare declared vs observed vs enumerated, return the coverage report.</td></tr>
+              <tr><td><code>POST /lens/topology/refresh</code></td><td>Recompute the cacheable topology view and repopulate the cache. Body: optional <code>{ agentId }</code>. Returns the fresh scan plus its <code>computedAt</code>. A recomputed read, not a write; <code>501</code> where no cache is wired, since the plain scan already computes live.</td></tr>
               <tr><td><code>POST /lens/topology/bootstrap</code></td><td>Propose candidate dimensions for a surface based on recent traffic.</td></tr>
             </tbody>
           </table>
@@ -2461,13 +2677,14 @@ Content-Type: application/json
 
         <h4>Reference</h4>
 
-        <h5>Endpoint</h5>
+        <h5>Endpoints</h5>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>POST /lens/attribute</code></td><td>Run drift attribution over a window.</td></tr>
+              <tr><td><code>GET /lens/served-model-transitions</code></td><td>The served-model ledger: per alias, "served A over this interval, served B after it", derived from the stamped served-model column. A transition under a fixed requested alias is a vendor-reported reroute, which is the one observational light-source signal and what a stale-floor check consults. Honestly sparse for events whose column is not yet populated.</td></tr>
             </tbody>
           </table>
         </div>
@@ -2636,6 +2853,8 @@ Content-Type: application/json
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>POST /lens/decomposeVariance</code></td><td>Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record <code>eventId</code>.</td></tr>
+              <tr><td><code>POST /lens/fixtures/calibrate-floor</code></td><td>Source the noise floor the decomposition reads against. Reads replay-provenance events only, so production traffic is not conflated with the floor. Per-fixture-and-dimension sample variance, with a sample-count-weighted pooled mean per dimension. Idempotent and retry-safe.</td></tr>
+              <tr><td><code>POST /lens/replay</code></td><td>Re-issue captured requests through a target lens, window-stamped so the paired-window read works. Holds the input constant and varies the lens. Source events by <code>sourceEventIds</code> or <code>sourceCorrelationIdPrefix</code>; events carrying no stored raw request are reported skipped rather than silently dropped. Every replay is a real model call, so the count is capped.</td></tr>
               <tr><td><code>POST /lens/decomposition/evaluate</code></td><td>Return the confidence verdict for the analysis record.</td></tr>
               <tr><td><code>POST /lens/decomposition/lifecycle</code></td><td>Govern the reading: <code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
             </tbody>
@@ -2851,6 +3070,7 @@ Content-Type: application/json
             <tbody>
               <tr><td><code>POST /hil/override</code></td><td>Record a human override on a captured event.</td></tr>
               <tr><td><code>POST /lessons/cluster</code></td><td>Cluster overrides in a window.</td></tr>
+              <tr><td><code>POST /lessons/capture-scan</code></td><td>Sweep judged failures on opt-in surfaces into the curation store so they cluster. Judged failures live in the event store and the clusterer reads the curation store; without this bridge a failure never clusters unless an override seeded it by hand. Opt in per surface with <code>captureJudgedFailures</code>. Idempotent per source event and dimension; the approver gate still gates the drafted lesson.</td></tr>
               <tr><td><code>POST /lessons/draft</code></td><td>Ask the drafter to propose a corrective artifact for a cluster.</td></tr>
               <tr><td><code>POST /hil/approve</code></td><td>Approve a draft at the gate.</td></tr>
               <tr><td><code>POST /hil/reject</code></td><td>Reject a draft at the gate (comment required).</td></tr>
@@ -3518,6 +3738,19 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
 
         <h4>Reference</h4>
 
+        <h5>Endpoints</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/builder-seams</code></td><td>The scanner pushes its current registered-seam set. Replace-current: a scan run is a complete re-derivation of the code's interpreted seams, so the newest push is the truth and a seam that no longer appears is gone. Writes the evidence registry only, never the contract registry. Returns <code>202 { accepted }</code> once the write is durable and visible to other instances. <code>501</code> where the registry is not wired, which is the only opt-in.</td></tr>
+              <tr><td><code>GET /lens/builder-seams</code></td><td>Confirm an ingest landed and is visible cross-instance before its call events start carrying a call-site id. A per-source summary by default; <code>?full=1</code> returns the held scans.</td></tr>
+              <tr><td><code>POST /lens/seam-soak/judge</code></td><td>Run the offline value-efficacy judge over a seam's stored raw-output corpus. Operator-invoked, approver and cost gated. The judge runs over the stored corpus, never the live stream, and verdicts are minted server-side on the judge surface. <code>501</code> where no judge scorer is wired.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
         <p>
           The shared vocabulary, the four sink shapes, the default-path forms and the sink kinds, lives in
           the public contract package so the build-time scanner and the run-time producer name the same
@@ -3532,7 +3765,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          Every observe-only surface produces findings, and there are twenty-five sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
+          Every observe-only surface produces findings, and there are twenty-six sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
         </p>
 
         <h4>What it is</h4>
@@ -3555,8 +3788,8 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
         <h5>The sources</h5>
 
         <p>
-          Twenty-five, spanning judge behavior, evaluation structure, coverage, the store, and the seam
-          work. They are listed here because the spine is only as good as what files into it.
+          Twenty-six, spanning judge behavior, evaluation structure, coverage, attribution, the store, and
+          the seam work. They are listed here because the spine is only as good as what files into it.
         </p>
 
         <div class="guide-table-wrap">
@@ -3566,7 +3799,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
               <tr><td>Judge behavior</td><td><code>verdict-reliability</code>, <code>judge-liveness</code>, <code>judge-malfunction</code>, <code>co-groundedness</code></td></tr>
               <tr><td>Evaluation structure</td><td><code>orthogonality-hypothesis</code>, <code>primary-axis-orthogonality</code>, <code>redundancy-candidate</code>, <code>pairwise-drift</code>, <code>contested-cohort</code>, <code>rubric-gap</code>, <code>rubric-ref-broken</code></td></tr>
               <tr><td>Coverage and reach</td><td><code>coverage-gap</code>, <code>reach-gap</code>, <code>emission-gap</code>, <code>dark-mass-blindspot</code>, <code>read-window-underpowered</code></td></tr>
-              <tr><td>Surface lifecycle</td><td><code>trajectory</code>, <code>quarantine-candidate</code>, <code>retirement-candidate</code>, <code>hash-provenance</code></td></tr>
+              <tr><td>Surface lifecycle and attribution</td><td><code>trajectory</code>, <code>quarantine-candidate</code>, <code>retirement-candidate</code>, <code>hash-provenance</code>, <code>source-conflation</code></td></tr>
               <tr><td>Seams and authority</td><td><code>builder-seam</code>, <code>seam-soak</code>, <code>authority-suspended</code></td></tr>
               <tr><td>Store</td><td><code>store-capacity</code>, <code>retention-integrity</code></td></tr>
             </tbody>
@@ -3576,6 +3809,27 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
         <p>
           A code seam and a model call file into the same spine. They arrive from different sources and sit
           on adjacent surfaces, and from the lifecycle's side they are the same object.
+        </p>
+
+        <h5>One surface, several agents</h5>
+
+        <p>
+          When several of a swarm's agents emit onto one surface, pooling them is sometimes right and sometimes fabricates a statistic. Every source declares which, so a new producer cannot pool two agents by omission.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Partition</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td><code>per-source</code></td><td>Pooling corrupts the statistic or destroys attribution, so the source runs once per agent and each finding is stamped with its <code>sourceId</code>. A no-op where one surface has one agent. The analytic reads over scores and variance sit here: pooling two score populations manufactures correlation that neither agent shows.</td></tr>
+              <tr><td><code>pooled-examine</code></td><td>Pooling is correct, because the instrument is shared, the contract is global, or the grouping is the operator's and not the lens's to override. The <code>source-conflation</code> alarm watches these for a hidden per-agent split and surfaces it without imposing a partition.</td></tr>
+              <tr><td><code>pooled</code></td><td>Global, or keyed on a different axis entirely: the consumer's agent id, the rubric, the lens's own store. A per-agent split is not meaningful and the alarm ignores it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          <code>source-conflation</code> is the twenty-sixth source and the one that reads the others: it compares agents inside a pooled read and reports where a single number is hiding two populations. It points, it does not repartition. Whether an operator's grouping is wrong is the operator's call.
         </p>
 
         <h5>Three grains</h5>
@@ -3618,6 +3872,99 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           <li>Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.</li>
         </ul>
 
+        <h5>Read the queue</h5>
+
+        <pre><code>GET /lens/attention?surfaceId=classify-intent&amp;state=untriaged&amp;severity=alarm&amp;limit=50
+Authorization: Bearer &lt;token&gt;
+x-holonograph-run-mode: production</code></pre>
+
+        <p>
+          Filters: <code>surfaceId</code>, <code>source</code>, <code>state</code>, <code>severity</code>, <code>sort</code>, <code>since</code>, <code>until</code>, <code>limit</code>, <code>cursor</code>. Severity is one of <code>alarm</code>, <code>needs-review</code> or <code>coverage</code>, which is the ranking the default sort uses.
+        </p>
+
+        <p>
+          Each item carries <code>findingRef</code> and its derived <code>findingKey</code>, the <code>source</code>, the <code>severity</code>, a <code>count</code> of the events that collapsed into it, <code>firstSeen</code> and <code>lastSeen</code>, the inline <code>evidence</code>, the derived <code>triageState</code>, the <code>latestTriage</code> record, <code>how</code>, and <code>gate</code>.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">The queue reads without a triage store</span>
+          Without a triage store wired, the queue still returns: every finding reads as untriaged. Writes are what need the store, and <code>POST /lens/attention/triage</code> answers <code>501</code> without one. An unconfigured deployment loses the lifecycle, not the observability.
+        </div>
+
+        <h5>Open one finding</h5>
+
+        <pre><code>GET /lens/attention/evidence?findingKey=&lt;key&gt;</code></pre>
+
+        <p>
+          The decision-grade detail behind one row, fetched when an operator opens it rather than for every row in the queue. It returns a representative <code>exemplar</code>, the most recent flagged call in the class, with the prompt, the model's answer, the judge's verdict and rationale, and the mechanical claims: the tool the judge said was not invoked, the datum it said was fabricated. Alongside it, <code>sampleCount</code> and a <code>samples</code> list to spot-check, plus <code>reAdjudicable</code> and <code>unavailable</code>. Re-derived per read; nothing is persisted. A class that no longer recurs in the window returns an honest-null exemplar rather than a stale one.
+        </p>
+
+        <h5>Annotate</h5>
+
+        <pre><code>POST /lens/attention/triage
+Authorization: Bearer &lt;token&gt;
+Content-Type: application/json
+
+{
+  "findingRef": { "primary": { "grain": "structural", "id": "..." }, "attributes": { ... } },
+  "disposition": "confirmed-defect",
+  "rationale": "the judge passed three misuse samples in a row",
+  "approverId": "brian"
+}</code></pre>
+
+        <p>
+          <code>rationale</code> and <code>approverId</code> are required: an annotation without a reason or an author is not a compliance record. Two optional fields pin what the operator saw, <code>evidenceSnapshotRef</code> for the denormalized slice and <code>asOf</code> for the substrate instant, so a decision stays reconstructible after the evidence moves on. The server stamps <code>occurredAt</code> itself.
+        </p>
+
+        <h5>Three dispositions, five states</h5>
+
+        <p>
+          A disposition is what the operator wrote. A state is what the queue derives.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Value</th><th>Kind</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>confirmed-defect</code></td><td>disposition</td><td>Adjudicated real. This is the one that mints a proposal.</td></tr>
+              <tr><td><code>false-alarm</code></td><td>disposition</td><td>Adjudicated not real.</td></tr>
+              <tr><td><code>acknowledged</code></td><td>disposition</td><td>Real and accepted: a known blind spot the operator chooses to leave. Parked, not dismissed.</td></tr>
+              <tr><td><code>untriaged</code></td><td>state only</td><td>No record yet.</td></tr>
+              <tr><td><code>resolved</code></td><td>state only</td><td>The proposal was applied through Curate, or the finding stopped recurring. A lifecycle signal sets it, never a triage click.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5>What a confirmed finding mints</h5>
+
+        <p>
+          Twelve authoring targets. Each lands in Curate approver-gated, carrying intent rather than an apply-payload: the operator authors the change.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Proposal kind</th><th>Default source</th><th>The remedy</th></tr></thead>
+            <tbody>
+              <tr><td><code>grounding-cap-bump</code></td><td><code>verdict-reliability</code></td><td>Raise the grounding cap the flagged verdicts are hitting.</td></tr>
+              <tr><td><code>gate-dimension</code></td><td><code>judge-liveness</code></td><td>Put a dimension under a gate.</td></tr>
+              <tr><td><code>adjust-threshold</code></td><td>operator-raised</td><td>Move a <code>passThreshold</code>.</td></tr>
+              <tr><td><code>predicate-downweight</code></td><td><code>trajectory</code></td><td>Downweight a trajectory predicate that over-fires.</td></tr>
+              <tr><td><code>declare-axis</code></td><td><code>orthogonality-hypothesis</code></td><td>Declare an emitted-but-undeclared column as its own axis. Splits a confound out.</td></tr>
+              <tr><td><code>rejoin-dimension</code></td><td><code>redundancy-candidate</code></td><td>Collapse a dependent dimension into the twin it duplicates. The inverse of <code>declare-axis</code>: this merges a copy back into the axis it never left.</td></tr>
+              <tr><td><code>retire-surface</code></td><td><code>coverage-gap</code>, <code>retirement-candidate</code></td><td>Retire a surface, or mark it forward-declared.</td></tr>
+              <tr><td><code>release-from-quarantine</code></td><td><code>quarantine-candidate</code></td><td>Release a quarantined stream.</td></tr>
+              <tr><td><code>author-rubric</code></td><td><code>rubric-gap</code></td><td>Author a bespoke per-facet rubric for a facet that has only ridden the default.</td></tr>
+              <tr><td><code>fix-rubric-ref</code></td><td><code>rubric-ref-broken</code></td><td>Repair a rubric reference that no longer resolves.</td></tr>
+              <tr><td><code>author-fixture</code></td><td>operator-raised</td><td>Author a fixture the surface is missing.</td></tr>
+              <tr><td><code>retention-policy</code></td><td><code>store-capacity</code>, <code>read-window-underpowered</code></td><td>Adopt or tighten a retention preset. The operator sets the policy; the lens never compacts on its own.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Fourteen of the twenty-six sources mint nothing by default, <code>source-conflation</code> among them. A source with no default proposal is not a lesser finding: it is one where the remedy is a judgment the lens declines to pre-empt.
+        </p>
+
         <h4>Reading the output</h4>
 
         <p>
@@ -3641,6 +3988,24 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
         </p>
 
         <h4>Reference</h4>
+
+        <h5>Endpoints</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/attention</code></td><td>The cross-source queue: findings merged with triage state, severity-ranked, cursor-paginated.</td></tr>
+              <tr><td><code>GET /lens/attention/evidence</code></td><td>The exemplar and sample list behind one finding.</td></tr>
+              <tr><td><code>POST /lens/attention/triage</code></td><td>Append one annotation. <code>501</code> without a triage store.</td></tr>
+              <tr><td><code>GET /lens/trajectory-findings</code></td><td>The <code>trajectory</code> source read on its own: the turn-to-conversation axis a per-turn judge structurally cannot see. Groups events by the consumer's boundary column, runs the detectors, and returns the findings alongside the honest-null accounting (events with no boundary key, turns with no output text, which predicates actually ran) so an unmeasured slice never reads as clean.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          All three are also served under the <code>/holonograph</code> alias. The reads derive per request and persist nothing; the write touches the triage store only, which is not an input to the lens hash.
+        </p>
 
         <p>
           The public module declares the wire and store contract only. Which surface maps to which
@@ -3772,6 +4137,43 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
         </ul>
 
         <h4>Reference</h4>
+
+        <h5>Endpoints</h5>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/authority</code></td><td>One reading per gated dimension, plus an honest <code>unmapped</code> reading for every gate-less surface. Re-derived per read.</td></tr>
+              <tr><td><code>GET /lens/authority/tears</code></td><td>The open tears on each surface, the acknowledgement records, and the granularity in force.</td></tr>
+              <tr><td><code>POST /lens/authority/tear/acknowledge</code></td><td>Acknowledge one tear. Body: <code>surfaceId</code>, <code>approverId</code>, optional <code>tearEventId</code> and <code>note</code>.</td></tr>
+              <tr><td><code>GET /lens/authority/policy</code></td><td>The policy in force, its source, and whether this deployment can write one.</td></tr>
+              <tr><td><code>PUT /lens/authority/policy</code></td><td>Replace it. Approver-gated, compare-and-swap on <code>basePolicyId</code>. <code>501</code> without a durable policy store.</td></tr>
+              <tr><td><code>GET /lens/authority/policy/history</code></td><td>The append-only record of every policy that has been in force.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5>A reading</h5>
+
+        <p>
+          Each entry carries <code>surfaceId</code> and <code>dimensionId</code>, the <code>state</code>, the <code>interpretation</code> that identifies the sink, the <code>contract</code> and its <code>preconditions</code>, the statistical <code>power</code>, any <code>accuracyHold</code> or <code>reSoak</code>, the <code>suspension</code> when there is one, and the <code>basis</code> the state was derived from. A reading is always present, so an absent surface cannot pass for a healthy one.
+        </p>
+
+        <h5>The policy</h5>
+
+        <p>
+          One field today, <code>tearAckGranularity</code>: <code>watermark</code> means an acknowledgement covers every tear up to it, <code>per-tear</code> means one acknowledgement per tear, applied oldest first. Unknown keys are refused rather than ignored, so a typo cannot read as a policy that silently does not apply.
+        </p>
+
+        <p>
+          Resolution order is the operator's persisted policy, then the file seed, then the defaults. The lens never changes it: the <code>PUT</code> is the only writer and an approver gates it.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Compare-and-swap, not last-write-wins</span>
+          The <code>PUT</code> carries the <code>basePolicyId</code> the operator reviewed. If the policy moved since, the write is refused with <code>authority_policy_conflict</code> rather than overwriting someone else's change. Reload, re-review, re-submit. The retention policy works the same way.
+        </div>
 
         <p>
           The state ontology, the dependency-condition kinds, the stack and contract shapes and the pure
@@ -4197,6 +4599,54 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
           A compacted span reads the same as an uncompacted one for every structured consumer. Scores,
           grading, gate outcomes and identity are unchanged, because none of them lived in the payload. A
           reading that cannot be reproduced on a husk says so as a method boundary.
+        </p>
+
+        <h4>The retention policy</h4>
+
+        <p>
+          A policy is a standing disposition the operator approved. The lens never adopts one: the <code>store-capacity</code> finding recommends a preset and stops there. Under <code>schedule: manual</code> nothing runs on its own; under <code>schedule: auto</code> each nightly run remains that same approved disposition, and each one mints a seal and a spine entry.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/retention/policy</code></td><td>The policy in force, its <code>source</code> (<code>operator</code>, <code>file</code> or <code>default</code>), the operator record, whether <code>PUT</code> is available here, and whether a file seed is being ignored.</td></tr>
+              <tr><td><code>PUT /lens/retention/policy</code></td><td>Replace it. Approver-gated, compare-and-swap on <code>basePolicyId</code>, and a delete-mode policy needs an explicit acknowledgement. Appends to the durable history, then mints the audit record. <code>501</code> without a policy store.</td></tr>
+              <tr><td><code>GET /lens/retention/policy/history</code></td><td>Every operator policy, oldest first.</td></tr>
+              <tr><td><code>GET /lens/retention/schedule</code></td><td>The schedule and the auto-run log. Reports <code>supported: false</code> where it cannot run.</td></tr>
+              <tr><td><code>GET /lens/retention/compaction</code></td><td>Status: tiers, seals, chain head, any interrupted operation. <code>?verify=true</code> re-reads every segment and checks the chain.</td></tr>
+              <tr><td><code>POST /lens/retention/compaction/prepare</code></td><td>The one-time index preparation a backend needs before its first compaction. Approver-gated and explicit; the filesystem backend needs none.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">A read-window override naming an undeclared surface is a warning</span>
+          The policy schema refuses duplicate or ambiguous read-window overrides and unknown run modes outright. An override naming a surface the contract does not declare is accepted instead, with a <code>warnings</code> entry: the contract may be about to declare it, and refusing would make policy and contract impossible to deploy in either order.
+        </div>
+
+        <h4>Archive, rehydrate and erasure</h4>
+
+        <p>
+          Sealed segments can be mounted back for reading, and data can be removed on request. Every write here is approver-gated, because the lens rehydrates and erases on no one's initiative but the operator's.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/archive/overlays</code></td><td>The mounted rehydrate overlays. Also reported on health.</td></tr>
+              <tr><td><code>POST /lens/archive/rehydrate</code></td><td>Mount archive segments as a read-only overlay with a TTL, selected by <code>segmentIds</code>, <code>window</code> or <code>decompositionEventId</code>. Verifies the chain and footer digests and decrypts where needed. Nothing is appended.</td></tr>
+              <tr><td><code>POST /lens/archive/unmount</code></td><td>End an overlay before its TTL.</td></tr>
+              <tr><td><code>POST /lens/archive/erase/plan</code></td><td>A dry run of a right-to-delete erasure: the members by tier, the seals it re-segments, the segments it shreds, the frozen windows it touches, what is removed and what survives. Writes nothing.</td></tr>
+              <tr><td><code>POST /lens/archive/erase</code></td><td>Execute a reviewed plan. Approver-gated and requires <code>acknowledgeIrreversible: true</code>; the server re-plans and refuses a plan that has moved.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          An overlay is read-only and expires. Rehydrating does not reverse a compaction: it makes a sealed span readable for as long as the TTL lasts, and appends nothing. A backend without the archive surface answers the read with <code>{ supported: false, reason }</code> and every write with <code>501</code>, rather than an empty success.
         </p>
 
         <h4>Reference</h4>

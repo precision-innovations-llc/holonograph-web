@@ -93,7 +93,7 @@
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          Every observe-only surface produces findings, and there are twenty-five sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
+          Every observe-only surface produces findings, and there are twenty-six sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
         </p>
 
         <h2>What it is</h2>
@@ -116,8 +116,8 @@
         <h3>The sources</h3>
 
         <p>
-          Twenty-five, spanning judge behavior, evaluation structure, coverage, the store, and the seam
-          work. They are listed here because the spine is only as good as what files into it.
+          Twenty-six, spanning judge behavior, evaluation structure, coverage, attribution, the store, and
+          the seam work. They are listed here because the spine is only as good as what files into it.
         </p>
 
         <div class="guide-table-wrap">
@@ -127,7 +127,7 @@
               <tr><td>Judge behavior</td><td><code>verdict-reliability</code>, <code>judge-liveness</code>, <code>judge-malfunction</code>, <code>co-groundedness</code></td></tr>
               <tr><td>Evaluation structure</td><td><code>orthogonality-hypothesis</code>, <code>primary-axis-orthogonality</code>, <code>redundancy-candidate</code>, <code>pairwise-drift</code>, <code>contested-cohort</code>, <code>rubric-gap</code>, <code>rubric-ref-broken</code></td></tr>
               <tr><td>Coverage and reach</td><td><code>coverage-gap</code>, <code>reach-gap</code>, <code>emission-gap</code>, <code>dark-mass-blindspot</code>, <code>read-window-underpowered</code></td></tr>
-              <tr><td>Surface lifecycle</td><td><code>trajectory</code>, <code>quarantine-candidate</code>, <code>retirement-candidate</code>, <code>hash-provenance</code></td></tr>
+              <tr><td>Surface lifecycle and attribution</td><td><code>trajectory</code>, <code>quarantine-candidate</code>, <code>retirement-candidate</code>, <code>hash-provenance</code>, <code>source-conflation</code></td></tr>
               <tr><td>Seams and authority</td><td><code>builder-seam</code>, <code>seam-soak</code>, <code>authority-suspended</code></td></tr>
               <tr><td>Store</td><td><code>store-capacity</code>, <code>retention-integrity</code></td></tr>
             </tbody>
@@ -137,6 +137,27 @@
         <p>
           A code seam and a model call file into the same spine. They arrive from different sources and sit
           on adjacent surfaces, and from the lifecycle's side they are the same object.
+        </p>
+
+        <h3>One surface, several agents</h3>
+
+        <p>
+          When several of a swarm's agents emit onto one surface, pooling them is sometimes right and sometimes fabricates a statistic. Every source declares which, so a new producer cannot pool two agents by omission.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Partition</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td><code>per-source</code></td><td>Pooling corrupts the statistic or destroys attribution, so the source runs once per agent and each finding is stamped with its <code>sourceId</code>. A no-op where one surface has one agent. The analytic reads over scores and variance sit here: pooling two score populations manufactures correlation that neither agent shows.</td></tr>
+              <tr><td><code>pooled-examine</code></td><td>Pooling is correct, because the instrument is shared, the contract is global, or the grouping is the operator's and not the lens's to override. The <code>source-conflation</code> alarm watches these for a hidden per-agent split and surfaces it without imposing a partition.</td></tr>
+              <tr><td><code>pooled</code></td><td>Global, or keyed on a different axis entirely: the consumer's agent id, the rubric, the lens's own store. A per-agent split is not meaningful and the alarm ignores it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          <code>source-conflation</code> is the twenty-sixth source and the one that reads the others: it compares agents inside a pooled read and reports where a single number is hiding two populations. It points, it does not repartition. Whether an operator's grouping is wrong is the operator's call.
         </p>
 
         <h3>Three grains</h3>
@@ -179,6 +200,99 @@
           <li>Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.</li>
         </ul>
 
+        <h3>Read the queue</h3>
+
+        <pre><code>GET /lens/attention?surfaceId=classify-intent&amp;state=untriaged&amp;severity=alarm&amp;limit=50
+Authorization: Bearer &lt;token&gt;
+x-holonograph-run-mode: production</code></pre>
+
+        <p>
+          Filters: <code>surfaceId</code>, <code>source</code>, <code>state</code>, <code>severity</code>, <code>sort</code>, <code>since</code>, <code>until</code>, <code>limit</code>, <code>cursor</code>. Severity is one of <code>alarm</code>, <code>needs-review</code> or <code>coverage</code>, which is the ranking the default sort uses.
+        </p>
+
+        <p>
+          Each item carries <code>findingRef</code> and its derived <code>findingKey</code>, the <code>source</code>, the <code>severity</code>, a <code>count</code> of the events that collapsed into it, <code>firstSeen</code> and <code>lastSeen</code>, the inline <code>evidence</code>, the derived <code>triageState</code>, the <code>latestTriage</code> record, <code>how</code>, and <code>gate</code>.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">The queue reads without a triage store</span>
+          Without a triage store wired, the queue still returns: every finding reads as untriaged. Writes are what need the store, and <code>POST /lens/attention/triage</code> answers <code>501</code> without one. An unconfigured deployment loses the lifecycle, not the observability.
+        </div>
+
+        <h3>Open one finding</h3>
+
+        <pre><code>GET /lens/attention/evidence?findingKey=&lt;key&gt;</code></pre>
+
+        <p>
+          The decision-grade detail behind one row, fetched when an operator opens it rather than for every row in the queue. It returns a representative <code>exemplar</code>, the most recent flagged call in the class, with the prompt, the model's answer, the judge's verdict and rationale, and the mechanical claims: the tool the judge said was not invoked, the datum it said was fabricated. Alongside it, <code>sampleCount</code> and a <code>samples</code> list to spot-check, plus <code>reAdjudicable</code> and <code>unavailable</code>. Re-derived per read; nothing is persisted. A class that no longer recurs in the window returns an honest-null exemplar rather than a stale one.
+        </p>
+
+        <h3>Annotate</h3>
+
+        <pre><code>POST /lens/attention/triage
+Authorization: Bearer &lt;token&gt;
+Content-Type: application/json
+
+{
+  "findingRef": { "primary": { "grain": "structural", "id": "..." }, "attributes": { ... } },
+  "disposition": "confirmed-defect",
+  "rationale": "the judge passed three misuse samples in a row",
+  "approverId": "brian"
+}</code></pre>
+
+        <p>
+          <code>rationale</code> and <code>approverId</code> are required: an annotation without a reason or an author is not a compliance record. Two optional fields pin what the operator saw, <code>evidenceSnapshotRef</code> for the denormalized slice and <code>asOf</code> for the substrate instant, so a decision stays reconstructible after the evidence moves on. The server stamps <code>occurredAt</code> itself.
+        </p>
+
+        <h3>Three dispositions, five states</h3>
+
+        <p>
+          A disposition is what the operator wrote. A state is what the queue derives.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Value</th><th>Kind</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>confirmed-defect</code></td><td>disposition</td><td>Adjudicated real. This is the one that mints a proposal.</td></tr>
+              <tr><td><code>false-alarm</code></td><td>disposition</td><td>Adjudicated not real.</td></tr>
+              <tr><td><code>acknowledged</code></td><td>disposition</td><td>Real and accepted: a known blind spot the operator chooses to leave. Parked, not dismissed.</td></tr>
+              <tr><td><code>untriaged</code></td><td>state only</td><td>No record yet.</td></tr>
+              <tr><td><code>resolved</code></td><td>state only</td><td>The proposal was applied through Curate, or the finding stopped recurring. A lifecycle signal sets it, never a triage click.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>What a confirmed finding mints</h3>
+
+        <p>
+          Twelve authoring targets. Each lands in Curate approver-gated, carrying intent rather than an apply-payload: the operator authors the change.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Proposal kind</th><th>Default source</th><th>The remedy</th></tr></thead>
+            <tbody>
+              <tr><td><code>grounding-cap-bump</code></td><td><code>verdict-reliability</code></td><td>Raise the grounding cap the flagged verdicts are hitting.</td></tr>
+              <tr><td><code>gate-dimension</code></td><td><code>judge-liveness</code></td><td>Put a dimension under a gate.</td></tr>
+              <tr><td><code>adjust-threshold</code></td><td>operator-raised</td><td>Move a <code>passThreshold</code>.</td></tr>
+              <tr><td><code>predicate-downweight</code></td><td><code>trajectory</code></td><td>Downweight a trajectory predicate that over-fires.</td></tr>
+              <tr><td><code>declare-axis</code></td><td><code>orthogonality-hypothesis</code></td><td>Declare an emitted-but-undeclared column as its own axis. Splits a confound out.</td></tr>
+              <tr><td><code>rejoin-dimension</code></td><td><code>redundancy-candidate</code></td><td>Collapse a dependent dimension into the twin it duplicates. The inverse of <code>declare-axis</code>: this merges a copy back into the axis it never left.</td></tr>
+              <tr><td><code>retire-surface</code></td><td><code>coverage-gap</code>, <code>retirement-candidate</code></td><td>Retire a surface, or mark it forward-declared.</td></tr>
+              <tr><td><code>release-from-quarantine</code></td><td><code>quarantine-candidate</code></td><td>Release a quarantined stream.</td></tr>
+              <tr><td><code>author-rubric</code></td><td><code>rubric-gap</code></td><td>Author a bespoke per-facet rubric for a facet that has only ridden the default.</td></tr>
+              <tr><td><code>fix-rubric-ref</code></td><td><code>rubric-ref-broken</code></td><td>Repair a rubric reference that no longer resolves.</td></tr>
+              <tr><td><code>author-fixture</code></td><td>operator-raised</td><td>Author a fixture the surface is missing.</td></tr>
+              <tr><td><code>retention-policy</code></td><td><code>store-capacity</code>, <code>read-window-underpowered</code></td><td>Adopt or tighten a retention preset. The operator sets the policy; the lens never compacts on its own.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Fourteen of the twenty-six sources mint nothing by default, <code>source-conflation</code> among them. A source with no default proposal is not a lesser finding: it is one where the remedy is a judgment the lens declines to pre-empt.
+        </p>
+
         <h2>Reading the output</h2>
 
         <p>
@@ -202,6 +316,24 @@
         </p>
 
         <h2>Reference</h2>
+
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/attention</code></td><td>The cross-source queue: findings merged with triage state, severity-ranked, cursor-paginated.</td></tr>
+              <tr><td><code>GET /lens/attention/evidence</code></td><td>The exemplar and sample list behind one finding.</td></tr>
+              <tr><td><code>POST /lens/attention/triage</code></td><td>Append one annotation. <code>501</code> without a triage store.</td></tr>
+              <tr><td><code>GET /lens/trajectory-findings</code></td><td>The <code>trajectory</code> source read on its own: the turn-to-conversation axis a per-turn judge structurally cannot see. Groups events by the consumer's boundary column, runs the detectors, and returns the findings alongside the honest-null accounting (events with no boundary key, turns with no output text, which predicates actually ran) so an unmeasured slice never reads as clean.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          All three are also served under the <code>/holonograph</code> alias. The reads derive per request and persist nothing; the write touches the triage store only, which is not an input to the lens hash.
+        </p>
 
         <p>
           The public module declares the wire and store contract only. Which surface maps to which

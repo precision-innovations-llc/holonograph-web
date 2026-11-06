@@ -271,13 +271,14 @@ Content-Type: application/json
 
         <h2>Reference</h2>
 
-        <h3>Endpoint</h3>
+        <h3>Endpoints</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>POST /lens/attribute</code></td><td>Run drift attribution over a window.</td></tr>
+              <tr><td><code>GET /lens/served-model-transitions</code></td><td>The served-model ledger: per alias, "served A over this interval, served B after it", derived from the stamped served-model column. A transition under a fixed requested alias is a vendor-reported reroute, which is the one observational light-source signal and what a stale-floor check consults. Honestly sparse for events whose column is not yet populated.</td></tr>
             </tbody>
           </table>
         </div>

@@ -396,6 +396,37 @@ const summary = await client.contract.register({
 
         `scoring` is required on every dimension and is one of `exact-match`, `llm-judge` or `custom`. It sets the score codomain, so it also fixes the scale a `passThreshold` is read against: `llm-judge` emits 0–10, `exact-match` emits 0 or 1. Registration rejects a threshold outside the declared strategy's range.
 
+### What a dimension declares
+
+        The example above declares the minimum. A dimension carries eleven fields, and most of the lens's judge-side analysis keys on them: the rubric it scores against, the threshold it passes at, the gate it drives, the grounding it claims to depend on, and the judge surface that produces its verdict.
+
+Field	Shape	What it declares
+
+`id`	string (req)	The dimension identifier within this surface.
+
+`description`	string (opt)	Shown in operator interfaces.
+
+`scoring`	enum (req)	`exact-match`, `llm-judge` or `custom`. Sets the score codomain, and gates which of the fields below are legal.
+
+`rubricRef`	string (opt)	Path to the rubric, for `llm-judge`. When the dimension is a live gate, registration *resolves and reads* the file: an unresolvable gate rubric is rejected at `POST`, not warned about at runtime. A relative path resolves against the daemon's rubric root. A non-gated ref is left to your own eval pipeline and is not resolved.
+
+`passThreshold`	number (opt)	Where this dimension passes, on the `scoring` strategy's scale. Omit for pass/fail-only dimensions. Registration rejects an out-of-range value, which is what catches a `0.5` meant as a probability on a 0–10 judge.
+
+`gatePolicy`	object (opt)	Makes this dimension a live gate: the gateway grades the response inline in the declared `activeRunModes` and takes `failureAction`, one of `retry`, `flag` or `block`, when the score falls below the gate's own `passThreshold`. Absent, or `enabled: false`, leaves the dimension drift-monitoring only. See [Judge modes](./judge-modes).
+
+`valueDomain`	object (opt)	The legal value set, checked before any scorer runs. An out-of-domain value is forced to `passed: false` with a structured rationale, so a hallucinated-brand check costs nothing and never reaches a judge call. `kind: 'enum'` is the only variant today.
+
+`rubricDispatch`	object (opt)	Facet-scoped rubric selection for `llm-judge`: `facet` names a declared cohort-tag key, `refsFrom` the bucket a per-facet rubric resolves from by convention, `refs` optional pins. `rubricRef` then becomes the required default an unmatched facet falls back to, so a judge never silently skips. Requires `rubricRef`; rejected on any other strategy.
+
+`judgeClaimContract`	object (opt)	Declares the judge claim-instrumented: it owes the structured assertions named in `assertionKinds` as fields rather than prose. Its presence is what flips the deterministic reliability checks from honest-null to reading the field. Valid only on `llm-judge`. See [Verdict reliability](./sdk-reference#verdict-reliability).
+
+`judgeSurfaceId`	string or string[] (opt)	Which `role: 'judge'` surface grades this dimension. The operator-legible half of a pair: `role` on a surface says it *is* a judge, this says the subject is graded *by* it. Many-to-many, so an array holds a holistic judge alongside focused ones. Each id is checked at registration to name a declared judge surface, and not this dimension's own.
+
+`expectsGrounding`	array (opt)	Declare-your-reach for judgment fidelity. Each entry names a substrate `column` and the `misuseValues` of it the judge must penalize. A value can sit in the judge's sight and go unused, and the score then saturates: visible, blind to its meaning. Each `column` must be a declared substrate column.
+
+          A misuse value is an output correlate, not a situation label
+          A `misuseValues` entry has to be a value the producer consumed that correlates with the *wrong output*. A label of the grounding situation, which a correct output could carry just as easily, admits both a faithful and a faulty output under one value and reads as false saturation.
+
         Or over HTTP:
 
 ```
@@ -611,6 +642,9 @@ x-holonograph-run-mode: production
 
           - **Default reads to `production-state`**. When you're diagnosing something unusual, pass `provenance=all`. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports `hiddenByProvenanceScope` — how many events the current scope filtered out — so a `count: 0` with a non-zero hidden count reads as &ldquo;wrong scope, add `?provenance=all`&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.
 
+          Not the other snapshot
+          This chapter is about the four-layer snapshot: one evaluation, one row. A *lens snapshot* is a different object, a versioned record of the lens configuration in force, and it has its own endpoints under `/lens/snapshots`. See [Lens versioning and snapshots](./sdk-reference#lens-snapshots).
+
 ## Reference
 
 ### Endpoints
@@ -768,7 +802,35 @@ await handle.reportOutcome({
 
         Substrate columns come back on every event via `GET /lens/events`. Filter queries on them the same way you filter on cohort tags: a slice is a set of column-value pairs, and the values you didn't declare aren't queryable. That's the whole point of declaring them ahead of time.
 
+## Is the column actually emitting?
+
+        Declaring a column does not populate it, and a column that never populates reads as a clean one. `GET /lens/emission` is the audit: per declared column on a surface, the in-window emission rate, per-day tallies, and a verdict. An `always` column at 0% reads `missing`, which means broken; a `conditional` one reads `absent`, which may be legitimately sparse.
+
+        Two fields on the column shape set what the audit measures against:
+
+Field	Shape	What it declares
+
+`emissionExpectation`	`always`, `conditional`, or `{ whenever }` (opt)	Omit it and the expectation is derived from `semantic`, so existing contracts are unaffected. The co-occurrence form `{ whenever }` resolves to `conditional` and carries a predicate the audit scopes its denominator to, which turns a conditional column's silence from unverifiable into testable.
+
+`expectationMismatchMaxRate`	number in (0, 1) (opt)	For an `always` column, the rate below which it is behaving `conditional`. The audit runs a one-sided binomial test and reports `expectation-mismatch` only when it rejects. Defaults to 0.05. Set it where the sparsity is known: a column legitimately present on a fifth of events can declare 0.25 rather than arguing with the general default.
+
+        The audit's set-difference runs both ways. `undeclaredObserved` catches the reverse case: a key arriving on events that no contract declares.
+
+## Promote what you are already emitting
+
+        The usual loop is declare, deploy, audit, fix. `GET /lens/contract-promotion` inverts it. For every emitted-but-undeclared key the emission audit already found, it proposes a mergeable `SubstrateColumn` skeleton, with `semantic` inferred from the observed emission rate.
+
+        The operator-judgment fields, `control` and `visibility`, carry a conservative default and are listed in `operatorMustConfirm`. Nothing is merged: the read proposes a stub and the operator reviews it and posts the contract. Reversing the loop this way means a column you have been emitting for a month becomes queryable without first guessing what to declare.
+
 ## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/emission`	Per-column emission rate, per-day tallies, verdict, and the undeclared-but-observed set.
+
+`GET /lens/contract-promotion`	A mergeable column stub per undeclared key, with the fields needing operator judgment flagged.
 
 ### Common diagnostic columns
 
@@ -1259,6 +1321,39 @@ const result = await client.callDirectly(rawRequest);
 
         Prefer `messages.create` for anything user-facing. `callDirectly` is an escape hatch, not the everyday path.
 
+## Reads the client does not wrap
+
+        Five endpoints an integration reaches for that have no client method. Call them over HTTP; each is also served under the `/holonograph` alias.
+
+Method & path	Purpose
+
+`GET /lens/version`	The ledger-issued `lensVersion` in force. Stamp this into an event you build by hand; a placeholder is refused at ingest.
+
+`GET /aperture/health`	`{ status, lessons }`, where `lessons` is the boot-resolved capability state: available, unavailable or degraded, with a reason. A degrade is retrievable here as a first-class state rather than having gone to a log line at boot. Exempt from the run-mode header gate, still bearer-authed.
+
+`POST /lens/availability/mark`	The HTTP form of `availability.mark`, for operator-side uptime automation that posts markers without the SDK.
+
+`GET /lens/availability`	The read twin of `availability.mark`: the bracketed unreachable windows and the pairing summary over the whole marker history, so the summary covers the store rather than one write.
+
+`GET /lens/judge-claim-coverage`	Declared against observed, per dimension declaring a `judgeClaimContract`: `emitted`, `malformed`, or `absent`. The third is the gap that matters, a judge that declared a claim contract and is not emitting one. Empty when no dimension declares one.
+
+`GET /lens/events/:eventId``GET /lens/events/:eventId/judge-verdicts`	One event, and the verdicts linked to it. The id is what `reportOutcome` returned.
+
+## Lens versioning and snapshots
+
+          Two different snapshots
+          A *four-layer snapshot* is one evaluation event, the subject of [Chapter 03](./snapshot). A *lens snapshot* is a versioned record of the lens configuration itself: which lessons, fixtures and composition were in force. The endpoints below are the second kind.
+
+Method & path	Purpose
+
+`GET /lens/snapshots`	The version history with per-version metadata: `versionId`, `capturedAt`, `curatedBy`, `changeSummary`, `predecessorVersionId`, and lesson and fixture counts. The bodies are excluded so a timeline renders without paging.
+
+`GET /lens/snapshots/:versionId`	The full composition for one version.
+
+`POST /lens/snapshots`	Publish one. Append-only: re-publishing an existing `versionId` is a no-op and the original is preserved. Returns the assigned id.
+
+        All three answer `501` where no lens-snapshot store is wired.
+
 ## Errors
 
         Errors from the lens surface as `HolonographHttpError`, which carries the HTTP status, an error code, and any details the lens returned. There are additional typed error classes for the grading and availability flows so a catch block can discriminate on class.
@@ -1288,6 +1383,125 @@ try {
 ```
 
         `4xx` covers validation, auth, and not-found. `5xx` is internal. `501` means the feature isn't wired on the given deployment.
+
+### Typed error classes
+
+        Four classes beyond `HolonographHttpError`, so a catch block can discriminate without reading a message string. The first three are ordering and shape errors in the multiplex grading flow; they are raised client-side and never reach the wire.
+
+Class	Raised when
+
+`HolonographGradeAfterReportError`	`gradeObserver` was called after `reportOutcome` already flushed. Grade every observer first, then report once.
+
+`HolonographObserverNotFoundError`	`gradeObserver` was given a `lightSourceId` matching no record in `observerRecords`. Iterate the array rather than naming ids.
+
+`HolonographNoObserversError`	`gradeObserver` was called on a single-vendor routing, where there is nothing to grade.
+
+`HolonographMarkerPairingWarningError`	`availability.mark(req, { strict: true })` and the server's pairing feedback came back with a severity other than `ok`, such as a closer that paired no open window. The default posture warns and returns the response instead, since a marker write is best-effort; the error carries the full pairing summary.
+
+### Error codes
+
+        Every `code` the lens emits, with its default status. A handler may override the status per call, so read the code rather than the number.
+
+Code	Status	Meaning
+
+**Request validation**
+
+`invalid_request`	400	Body or query failed schema validation. `details` carries the flattened field errors.
+
+`not_implemented`	501	The endpoint exists but is not wired on this deployment.
+
+`streaming_not_yet_implemented`	501	The endpoint exists but its feature flag is off.
+
+**Auth**
+
+`unauthenticated`	401	Missing or invalid bearer token.
+
+`forbidden`	403	Token valid, scope insufficient for the action.
+
+**Not found**
+
+`not_found`	404	The named correlationId, surfaceId, draftId, lessonId or eventId does not exist.
+
+**runMode discipline**
+
+`runmode_mismatch`	403	The active run mode does not authorize this action against the targeted resource class. See [Run modes](./run-modes).
+
+`missing_runmode`	400	No run mode, or an invalid one, at the entry boundary.
+
+**Lens-side guards**
+
+`validation_required`	409	The surface is in validation-required state; declaration is blocked.
+
+`baseline_gate`	409	A baseline declaration failed a gate: a missing annotation, unlabeled fixtures.
+
+`lens_incompatible`	409	A lens-snapshot composition reference is incompatible with the current substrate.
+
+**Gateway and mediation**
+
+`no_routing_for_surface`	404	No routing is configured for the surface. The usual cause is a `routings` array declared inside a surface instead of at the contract root; see [Surface contracts](./surface-contracts).
+
+`gate_blocked`	200	A gate executed and blocked delivery; the canned message is returned. A 200 because the call completed: the block is the outcome, not a failure. See [Judge modes](./judge-modes).
+
+`light_source_error`	502	The vendor returned an error.
+
+**Curation and lessons**
+
+`invalid_gate_transition`	409	The draft is not in a state that permits this transition.
+
+`duplicate_enqueue`	409	The draft is already enqueued, or already in the requested state.
+
+`missing_decision_comment`	400	An approver decision arrived without its required annotation.
+
+`missing_existing_lesson`	404	The publisher could not find the lesson the draft claimed to update.
+
+`duplicate_publish`	409	Publish was called with a stable artifact id that already exists in the destination store. `details` carries the existing `artifactId`, so an idempotent re-publish is distinguishable from a fault.
+
+`invalid_seed_event`	400	The pinned seed event's surface does not match the fixture's parent surface.
+
+`seed_event_not_seedable`	409	The pinned seed event exists but carries no usable `rawRequest`, having been size-stripped or written by an older client.
+
+`runmode_seed_bypass_forbidden`	403	A non-production `seedRawRequest` bypass was supplied under `production`.
+
+**Live multiplex run**
+
+`multiplex_raw_request_missing`	409	The resolved source run carries no `light.rawRequest`, so there is nothing to re-issue across vendors. The dashboard's run button is gated on a stored payload for the same reason.
+
+**Resource limits**
+
+`rate_limited`	429	Request rate exceeded for the caller's key. Carries `Retry-After`.
+
+`payload_too_large`	413	Body exceeds the JSON cap, 1 MB per request by default.
+
+`request_timeout`	408	The body did not finish arriving within the read timeout.
+
+`store_insufficient_storage`	507	The event store is out of space. Writes are temp-and-rename, so nothing partial landed and retrying the same `eventId` is safe.
+
+`store_unavailable`	503	The store refused the write: read-only mount, or permission denied. Retry once write access is restored.
+
+**Compaction**
+
+`compaction_plan_stale`	409	The store changed since the plan was reviewed: new or sealed events, pins, a day rollover. Re-plan. See [Compaction & husking](./compaction).
+
+`compaction_conflict`	409	The compaction cannot proceed as asked: already unsealed, a delete-mode unseal, a member gone.
+
+`compaction_verification_failed`	500	A seal's per-day verification found a consumer that differs on husks. Nothing was sealed or moved.
+
+**Retention and authority**
+
+`retention_policy_conflict`	409	The retention policy changed since the operator reviewed it; `basePolicyId` is stale. Reload and re-review.
+
+`authority_tear_already_acknowledged`	409	An acknowledgement at or after this tear already exists on the surface.
+
+`authority_tear_ack_out_of_order`	409	Acknowledgements apply oldest first and an older tear is still open. The error names it. See [Authority](./authority).
+
+`authority_policy_conflict`	409	The authority policy changed since review; `basePolicyId` is stale.
+
+**Catch-all**
+
+`internal`	500	An uncaught exception. Report it.
+
+          Read the code, not the status
+          Fourteen of the thirty-six share `409` and two share `501`, so the status alone does not identify the condition. `gate_blocked` is the sharpest case: it carries a `200`, because a blocked delivery is a completed call with a canned response, not a transport failure.
 
 ## Advanced: HttpTransport
 
@@ -1954,6 +2168,8 @@ Method & path	Purpose
 
 `POST /lens/topology/scan`	Compare declared vs observed vs enumerated, return the coverage report.
 
+`POST /lens/topology/refresh`	Recompute the cacheable topology view and repopulate the cache. Body: optional `{ agentId }`. Returns the fresh scan plus its `computedAt`. A recomputed read, not a write; `501` where no cache is wired, since the plain scan already computes live.
+
 `POST /lens/topology/bootstrap`	Propose candidate dimensions for a surface based on recent traffic.
 
 ### POST /lens/topology/structural-inventory: request
@@ -2359,11 +2575,13 @@ Column	What it records
 
 ## Reference
 
-### Endpoint
+### Endpoints
 
 Method & path	Purpose
 
 `POST /lens/attribute`	Run drift attribution over a window.
+
+`GET /lens/served-model-transitions`	The served-model ledger: per alias, "served A over this interval, served B after it", derived from the stamped served-model column. A transition under a fixed requested alias is a vendor-reported reroute, which is the one observational light-source signal and what a stale-floor check consults. Honestly sparse for events whose column is not yet populated.
 
 ### Request
 
@@ -2515,6 +2733,10 @@ Verdict	Next action
 Method & path	Purpose
 
 `POST /lens/decomposeVariance`	Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record `eventId`.
+
+`POST /lens/fixtures/calibrate-floor`	Source the noise floor the decomposition reads against. Reads replay-provenance events only, so production traffic is not conflated with the floor. Per-fixture-and-dimension sample variance, with a sample-count-weighted pooled mean per dimension. Idempotent and retry-safe.
+
+`POST /lens/replay`	Re-issue captured requests through a target lens, window-stamped so the paired-window read works. Holds the input constant and varies the lens. Source events by `sourceEventIds` or `sourceCorrelationIdPrefix`; events carrying no stored raw request are reported skipped rather than silently dropped. Every replay is a real model call, so the count is capped.
 
 `POST /lens/decomposition/evaluate`	Return the confidence verdict for the analysis record.
 
@@ -2726,6 +2948,8 @@ Method & path	Purpose
 `POST /hil/override`	Record a human override on a captured event.
 
 `POST /lessons/cluster`	Cluster overrides in a window.
+
+`POST /lessons/capture-scan`	Sweep judged failures on opt-in surfaces into the curation store so they cluster. Judged failures live in the event store and the clusterer reads the curation store; without this bridge a failure never clusters unless an override seeded it by hand. Opt in per surface with `captureJudgedFailures`. Idempotent per source event and dimension; the approver gate still gates the drafted lesson.
 
 `POST /lessons/draft`	Ask the drafter to propose a corrective artifact for a cluster.
 
@@ -3302,6 +3526,16 @@ Axis	Value
 
 ## Reference
 
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/builder-seams`	The scanner pushes its current registered-seam set. Replace-current: a scan run is a complete re-derivation of the code's interpreted seams, so the newest push is the truth and a seam that no longer appears is gone. Writes the evidence registry only, never the contract registry. Returns `202 { accepted }` once the write is durable and visible to other instances. `501` where the registry is not wired, which is the only opt-in.
+
+`GET /lens/builder-seams`	Confirm an ingest landed and is visible cross-instance before its call events start carrying a call-site id. A per-source summary by default; `?full=1` returns the held scans.
+
+`POST /lens/seam-soak/judge`	Run the offline value-efficacy judge over a seam's stored raw-output corpus. Operator-invoked, approver and cost gated. The judge runs over the stored corpus, never the live stream, and verdicts are minted server-side on the judge surface. `501` where no judge scorer is wired.
+
         The shared vocabulary, the four sink shapes, the default-path forms and the sink kinds, lives in
           the public contract package so the build-time scanner and the run-time producer name the same
           things. The interpretation disposition is the same enum the authority state machine reads.
@@ -3316,7 +3550,7 @@ Chapter 18
 
 # The attention spine
 
-        Every observe-only surface produces findings, and there are twenty-five sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
+        Every observe-only surface produces findings, and there are twenty-six sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
 
 ## What it is
 
@@ -3332,8 +3566,8 @@ Object	What it holds
 
 ### The sources
 
-        Twenty-five, spanning judge behavior, evaluation structure, coverage, the store, and the seam
-          work. They are listed here because the spine is only as good as what files into it.
+        Twenty-six, spanning judge behavior, evaluation structure, coverage, attribution, the store, and
+          the seam work. They are listed here because the spine is only as good as what files into it.
 
 Group	Sources
 
@@ -3343,7 +3577,7 @@ Evaluation structure	`orthogonality-hypothesis`, `primary-axis-orthogonality`, `
 
 Coverage and reach	`coverage-gap`, `reach-gap`, `emission-gap`, `dark-mass-blindspot`, `read-window-underpowered`
 
-Surface lifecycle	`trajectory`, `quarantine-candidate`, `retirement-candidate`, `hash-provenance`
+Surface lifecycle and attribution	`trajectory`, `quarantine-candidate`, `retirement-candidate`, `hash-provenance`, `source-conflation`
 
 Seams and authority	`builder-seam`, `seam-soak`, `authority-suspended`
 
@@ -3351,6 +3585,20 @@ Store	`store-capacity`, `retention-integrity`
 
         A code seam and a model call file into the same spine. They arrive from different sources and sit
           on adjacent surfaces, and from the lifecycle's side they are the same object.
+
+### One surface, several agents
+
+        When several of a swarm's agents emit onto one surface, pooling them is sometimes right and sometimes fabricates a statistic. Every source declares which, so a new producer cannot pool two agents by omission.
+
+Partition	Behavior
+
+`per-source`	Pooling corrupts the statistic or destroys attribution, so the source runs once per agent and each finding is stamped with its `sourceId`. A no-op where one surface has one agent. The analytic reads over scores and variance sit here: pooling two score populations manufactures correlation that neither agent shows.
+
+`pooled-examine`	Pooling is correct, because the instrument is shared, the contract is global, or the grouping is the operator's and not the lens's to override. The `source-conflation` alarm watches these for a hidden per-agent split and surfaces it without imposing a partition.
+
+`pooled`	Global, or keyed on a different axis entirely: the consumer's agent id, the rubric, the lens's own store. A per-agent split is not meaningful and the alarm ignores it.
+
+        `source-conflation` is the twenty-sixth source and the one that reads the others: it compares agents inside a pooled read and reports where a single number is hiding two populations. It points, it does not repartition. Whether an operator's grouping is wrong is the operator's call.
 
 ### Three grains
 
@@ -3384,6 +3632,94 @@ Store	`store-capacity`, `retention-integrity`
 
           - Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.
 
+### Read the queue
+
+```
+GET /lens/attention?surfaceId=classify-intent&state=untriaged&severity=alarm&limit=50
+Authorization: Bearer
+x-holonograph-run-mode: production
+```
+
+        Filters: `surfaceId`, `source`, `state`, `severity`, `sort`, `since`, `until`, `limit`, `cursor`. Severity is one of `alarm`, `needs-review` or `coverage`, which is the ranking the default sort uses.
+
+        Each item carries `findingRef` and its derived `findingKey`, the `source`, the `severity`, a `count` of the events that collapsed into it, `firstSeen` and `lastSeen`, the inline `evidence`, the derived `triageState`, the `latestTriage` record, `how`, and `gate`.
+
+          The queue reads without a triage store
+          Without a triage store wired, the queue still returns: every finding reads as untriaged. Writes are what need the store, and `POST /lens/attention/triage` answers `501` without one. An unconfigured deployment loses the lifecycle, not the observability.
+
+### Open one finding
+
+```
+GET /lens/attention/evidence?findingKey=
+```
+
+        The decision-grade detail behind one row, fetched when an operator opens it rather than for every row in the queue. It returns a representative `exemplar`, the most recent flagged call in the class, with the prompt, the model's answer, the judge's verdict and rationale, and the mechanical claims: the tool the judge said was not invoked, the datum it said was fabricated. Alongside it, `sampleCount` and a `samples` list to spot-check, plus `reAdjudicable` and `unavailable`. Re-derived per read; nothing is persisted. A class that no longer recurs in the window returns an honest-null exemplar rather than a stale one.
+
+### Annotate
+
+```
+POST /lens/attention/triage
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "findingRef": { "primary": { "grain": "structural", "id": "..." }, "attributes": { ... } },
+  "disposition": "confirmed-defect",
+  "rationale": "the judge passed three misuse samples in a row",
+  "approverId": "brian"
+}
+```
+
+        `rationale` and `approverId` are required: an annotation without a reason or an author is not a compliance record. Two optional fields pin what the operator saw, `evidenceSnapshotRef` for the denormalized slice and `asOf` for the substrate instant, so a decision stays reconstructible after the evidence moves on. The server stamps `occurredAt` itself.
+
+### Three dispositions, five states
+
+        A disposition is what the operator wrote. A state is what the queue derives.
+
+Value	Kind	Meaning
+
+`confirmed-defect`	disposition	Adjudicated real. This is the one that mints a proposal.
+
+`false-alarm`	disposition	Adjudicated not real.
+
+`acknowledged`	disposition	Real and accepted: a known blind spot the operator chooses to leave. Parked, not dismissed.
+
+`untriaged`	state only	No record yet.
+
+`resolved`	state only	The proposal was applied through Curate, or the finding stopped recurring. A lifecycle signal sets it, never a triage click.
+
+### What a confirmed finding mints
+
+        Twelve authoring targets. Each lands in Curate approver-gated, carrying intent rather than an apply-payload: the operator authors the change.
+
+Proposal kind	Default source	The remedy
+
+`grounding-cap-bump`	`verdict-reliability`	Raise the grounding cap the flagged verdicts are hitting.
+
+`gate-dimension`	`judge-liveness`	Put a dimension under a gate.
+
+`adjust-threshold`	operator-raised	Move a `passThreshold`.
+
+`predicate-downweight`	`trajectory`	Downweight a trajectory predicate that over-fires.
+
+`declare-axis`	`orthogonality-hypothesis`	Declare an emitted-but-undeclared column as its own axis. Splits a confound out.
+
+`rejoin-dimension`	`redundancy-candidate`	Collapse a dependent dimension into the twin it duplicates. The inverse of `declare-axis`: this merges a copy back into the axis it never left.
+
+`retire-surface`	`coverage-gap`, `retirement-candidate`	Retire a surface, or mark it forward-declared.
+
+`release-from-quarantine`	`quarantine-candidate`	Release a quarantined stream.
+
+`author-rubric`	`rubric-gap`	Author a bespoke per-facet rubric for a facet that has only ridden the default.
+
+`fix-rubric-ref`	`rubric-ref-broken`	Repair a rubric reference that no longer resolves.
+
+`author-fixture`	operator-raised	Author a fixture the surface is missing.
+
+`retention-policy`	`store-capacity`, `read-window-underpowered`	Adopt or tighten a retention preset. The operator sets the policy; the lens never compacts on its own.
+
+        Fourteen of the twenty-six sources mint nothing by default, `source-conflation` among them. A source with no default proposal is not a lesser finding: it is one where the remedy is a judgment the lens declines to pre-empt.
+
 ## Reading the output
 
         A finding carries its `findingRef`, the surface and dimension it came from, the run
@@ -3401,6 +3737,20 @@ Store	`store-capacity`, `retention-integrity`
         Reflection sits above that again, switched on for a cell once its authority is established.
 
 ## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/attention`	The cross-source queue: findings merged with triage state, severity-ranked, cursor-paginated.
+
+`GET /lens/attention/evidence`	The exemplar and sample list behind one finding.
+
+`POST /lens/attention/triage`	Append one annotation. `501` without a triage store.
+
+`GET /lens/trajectory-findings`	The `trajectory` source read on its own: the turn-to-conversation axis a per-turn judge structurally cannot see. Groups events by the consumer's boundary column, runs the detectors, and returns the findings alongside the honest-null accounting (events with no boundary key, turns with no output text, which predicates actually ran) so an unmeasured slice never reads as clean.
+
+        All three are also served under the `/holonograph` alias. The reads derive per request and persist nothing; the write touches the triage store only, which is not an input to the lens hash.
 
         The public module declares the wire and store contract only. Which surface maps to which
           `FindingRef`, and the store implementation, live in the lens package.
@@ -3508,6 +3858,35 @@ Condition	Envelope
           - Read the map rather than a single number. A living system holds authority on every surface rarely and briefly; which surfaces hold it, and what withdrew the rest, is the reading.
 
 ## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/authority`	One reading per gated dimension, plus an honest `unmapped` reading for every gate-less surface. Re-derived per read.
+
+`GET /lens/authority/tears`	The open tears on each surface, the acknowledgement records, and the granularity in force.
+
+`POST /lens/authority/tear/acknowledge`	Acknowledge one tear. Body: `surfaceId`, `approverId`, optional `tearEventId` and `note`.
+
+`GET /lens/authority/policy`	The policy in force, its source, and whether this deployment can write one.
+
+`PUT /lens/authority/policy`	Replace it. Approver-gated, compare-and-swap on `basePolicyId`. `501` without a durable policy store.
+
+`GET /lens/authority/policy/history`	The append-only record of every policy that has been in force.
+
+### A reading
+
+        Each entry carries `surfaceId` and `dimensionId`, the `state`, the `interpretation` that identifies the sink, the `contract` and its `preconditions`, the statistical `power`, any `accuracyHold` or `reSoak`, the `suspension` when there is one, and the `basis` the state was derived from. A reading is always present, so an absent surface cannot pass for a healthy one.
+
+### The policy
+
+        One field today, `tearAckGranularity`: `watermark` means an acknowledgement covers every tear up to it, `per-tear` means one acknowledgement per tear, applied oldest first. Unknown keys are refused rather than ignored, so a typo cannot read as a policy that silently does not apply.
+
+        Resolution order is the operator's persisted policy, then the file seed, then the defaults. The lens never changes it: the `PUT` is the only writer and an approver gates it.
+
+          Compare-and-swap, not last-write-wins
+          The `PUT` carries the `basePolicyId` the operator reviewed. If the policy moved since, the write is refused with `authority_policy_conflict` rather than overwriting someone else's change. Reload, re-review, re-submit. The retention policy works the same way.
 
         The state ontology, the dependency-condition kinds, the stack and contract shapes and the pure
           state machine are public contract. Signal extraction, turning gate composition, floors, versions
@@ -3874,6 +4253,45 @@ Class	Meaning
         A compacted span reads the same as an uncompacted one for every structured consumer. Scores,
           grading, gate outcomes and identity are unchanged, because none of them lived in the payload. A
           reading that cannot be reproduced on a husk says so as a method boundary.
+
+## The retention policy
+
+        A policy is a standing disposition the operator approved. The lens never adopts one: the `store-capacity` finding recommends a preset and stops there. Under `schedule: manual` nothing runs on its own; under `schedule: auto` each nightly run remains that same approved disposition, and each one mints a seal and a spine entry.
+
+Method & path	Purpose
+
+`GET /lens/retention/policy`	The policy in force, its `source` (`operator`, `file` or `default`), the operator record, whether `PUT` is available here, and whether a file seed is being ignored.
+
+`PUT /lens/retention/policy`	Replace it. Approver-gated, compare-and-swap on `basePolicyId`, and a delete-mode policy needs an explicit acknowledgement. Appends to the durable history, then mints the audit record. `501` without a policy store.
+
+`GET /lens/retention/policy/history`	Every operator policy, oldest first.
+
+`GET /lens/retention/schedule`	The schedule and the auto-run log. Reports `supported: false` where it cannot run.
+
+`GET /lens/retention/compaction`	Status: tiers, seals, chain head, any interrupted operation. `?verify=true` re-reads every segment and checks the chain.
+
+`POST /lens/retention/compaction/prepare`	The one-time index preparation a backend needs before its first compaction. Approver-gated and explicit; the filesystem backend needs none.
+
+          A read-window override naming an undeclared surface is a warning
+          The policy schema refuses duplicate or ambiguous read-window overrides and unknown run modes outright. An override naming a surface the contract does not declare is accepted instead, with a `warnings` entry: the contract may be about to declare it, and refusing would make policy and contract impossible to deploy in either order.
+
+## Archive, rehydrate and erasure
+
+        Sealed segments can be mounted back for reading, and data can be removed on request. Every write here is approver-gated, because the lens rehydrates and erases on no one's initiative but the operator's.
+
+Method & path	Purpose
+
+`GET /lens/archive/overlays`	The mounted rehydrate overlays. Also reported on health.
+
+`POST /lens/archive/rehydrate`	Mount archive segments as a read-only overlay with a TTL, selected by `segmentIds`, `window` or `decompositionEventId`. Verifies the chain and footer digests and decrypts where needed. Nothing is appended.
+
+`POST /lens/archive/unmount`	End an overlay before its TTL.
+
+`POST /lens/archive/erase/plan`	A dry run of a right-to-delete erasure: the members by tier, the seals it re-segments, the segments it shreds, the frozen windows it touches, what is removed and what survives. Writes nothing.
+
+`POST /lens/archive/erase`	Execute a reviewed plan. Approver-gated and requires `acknowledgeIrreversible: true`; the server re-plans and refuses a plan that has moved.
+
+        An overlay is read-only and expires. Rehydrating does not reverse a compaction: it makes a sealed span readable for as long as the TTL lasts, and appends nothing. A backend without the archive surface answers the read with `{ supported: false, reason }` and every write with `501`, rather than an empty success.
 
 ## Reference
 

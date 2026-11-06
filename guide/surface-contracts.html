@@ -178,6 +178,36 @@ const summary = await client.contract.register({
           <code>scoring</code> is required on every dimension and is one of <code>exact-match</code>, <code>llm-judge</code> or <code>custom</code>. It sets the score codomain, so it also fixes the scale a <code>passThreshold</code> is read against: <code>llm-judge</code> emits 0&ndash;10, <code>exact-match</code> emits 0 or 1. Registration rejects a threshold outside the declared strategy's range.
         </p>
 
+        <h3>What a dimension declares</h3>
+
+        <p>
+          The example above declares the minimum. A dimension carries eleven fields, and most of the lens's judge-side analysis keys on them: the rubric it scores against, the threshold it passes at, the gate it drives, the grounding it claims to depend on, and the judge surface that produces its verdict.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>Shape</th><th>What it declares</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code></td><td>string (req)</td><td>The dimension identifier within this surface.</td></tr>
+              <tr><td><code>description</code></td><td>string (opt)</td><td>Shown in operator interfaces.</td></tr>
+              <tr><td><code>scoring</code></td><td>enum (req)</td><td><code>exact-match</code>, <code>llm-judge</code> or <code>custom</code>. Sets the score codomain, and gates which of the fields below are legal.</td></tr>
+              <tr><td><code>rubricRef</code></td><td>string (opt)</td><td>Path to the rubric, for <code>llm-judge</code>. When the dimension is a live gate, registration <em>resolves and reads</em> the file: an unresolvable gate rubric is rejected at <code>POST</code>, not warned about at runtime. A relative path resolves against the daemon's rubric root. A non-gated ref is left to your own eval pipeline and is not resolved.</td></tr>
+              <tr><td><code>passThreshold</code></td><td>number (opt)</td><td>Where this dimension passes, on the <code>scoring</code> strategy's scale. Omit for pass/fail-only dimensions. Registration rejects an out-of-range value, which is what catches a <code>0.5</code> meant as a probability on a 0&ndash;10 judge.</td></tr>
+              <tr><td><code>gatePolicy</code></td><td>object (opt)</td><td>Makes this dimension a live gate: the gateway grades the response inline in the declared <code>activeRunModes</code> and takes <code>failureAction</code>, one of <code>retry</code>, <code>flag</code> or <code>block</code>, when the score falls below the gate's own <code>passThreshold</code>. Absent, or <code>enabled: false</code>, leaves the dimension drift-monitoring only. See <a href="./judge-modes">Judge modes</a>.</td></tr>
+              <tr><td><code>valueDomain</code></td><td>object (opt)</td><td>The legal value set, checked before any scorer runs. An out-of-domain value is forced to <code>passed: false</code> with a structured rationale, so a hallucinated-brand check costs nothing and never reaches a judge call. <code>kind: 'enum'</code> is the only variant today.</td></tr>
+              <tr><td><code>rubricDispatch</code></td><td>object (opt)</td><td>Facet-scoped rubric selection for <code>llm-judge</code>: <code>facet</code> names a declared cohort-tag key, <code>refsFrom</code> the bucket a per-facet rubric resolves from by convention, <code>refs</code> optional pins. <code>rubricRef</code> then becomes the required default an unmatched facet falls back to, so a judge never silently skips. Requires <code>rubricRef</code>; rejected on any other strategy.</td></tr>
+              <tr><td><code>judgeClaimContract</code></td><td>object (opt)</td><td>Declares the judge claim-instrumented: it owes the structured assertions named in <code>assertionKinds</code> as fields rather than prose. Its presence is what flips the deterministic reliability checks from honest-null to reading the field. Valid only on <code>llm-judge</code>. See <a href="./sdk-reference#verdict-reliability">Verdict reliability</a>.</td></tr>
+              <tr><td><code>judgeSurfaceId</code></td><td>string or string[] (opt)</td><td>Which <code>role: 'judge'</code> surface grades this dimension. The operator-legible half of a pair: <code>role</code> on a surface says it <em>is</em> a judge, this says the subject is graded <em>by</em> it. Many-to-many, so an array holds a holistic judge alongside focused ones. Each id is checked at registration to name a declared judge surface, and not this dimension's own.</td></tr>
+              <tr><td><code>expectsGrounding</code></td><td>array (opt)</td><td>Declare-your-reach for judgment fidelity. Each entry names a substrate <code>column</code> and the <code>misuseValues</code> of it the judge must penalize. A value can sit in the judge's sight and go unused, and the score then saturates: visible, blind to its meaning. Each <code>column</code> must be a declared substrate column.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">A misuse value is an output correlate, not a situation label</span>
+          A <code>misuseValues</code> entry has to be a value the producer consumed that correlates with the <em>wrong output</em>. A label of the grounding situation, which a correct output could carry just as easily, admits both a faithful and a faulty output under one value and reads as false saturation.
+        </div>
+
         <p>
           Or over HTTP:
         </p>

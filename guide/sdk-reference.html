@@ -389,7 +389,7 @@ const eventId = await handle.reportOutcome({
           Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). It resolves to that event's id, which is the handle an asynchronous judge needs: a verdict minted later references it as its subject event. What Holonograph does with the event afterwards is the subject of the analysis chapters.
         </p>
 
-        <h2>Verdict reliability — let the lens check your judge</h2>
+        <h2 id="verdict-reliability">Verdict reliability — let the lens check your judge</h2>
 
         <p>
           A verdict does not have to come back in-request. Which timings are available to a judge, and what
@@ -562,6 +562,48 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
         <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is an escape hatch, not the everyday path.</p>
 
+        <h2>Reads the client does not wrap</h2>
+
+        <p>
+          Five endpoints an integration reaches for that have no client method. Call them over HTTP; each is also served under the <code>/holonograph</code> alias.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/version</code></td><td>The ledger-issued <code>lensVersion</code> in force. Stamp this into an event you build by hand; a placeholder is refused at ingest.</td></tr>
+              <tr><td><code>GET /aperture/health</code></td><td><code>{ status, lessons }</code>, where <code>lessons</code> is the boot-resolved capability state: available, unavailable or degraded, with a reason. A degrade is retrievable here as a first-class state rather than having gone to a log line at boot. Exempt from the run-mode header gate, still bearer-authed.</td></tr>
+              <tr><td><code>POST /lens/availability/mark</code></td><td>The HTTP form of <code>availability.mark</code>, for operator-side uptime automation that posts markers without the SDK.</td></tr>
+              <tr><td><code>GET /lens/availability</code></td><td>The read twin of <code>availability.mark</code>: the bracketed unreachable windows and the pairing summary over the whole marker history, so the summary covers the store rather than one write.</td></tr>
+              <tr><td><code>GET /lens/judge-claim-coverage</code></td><td>Declared against observed, per dimension declaring a <code>judgeClaimContract</code>: <code>emitted</code>, <code>malformed</code>, or <code>absent</code>. The third is the gap that matters, a judge that declared a claim contract and is not emitting one. Empty when no dimension declares one.</td></tr>
+              <tr><td><code>GET /lens/events/:eventId</code><br /><code>GET /lens/events/:eventId/judge-verdicts</code></td><td>One event, and the verdicts linked to it. The id is what <code>reportOutcome</code> returned.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="lens-snapshots">Lens versioning and snapshots</h2>
+
+        <div class="guide-callout">
+          <span class="callout-label">Two different snapshots</span>
+          A <em>four-layer snapshot</em> is one evaluation event, the subject of <a href="./snapshot">Chapter 03</a>. A <em>lens snapshot</em> is a versioned record of the lens configuration itself: which lessons, fixtures and composition were in force. The endpoints below are the second kind.
+        </div>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/snapshots</code></td><td>The version history with per-version metadata: <code>versionId</code>, <code>capturedAt</code>, <code>curatedBy</code>, <code>changeSummary</code>, <code>predecessorVersionId</code>, and lesson and fixture counts. The bodies are excluded so a timeline renders without paging.</td></tr>
+              <tr><td><code>GET /lens/snapshots/:versionId</code></td><td>The full composition for one version.</td></tr>
+              <tr><td><code>POST /lens/snapshots</code></td><td>Publish one. Append-only: re-publishing an existing <code>versionId</code> is a no-op and the original is preserved. Returns the assigned id.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          All three answer <code>501</code> where no lens-snapshot store is wired.
+        </p>
+
         <h2>Errors</h2>
 
         <p>Errors from the lens surface as <code>HolonographHttpError</code>, which carries the HTTP status, an error code, and any details the lens returned. There are additional typed error classes for the grading and availability flows so a catch block can discriminate on class.</p>
@@ -591,6 +633,98 @@ try {
         <p>
           <code>4xx</code> covers validation, auth, and not-found. <code>5xx</code> is internal. <code>501</code> means the feature isn't wired on the given deployment.
         </p>
+
+        <h3>Typed error classes</h3>
+
+        <p>Four classes beyond <code>HolonographHttpError</code>, so a catch block can discriminate without reading a message string. The first three are ordering and shape errors in the multiplex grading flow; they are raised client-side and never reach the wire.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Class</th><th>Raised when</th></tr></thead>
+            <tbody>
+              <tr><td><code>HolonographGradeAfterReportError</code></td><td><code>gradeObserver</code> was called after <code>reportOutcome</code> already flushed. Grade every observer first, then report once.</td></tr>
+              <tr><td><code>HolonographObserverNotFoundError</code></td><td><code>gradeObserver</code> was given a <code>lightSourceId</code> matching no record in <code>observerRecords</code>. Iterate the array rather than naming ids.</td></tr>
+              <tr><td><code>HolonographNoObserversError</code></td><td><code>gradeObserver</code> was called on a single-vendor routing, where there is nothing to grade.</td></tr>
+              <tr><td><code>HolonographMarkerPairingWarningError</code></td><td><code>availability.mark(req, { strict: true })</code> and the server's pairing feedback came back with a severity other than <code>ok</code>, such as a closer that paired no open window. The default posture warns and returns the response instead, since a marker write is best-effort; the error carries the full pairing summary.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Error codes</h3>
+
+        <p>Every <code>code</code> the lens emits, with its default status. A handler may override the status per call, so read the code rather than the number.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Code</th><th>Status</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td colspan="3"><strong>Request validation</strong></td></tr>
+              <tr><td><code>invalid_request</code></td><td>400</td><td>Body or query failed schema validation. <code>details</code> carries the flattened field errors.</td></tr>
+              <tr><td><code>not_implemented</code></td><td>501</td><td>The endpoint exists but is not wired on this deployment.</td></tr>
+              <tr><td><code>streaming_not_yet_implemented</code></td><td>501</td><td>The endpoint exists but its feature flag is off.</td></tr>
+
+              <tr><td colspan="3"><strong>Auth</strong></td></tr>
+              <tr><td><code>unauthenticated</code></td><td>401</td><td>Missing or invalid bearer token.</td></tr>
+              <tr><td><code>forbidden</code></td><td>403</td><td>Token valid, scope insufficient for the action.</td></tr>
+
+              <tr><td colspan="3"><strong>Not found</strong></td></tr>
+              <tr><td><code>not_found</code></td><td>404</td><td>The named correlationId, surfaceId, draftId, lessonId or eventId does not exist.</td></tr>
+
+              <tr><td colspan="3"><strong>runMode discipline</strong></td></tr>
+              <tr><td><code>runmode_mismatch</code></td><td>403</td><td>The active run mode does not authorize this action against the targeted resource class. See <a href="./run-modes">Run modes</a>.</td></tr>
+              <tr><td><code>missing_runmode</code></td><td>400</td><td>No run mode, or an invalid one, at the entry boundary.</td></tr>
+
+              <tr><td colspan="3"><strong>Lens-side guards</strong></td></tr>
+              <tr><td><code>validation_required</code></td><td>409</td><td>The surface is in validation-required state; declaration is blocked.</td></tr>
+              <tr><td><code>baseline_gate</code></td><td>409</td><td>A baseline declaration failed a gate: a missing annotation, unlabeled fixtures.</td></tr>
+              <tr><td><code>lens_incompatible</code></td><td>409</td><td>A lens-snapshot composition reference is incompatible with the current substrate.</td></tr>
+
+              <tr><td colspan="3"><strong>Gateway and mediation</strong></td></tr>
+              <tr><td><code>no_routing_for_surface</code></td><td>404</td><td>No routing is configured for the surface. The usual cause is a <code>routings</code> array declared inside a surface instead of at the contract root; see <a href="./surface-contracts">Surface contracts</a>.</td></tr>
+              <tr><td><code>gate_blocked</code></td><td>200</td><td>A gate executed and blocked delivery; the canned message is returned. A 200 because the call completed: the block is the outcome, not a failure. See <a href="./judge-modes">Judge modes</a>.</td></tr>
+              <tr><td><code>light_source_error</code></td><td>502</td><td>The vendor returned an error.</td></tr>
+
+              <tr><td colspan="3"><strong>Curation and lessons</strong></td></tr>
+              <tr><td><code>invalid_gate_transition</code></td><td>409</td><td>The draft is not in a state that permits this transition.</td></tr>
+              <tr><td><code>duplicate_enqueue</code></td><td>409</td><td>The draft is already enqueued, or already in the requested state.</td></tr>
+              <tr><td><code>missing_decision_comment</code></td><td>400</td><td>An approver decision arrived without its required annotation.</td></tr>
+              <tr><td><code>missing_existing_lesson</code></td><td>404</td><td>The publisher could not find the lesson the draft claimed to update.</td></tr>
+              <tr><td><code>duplicate_publish</code></td><td>409</td><td>Publish was called with a stable artifact id that already exists in the destination store. <code>details</code> carries the existing <code>artifactId</code>, so an idempotent re-publish is distinguishable from a fault.</td></tr>
+              <tr><td><code>invalid_seed_event</code></td><td>400</td><td>The pinned seed event's surface does not match the fixture's parent surface.</td></tr>
+              <tr><td><code>seed_event_not_seedable</code></td><td>409</td><td>The pinned seed event exists but carries no usable <code>rawRequest</code>, having been size-stripped or written by an older client.</td></tr>
+              <tr><td><code>runmode_seed_bypass_forbidden</code></td><td>403</td><td>A non-production <code>seedRawRequest</code> bypass was supplied under <code>production</code>.</td></tr>
+
+              <tr><td colspan="3"><strong>Live multiplex run</strong></td></tr>
+              <tr><td><code>multiplex_raw_request_missing</code></td><td>409</td><td>The resolved source run carries no <code>light.rawRequest</code>, so there is nothing to re-issue across vendors. The dashboard's run button is gated on a stored payload for the same reason.</td></tr>
+
+              <tr><td colspan="3"><strong>Resource limits</strong></td></tr>
+              <tr><td><code>rate_limited</code></td><td>429</td><td>Request rate exceeded for the caller's key. Carries <code>Retry-After</code>.</td></tr>
+              <tr><td><code>payload_too_large</code></td><td>413</td><td>Body exceeds the JSON cap, 1&nbsp;MB per request by default.</td></tr>
+              <tr><td><code>request_timeout</code></td><td>408</td><td>The body did not finish arriving within the read timeout.</td></tr>
+              <tr><td><code>store_insufficient_storage</code></td><td>507</td><td>The event store is out of space. Writes are temp-and-rename, so nothing partial landed and retrying the same <code>eventId</code> is safe.</td></tr>
+              <tr><td><code>store_unavailable</code></td><td>503</td><td>The store refused the write: read-only mount, or permission denied. Retry once write access is restored.</td></tr>
+
+              <tr><td colspan="3"><strong>Compaction</strong></td></tr>
+              <tr><td><code>compaction_plan_stale</code></td><td>409</td><td>The store changed since the plan was reviewed: new or sealed events, pins, a day rollover. Re-plan. See <a href="./compaction">Compaction &amp; husking</a>.</td></tr>
+              <tr><td><code>compaction_conflict</code></td><td>409</td><td>The compaction cannot proceed as asked: already unsealed, a delete-mode unseal, a member gone.</td></tr>
+              <tr><td><code>compaction_verification_failed</code></td><td>500</td><td>A seal's per-day verification found a consumer that differs on husks. Nothing was sealed or moved.</td></tr>
+
+              <tr><td colspan="3"><strong>Retention and authority</strong></td></tr>
+              <tr><td><code>retention_policy_conflict</code></td><td>409</td><td>The retention policy changed since the operator reviewed it; <code>basePolicyId</code> is stale. Reload and re-review.</td></tr>
+              <tr><td><code>authority_tear_already_acknowledged</code></td><td>409</td><td>An acknowledgement at or after this tear already exists on the surface.</td></tr>
+              <tr><td><code>authority_tear_ack_out_of_order</code></td><td>409</td><td>Acknowledgements apply oldest first and an older tear is still open. The error names it. See <a href="./authority">Authority</a>.</td></tr>
+              <tr><td><code>authority_policy_conflict</code></td><td>409</td><td>The authority policy changed since review; <code>basePolicyId</code> is stale.</td></tr>
+
+              <tr><td colspan="3"><strong>Catch-all</strong></td></tr>
+              <tr><td><code>internal</code></td><td>500</td><td>An uncaught exception. Report it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">Read the code, not the status</span>
+          Fourteen of the thirty-six share <code>409</code> and two share <code>501</code>, so the status alone does not identify the condition. <code>gate_blocked</code> is the sharpest case: it carries a <code>200</code>, because a blocked delivery is a completed call with a canned response, not a transport failure.
+        </div>
 
         <h2>Advanced: <code>HttpTransport</code></h2>
 

@@ -211,6 +211,43 @@
 
         <h2>Reference</h2>
 
+        <h3>Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/authority</code></td><td>One reading per gated dimension, plus an honest <code>unmapped</code> reading for every gate-less surface. Re-derived per read.</td></tr>
+              <tr><td><code>GET /lens/authority/tears</code></td><td>The open tears on each surface, the acknowledgement records, and the granularity in force.</td></tr>
+              <tr><td><code>POST /lens/authority/tear/acknowledge</code></td><td>Acknowledge one tear. Body: <code>surfaceId</code>, <code>approverId</code>, optional <code>tearEventId</code> and <code>note</code>.</td></tr>
+              <tr><td><code>GET /lens/authority/policy</code></td><td>The policy in force, its source, and whether this deployment can write one.</td></tr>
+              <tr><td><code>PUT /lens/authority/policy</code></td><td>Replace it. Approver-gated, compare-and-swap on <code>basePolicyId</code>. <code>501</code> without a durable policy store.</td></tr>
+              <tr><td><code>GET /lens/authority/policy/history</code></td><td>The append-only record of every policy that has been in force.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>A reading</h3>
+
+        <p>
+          Each entry carries <code>surfaceId</code> and <code>dimensionId</code>, the <code>state</code>, the <code>interpretation</code> that identifies the sink, the <code>contract</code> and its <code>preconditions</code>, the statistical <code>power</code>, any <code>accuracyHold</code> or <code>reSoak</code>, the <code>suspension</code> when there is one, and the <code>basis</code> the state was derived from. A reading is always present, so an absent surface cannot pass for a healthy one.
+        </p>
+
+        <h3>The policy</h3>
+
+        <p>
+          One field today, <code>tearAckGranularity</code>: <code>watermark</code> means an acknowledgement covers every tear up to it, <code>per-tear</code> means one acknowledgement per tear, applied oldest first. Unknown keys are refused rather than ignored, so a typo cannot read as a policy that silently does not apply.
+        </p>
+
+        <p>
+          Resolution order is the operator's persisted policy, then the file seed, then the defaults. The lens never changes it: the <code>PUT</code> is the only writer and an approver gates it.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Compare-and-swap, not last-write-wins</span>
+          The <code>PUT</code> carries the <code>basePolicyId</code> the operator reviewed. If the policy moved since, the write is refused with <code>authority_policy_conflict</code> rather than overwriting someone else's change. Reload, re-review, re-submit. The retention policy works the same way.
+        </div>
+
         <p>
           The state ontology, the dependency-condition kinds, the stack and contract shapes and the pure
           state machine are public contract. Signal extraction, turning gate composition, floors, versions

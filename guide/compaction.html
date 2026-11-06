@@ -186,6 +186,54 @@
           reading that cannot be reproduced on a husk says so as a method boundary.
         </p>
 
+        <h2>The retention policy</h2>
+
+        <p>
+          A policy is a standing disposition the operator approved. The lens never adopts one: the <code>store-capacity</code> finding recommends a preset and stops there. Under <code>schedule: manual</code> nothing runs on its own; under <code>schedule: auto</code> each nightly run remains that same approved disposition, and each one mints a seal and a spine entry.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/retention/policy</code></td><td>The policy in force, its <code>source</code> (<code>operator</code>, <code>file</code> or <code>default</code>), the operator record, whether <code>PUT</code> is available here, and whether a file seed is being ignored.</td></tr>
+              <tr><td><code>PUT /lens/retention/policy</code></td><td>Replace it. Approver-gated, compare-and-swap on <code>basePolicyId</code>, and a delete-mode policy needs an explicit acknowledgement. Appends to the durable history, then mints the audit record. <code>501</code> without a policy store.</td></tr>
+              <tr><td><code>GET /lens/retention/policy/history</code></td><td>Every operator policy, oldest first.</td></tr>
+              <tr><td><code>GET /lens/retention/schedule</code></td><td>The schedule and the auto-run log. Reports <code>supported: false</code> where it cannot run.</td></tr>
+              <tr><td><code>GET /lens/retention/compaction</code></td><td>Status: tiers, seals, chain head, any interrupted operation. <code>?verify=true</code> re-reads every segment and checks the chain.</td></tr>
+              <tr><td><code>POST /lens/retention/compaction/prepare</code></td><td>The one-time index preparation a backend needs before its first compaction. Approver-gated and explicit; the filesystem backend needs none.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">A read-window override naming an undeclared surface is a warning</span>
+          The policy schema refuses duplicate or ambiguous read-window overrides and unknown run modes outright. An override naming a surface the contract does not declare is accepted instead, with a <code>warnings</code> entry: the contract may be about to declare it, and refusing would make policy and contract impossible to deploy in either order.
+        </div>
+
+        <h2>Archive, rehydrate and erasure</h2>
+
+        <p>
+          Sealed segments can be mounted back for reading, and data can be removed on request. Every write here is approver-gated, because the lens rehydrates and erases on no one's initiative but the operator's.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/archive/overlays</code></td><td>The mounted rehydrate overlays. Also reported on health.</td></tr>
+              <tr><td><code>POST /lens/archive/rehydrate</code></td><td>Mount archive segments as a read-only overlay with a TTL, selected by <code>segmentIds</code>, <code>window</code> or <code>decompositionEventId</code>. Verifies the chain and footer digests and decrypts where needed. Nothing is appended.</td></tr>
+              <tr><td><code>POST /lens/archive/unmount</code></td><td>End an overlay before its TTL.</td></tr>
+              <tr><td><code>POST /lens/archive/erase/plan</code></td><td>A dry run of a right-to-delete erasure: the members by tier, the seals it re-segments, the segments it shreds, the frozen windows it touches, what is removed and what survives. Writes nothing.</td></tr>
+              <tr><td><code>POST /lens/archive/erase</code></td><td>Execute a reviewed plan. Approver-gated and requires <code>acknowledgeIrreversible: true</code>; the server re-plans and refuses a plan that has moved.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          An overlay is read-only and expires. Rehydrating does not reverse a compaction: it makes a sealed span readable for as long as the TTL lasts, and appends nothing. A backend without the archive surface answers the read with <code>{ supported: false, reason }</code> and every write with <code>501</code>, rather than an empty success.
+        </p>
+
         <h2>Reference</h2>
 
         <ul>

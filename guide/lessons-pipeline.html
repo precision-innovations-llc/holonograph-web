@@ -265,6 +265,7 @@ Content-Type: application/json
             <tbody>
               <tr><td><code>POST /hil/override</code></td><td>Record a human override on a captured event.</td></tr>
               <tr><td><code>POST /lessons/cluster</code></td><td>Cluster overrides in a window.</td></tr>
+              <tr><td><code>POST /lessons/capture-scan</code></td><td>Sweep judged failures on opt-in surfaces into the curation store so they cluster. Judged failures live in the event store and the clusterer reads the curation store; without this bridge a failure never clusters unless an override seeded it by hand. Opt in per surface with <code>captureJudgedFailures</code>. Idempotent per source event and dimension; the approver gate still gates the drafted lesson.</td></tr>
               <tr><td><code>POST /lessons/draft</code></td><td>Ask the drafter to propose a corrective artifact for a cluster.</td></tr>
               <tr><td><code>POST /hil/approve</code></td><td>Approve a draft at the gate.</td></tr>
               <tr><td><code>POST /hil/reject</code></td><td>Reject a draft at the gate (comment required).</td></tr>

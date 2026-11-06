@@ -221,6 +221,8 @@ Content-Type: application/json
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>POST /lens/decomposeVariance</code></td><td>Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record <code>eventId</code>.</td></tr>
+              <tr><td><code>POST /lens/fixtures/calibrate-floor</code></td><td>Source the noise floor the decomposition reads against. Reads replay-provenance events only, so production traffic is not conflated with the floor. Per-fixture-and-dimension sample variance, with a sample-count-weighted pooled mean per dimension. Idempotent and retry-safe.</td></tr>
+              <tr><td><code>POST /lens/replay</code></td><td>Re-issue captured requests through a target lens, window-stamped so the paired-window read works. Holds the input constant and varies the lens. Source events by <code>sourceEventIds</code> or <code>sourceCorrelationIdPrefix</code>; events carrying no stored raw request are reported skipped rather than silently dropped. Every replay is a real model call, so the count is capped.</td></tr>
               <tr><td><code>POST /lens/decomposition/evaluate</code></td><td>Return the confidence verdict for the analysis record.</td></tr>
               <tr><td><code>POST /lens/decomposition/lifecycle</code></td><td>Govern the reading: <code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
             </tbody>
