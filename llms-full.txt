@@ -3228,15 +3228,350 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 15 — Judge modes
+### Chapter 15 — Rubric coverage and de-saturation
 
-_Permalink: https://holonograph.ai/guide/judge-modes_
+_Permalink: https://holonograph.ai/guide/rubric-coverage_
 
 Chapter 15
 
-# Judge modes
+# Rubric coverage and de-saturation
 
-        Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
+        One rubric over a population with real sub-kinds judges the union weakly, or judges the wrong specifics. This chapter is the loop that fixes that: scope a rubric per facet, see which facets have one, draft the ones that do not, and check that what you drafted can still tell a wrong answer from a right one.
+
+## What it is
+
+        A grading dimension carries one `rubricRef`. Point it at a surface whose population is heterogeneous, with members like `Daily Summary`, `Weather Advisory` and `Weekly Check-in`, and that one rubric either grades the union loosely or grades one member's specifics and mis-grades the rest.
+
+        `rubricDispatch` scopes a rubric per facet without enumerating the members in the contract:
+
+```
+{
+  "id": "signal-quality",
+  "scoring": "llm-judge",
+  "rubricRef": "gs://rubrics/signal-general.md",
+  "rubricDispatch": {
+    "facet": "signal.name",
+    "refsFrom": "gs://rubrics/signal-alert/",
+    "refs": { "Morning Routine": "gs://rubrics/pinned/morning.md" }
+  }
+}
+```
+
+Field	What it declares
+
+`facet`	The cohort-tag key whose per-event value selects the rubric. It has to be a key in the surface's declared `cohortTags` vocabulary: a bounded identifier, not a human-authored display string with its em-dashes and emoji.
+
+`refsFrom`	The bucket a per-facet rubric resolves from by convention. The rubric for value V is `refsFrom` + the normalized V + `.md`. Adding a member's rubric is a bucket write, never a contract change.
+
+`refs`	Optional pins that override the convention for named values. Keys are matched in their normalized form, so pinning `Morning Routine` addresses the same rubric identity the convention would.
+
+        The dimension's own `rubricRef` is re-cast as the required default. An unknown or unmatched facet is scored against it rather than skipped, because skipping would manufacture the judge-liveness hole the instrument exists to close. It is scored, marked, and counted.
+
+### One normalization, shared
+
+        A facet value and its filename have to address the same rubric, so both the dispatch and the drafter that writes the bucket file call one function. It folds Unicode and strips combining marks, lowercases, collapses every run of non-alphanumerics to a single hyphen, and trims:
+
+```
+"Morning Routine"                → morning-routine.md
+"Weather — Heat Advisory ⚠️"      → weather-heat-advisory.md
+"café"                           → cafe.md
+```
+
+        A value that is entirely non-alphanumeric, a bare emoji say, normalizes to nothing. That is an unaddressable stem, so the planner reads it as an unmatched value rather than pointing at a `.md` that cannot exist.
+
+## Why it matters
+
+        Two properties make the loop auditable rather than hopeful.
+
+### The default is countable, and says why
+
+        Every scored event is stamped with which rubric judged it and, when that was the default, why. Four reasons, and they are different problems:
+
+Reason	What happened	What to do
+
+`no-bespoke-ref`	A declared facet value with no per-facet rubric authored yet.	Nothing is wrong. This is the drafter's work queue.
+
+`unmatched-value`	A `facet=value` tag was present, but the value is not declared and does not normalize to one.	A typo or an undeclared member. Fix the tag or declare the value.
+
+`facet-tag-absent`	The event carried no `facet=` tag at all.	Un-tagged emit. Fix the producer.
+
+`pin-unresolved`	An explicit `refs` pin was set and failed to load.	A bad pin. Louder than a convention miss, because you asked for this one by name.
+
+        Without the split, the default population is one undifferentiated bucket and a coverage gap is indistinguishable from a broken emitter.
+
+### The default vouches for less
+
+        A default-scored event is also reduced-reach. The surface-general rubric vouches for surface-general correctness, not for domain quality, so it is deliberately strict about what it can see and silent about what it cannot. Scores under it are not comparable to scores under a bespoke rubric, and the lens treats the difference as a property of the instrument rather than of the agent.
+
+## How to use it
+
+### Read the worklist
+
+```
+GET /lens/facet-coverage?surfaceId=signal-alert
+```
+
+        One report per dispatching dimension. The counts are the readout: `facetsSeen` against `bespokeCount`, `scoredOnDefault` split by reason, `untaggedCount`, and `defaultOnly` for the facets that have never had anything but the default. `facets` carries the per-facet detail, each entry naming its `source` and, where that is `default`, its `defaultReason`.
+
+        Re-derived per read from the apparatus columns. A surface with no dispatching dimension returns empty rather than zero.
+
+### Draft one
+
+```
+POST /lens/rubric/propose
+{
+  "surfaceId": "signal-alert",
+  "dimensionId": "signal-quality",
+  "facetValue": "Morning Routine"
+}
+```
+
+        The deterministic scaffold is assembled server-side from the contract: the dimensional-context header and the required verdict shape come from `rubricDispatch` and `judgeClaimContract`. The narrator contributes the domain grading criteria and nothing else. It has no channel through which to emit a number, so a fabricated threshold is structurally impossible rather than merely unlikely.
+
+        The response carries the `refPath` the approved body belongs at, the `draft`, and two honesty flags. `narratorStatus` is `llm` when a real narrator produced the criteria, `stub` when none is configured, and `stub-fallback` when one was configured and threw: a draft returned under `stub-fallback` is a deterministic skeleton and must not read as an authored proposal. `evidenceAvailable` flags whether the count behind the draft was measured or is a placeholder.
+
+        Propose-only. The draft goes to the approver gate, and the approved body is what the operator writes to the bucket. The lens never writes the rubric.
+
+### Check that it discriminates
+
+        A rubric can be authored, resolved, and scoring, and still be blind. If a value sits in the judge's sight and the rubric never asks about it, an output that is wrong along that value scores as if it were right. The score saturates.
+
+```
+POST /lens/saturation/audit
+{
+  "surfaceId": "signal-alert",
+  "dimensionId": "signal-quality"
+}
+```
+
+        The audit reads the dimension's declared `expectsGrounding` axes and, for each, computes the pass-rate of the declared misuse values against the dimension's `passThreshold`.
+
+Per axis	Means
+
+`blind`	The misuse passes at or above the blind threshold, 0.5 by default. The judge is letting it through.
+
+`discriminating`	The misuse reliably fails.
+
+`unverified`	Too few misuse samples, five by default, or no declared `passThreshold`. Honest-null, not a pass.
+
+        The dimension's verdict is `saturated`, `discriminating`, `unverified`, or `no-expectation` where nothing was declared to check. Each axis also reports its misuse and correct-use counts, both pass-rates and the mean misuse score, because a working judge passes correct use and fails misuse, and seeing only one half of that is not evidence.
+
+          Functional, not statistical
+          An earlier version of this check asked whether the score varies with the axis at all, by analysis of variance. That is the wrong question. A judge scoring the misuse 8.4 against a correct 9 varies significantly and still passes the misuse. Separability is not adequate penalization. The verdict is the pass-rate, which is also robust to a judge catching some of the misuse for an unrelated reason: it still reads blind on the fraction it lets through.
+
+        No judge is in the loop. The audit reads the substrate alone, because a saturated judge cannot be its own alarm. There is no approver gate and no model call. `provenance` defaults to `all`, so a replay panel built by varying the grounding is in scope, and `correlationIdPrefix` scopes the read to it.
+
+### Fan out a focused reviewer
+
+        Given measured saturation, the remedy is not to rewrite the holistic rubric. It is to add a reviewer that looks at one thing:
+
+```
+POST /lens/rubric/desaturate
+{
+  "surfaceId": "signal-alert",
+  "dimensionId": "signal-quality",
+  "facetValue": "Morning Routine",
+  "blindDimension": {
+    "name": "hrv-provenance",
+    "description": "whether the HRV figure came from the overnight window it claims",
+    "groundingKey": "hrv_metric_type",
+    "misuseValues": ["intraday_spot"]
+  },
+  "saturationEvidence": {
+    "scenarios": [
+      { "label": "overnight (correct)", "judgeMean": 8.9 },
+      { "label": "intraday spot (wrong)", "judgeMean": 8.4 }
+    ],
+    "replayRunRef": "replay:hrv-probe:"
+  }
+}
+```
+
+        You supply the measured evidence; the server drafts against it. The deterministic facts, the blind dimension and the saturation matrix and the fan-out structure, are pinned server-side, and the narrator writes the focused criteria only. The same discipline as `/propose`, and the same approver gate.
+
+        What comes back is a focused sub-reviewer plus a registrable fan-out fragment: a separate `role: 'judge'` surface, its routing, and the `judgeSurfaceId` link that attaches it to the subject dimension. It appends. The holistic rubric is never replaced, because a focused judge that replaced it would trade one blind spot for another.
+
+        Declaring `misuseValues` on the fan-out is what makes it auditable in turn. Omit them and the new judge is not saturation-auditable until you declare them.
+
+          A misuse value is an output correlate
+          The audit keys on the grounding value, so a declared misuse value only discriminates when it is a value the producer consumed that correlates with the wrong output. A value that labels the grounding *situation* instead admits both a faithful and a faulty output under the same value: the pass-rate mixes the two, lands near half, and mislabels the judge blind. Such an axis is auditable only when the events are scoped to the faulty arm first.
+
+## Reading the output
+
+        Three apparatus columns are stamped on every dispatched judgment. They are reserved, so a contract may not declare them.
+
+Column	Carries
+
+`judge.rubric_source`	`facet` or `default`.
+
+`judge.rubric_facet`	The facet value the event dispatched on.
+
+`judge.rubric_default_reason`	One of the four reasons, when the source was `default`.
+
+          Which rubric an event got is instrument variance
+          A default-scored population scores systematically lower for instrument reasons. Attributing that gap to the agent is the same mistake as attributing a regional confound to it. `judge.rubric_source` is a conditioning-permitted axis for exactly this reason, alongside the rubric hash, and the variance decomposition treats both as instrument variance rather than agent variance.
+
+        Two of the attention spine's twenty-six sources file from here. `rubric-gap` is a declared facet riding the default with no bespoke rubric authored, and it mints an `author-rubric` proposal. `rubric-ref-broken` is a reference that no longer resolves, and it mints `fix-rubric-ref`. See [The attention spine](./attention-spine).
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/facet-coverage`	The coverage readout per dispatching dimension, with the per-facet detail and the default split by reason.
+
+`POST /lens/rubric/propose`	Draft a bespoke rubric for one named facet value. Propose-only, approver-gated.
+
+`POST /lens/saturation/audit`	The judge-independent discrimination check against the declared grounding. Pure read.
+
+`POST /lens/rubric/desaturate`	Draft a focused sub-reviewer plus its fan-out fragment, from measured saturation evidence. Propose-only, approver-gated.
+
+### Contract surface
+
+        `rubricDispatch`, `expectsGrounding`, `judgeSurfaceId` and `judgeClaimContract` are all declared on the grading dimension; see [What a dimension declares](./surface-contracts#what-a-dimension-declares). The dispatch decision is a published contract, shared by the lens's own gated judge and by an operator's inline one, so both resolve a facet to the same rubric. Resolving the rubric bytes is the caller's: the plan says what to fetch, the caller fetches, and the apparatus columns are stamped from the outcome.
+
+        The drafter prompts and the composition order behind `/propose` and `/desaturate` ship inside the binary.
+
+---
+
+### Chapter 16 — Facet separability
+
+_Permalink: https://holonograph.ai/guide/facet-separability_
+
+Chapter 16
+
+# Facet separability
+
+        Fanning out to a focused judge per construct asserts, on faith, that those constructs are separable. This chapter is the certification under that assertion: whether a decomposition is a real topology, one axis wearing two names, or a prerequisite dressed as a peer.
+
+## What it is
+
+        Correlation is symmetric. It can say two facets move together; it cannot say that breaking A degrades B while breaking B leaves A intact. That asymmetry is the whole question, and it is invisible to any correlation-shaped measure, the [orthogonality audit](./variance-isolation) included.
+
+        So the audit intervenes. Over a joint-state panel, events labelled by which facets' defects were injected, it runs a factorial and reads the directional cross-over-main ratio in each direction: how much facet F's score moves when F's own defect is injected, against how much it moves when G's is.
+
+Verdict	Signature	What it means	What to do
+
+`separable`	Both ratios low	Independent axes.	Keep both.
+
+`collinear-collapse`	Both high, symmetric	One axis wearing two names.	Rejoin. This is the only verdict where rejoining is right.
+
+`asymmetric-subsumption`	One high, one low	The high-ratio facet subsumes the low one: a prerequisite or constituent relationship, not a duplicate.	Keep both. The subsumed one is the sharp sub-dimension; the other is the catch-all.
+
+`unverified`	Undersampled, a dead own-axis, or a compensatory coupling	Not established.	Nothing yet. Reported rather than rounded to separable.
+
+          The trap this closes
+          A saturation or collinearity signal on its own says "these look redundant, rejoin them." That is right for `collinear-collapse` and wrong for `asymmetric-subsumption`, where rejoining destroys a real, independently manipulable axis. Collinear behavior is a hypothesis. Run the factorial before you rejoin.
+
+## Why it matters
+
+        Two things depend on the answer being right.
+
+        A fan-out is a claim about topology. Minting three focused judges per subject asserts those three constructs can be judged apart. If two of them are one axis, you have bought two judges' latency and cost for one axis of signal, and their agreement will read as corroboration when it is tautology.
+
+        Reflection depends on it further downstream. Full orthogonality is one of the grant's hard preconditions, and a decomposition that has not certified cannot satisfy it. See [What has to hold before a cell reflects](./judge-modes#what-has-to-hold).
+
+## How to use it
+
+        Three reads, in order of cost. The screen proposes a hypothesis, the audit certifies it, the monitor watches it.
+
+### Screen for candidates
+
+```
+POST /lens/redundancy/screen
+{ "surfaceId": "classify-intent" }
+```
+
+        Over per-event score vectors it returns the pairwise collinearity matrix and, for each collinear pair, two things the matrix alone does not give: a scrap-pick naming which twin is the dependent copy, and a residual localization naming the substrate column that holds the copy's only independent variance. Omit `dimensionIds` and every scored dimension on the surface is screened.
+
+        Data-gated. A pair below the minimum sample floor reads `undersampled` and a dimension with no variance reads `no-variance`, with a pointer at the saturation audit, since a dimension that never moves is usually a blind judge rather than a redundant one. The screen withholds rather than fires on a thin panel.
+
+### Certify the pair
+
+```
+POST /lens/facet-topology/audit
+{
+  "surfaceId": "classify-intent",
+  "facets": [
+    { "dimensionId": "hrv-provenance",  "defectColumn": "defect.hrv",   "defectValue": "injected" },
+    { "dimensionId": "place-identity",  "defectColumn": "defect.place", "defectValue": "injected" }
+  ]
+}
+```
+
+        Each `facets` entry is a panel-based expectation: the facet's score dimension, the diagnostic substrate column marking its injected defect, and the value that marks the defect as present. At least two are required, because the question is about a pair.
+
+        `provenance` defaults to `all`, so a replay or emitted panel is in scope, and `correlationIdPrefix` scopes to one. `options` takes the cell-size floor and the ratio cutoffs where a surface needs them; the defaults are conservative.
+
+        Read-only, so propose-only. The audit returns a verdict per unordered pair and the operator promotes the split, keeps it, or rejoins.
+
+          The audit inherits its panel's validity
+          A facet whose own injected defect does not actually move its own score makes the cross-over-main ratio explode into a fake subsumption. Those pairs are reported as such rather than scored. The factorial is only as good as the ablation underneath it: if the defect you injected was not a defect, nothing downstream of it is a measurement.
+
+### Watch the band
+
+```
+POST /lens/pairwise-monitor/run
+{ "surfaceId": "classify-intent" }
+```
+
+        The factorial is expensive and offline. The monitor is the cheap online guard on it. Over per-event defect co-firing it returns, per dimension pair, the co-trigger contingency and the marginal-adjusted phi coupling, which is the measure that disentangles real coupling from a shared score floor, plus the signal for a pair collapsing toward collinear while live.
+
+        Give it the characterized band as `expectedBands` and it returns a drift verdict proposing a re-run of the audit. Run the audit with `persist: true` and it closes the loop itself: the audit also runs the monitor over the same window and appends a durable characterization record merging the verdict with the co-trigger band per pair, which is what the monitor reads back. `bandTolerance` sets the band's half-width, 0.1 by default.
+
+        The monitor proposes drift. It never adjusts a band, because a band that moves itself measures nothing.
+
+### When the judge and the producer disagree
+
+```
+POST /lens/contested-cohort/screen
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }
+```
+
+        The adjacent question, converging on the same fields. For one judged dimension it partitions events by each candidate substrate-column cohort and tests whether the judge's fail-rate on a cohort value is systematically elevated against the rest of the population, by a two-by-two chi-square per cohort with the family under false-discovery control.
+
+        A contested cohort is one where the producer's outputs are systematically rejected. It is reported with the producer's own within-cohort consistency alongside, because a producer that is consistently doing one thing and consistently marked down for it has a different shape from one that is erratic.
+
+        The lens cannot adjudicate which party is right, and does not try. It points at the interaction, notes that a focused judge on that field would isolate it, and routes to review. Cohorts below the sample floor are withheld.
+
+## Reading the output
+
+        Every read here is read-only and propose-only, and three of the attention spine's sources file from them: `redundancy-candidate`, which mints a `rejoin-dimension` proposal, plus `pairwise-drift` and `contested-cohort`, which mint nothing. A source with no default proposal is one where the remedy is a judgment the lens declines to make for you.
+
+        All four are data-gated and report honest nulls. A withheld pair, an undersampled cohort and an unverified verdict are all distinguishable from a clean result, which is the property that makes a quiet report worth anything.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/redundancy/screen`	The collinearity matrix, with a scrap-pick and residual localization per collinear pair.
+
+`POST /lens/facet-topology/audit`	The interventional factorial. Returns a verdict per unordered pair; `persist: true` also records the characterization and its band.
+
+`POST /lens/pairwise-monitor/run`	The online guard: co-trigger contingency, marginal-adjusted phi, and a drift verdict against the characterized band.
+
+`POST /lens/contested-cohort/screen`	Cohorts where the judge systematically rejects the producer, with the producer's within-cohort consistency.
+
+### Where this sits
+
+        Upstream is [Rubric coverage and de-saturation](./rubric-coverage): a de-saturation fan-out creates the facets this chapter certifies, so the two run as one loop rather than two tools. Alongside it at axis altitude is the orthogonality audit in [Variance isolation](./variance-isolation), which asks whether a declared substrate column explains anything, a different object measured a different way.
+
+        The factorial, the coupling measure and the tuning constants ship inside the binary. The verdict vocabulary and the record shapes are public contract.
+
+---
+
+### Chapter 17 — Judge modes and reflection
+
+_Permalink: https://holonograph.ai/guide/judge-modes_
+
+Chapter 17
+
+# Judge modes and reflection
+
+        Every judge/gate relationship on a surface is one of four modes, the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery. Reflection is the third cell, and the only one Holonograph grants rather than leaving to configuration.
 
 ## What it is
 
@@ -3288,7 +3623,88 @@ Chapter 15
           blocks on a verdict that has not arrived. Per-judgment verdict provenance distinguishes the raw
           judge result from the producer-filtered one.
 
+## Why reflection is gated
+
+        Reflection turns a judge from an evaluator you read into an optimization target the producer
+          chases. That inverts the trust requirement. A judge you only read can be a little wrong, because
+          you flag and a human reviews. A judge you optimize against has to be right, because the producer
+          will find and exploit every gap in it.
+
+        The gate is on validity, not on discrimination. Those come apart: a judge can score stably and
+          still be blind, saturated, or wrong about how a construct should treat absence. Scoring the same
+          way every time is reliability, and reliability does not imply validity.
+
+### The specific hazard
+
+        Real dimensions are often requires-confirmation: an honest "I do not have the data" correctly
+          scores low. Put that judge in a retry loop and the cheapest way for the producer to raise its
+          score is to stop being honest about the absence and fabricate. That is the exact failure the
+          apparatus exists to catch, now with a loop optimizing toward it.
+
+        So reflection without established authority is not merely a waste of tokens and time. It is a
+          pressure applied to the one behavior you most need preserved.
+
+## What has to hold before a cell reflects
+
+        Reflection unlocks for a `judge &times; rubric &times; facet &times; surface` cell when
+          all of the following hold. The gate is dual: Holonograph computes the statistical pass, then a
+          human confirms.
+
+          - **Soak.** Enough live production data to reach a statistical N. Holonograph determines the statistical pass; a human approves the N, judging whether the sample spans the breadth of real inputs and outputs.
+
+          - **Discrimination.** The facet's dimensions pass discrimination evaluation, with a human confirming key outlier calls and a statistical sampling of calls on that facet.
+
+          - **Saturation cleared.** Every dimension passes the saturation audit, which is [a read you can run yourself](./rubric-coverage#the-saturation-audit).
+
+        Validity is cell-specific, so the grant is too. A judge certified on one facet of one surface has
+          said nothing about another.
+
+## What reflection does
+
+        A failing response returns to the producer with the judge's grounded critique attached, and the
+          producer retries, capped. Reflection is the soft tier of the judge's authority over delivery: it
+          can send the producer back, it cannot block. Blocking remains deterministic code in the gate, or
+          operator policy.
+
+## Revocation
+
+        The grant is revoked on any change to the identity it was computed on. A new judge model, a
+          revised rubric, a changed context scope: the cell certifies again or it does not reflect. This is
+          the authority machinery applied to the judge rather than to the producer, and it suspends the same
+          way for the same reasons.
+
+## The shared-frame check
+
+        One of those preconditions has an instrument of its own. Groundedness has to hold on both sides: a judge that read a different frame from the producer is not measuring the producer, and a groundedness alarm on such a pair points at the wrong party.
+
+```
+POST /lens/co-groundedness/screen
+{ "surfaceId": "classify-intent" }
+```
+
+        Over the surface's claim-instrumented judged dimensions it classifies each judge-to-subject frame relation:
+
+Relation	What it says
+
+`shared-frame-intact`	Judge and producer were grounded in the same values. A groundedness finding here is about the producer.
+
+`judge-misread-frame`	The judge read the frame wrong. The finding is about the judge.
+
+`judge-frame-truncated`	The judge saw part of the frame. Its verdict is scoped to what it saw, whatever it asserts.
+
+`judge-grounded-outside-frame`	The judge grounded on something the producer never had. It is marking the producer down for an absence that was never the producer's.
+
+`not-assessable`	The relation could not be established. Reported rather than assumed intact.
+
+        The last two are the observer-groundedness asymmetry, and they are the disambiguation to run before treating a groundedness alarm as a producer fault. Deterministic per verdict, certain or abstain: no false-discovery gate and no data floor, because each relation is established or it is not. Read-only, so it proposes and the operator disposes.
+
 ## Reference
+
+Method & path	Purpose
+
+`POST /lens/co-groundedness/screen`	Classify the judge-to-subject frame relation per claim-instrumented dimension.
+
+        Your own reflection loop remains yours to run; nothing here prevents it. The claim is narrower: a retry loop against an uncertified judge spends tokens to apply pressure in an unknown direction. Holonograph turns reflection on when the cell has qualified, if you have asked for it.
 
         The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
           the implementation. The reflection path and the judge-gate enforcement cluster each have their
@@ -3296,11 +3712,11 @@ Chapter 15
 
 ---
 
-### Chapter 16 — Seams
+### Chapter 18 — Seams
 
 _Permalink: https://holonograph.ai/guide/seams_
 
-Chapter 16
+Chapter 18
 
 # Seams
 
@@ -3407,11 +3823,11 @@ Shape	Form
 
 ---
 
-### Chapter 17 — The seam monitor
+### Chapter 19 — The seam monitor
 
 _Permalink: https://holonograph.ai/guide/seam-monitor_
 
-Chapter 17
+Chapter 19
 
 # The seam monitor
 
@@ -3542,11 +3958,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 18 — The attention spine
+### Chapter 20 — The attention spine
 
 _Permalink: https://holonograph.ai/guide/attention-spine_
 
-Chapter 18
+Chapter 20
 
 # The attention spine
 
@@ -3757,11 +4173,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 19 — Authority
+### Chapter 21 — Authority
 
 _Permalink: https://holonograph.ai/guide/authority_
 
-Chapter 19
+Chapter 21
 
 # Authority
 
@@ -3894,86 +4310,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 20 — Reflection
-
-_Permalink: https://holonograph.ai/guide/reflection_
-
-Chapter 20
-
-# Reflection
-
-        When a response fails a judge, the judge’s grounded critique can go back to the producer for a capped retry. Holonograph grants that per judge, rubric, facet and surface, and only after that exact cell has certified. It is never a default and never an operator toggle.
-
-## Why it is gated
-
-        Reflection turns a judge from an evaluator you read into an optimization target the producer
-          chases. That inverts the trust requirement. A judge you only read can be a little wrong, because
-          you flag and a human reviews. A judge you optimize against has to be right, because the producer
-          will find and exploit every gap in it.
-
-        The gate is on validity, not on discrimination. Those come apart: a judge can score stably and
-          still be blind, saturated, or wrong about how a construct should treat absence. Scoring the same
-          way every time is reliability, and reliability does not imply validity.
-
-### The specific hazard
-
-        Real dimensions are often requires-confirmation: an honest "I do not have the data" correctly
-          scores low. Put that judge in a retry loop and the cheapest way for the producer to raise its
-          score is to stop being honest about the absence and fabricate. That is the exact failure the
-          apparatus exists to catch, now with a loop optimizing toward it.
-
-        So reflection without established authority is not merely a waste of tokens and time. It is a
-          pressure applied to the one behavior you most need preserved.
-
-## What has to hold
-
-        Reflection unlocks for a `judge &times; rubric &times; facet &times; surface` cell when
-          all of the following hold. The gate is dual: Holonograph computes the statistical pass, then a
-          human confirms.
-
-          - **Soak.** Enough live production data to reach a statistical N. Holonograph determines the statistical pass; a human approves the N, judging whether the sample spans the breadth of real inputs and outputs.
-
-          - **Discrimination.** The facet's dimensions pass discrimination evaluation, with a human confirming key outlier calls and a statistical sampling of calls on that facet.
-
-          - **Saturation cleared.** Every dimension passes the saturation audit.
-
-        Validity is cell-specific, so the grant is too. A judge certified on one facet of one surface has
-          said nothing about another.
-
-## What it does
-
-        A failing response returns to the producer with the judge's grounded critique attached, and the
-          producer retries, capped. Reflection is the soft tier of the judge's authority over delivery: it
-          can send the producer back, it cannot block. Blocking remains deterministic code in the gate, or
-          operator policy.
-
-        Because a verdict has to be in hand before the producer finishes, reflection is inline by
-          construction. An asynchronous judge observes and nothing more.
-
-## Revocation
-
-        The grant is revoked on any change to the identity it was computed on. A new judge model, a
-          revised rubric, a changed context scope: the cell certifies again or it does not reflect. This is
-          the authority machinery applied to the judge rather than to the producer, and it suspends the same
-          way for the same reasons.
-
-## Reference
-
-        Your own reflection loop remains yours to run; nothing here prevents it. The claim is narrower
-          and worth stating plainly: a retry loop against an uncertified judge spends tokens to apply
-          pressure in an unknown direction. Holonograph turns reflection on when the cell has earned it, if
-          you have asked for it.
-
-        The taxonomy that places reflection among the judge modes is documented ahead of the
-          implementation, as is this chapter.
-
----
-
-### Chapter 21 — Route a verdict to a human
+### Chapter 22 — Route a verdict to a human
 
 _Permalink: https://holonograph.ai/guide/subscriptions_
 
-Chapter 21
+Chapter 22
 
 # Route a verdict to a human
 
@@ -4173,11 +4514,11 @@ Method & path	Purpose
 
 ---
 
-### Chapter 22 — Compaction & husking
+### Chapter 23 — Compaction & husking
 
 _Permalink: https://holonograph.ai/guide/compaction_
 
-Chapter 22
+Chapter 23
 
 # Compaction & husking
 

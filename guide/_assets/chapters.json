@@ -111,20 +111,36 @@
       "num": "14",
       "slug": "conformance",
       "title": "Conformance & fixtures",
-      "group": "Variance controls for model seams",
+      "group": "Judge validity and authority",
       "status": "live",
       "blurb": "Whether a judge actually ran against its fixtures, or silently defaulted."
     },
     {
       "num": "15",
-      "slug": "judge-modes",
-      "title": "Judge modes",
-      "group": "Variance controls for model seams",
-      "status": "design",
-      "blurb": "Four modes on two axes: does the producer wait, and may the verdict touch delivery."
+      "slug": "rubric-coverage",
+      "title": "Rubric coverage and de-saturation",
+      "group": "Judge validity and authority",
+      "status": "live",
+      "blurb": "A rubric per facet, a worklist of the facets without one, and a check that what you wrote still discriminates."
     },
     {
       "num": "16",
+      "slug": "facet-separability",
+      "title": "Facet separability",
+      "group": "Judge validity and authority",
+      "status": "live",
+      "blurb": "Whether a decomposition is a real topology, one axis wearing two names, or a prerequisite dressed as a peer."
+    },
+    {
+      "num": "17",
+      "slug": "judge-modes",
+      "title": "Judge modes and reflection",
+      "group": "Judge validity and authority",
+      "status": "design",
+      "blurb": "Four modes on two axes, and the third cell: a capped retry granted per cell, never defaulted."
+    },
+    {
+      "num": "18",
       "slug": "seams",
       "title": "Seams",
       "group": "Seams, soak, and authority",
@@ -132,7 +148,7 @@
       "blurb": "An interpreted value driving a decision. Permanent, closeable, not removable."
     },
     {
-      "num": "17",
+      "num": "19",
       "slug": "seam-monitor",
       "title": "The seam monitor",
       "group": "Seams, soak, and authority",
@@ -140,15 +156,15 @@
       "blurb": "Finding seams in source, adjudicating them, registering them, and soaking them."
     },
     {
-      "num": "18",
+      "num": "20",
       "slug": "attention-spine",
       "title": "The attention spine",
       "group": "Seams, soak, and authority",
       "status": "live",
-      "blurb": "One operator lifecycle over twenty-five sources of findings."
+      "blurb": "One operator lifecycle over twenty-six sources of findings."
     },
     {
-      "num": "19",
+      "num": "21",
       "slug": "authority",
       "title": "Authority",
       "group": "Seams, soak, and authority",
@@ -156,15 +172,7 @@
       "blurb": "The per-surface state that the declared prerequisites are satisfied on the record."
     },
     {
-      "num": "20",
-      "slug": "reflection",
-      "title": "Reflection",
-      "group": "Seams, soak, and authority",
-      "status": "design",
-      "blurb": "A capped retry against a certified judge, granted per cell."
-    },
-    {
-      "num": "21",
+      "num": "22",
       "slug": "subscriptions",
       "title": "Route a verdict to a human",
       "group": "Operational utilities",
@@ -172,7 +180,7 @@
       "blurb": "Fire a signed webhook when a predicate over the lens’s own verdicts crosses a line."
     },
     {
-      "num": "22",
+      "num": "23",
       "slug": "compaction",
       "title": "Compaction & husking",
       "group": "Operational utilities",

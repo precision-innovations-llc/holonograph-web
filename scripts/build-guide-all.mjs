@@ -18,40 +18,21 @@ import { dirname, join } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
-const CHAPTERS = [
-  ["01", "overview", "Overview & first principles"],
-  ["02", "surface-contracts", "Surface contracts"],
-  ["03", "snapshot", "The four-layer snapshot"],
-  ["04", "substrate-columns", "Substrate columns"],
-  ["05", "sdk-reference", "SDK reference"],
-  ["06", "mediating-lens", "The mediating lens"],
-  ["07", "run-modes", "Run modes"],
-  ["08", "sidecar", "Sidecar / OTel integration"],
-  ["09", "topology-scanner", "Surface topology scanner"],
-  ["10", "multiplexer", "The multiplexer"],
-  ["11", "drift-attribution", "Drift attribution"],
-  ["12", "variance-isolation", "Variance isolation"],
-  ["13", "lessons-pipeline", "The lessons pipeline"],
-  ["14", "conformance", "Conformance & fixtures"],
-  ["15", "judge-modes", "Judge modes"],
-  ["16", "seams", "Seams"],
-  ["17", "seam-monitor", "The seam monitor"],
-  ["18", "attention-spine", "The attention spine"],
-  ["19", "authority", "Authority"],
-  ["20", "reflection", "Reflection"],
-  ["21", "subscriptions", "Route a verdict to a human"],
-  ["22", "compaction", "Compaction & husking"],
-];
+// Chapter order, numbering, titles and parts all come from the manifest, so
+// this script and build-guide-nav.mjs cannot disagree about what the Guide is.
+const { chapters: MANIFEST } = JSON.parse(
+  readFileSync(join(ROOT, "guide/_assets/chapters.json"), "utf8"),
+);
+const CHAPTERS = MANIFEST.map((c) => [c.num, c.slug, c.title]);
 
-// Parts, mirroring the per-chapter sidebar. Each entry is [part title, first chapter slug].
-const PARTS = [
-  ["Overview", "overview"],
-  ["Operating the lens", "surface-contracts"],
-  ["Variance controls for model seams", "conformance"],
-  ["Seams, soak, and authority", "seams"],
-  ["Operational utilities", "subscriptions"],
-];
-const PART_BY_FIRST_SLUG = new Map(PARTS.map(([t, slug], i) => [slug, { title: t, roman: ["I","II","III","IV","V"][i] }]));
+// Parts, in manifest order: [part title, first chapter slug].
+const PARTS = (() => {
+  const seen = new Map();
+  for (const c of MANIFEST) if (!seen.has(c.group)) seen.set(c.group, c.slug);
+  return [...seen.entries()];
+})();
+const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+const PART_BY_FIRST_SLUG = new Map(PARTS.map(([t, slug], i) => [slug, { title: t, roman: ROMAN[i] }]));
 
 // ------- extract <article> body from a chapter file, strip prev/next nav -------
 function extractChapterBody(slug) {

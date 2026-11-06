@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Judge modes — The Guide — Holonograph</title>
-<meta name="description" content="Every judge on a surface sits in one of four modes, fixed by two questions: does the producer wait, and may the verdict touch delivery." />
+<title>Judge modes and reflection — The Guide — Holonograph</title>
+<meta name="description" content="Four judge modes on two axes: does the producer wait, and may the verdict touch delivery. Reflection is the third cell, and it is granted per cell, never defaulted." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="design" />
 <meta name="sign-off-required" content="false" />
@@ -13,8 +13,8 @@
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
-<meta property="og:title" content="Judge modes · Holonograph Guide" />
-<meta property="og:description" content="Every judge on a surface sits in one of four modes, fixed by two questions: does the producer wait, and may the verdict touch delivery." />
+<meta property="og:title" content="Judge modes and reflection — The Guide" />
+<meta property="og:description" content="Four judge modes on two axes: does the producer wait, and may the verdict touch delivery. Reflection is the third cell, and it is granted per cell, never defaulted." />
 <meta property="og:url" content="https://holonograph.ai/guide/judge-modes" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
 <meta property="og:image:width" content="2752" />
@@ -22,8 +22,8 @@
 <meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
-<meta name="twitter:title" content="Judge modes · Holonograph Guide" />
-<meta name="twitter:description" content="Every judge on a surface sits in one of four modes, fixed by two questions: does the producer wait, and may the verdict touch delivery." />
+<meta name="twitter:title" content="Judge modes and reflection — The Guide" />
+<meta name="twitter:description" content="Four judge modes on two axes: does the producer wait, and may the verdict touch delivery. Reflection is the third cell, and it is granted per cell, never defaulted." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -75,30 +75,31 @@
         <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
         <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
         <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li class="s-part">Variance controls for model seams</li>
+        <li class="s-part">Judge validity and authority</li>
         <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li class="current"><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
+        <li><span class="s-num">15</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">16</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li class="current"><span class="s-num">17</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
         <li class="s-part">Seams, soak, and authority</li>
-        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
-        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
-        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
-        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
-        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li><span class="s-num">18</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">19</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">20</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li><span class="s-num">21</span><a href="./authority" class="s-ttl">Authority</a></li>
         <li class="s-part">Operational utilities</li>
-        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">22</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">23</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
       </ol>
     </aside>
 
     <main class="guide-main">
       <article>
 
-        <p class="guide-eyebrow">Chapter 15</p>
-        <h1 class="guide-h1">Judge modes</h1>
+        <p class="guide-eyebrow">Chapter 17</p>
+        <h1 class="guide-h1">Judge modes and reflection</h1>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
+          Every judge/gate relationship on a surface is one of four modes, the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery. Reflection is the third cell, and the only one Holonograph grants rather than leaving to configuration.
         </p>
 
         <h2 id="what-it-is">What it is</h2>
@@ -165,7 +166,117 @@
           judge result from the producer-filtered one.
         </p>
 
+<h2 id="why-reflection-is-gated">Why reflection is gated</h2>
+
+        <p>
+          Reflection turns a judge from an evaluator you read into an optimization target the producer
+          chases. That inverts the trust requirement. A judge you only read can be a little wrong, because
+          you flag and a human reviews. A judge you optimize against has to be right, because the producer
+          will find and exploit every gap in it.
+        </p>
+
+        <p>
+          The gate is on validity, not on discrimination. Those come apart: a judge can score stably and
+          still be blind, saturated, or wrong about how a construct should treat absence. Scoring the same
+          way every time is reliability, and reliability does not imply validity.
+        </p>
+
+        <h3 id="the-specific-hazard">The specific hazard</h3>
+
+        <p>
+          Real dimensions are often requires-confirmation: an honest "I do not have the data" correctly
+          scores low. Put that judge in a retry loop and the cheapest way for the producer to raise its
+          score is to stop being honest about the absence and fabricate. That is the exact failure the
+          apparatus exists to catch, now with a loop optimizing toward it.
+        </p>
+
+        <p>
+          So reflection without established authority is not merely a waste of tokens and time. It is a
+          pressure applied to the one behavior you most need preserved.
+        </p>
+
+        <h2 id="what-has-to-hold">What has to hold before a cell reflects</h2>
+
+        <p>
+          Reflection unlocks for a <code>judge &times; rubric &times; facet &times; surface</code> cell when
+          all of the following hold. The gate is dual: Holonograph computes the statistical pass, then a
+          human confirms.
+        </p>
+
+        <ul>
+          <li><strong>Soak.</strong> Enough live production data to reach a statistical N. Holonograph determines the statistical pass; a human approves the N, judging whether the sample spans the breadth of real inputs and outputs.</li>
+          <li><strong>Discrimination.</strong> The facet's dimensions pass discrimination evaluation, with a human confirming key outlier calls and a statistical sampling of calls on that facet.</li>
+          <li><strong>Saturation cleared.</strong> Every dimension passes the saturation audit, which is <a href="./rubric-coverage#the-saturation-audit">a read you can run yourself</a>.</li>
+        </ul>
+
+        <p>
+          Validity is cell-specific, so the grant is too. A judge certified on one facet of one surface has
+          said nothing about another.
+        </p>
+
+        <h2 id="what-reflection-does">What reflection does</h2>
+
+        <p>
+          A failing response returns to the producer with the judge's grounded critique attached, and the
+          producer retries, capped. Reflection is the soft tier of the judge's authority over delivery: it
+          can send the producer back, it cannot block. Blocking remains deterministic code in the gate, or
+          operator policy.
+        </p>
+
+
+        <h2 id="revocation">Revocation</h2>
+
+        <p>
+          The grant is revoked on any change to the identity it was computed on. A new judge model, a
+          revised rubric, a changed context scope: the cell certifies again or it does not reflect. This is
+          the authority machinery applied to the judge rather than to the producer, and it suspends the same
+          way for the same reasons.
+        </p>
+
+        <h2 id="the-shared-frame-check">The shared-frame check</h2>
+
+        <p>
+          One of those preconditions has an instrument of its own. Groundedness has to hold on both sides: a judge that read a different frame from the producer is not measuring the producer, and a groundedness alarm on such a pair points at the wrong party.
+        </p>
+
+        <pre><code>POST /lens/co-groundedness/screen
+{ "surfaceId": "classify-intent" }</code></pre>
+
+        <p>
+          Over the surface's claim-instrumented judged dimensions it classifies each judge-to-subject frame relation:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Relation</th><th>What it says</th></tr></thead>
+            <tbody>
+              <tr><td><code>shared-frame-intact</code></td><td>Judge and producer were grounded in the same values. A groundedness finding here is about the producer.</td></tr>
+              <tr><td><code>judge-misread-frame</code></td><td>The judge read the frame wrong. The finding is about the judge.</td></tr>
+              <tr><td><code>judge-frame-truncated</code></td><td>The judge saw part of the frame. Its verdict is scoped to what it saw, whatever it asserts.</td></tr>
+              <tr><td><code>judge-grounded-outside-frame</code></td><td>The judge grounded on something the producer never had. It is marking the producer down for an absence that was never the producer's.</td></tr>
+              <tr><td><code>not-assessable</code></td><td>The relation could not be established. Reported rather than assumed intact.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The last two are the observer-groundedness asymmetry, and they are the disambiguation to run before treating a groundedness alarm as a producer fault. Deterministic per verdict, certain or abstain: no false-discovery gate and no data floor, because each relation is established or it is not. Read-only, so it proposes and the operator disposes.
+        </p>
+
         <h2 id="reference">Reference</h2>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/co-groundedness/screen</code></td><td>Classify the judge-to-subject frame relation per claim-instrumented dimension.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Your own reflection loop remains yours to run; nothing here prevents it. The claim is narrower: a retry loop against an uncertified judge spends tokens to apply pressure in an unknown direction. Holonograph turns reflection on when the cell has qualified, if you have asked for it.
+        </p>
 
         <p>
           The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
@@ -174,9 +285,9 @@
         </p>
 
         <nav class="guide-nav" aria-label="Chapter navigation">
-          <a href="./conformance" class="nav-prev">
+          <a href="./facet-separability" class="nav-prev">
             <span class="nav-label">Previous</span>
-            <span class="nav-title">Conformance &amp; fixtures</span>
+            <span class="nav-title">Facet separability</span>
           </a>
           <a href="./seams" class="nav-next">
             <span class="nav-label">Next</span>
@@ -190,7 +301,7 @@
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>Chapter 15 · Judge modes</span>
+    <span>Chapter 17 · Judge modes and reflection</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
 <script src="./_assets/guide-search.js"></script>

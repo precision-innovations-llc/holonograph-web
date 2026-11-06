@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f6f5f9" />
+<title>Facet separability — The Guide — Holonograph</title>
+<meta name="description" content="Certify that a decomposition into facets is a real topology rather than one axis wearing two names, and keep watch on it cheaply." />
+<meta name="discloses" content="capability-only" />
+<meta name="status" content="design" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/facet-separability" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="Facet separability — The Guide" />
+<meta property="og:description" content="Certify that a decomposition into facets is a real topology rather than one axis wearing two names, and keep watch on it cheaply." />
+<meta property="og:url" content="https://holonograph.ai/guide/judge-modes" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="Facet separability — The Guide" />
+<meta name="twitter:description" content="Certify that a decomposition into facets is a real topology rather than one axis wearing two names, and keep watch on it cheaply." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
+<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
+</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
+      <a class="pill" href="../pricing.html">Get started</a>
+    </nav></div>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
+      <ol>
+        <li class="s-part">Overview</li>
+        <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li class="s-part">Operating the lens</li>
+        <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity and authority</li>
+        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">15</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li class="current"><span class="s-num">16</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">17</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams, soak, and authority</li>
+        <li><span class="s-num">18</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">19</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">20</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li><span class="s-num">21</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li class="s-part">Operational utilities</li>
+        <li><span class="s-num">22</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">23</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+      </ol>      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+
+
+        <p class="guide-eyebrow">Chapter 16</p>
+        <h1 class="guide-h1">Facet separability</h1>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          Fanning out to a focused judge per construct asserts, on faith, that those constructs are separable. This chapter is the certification under that assertion: whether a decomposition is a real topology, one axis wearing two names, or a prerequisite dressed as a peer.
+        </p>
+
+        <h2 id="what-it-is">What it is</h2>
+
+        <p>
+          Correlation is symmetric. It can say two facets move together; it cannot say that breaking A degrades B while breaking B leaves A intact. That asymmetry is the whole question, and it is invisible to any correlation-shaped measure, the <a href="./variance-isolation">orthogonality audit</a> included.
+        </p>
+
+        <p>
+          So the audit intervenes. Over a joint-state panel, events labelled by which facets' defects were injected, it runs a factorial and reads the directional cross-over-main ratio in each direction: how much facet F's score moves when F's own defect is injected, against how much it moves when G's is.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Verdict</th><th>Signature</th><th>What it means</th><th>What to do</th></tr></thead>
+            <tbody>
+              <tr><td><code>separable</code></td><td>Both ratios low</td><td>Independent axes.</td><td>Keep both.</td></tr>
+              <tr><td><code>collinear-collapse</code></td><td>Both high, symmetric</td><td>One axis wearing two names.</td><td>Rejoin. This is the only verdict where rejoining is right.</td></tr>
+              <tr><td><code>asymmetric-subsumption</code></td><td>One high, one low</td><td>The high-ratio facet subsumes the low one: a prerequisite or constituent relationship, not a duplicate.</td><td>Keep both. The subsumed one is the sharp sub-dimension; the other is the catch-all.</td></tr>
+              <tr><td><code>unverified</code></td><td>Undersampled, a dead own-axis, or a compensatory coupling</td><td>Not established.</td><td>Nothing yet. Reported rather than rounded to separable.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">The trap this closes</span>
+          A saturation or collinearity signal on its own says "these look redundant, rejoin them." That is right for <code>collinear-collapse</code> and wrong for <code>asymmetric-subsumption</code>, where rejoining destroys a real, independently manipulable axis. Collinear behavior is a hypothesis. Run the factorial before you rejoin.
+        </div>
+
+        <h2 id="why-it-matters">Why it matters</h2>
+
+        <p>
+          Two things depend on the answer being right.
+        </p>
+
+        <p>
+          A fan-out is a claim about topology. Minting three focused judges per subject asserts those three constructs can be judged apart. If two of them are one axis, you have bought two judges' latency and cost for one axis of signal, and their agreement will read as corroboration when it is tautology.
+        </p>
+
+        <p>
+          Reflection depends on it further downstream. Full orthogonality is one of the grant's hard preconditions, and a decomposition that has not certified cannot satisfy it. See <a href="./judge-modes#what-has-to-hold">What has to hold before a cell reflects</a>.
+        </p>
+
+        <h2 id="how-to-use-it">How to use it</h2>
+
+        <p>
+          Three reads, in order of cost. The screen proposes a hypothesis, the audit certifies it, the monitor watches it.
+        </p>
+
+        <h3 id="screen-for-candidates">Screen for candidates</h3>
+
+        <pre><code>POST /lens/redundancy/screen
+{ "surfaceId": "classify-intent" }</code></pre>
+
+        <p>
+          Over per-event score vectors it returns the pairwise collinearity matrix and, for each collinear pair, two things the matrix alone does not give: a scrap-pick naming which twin is the dependent copy, and a residual localization naming the substrate column that holds the copy's only independent variance. Omit <code>dimensionIds</code> and every scored dimension on the surface is screened.
+        </p>
+
+        <p>
+          Data-gated. A pair below the minimum sample floor reads <code>undersampled</code> and a dimension with no variance reads <code>no-variance</code>, with a pointer at the saturation audit, since a dimension that never moves is usually a blind judge rather than a redundant one. The screen withholds rather than fires on a thin panel.
+        </p>
+
+        <h3 id="certify-the-pair">Certify the pair</h3>
+
+        <pre><code>POST /lens/facet-topology/audit
+{
+  "surfaceId": "classify-intent",
+  "facets": [
+    { "dimensionId": "hrv-provenance",  "defectColumn": "defect.hrv",   "defectValue": "injected" },
+    { "dimensionId": "place-identity",  "defectColumn": "defect.place", "defectValue": "injected" }
+  ]
+}</code></pre>
+
+        <p>
+          Each <code>facets</code> entry is a panel-based expectation: the facet's score dimension, the diagnostic substrate column marking its injected defect, and the value that marks the defect as present. At least two are required, because the question is about a pair.
+        </p>
+
+        <p>
+          <code>provenance</code> defaults to <code>all</code>, so a replay or emitted panel is in scope, and <code>correlationIdPrefix</code> scopes to one. <code>options</code> takes the cell-size floor and the ratio cutoffs where a surface needs them; the defaults are conservative.
+        </p>
+
+        <p>
+          Read-only, so propose-only. The audit returns a verdict per unordered pair and the operator promotes the split, keeps it, or rejoins.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">The audit inherits its panel's validity</span>
+          A facet whose own injected defect does not actually move its own score makes the cross-over-main ratio explode into a fake subsumption. Those pairs are reported as such rather than scored. The factorial is only as good as the ablation underneath it: if the defect you injected was not a defect, nothing downstream of it is a measurement.
+        </div>
+
+        <h3 id="watch-the-band">Watch the band</h3>
+
+        <pre><code>POST /lens/pairwise-monitor/run
+{ "surfaceId": "classify-intent" }</code></pre>
+
+        <p>
+          The factorial is expensive and offline. The monitor is the cheap online guard on it. Over per-event defect co-firing it returns, per dimension pair, the co-trigger contingency and the marginal-adjusted phi coupling, which is the measure that disentangles real coupling from a shared score floor, plus the signal for a pair collapsing toward collinear while live.
+        </p>
+
+        <p>
+          Give it the characterized band as <code>expectedBands</code> and it returns a drift verdict proposing a re-run of the audit. Run the audit with <code>persist: true</code> and it closes the loop itself: the audit also runs the monitor over the same window and appends a durable characterization record merging the verdict with the co-trigger band per pair, which is what the monitor reads back. <code>bandTolerance</code> sets the band's half-width, 0.1 by default.
+        </p>
+
+        <p>
+          The monitor proposes drift. It never adjusts a band, because a band that moves itself measures nothing.
+        </p>
+
+        <h3 id="when-the-judge-and-producer-disagree">When the judge and the producer disagree</h3>
+
+        <pre><code>POST /lens/contested-cohort/screen
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
+
+        <p>
+          The adjacent question, converging on the same fields. For one judged dimension it partitions events by each candidate substrate-column cohort and tests whether the judge's fail-rate on a cohort value is systematically elevated against the rest of the population, by a two-by-two chi-square per cohort with the family under false-discovery control.
+        </p>
+
+        <p>
+          A contested cohort is one where the producer's outputs are systematically rejected. It is reported with the producer's own within-cohort consistency alongside, because a producer that is consistently doing one thing and consistently marked down for it has a different shape from one that is erratic.
+        </p>
+
+        <p>
+          The lens cannot adjudicate which party is right, and does not try. It points at the interaction, notes that a focused judge on that field would isolate it, and routes to review. Cohorts below the sample floor are withheld.
+        </p>
+
+        <h2 id="reading-the-output">Reading the output</h2>
+
+        <p>
+          Every read here is read-only and propose-only, and three of the attention spine's sources file from them: <code>redundancy-candidate</code>, which mints a <code>rejoin-dimension</code> proposal, plus <code>pairwise-drift</code> and <code>contested-cohort</code>, which mint nothing. A source with no default proposal is one where the remedy is a judgment the lens declines to make for you.
+        </p>
+
+        <p>
+          All four are data-gated and report honest nulls. A withheld pair, an undersampled cohort and an unverified verdict are all distinguishable from a clean result, which is the property that makes a quiet report worth anything.
+        </p>
+
+        <h2 id="reference">Reference</h2>
+
+        <h3 id="endpoints">Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /lens/redundancy/screen</code></td><td>The collinearity matrix, with a scrap-pick and residual localization per collinear pair.</td></tr>
+              <tr><td><code>POST /lens/facet-topology/audit</code></td><td>The interventional factorial. Returns a verdict per unordered pair; <code>persist: true</code> also records the characterization and its band.</td></tr>
+              <tr><td><code>POST /lens/pairwise-monitor/run</code></td><td>The online guard: co-trigger contingency, marginal-adjusted phi, and a drift verdict against the characterized band.</td></tr>
+              <tr><td><code>POST /lens/contested-cohort/screen</code></td><td>Cohorts where the judge systematically rejects the producer, with the producer's within-cohort consistency.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="where-this-sits">Where this sits</h3>
+
+        <p>
+          Upstream is <a href="./rubric-coverage">Rubric coverage and de-saturation</a>: a de-saturation fan-out creates the facets this chapter certifies, so the two run as one loop rather than two tools. Alongside it at axis altitude is the orthogonality audit in <a href="./variance-isolation">Variance isolation</a>, which asks whether a declared substrate column explains anything, a different object measured a different way.
+        </p>
+
+        <p>
+          The factorial, the coupling measure and the tuning constants ship inside the binary. The verdict vocabulary and the record shapes are public contract.
+        </p>
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./rubric-coverage" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Rubric coverage and de-saturation</span>
+          </a>
+          <a href="./judge-modes" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Judge modes and reflection</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 16 · Facet separability</span>
+    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
+  </footer>
+<script src="./_assets/guide-search.js"></script>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
+</body>
+</html>

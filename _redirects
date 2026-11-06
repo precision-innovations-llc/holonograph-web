@@ -1,3 +1,7 @@
+# The reflection chapter merged into judge-modes (it is cell 3 of the same matrix).
+/guide/reflection        /guide/judge-modes   301
+/guide/reflection.html   /guide/judge-modes   301
+
 # Preventive 404s for internal/private content patterns that must never be served.
 # Cloudflare Pages honors this file at the site root. Missing files return 404 by
 # default; these rules extend that guarantee to specific filenames even if a file

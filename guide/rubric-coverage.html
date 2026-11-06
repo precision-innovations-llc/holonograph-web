@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f6f5f9" />
+<title>Rubric coverage and de-saturation — The Guide — Holonograph</title>
+<meta name="description" content="Scope a rubric per facet, see which facets have one, draft the rest, and check that what you drafted can still tell a wrong answer from a right one." />
+<meta name="discloses" content="capability-only" />
+<meta name="status" content="design" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/rubric-coverage" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="Rubric coverage and de-saturation — The Guide" />
+<meta property="og:description" content="Scope a rubric per facet, see which facets have one, draft the rest, and check that what you drafted can still tell a wrong answer from a right one." />
+<meta property="og:url" content="https://holonograph.ai/guide/judge-modes" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="Rubric coverage and de-saturation — The Guide" />
+<meta name="twitter:description" content="Scope a rubric per facet, see which facets have one, draft the rest, and check that what you drafted can still tell a wrong answer from a right one." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
+<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
+</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
+      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
+      <a class="pill" href="../pricing.html">Get started</a>
+    </nav></div>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
+      <ol>
+        <li class="s-part">Overview</li>
+        <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li class="s-part">Operating the lens</li>
+        <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
+        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity and authority</li>
+        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li class="current"><span class="s-num">15</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">16</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">17</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams, soak, and authority</li>
+        <li><span class="s-num">18</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">19</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">20</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li><span class="s-num">21</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li class="s-part">Operational utilities</li>
+        <li><span class="s-num">22</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">23</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+      </ol>      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+
+
+        <p class="guide-eyebrow">Chapter 15</p>
+        <h1 class="guide-h1">Rubric coverage and de-saturation</h1>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          One rubric over a population with real sub-kinds judges the union weakly, or judges the wrong specifics. This chapter is the loop that fixes that: scope a rubric per facet, see which facets have one, draft the ones that do not, and check that what you drafted can still tell a wrong answer from a right one.
+        </p>
+
+        <h2 id="what-it-is">What it is</h2>
+
+        <p>
+          A grading dimension carries one <code>rubricRef</code>. Point it at a surface whose population is heterogeneous, with members like <code>Daily Summary</code>, <code>Weather Advisory</code> and <code>Weekly Check-in</code>, and that one rubric either grades the union loosely or grades one member's specifics and mis-grades the rest.
+        </p>
+
+        <p>
+          <code>rubricDispatch</code> scopes a rubric per facet without enumerating the members in the contract:
+        </p>
+
+        <pre><code>{
+  "id": "signal-quality",
+  "scoring": "llm-judge",
+  "rubricRef": "gs://rubrics/signal-general.md",
+  "rubricDispatch": {
+    "facet": "signal.name",
+    "refsFrom": "gs://rubrics/signal-alert/",
+    "refs": { "Morning Routine": "gs://rubrics/pinned/morning.md" }
+  }
+}</code></pre>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Field</th><th>What it declares</th></tr></thead>
+            <tbody>
+              <tr><td><code>facet</code></td><td>The cohort-tag key whose per-event value selects the rubric. It has to be a key in the surface's declared <code>cohortTags</code> vocabulary: a bounded identifier, not a human-authored display string with its em-dashes and emoji.</td></tr>
+              <tr><td><code>refsFrom</code></td><td>The bucket a per-facet rubric resolves from by convention. The rubric for value V is <code>refsFrom</code> + the normalized V + <code>.md</code>. Adding a member's rubric is a bucket write, never a contract change.</td></tr>
+              <tr><td><code>refs</code></td><td>Optional pins that override the convention for named values. Keys are matched in their normalized form, so pinning <code>Morning Routine</code> addresses the same rubric identity the convention would.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The dimension's own <code>rubricRef</code> is re-cast as the required default. An unknown or unmatched facet is scored against it rather than skipped, because skipping would manufacture the judge-liveness hole the instrument exists to close. It is scored, marked, and counted.
+        </p>
+
+        <h3 id="one-normalization">One normalization, shared</h3>
+
+        <p>
+          A facet value and its filename have to address the same rubric, so both the dispatch and the drafter that writes the bucket file call one function. It folds Unicode and strips combining marks, lowercases, collapses every run of non-alphanumerics to a single hyphen, and trims:
+        </p>
+
+        <pre><code>"Morning Routine"                → morning-routine.md
+"Weather — Heat Advisory ⚠️"      → weather-heat-advisory.md
+"café"                           → cafe.md</code></pre>
+
+        <p>
+          A value that is entirely non-alphanumeric, a bare emoji say, normalizes to nothing. That is an unaddressable stem, so the planner reads it as an unmatched value rather than pointing at a <code>.md</code> that cannot exist.
+        </p>
+
+        <h2 id="why-it-matters">Why it matters</h2>
+
+        <p>
+          Two properties make the loop auditable rather than hopeful.
+        </p>
+
+        <h3 id="the-default-is-countable">The default is countable, and says why</h3>
+
+        <p>
+          Every scored event is stamped with which rubric judged it and, when that was the default, why. Four reasons, and they are different problems:
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Reason</th><th>What happened</th><th>What to do</th></tr></thead>
+            <tbody>
+              <tr><td><code>no-bespoke-ref</code></td><td>A declared facet value with no per-facet rubric authored yet.</td><td>Nothing is wrong. This is the drafter's work queue.</td></tr>
+              <tr><td><code>unmatched-value</code></td><td>A <code>facet=value</code> tag was present, but the value is not declared and does not normalize to one.</td><td>A typo or an undeclared member. Fix the tag or declare the value.</td></tr>
+              <tr><td><code>facet-tag-absent</code></td><td>The event carried no <code>facet=</code> tag at all.</td><td>Un-tagged emit. Fix the producer.</td></tr>
+              <tr><td><code>pin-unresolved</code></td><td>An explicit <code>refs</code> pin was set and failed to load.</td><td>A bad pin. Louder than a convention miss, because you asked for this one by name.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Without the split, the default population is one undifferentiated bucket and a coverage gap is indistinguishable from a broken emitter.
+        </p>
+
+        <h3 id="the-default-vouches-for-less">The default vouches for less</h3>
+
+        <p>
+          A default-scored event is also reduced-reach. The surface-general rubric vouches for surface-general correctness, not for domain quality, so it is deliberately strict about what it can see and silent about what it cannot. Scores under it are not comparable to scores under a bespoke rubric, and the lens treats the difference as a property of the instrument rather than of the agent.
+        </p>
+
+        <h2 id="how-to-use-it">How to use it</h2>
+
+        <h3 id="read-the-worklist">Read the worklist</h3>
+
+        <pre><code>GET /lens/facet-coverage?surfaceId=signal-alert</code></pre>
+
+        <p>
+          One report per dispatching dimension. The counts are the readout: <code>facetsSeen</code> against <code>bespokeCount</code>, <code>scoredOnDefault</code> split by reason, <code>untaggedCount</code>, and <code>defaultOnly</code> for the facets that have never had anything but the default. <code>facets</code> carries the per-facet detail, each entry naming its <code>source</code> and, where that is <code>default</code>, its <code>defaultReason</code>.
+        </p>
+
+        <p>
+          Re-derived per read from the apparatus columns. A surface with no dispatching dimension returns empty rather than zero.
+        </p>
+
+        <h3 id="draft-a-rubric">Draft one</h3>
+
+        <pre><code>POST /lens/rubric/propose
+{
+  "surfaceId": "signal-alert",
+  "dimensionId": "signal-quality",
+  "facetValue": "Morning Routine"
+}</code></pre>
+
+        <p>
+          The deterministic scaffold is assembled server-side from the contract: the dimensional-context header and the required verdict shape come from <code>rubricDispatch</code> and <code>judgeClaimContract</code>. The narrator contributes the domain grading criteria and nothing else. It has no channel through which to emit a number, so a fabricated threshold is structurally impossible rather than merely unlikely.
+        </p>
+
+        <p>
+          The response carries the <code>refPath</code> the approved body belongs at, the <code>draft</code>, and two honesty flags. <code>narratorStatus</code> is <code>llm</code> when a real narrator produced the criteria, <code>stub</code> when none is configured, and <code>stub-fallback</code> when one was configured and threw: a draft returned under <code>stub-fallback</code> is a deterministic skeleton and must not read as an authored proposal. <code>evidenceAvailable</code> flags whether the count behind the draft was measured or is a placeholder.
+        </p>
+
+        <p>
+          Propose-only. The draft goes to the approver gate, and the approved body is what the operator writes to the bucket. The lens never writes the rubric.
+        </p>
+
+        <h3 id="the-saturation-audit">Check that it discriminates</h3>
+
+        <p>
+          A rubric can be authored, resolved, and scoring, and still be blind. If a value sits in the judge's sight and the rubric never asks about it, an output that is wrong along that value scores as if it were right. The score saturates.
+        </p>
+
+        <pre><code>POST /lens/saturation/audit
+{
+  "surfaceId": "signal-alert",
+  "dimensionId": "signal-quality"
+}</code></pre>
+
+        <p>
+          The audit reads the dimension's declared <code>expectsGrounding</code> axes and, for each, computes the pass-rate of the declared misuse values against the dimension's <code>passThreshold</code>.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Per axis</th><th>Means</th></tr></thead>
+            <tbody>
+              <tr><td><code>blind</code></td><td>The misuse passes at or above the blind threshold, 0.5 by default. The judge is letting it through.</td></tr>
+              <tr><td><code>discriminating</code></td><td>The misuse reliably fails.</td></tr>
+              <tr><td><code>unverified</code></td><td>Too few misuse samples, five by default, or no declared <code>passThreshold</code>. Honest-null, not a pass.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The dimension's verdict is <code>saturated</code>, <code>discriminating</code>, <code>unverified</code>, or <code>no-expectation</code> where nothing was declared to check. Each axis also reports its misuse and correct-use counts, both pass-rates and the mean misuse score, because a working judge passes correct use and fails misuse, and seeing only one half of that is not evidence.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">Functional, not statistical</span>
+          An earlier version of this check asked whether the score varies with the axis at all, by analysis of variance. That is the wrong question. A judge scoring the misuse 8.4 against a correct 9 varies significantly and still passes the misuse. Separability is not adequate penalization. The verdict is the pass-rate, which is also robust to a judge catching some of the misuse for an unrelated reason: it still reads blind on the fraction it lets through.
+        </div>
+
+        <p>
+          No judge is in the loop. The audit reads the substrate alone, because a saturated judge cannot be its own alarm. There is no approver gate and no model call. <code>provenance</code> defaults to <code>all</code>, so a replay panel built by varying the grounding is in scope, and <code>correlationIdPrefix</code> scopes the read to it.
+        </p>
+
+        <h3 id="fan-out-a-focused-reviewer">Fan out a focused reviewer</h3>
+
+        <p>
+          Given measured saturation, the remedy is not to rewrite the holistic rubric. It is to add a reviewer that looks at one thing:
+        </p>
+
+        <pre><code>POST /lens/rubric/desaturate
+{
+  "surfaceId": "signal-alert",
+  "dimensionId": "signal-quality",
+  "facetValue": "Morning Routine",
+  "blindDimension": {
+    "name": "hrv-provenance",
+    "description": "whether the HRV figure came from the overnight window it claims",
+    "groundingKey": "hrv_metric_type",
+    "misuseValues": ["intraday_spot"]
+  },
+  "saturationEvidence": {
+    "scenarios": [
+      { "label": "overnight (correct)", "judgeMean": 8.9 },
+      { "label": "intraday spot (wrong)", "judgeMean": 8.4 }
+    ],
+    "replayRunRef": "replay:hrv-probe:"
+  }
+}</code></pre>
+
+        <p>
+          You supply the measured evidence; the server drafts against it. The deterministic facts, the blind dimension and the saturation matrix and the fan-out structure, are pinned server-side, and the narrator writes the focused criteria only. The same discipline as <code>/propose</code>, and the same approver gate.
+        </p>
+
+        <p>
+          What comes back is a focused sub-reviewer plus a registrable fan-out fragment: a separate <code>role: 'judge'</code> surface, its routing, and the <code>judgeSurfaceId</code> link that attaches it to the subject dimension. It appends. The holistic rubric is never replaced, because a focused judge that replaced it would trade one blind spot for another.
+        </p>
+
+        <p>
+          Declaring <code>misuseValues</code> on the fan-out is what makes it auditable in turn. Omit them and the new judge is not saturation-auditable until you declare them.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A misuse value is an output correlate</span>
+          The audit keys on the grounding value, so a declared misuse value only discriminates when it is a value the producer consumed that correlates with the wrong output. A value that labels the grounding <em>situation</em> instead admits both a faithful and a faulty output under the same value: the pass-rate mixes the two, lands near half, and mislabels the judge blind. Such an axis is auditable only when the events are scoped to the faulty arm first.
+        </div>
+
+        <h2 id="reading-the-output">Reading the output</h2>
+
+        <p>
+          Three apparatus columns are stamped on every dispatched judgment. They are reserved, so a contract may not declare them.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Column</th><th>Carries</th></tr></thead>
+            <tbody>
+              <tr><td><code>judge.rubric_source</code></td><td><code>facet</code> or <code>default</code>.</td></tr>
+              <tr><td><code>judge.rubric_facet</code></td><td>The facet value the event dispatched on.</td></tr>
+              <tr><td><code>judge.rubric_default_reason</code></td><td>One of the four reasons, when the source was <code>default</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">Which rubric an event got is instrument variance</span>
+          A default-scored population scores systematically lower for instrument reasons. Attributing that gap to the agent is the same mistake as attributing a regional confound to it. <code>judge.rubric_source</code> is a conditioning-permitted axis for exactly this reason, alongside the rubric hash, and the variance decomposition treats both as instrument variance rather than agent variance.
+        </div>
+
+        <p>
+          Two of the attention spine's twenty-six sources file from here. <code>rubric-gap</code> is a declared facet riding the default with no bespoke rubric authored, and it mints an <code>author-rubric</code> proposal. <code>rubric-ref-broken</code> is a reference that no longer resolves, and it mints <code>fix-rubric-ref</code>. See <a href="./attention-spine">The attention spine</a>.
+        </p>
+
+        <h2 id="reference">Reference</h2>
+
+        <h3 id="endpoints">Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/facet-coverage</code></td><td>The coverage readout per dispatching dimension, with the per-facet detail and the default split by reason.</td></tr>
+              <tr><td><code>POST /lens/rubric/propose</code></td><td>Draft a bespoke rubric for one named facet value. Propose-only, approver-gated.</td></tr>
+              <tr><td><code>POST /lens/saturation/audit</code></td><td>The judge-independent discrimination check against the declared grounding. Pure read.</td></tr>
+              <tr><td><code>POST /lens/rubric/desaturate</code></td><td>Draft a focused sub-reviewer plus its fan-out fragment, from measured saturation evidence. Propose-only, approver-gated.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="contract-surface">Contract surface</h3>
+
+        <p>
+          <code>rubricDispatch</code>, <code>expectsGrounding</code>, <code>judgeSurfaceId</code> and <code>judgeClaimContract</code> are all declared on the grading dimension; see <a href="./surface-contracts#what-a-dimension-declares">What a dimension declares</a>. The dispatch decision is a published contract, shared by the lens's own gated judge and by an operator's inline one, so both resolve a facet to the same rubric. Resolving the rubric bytes is the caller's: the plan says what to fetch, the caller fetches, and the apparatus columns are stamped from the outcome.
+        </p>
+
+        <p>
+          The drafter prompts and the composition order behind <code>/propose</code> and <code>/desaturate</code> ship inside the binary.
+        </p>
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./conformance" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Conformance &amp; fixtures</span>
+          </a>
+          <a href="./facet-separability" class="nav-next">
+            <span class="nav-label">Next</span>
+            <span class="nav-title">Facet separability</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 15 · Rubric coverage and de-saturation</span>
+    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
+  </footer>
+<script src="./_assets/guide-search.js"></script>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
+</body>
+</html>
