@@ -4,12 +4,12 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Variance isolation and declared axes — The Guide — Holonograph</title>
+<title>Variance isolation and declared axes · The Guide · Holonograph</title>
 <meta name="description" content="Separating real movement in your scores from the noise of measuring with a language model, then grading the substrate columns you declared to explain it." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="true" />
-<meta name="signed-off-by" content="Brian Kerrigan — 2026-07-06" />
+<meta name="signed-off-by" content="Brian Kerrigan · 2026-07-06" />
 <link rel="canonical" href="https://holonograph.ai/guide/variance-isolation" />
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Holonograph" />
@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
   <link rel="stylesheet" href="./_assets/guide.css?v=6" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -111,7 +111,7 @@
         <h2 id="what-it-is">What it is</h2>
 
         <p>
-          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
+          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the output to read first. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
         </p>
 
         <h2 id="what-you-get">What you get</h2>
@@ -235,11 +235,11 @@ Content-Type: application/json
 { "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
 
         <p>
-          A one-way analysis of variance per declared axis against the dimension, returning <code>confirmed</code>, <code>inert</code>, <code>insufficient-data</code> or <code>excluded</code>. A pure read: no calibration, no gate, no model call.
+          Grades every declared axis on how much of the dimension it accounts for, returning <code>confirmed</code>, <code>inert</code>, <code>insufficient-data</code> or <code>excluded</code>. A pure read: no calibration, no gate, no model call.
         </p>
 
         <p>
-          The <code>confirmed</code> decision is false-discovery controlled across the whole axis family by Benjamini-Yekutieli, so testing twelve axes does not manufacture one. Each axis carries its <code>pValue</code> and the adjusted one, and the <code>fdr</code> summary reports what the less conservative Benjamini-Hochberg instrument would have said, so the cost of the choice is visible rather than hidden.
+          The <code>confirmed</code> decision is false-discovery controlled across the entire axis family. Each axis carries both its original and adjusted <code>pValue</code>, and the <code>fdr</code> summary reports the trade-off.
         </p>
 
         <p>
@@ -247,11 +247,11 @@ Content-Type: application/json
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">An axis with a consumer is not demoted</span>
+          <span class="callout-label">When the demotion hint is withheld</span>
           The demotion hint fires only where an axis has no observed consumer. Two count. Every active axis is tested against all dimensions in the window, so one that explains a different dimension is protected. So is one a live conformance fixture references in a guard, an assertion or its required markers: a state-conditional guard that explains no scored dimension is still doing work for a deterministic check.
         </div>
 
-        <h3 id="propose-the-ones-you-did-not">Propose the ones you did not</h3>
+        <h3 id="propose-the-ones-you-did-not">Find the undeclared ones</h3>
 
         <pre><code>POST /lens/orthogonality/propose
 { "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
@@ -261,7 +261,7 @@ Content-Type: application/json
         </p>
 
         <p>
-          It needs a noise floor for the pair first, so calibrate before calling it. Then it decomposes the window, aggregates substrate emission over those same events, and takes the emitted-but-undeclared columns as the candidate set. Three gates have to pass: enough scored data, a lower bound on the agent-variance confidence interval above zero, and at least one undeclared column. Zero candidates is a <code>200</code> with a diagnostics block naming the gate that held, not an error.
+          It needs a noise floor for the pair first, so calibrate before calling it. Then it decomposes the window, aggregates substrate emission over those same events, and takes the emitted-but-undeclared columns as the candidate set. Three gates have to pass: enough scored data, agent variance established above zero, and at least one undeclared column. Zero candidates is a <code>200</code> with a diagnostics block naming the gate that held, not an error.
         </p>
 
         <p>
@@ -302,7 +302,7 @@ Content-Type: application/json
               <tr><td><code>POST /lens/replay</code></td><td>Re-issue captured requests through a target lens, window-stamped so the paired-window read works. Holds the input constant and varies the lens. Source events by <code>sourceEventIds</code> or <code>sourceCorrelationIdPrefix</code>; events carrying no stored raw request are reported skipped rather than silently dropped. Every replay is a real model call, so the count is capped.</td></tr>
               <tr><td><code>POST /lens/decomposition/evaluate</code></td><td>Return the confidence verdict for the analysis record.</td></tr>
               <tr><td><code>POST /lens/decomposition/lifecycle</code></td><td>Govern the reading: <code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
-              <tr><td><code>POST /lens/orthogonality/audit</code></td><td>Grade every declared axis against one dimension. One-way analysis of variance per axis, Benjamini-Yekutieli controlled across the family, lifecycle-aware and consumer-aware.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/audit</code></td><td>Grade every declared axis against one dimension. False-discovery controlled across the family, lifecycle-aware and consumer-aware.</td></tr>
               <tr><td><code>POST /lens/orthogonality/propose</code></td><td>Find emitted-but-undeclared columns worth declaring and enqueue each as a narrated candidate on the approver gate. Needs a calibrated floor. Zero candidates is an answer, with the gate that held.</td></tr>
               <tr><td><code>POST /lens/orthogonality/audit/compare</code></td><td>The audit over production against the audit over an input-constant panel, diffed per axis. Separates a robust axis from a sampling confound.</td></tr>
             </tbody>

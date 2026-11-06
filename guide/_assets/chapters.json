@@ -201,7 +201,7 @@
       "title": "Outcome delivery",
       "group": "Operational utilities",
       "status": "live",
-      "blurb": "Whether a scored outcome ever reached the user, and the horizon past which the lens refuses to imply it did."
+      "blurb": "Whether a scored outcome ever reached the user, and where the lens stops being able to observe it."
     },
     {
       "num": "26",

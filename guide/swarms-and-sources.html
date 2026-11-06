@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Swarms and sources — The Guide — Holonograph</title>
+<title>Swarms and sources · The Guide · Holonograph</title>
 <meta name="description" content="Reading several agents through one lens: the source that keeps them distinguishable, where pooling is right, and why the lens stamps the source rather than accepting it." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
@@ -13,7 +13,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
-<meta property="og:title" content="Swarms and sources — The Guide" />
+<meta property="og:title" content="Swarms and sources · The Guide" />
 <meta property="og:description" content="Reading several agents through one lens: the source that keeps them distinguishable, where pooling is right, and why the lens stamps the source rather than accepting it." />
 <meta property="og:url" content="https://holonograph.ai/guide/swarms-and-sources" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
@@ -22,7 +22,7 @@
 <meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
-<meta name="twitter:title" content="Swarms and sources — The Guide" />
+<meta name="twitter:title" content="Swarms and sources · The Guide" />
 <meta name="twitter:description" content="Reading several agents through one lens: the source that keeps them distinguishable, where pooling is right, and why the lens stamps the source rather than accepting it." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
   <link rel="stylesheet" href="./_assets/guide.css?v=6" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -120,11 +120,11 @@
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">A surface is not an agent</span>
+          <span class="callout-label">Surfaces span agents</span>
           A surface may span several agents in a swarm. The lens identifies a surface by what is being evaluated, never by the agent boundary the data crosses. Two agents doing the same job share a surface and stay separable by source, rather than becoming two surfaces that cannot be compared.
         </div>
 
-        <h3 id="stamped-not-claimed">Stamped, not claimed</h3>
+        <h3 id="stamped-not-claimed">How the source is set</h3>
 
         <p>
           The source is apparatus-owned. The lens stamps it at ingest from the authenticated operator, overriding any value the client sent. A client cannot attribute its events to another agent by asking.
@@ -184,10 +184,10 @@
           The judge pool stays unscoped on purpose. A judge call carries the judge&rsquo;s own source, not the subject agent&rsquo;s, and is tied to the subject by its linkage rather than by a shared source. Like a replay window, a source scope isolates a diagnostic panel, so the read is ephemeral and is not recorded as the production trajectory.
         </p>
 
-        <h3 id="read-findings-that-know-their-agent">Read findings that know their agent</h3>
+        <h3 id="read-findings-that-know-their-agent">Read findings scoped to an agent</h3>
 
         <p>
-          A finding&rsquo;s key carries a tagged <code>src=</code> segment, and only where the finding is genuinely multi-source, so single-source keys are unchanged. Two agents&rsquo; identical seam in shared or templated code produce two findings that triage separately instead of colliding into one.
+          A finding&rsquo;s key carries a tagged <code>src=</code> segment, and only where the finding is actually multi-source, so single-source keys are unchanged. Two agents&rsquo; identical seam in shared or templated code produce two findings that triage separately instead of colliding into one.
         </p>
 
         <p>

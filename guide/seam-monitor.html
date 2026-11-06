@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>The seam monitor — The Guide — Holonograph</title>
+<title>The seam monitor · The Guide · Holonograph</title>
 <meta name="description" content="Finding seams in source at authorship, adjudicating which are real, registering them as surfaces, and measuring their viability on live traffic." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
   <link rel="stylesheet" href="./_assets/guide.css?v=6" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -222,7 +222,7 @@
             <tbody>
               <tr><td><code>provenance</code></td><td><code>seam</code>. The isolation key. It sits in neither the production-state nor the exploratory-state set, so soaks are excluded from every default analysis and cannot drown a small agent's readings.</td></tr>
               <tr><td><code>runMode</code></td><td>The shared enum. Isolation is provenance-keyed and independent of run mode, so <code>eval</code> and <code>replay</code> mean here what they mean everywhere.</td></tr>
-              <tr><td><code>lightSourceIdentifier</code></td><td><code>seam/&lt;component&gt;/&lt;scan&gt;</code>. A seam is a light source that is not a model, and it takes the slot honestly rather than faking a vendor.</td></tr>
+              <tr><td><code>lightSourceIdentifier</code></td><td><code>seam/&lt;component&gt;/&lt;scan&gt;</code>. A seam is a light source that is not a model, and it takes the slot under its own name rather than a vendor's.</td></tr>
             </tbody>
           </table>
         </div>
@@ -233,7 +233,7 @@
           rides in the payload and husks away like a judge rationale.
         </p>
 
-        <h2 id="three-layers-three-claims">Three layers, three claims</h2>
+        <h2 id="three-layers-three-claims">The three layers</h2>
 
         <p>
           The scan and the soak are the first two layers of one instrument. Both sit above a question neither answers: when a call went wrong, which seam on its path was involved?
@@ -252,10 +252,10 @@
 
         <div class="guide-callout">
           <span class="callout-label">The lens trusts only what it observes at its own boundary</span>
-          One invariant discharges two constraints at once. Nothing is added to your code, because the evidence is the mediated traffic the lens already sees. And the subject never narrates itself: a seam's resolved arm counts only when it was recovered from the request and response bytes. An arm the builder asserts has its own grade, <code>self-reported</code>, which exists so the lens can refuse it rather than fold it silently into observed evidence.
+          One invariant discharges two constraints at once. Nothing is added to your code, because the evidence is the mediated traffic the lens already sees. And the subject&rsquo;s own account is never evidence: a seam's resolved arm counts only when it was recovered from the request and response bytes. An arm the builder asserts has its own grade, <code>self-reported</code>, which exists so the lens can refuse it rather than fold it silently into observed evidence.
         </div>
 
-        <h3 id="occurrence-is-not-participation">Occurrence is not participation</h3>
+        <h3 id="occurrence-is-not-participation">Why a linkage stays a candidate</h3>
 
         <p>
           Joining a call to a candidate seam through the call site proves the call site executed. It does not prove the seam took part. Every linkage from that join is graded <code>static-only</code>, including when the call itself was observed, and a deterministic join never promotes a candidate to <code>observed</code>. Only independent boundary evidence does, such as an arm value recovered injectively from the call's own bytes. A call-site frame that resolves to no node in the scan is <code>unknown</code>.
@@ -276,7 +276,7 @@
         <pre><code>GET /lens/seam-call-analysis?since=2026-10-01T00:00:00Z</code></pre>
 
         <p>
-          Over those observations: the judge fail-rate on calls where a seam node appears against the rest of the panel, as a two-by-two chi-square per node, with the family under false-discovery control. A row reads the seam as a whole or conditions on one resolved arm.
+          Over those observations: the judge fail-rate on calls where a seam node appears against the rest of the panel, per node, with the family under false-discovery control. A row reads the seam as a whole or conditions on one resolved arm.
         </p>
 
         <p>

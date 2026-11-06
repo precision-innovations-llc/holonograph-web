@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Outcome delivery — The Guide — Holonograph</title>
+<title>Outcome delivery · The Guide · Holonograph</title>
 <meta name="description" content="Declaring the stages an outcome traverses after scoring, emitting observed footprints, and reading the rate at which outcomes go dark before the user." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
@@ -13,7 +13,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
-<meta property="og:title" content="Outcome delivery — The Guide" />
+<meta property="og:title" content="Outcome delivery · The Guide" />
 <meta property="og:description" content="Declaring the stages an outcome traverses after scoring, emitting observed footprints, and reading the rate at which outcomes go dark before the user." />
 <meta property="og:url" content="https://holonograph.ai/guide/outcome-delivery" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
@@ -22,7 +22,7 @@
 <meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
-<meta name="twitter:title" content="Outcome delivery — The Guide" />
+<meta name="twitter:title" content="Outcome delivery · The Guide" />
 <meta name="twitter:description" content="Declaring the stages an outcome traverses after scoring, emitting observed footprints, and reading the rate at which outcomes go dark before the user." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
   <link rel="stylesheet" href="./_assets/guide.css?v=6" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -156,7 +156,7 @@
         </p>
 
         <p>
-          Each stage also declares whether the lens can see traversal. <code>declared</code> means the operator is telling the lens the stage exists while it emits nothing: the lens cannot verify delivery through it, so every verdict on that surface covers scoring only and the lens says so. <code>reconciled</code> means the stage emits a footprint per outcome, so the lens observes traversal and derives each outcome&rsquo;s fate.
+          Each stage also declares whether the lens can see traversal. <code>declared</code> means the operator is telling the lens the stage exists while it emits nothing: the lens cannot verify delivery through it, so every verdict on that surface covers scoring only, and the read reports that. <code>reconciled</code> means the stage emits a footprint per outcome, so the lens observes traversal and derives each outcome&rsquo;s fate.
         </p>
 
         <div class="guide-callout">
@@ -207,7 +207,7 @@
             <thead><tr><th>State</th><th>Meaning</th><th>Report</th></tr></thead>
             <tbody>
               <tr><td><code>measured</code></td><td>The terminal stage is <code>reconciled</code> and outcomes have settled.</td><td>Present.</td></tr>
-              <tr><td><code>horizon</code></td><td>The terminal stage is <code>declared</code>. The lens is told it exists and cannot observe it.</td><td><code>null</code>. No rate is invented.</td></tr>
+              <tr><td><code>horizon</code></td><td>The terminal stage is <code>declared</code>. The lens is told it exists and cannot observe it.</td><td><code>null</code>. No rate is derived.</td></tr>
               <tr><td><code>no-outcomes</code></td><td>Reconciled, but nothing was scored on the surface in the window.</td><td><code>null</code>.</td></tr>
             </tbody>
           </table>
@@ -239,7 +239,7 @@
         <h2 id="reading-the-output">Reading the output</h2>
 
         <p>
-          <code>darkRate</code> is <code>dark / settled</code>, where <code>settled</code> is <code>delivered + dark</code>. In-flight outcomes are excluded from both sides, so an outcome whose fate is genuinely unknown is never counted as either. With nothing settled the rate is <code>null</code> rather than zero.
+          <code>darkRate</code> is <code>dark / settled</code>, where <code>settled</code> is <code>delivered + dark</code>. In-flight outcomes are excluded from both sides, so an outcome whose fate is still unknown is never counted as either. With nothing settled the rate is <code>null</code> rather than zero.
         </p>
 
         <p>
@@ -251,7 +251,7 @@
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">Footprints are not substrate</span>
+          <span class="callout-label">Where footprints live</span>
           The footprint store is append-only and separate from the canonical event store, and it is never an input to the lens hash. Footprints are transient observations, so a backend may fold settled outcomes into per-surface, per-day tallies and prune past the rate window. The derived rate is what persists. Growth is bounded by the in-flight outcomes plus surfaces times days in window, never by every footprint ever emitted.
         </div>
 

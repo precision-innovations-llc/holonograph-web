@@ -133,10 +133,10 @@
 
         <div class="guide-callout">
           <span class="callout-label">Reading this as an agent</span>
-          Increasingly the reader here is not a person browsing a dashboard but a coding agent, asked to fix a bug or to find one nobody reported. Before it changes anything, it consults the lens: what actually moved, whether that movement is real, and which verdicts can be trusted. Every read in this Guide is exposed over plain HTTP for exactly that &mdash; the pre-action check that decides the next step. The dashboard is one surface over the same reads.
+          Increasingly the reader here is not a person browsing a dashboard but a coding agent, asked to fix a bug or to find one nobody reported. Before it changes anything, it consults the lens: what actually moved, whether that movement is real, and which verdicts can be trusted. Every read in this Guide is exposed over plain HTTP for exactly that: the pre-action check that decides the next step. The dashboard is one surface over the same reads.
         </div>
 
-        <h4 id="why-position-not-instrumentation">Why position, not instrumentation</h4>
+        <h4 id="why-position-not-instrumentation">Why position beats instrumentation</h4>
 
         <p>
           Observability tools for LLM systems have converged on a pattern: sprinkle logging calls through the agent's code, ship traces to a dashboard. That pattern works when the thing you're observing is deterministic. Modern agentic systems built on foundation LLMs are not. The model can be silently re-routed by the vendor behind a stable alias, and the evaluation apparatus is itself an LLM that drifts on its own schedule. Instrumentation inside the agent's code can only see what the agent chose to log, and the log format ages the day the SDK changes.
@@ -257,7 +257,7 @@
         </div>
 
         <p>
-          A handful of column ids are <strong>reserved</strong> to the apparatus; declaring one is a contract error. These are values Holonograph observes and stamps for you (see <a href="./substrate-columns">Substrate columns → apparatus-owned columns</a>) — you read them, you do not write them.
+          A handful of column ids are <strong>reserved</strong> to the apparatus; declaring one is a contract error. These are values Holonograph observes and stamps for you (see <a href="./substrate-columns">Substrate columns → apparatus-owned columns</a>): you read them, you do not write them.
         </p>
 
         <p>
@@ -271,7 +271,7 @@
         </p>
 
         <ul>
-          <li><strong>The lens knows what to expect.</strong> Ingested events are validated against the contract's declared dimensions and columns; anything that doesn't match is flagged, not silently accepted.</li>
+          <li><strong>Ingest is validated.</strong> Ingested events are validated against the contract's declared dimensions and columns; anything that doesn't match is flagged, not silently accepted.</li>
           <li><strong>Coverage becomes measurable.</strong> The <a href="./topology-scanner">topology scanner</a> compares what you <em>declared</em> against what the lens <em>observed</em> and surfaces the gaps: declared-but-never-observed dimensions, observed-but-never-declared ones, retirement candidates. That whole comparison exists because there is a contract to compare against.</li>
         </ul>
 
@@ -573,11 +573,11 @@ x-holonograph-run-mode: production</code></pre>
 
         <ul>
           <li><strong>Filter on cohort tags at read time</strong>, not at write time. Cohort tags are the query keys; write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.</li>
-          <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code>. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports <code>hiddenByProvenanceScope</code> &mdash; how many events the current scope filtered out &mdash; so a <code>count: 0</code> with a non-zero hidden count reads as &ldquo;wrong scope, add <code>?provenance=all</code>&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.</li>
+          <li><strong>Default reads to <code>production-state</code></strong>. When you're diagnosing something unusual, pass <code>provenance=all</code>. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports <code>hiddenByProvenanceScope</code> (how many events the current scope filtered out), so a <code>count: 0</code> with a non-zero hidden count reads as &ldquo;wrong scope, add <code>?provenance=all</code>&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.</li>
         </ul>
 
         <div class="guide-callout">
-          <span class="callout-label">Not the other snapshot</span>
+          <span class="callout-label">Two objects called a snapshot</span>
           This chapter is about the four-layer snapshot: one evaluation, one row. A <em>lens snapshot</em> is a different object, a versioned record of the lens configuration in force, and it has its own endpoints under <code>/lens/snapshots</code>. See <a href="./sdk-reference#lens-snapshots">Lens versioning and snapshots</a>.
         </div>
 
@@ -744,11 +744,11 @@ x-holonograph-run-mode: production</code></pre>
         <h5 id="apparatus-owned-columns">Apparatus-owned columns</h5>
 
         <p>
-          A third category, peer to mandatory and operator-declared: a small reserved namespace the apparatus writes and you cannot declare. Some facts are things Holonograph <em>observes</em>, not things you <em>assert</em> — which model a vendor actually served behind your requested alias, or the judge's own identity. Their column ids are reserved: a contract that tries to declare one is rejected, and the apparatus stamps the observed value itself on every event.
+          A third category, peer to mandatory and operator-declared: a small reserved namespace the apparatus writes and you cannot declare. Some facts are things Holonograph <em>observes</em>, not things you <em>assert</em>: which model a vendor actually served behind your requested alias, or the judge's own identity. Their column ids are reserved: a contract that tries to declare one is rejected, and the apparatus stamps the observed value itself on every event.
         </p>
 
         <p>
-          This is deliberate, and it is the difference between discouraging an error and preventing one. An observed fact you were free to overwrite is a fact you could get wrong — silently, and in exactly the direction that flatters your own system. A column you cannot declare is a fact you cannot fake. The illegal state — an operator asserting an apparatus-observed value — is not merely warned against; it has no representation in a valid contract.
+          This is deliberate, and it is the difference between discouraging an error and preventing one. An observed fact you were free to overwrite is a fact you could get wrong, silently, and in exactly the direction that flatters your own system. A column you cannot declare is a fact you cannot fake. The illegal state, an operator asserting an apparatus-observed value, is not merely warned against; it has no representation in a valid contract.
         </p>
 
         <h4 id="reading-the-output">Reading the output</h4>
@@ -845,7 +845,7 @@ x-holonograph-run-mode: production</code></pre>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in <a href="./sidecar">Sidecar / OTel integration</a>.
+          The <code>HolonographClient</code> is the surface an application, or a coding agent acting through one, uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in <a href="./sidecar">Sidecar / OTel integration</a>.
         </p>
 
         <h4 id="install">Install</h4>
@@ -1134,7 +1134,7 @@ const eventId = await handle.reportOutcome({
               <tr><td><code>passed</code></td><td>boolean</td><td>Whether the dimension passed the evaluation.</td></tr>
               <tr><td><code>expected</code></td><td>string</td><td>What good looked like: the expected shape of the response.</td></tr>
               <tr><td><code>actual</code></td><td>string</td><td>What the model actually produced (or a short summary).</td></tr>
-              <tr><td><code>claim</code></td><td>object (opt)</td><td>What the judge <em>asserted</em>, as fields the lens can verify — for the verdict-reliability layer to check (see below). A <code>JudgeClaimReport</code>; omit it and the dimension is simply not claim-instrumented.</td></tr>
+              <tr><td><code>claim</code></td><td>object (opt)</td><td>What the judge <em>asserted</em>, as fields the lens can verify, for the verdict-reliability layer to check (see below). A <code>JudgeClaimReport</code>; omit it and the dimension is simply not claim-instrumented.</td></tr>
             </tbody>
           </table>
         </div>
@@ -1143,7 +1143,7 @@ const eventId = await handle.reportOutcome({
           Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). It resolves to that event's id, which is the handle an asynchronous judge needs: a verdict minted later references it as its subject event. What Holonograph does with the event afterwards is the subject of the analysis chapters.
         </p>
 
-        <h4 id="verdict-reliability">Verdict reliability — let the lens check your judge</h4>
+        <h4 id="verdict-reliability">Verdict reliability: let the lens check your judge</h4>
 
         <p>
           A verdict does not have to come back in-request. Which timings are available to a judge, and what
@@ -1152,7 +1152,7 @@ const eventId = await handle.reportOutcome({
         </p>
 
         <p>
-          A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong> — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
+          A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong>, but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
         </p>
 
         <pre><code>await handle.reportOutcome({
@@ -1162,7 +1162,7 @@ const eventId = await handle.reportOutcome({
       passed: false,
       expected: "only facts present in the tool results",
       actual: "claimed a refund was issued and cited a total of $84.20",
-      // What the judge ASSERTED, as fields the lens can verify — not prose.
+      // What the judge ASSERTED, as fields the lens can verify, not prose.
       claim: {
         status: "emitted",
         assertions: [
@@ -1177,7 +1177,7 @@ const eventId = await handle.reportOutcome({
 });</code></pre>
 
         <p>
-          The lens checks each assertion <strong>against the captured call</strong> — is the accused value actually absent from everything the model read? was that tool really never invoked, anywhere across the whole conversation? — and reports, per assertion, whether the record <strong>corroborates</strong> or <strong>contradicts</strong> the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
+          The lens checks each assertion <strong>against the captured call</strong>. Is the accused value actually absent from everything the model read? Was that tool really never invoked, anywhere across the whole conversation? It reports, per assertion, whether the record <strong>corroborates</strong> or <strong>contradicts</strong> the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
         </p>
 
         <div class="guide-table-wrap">
@@ -1191,13 +1191,13 @@ const eventId = await handle.reportOutcome({
         </div>
 
         <p>
-          A dimension with no <code>claim</code> is simply not claim-instrumented — the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is <em>meant</em> to emit a claim but its output is malformed, report <code>{ status: "malformed", reflectionAttempted: &lt;boolean&gt; }</code> — the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The <code>JudgeClaimReport</code>, <code>JudgeAssertion</code>, and <code>JudgeAssertionKind</code> types are exported so you can build and validate the claim before you send it.
+          A dimension with no <code>claim</code> is simply not claim-instrumented: the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is <em>meant</em> to emit a claim but its output is malformed, report <code>{ status: "malformed", reflectionAttempted: &lt;boolean&gt; }</code>, the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The <code>JudgeClaimReport</code>, <code>JudgeAssertion</code>, and <code>JudgeAssertionKind</code> types are exported so you can build and validate the claim before you send it.
         </p>
 
-        <h5 id="reading-it-back-the-pre-action-check">Reading it back — the pre-action check</h5>
+        <h5 id="reading-it-back-the-pre-action-check">Reading it back: the pre-action check</h5>
 
         <p>
-          This is the read to run <em>before</em> you act on a verdict — before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use <code>client.callDirectly</code> or a plain <code>fetch</code> against your lens <code>endpoint</code>.
+          This is the read to run <em>before</em> you act on a verdict, before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use <code>client.callDirectly</code> or a plain <code>fetch</code> against your lens <code>endpoint</code>.
         </p>
 
         <pre><code>GET /holonograph/verdict-reliability?surfaceId=&lt;id&gt;&amp;since=&lt;iso&gt;&amp;until=&lt;iso&gt;</code></pre>
@@ -1208,7 +1208,7 @@ const eventId = await handle.reportOutcome({
             <tbody>
               <tr><td><code>eventCount</code></td><td>number</td><td>Evaluation events in the window.</td></tr>
               <tr><td><code>tierTally</code></td><td>object</td><td>How many verdicts fell into each reliability tier.</td></tr>
-              <tr><td><code>flagged[]</code></td><td>array</td><td>The verdicts the layer flagged as not safe to act on at face value — a judge the record <em>contradicted</em> is the loud case.</td></tr>
+              <tr><td><code>flagged[]</code></td><td>array</td><td>The verdicts the layer flagged as not safe to act on at face value: a judge the record <em>contradicted</em> is the loud case.</td></tr>
               <tr><td><code>trustDrivers</code></td><td>object</td><td>What most moved reliability over the window.</td></tr>
               <tr><td><code>corpusRates</code></td><td>object</td><td>Per-predicate firing rates from the reliability corpus (see below).</td></tr>
             </tbody>
@@ -1306,7 +1306,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
           For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see <a href="./run-modes">Run modes</a>.
         </p>
 
-        <h4 id="escape-hatch-calldirectly">Escape hatch: <code>callDirectly</code></h4>
+        <h4 id="escape-hatch-calldirectly">Bypassing mediation: <code>callDirectly</code></h4>
 
         <p>
           For scenarios that need the full request shape (a bespoke bridge, a replay tool, or an integration test that wants to prod an edge of the wire), the client exposes a lower-level <code>callDirectly</code> method that skips the <code>messages.create</code> ergonomics and forwards the request as-authored.
@@ -1314,7 +1314,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
         <pre><code>const result = await client.callDirectly(rawRequest);</code></pre>
 
-        <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is an escape hatch, not the everyday path.</p>
+        <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is for the cases above, not the everyday path.</p>
 
         <h4 id="reads-the-client-does-not-wrap">Reads the client does not wrap</h4>
 
@@ -1476,7 +1476,7 @@ try {
         </div>
 
         <div class="guide-callout">
-          <span class="callout-label">Read the code, not the status</span>
+          <span class="callout-label">The status does not identify the condition</span>
           Fourteen of the thirty-six share <code>409</code> and two share <code>501</code>, so the status alone does not identify the condition. <code>gate_blocked</code> is the sharpest case: it carries a <code>200</code>, because a blocked delivery is a completed call with a canned response, not a transport failure.
         </div>
 
@@ -1586,7 +1586,7 @@ const answer = handle.result;</code></pre>
 
         <h4 id="reading-the-output">Reading the output</h4>
 
-        <p>The response carries five load-bearing fields:</p>
+        <p>Five fields on the response matter:</p>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -1651,11 +1651,11 @@ const answer = handle.result;</code></pre>
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">A surface is not an agent</span>
+          <span class="callout-label">Surfaces span agents</span>
           A surface may span several agents in a swarm. The lens identifies a surface by what is being evaluated, never by the agent boundary the data crosses. Two agents doing the same job share a surface and stay separable by source, rather than becoming two surfaces that cannot be compared.
         </div>
 
-        <h5 id="stamped-not-claimed">Stamped, not claimed</h5>
+        <h5 id="stamped-not-claimed">How the source is set</h5>
 
         <p>
           The source is apparatus-owned. The lens stamps it at ingest from the authenticated operator, overriding any value the client sent. A client cannot attribute its events to another agent by asking.
@@ -1715,10 +1715,10 @@ const answer = handle.result;</code></pre>
           The judge pool stays unscoped on purpose. A judge call carries the judge&rsquo;s own source, not the subject agent&rsquo;s, and is tied to the subject by its linkage rather than by a shared source. Like a replay window, a source scope isolates a diagnostic panel, so the read is ephemeral and is not recorded as the production trajectory.
         </p>
 
-        <h5 id="read-findings-that-know-their-agent">Read findings that know their agent</h5>
+        <h5 id="read-findings-that-know-their-agent">Read findings scoped to an agent</h5>
 
         <p>
-          A finding&rsquo;s key carries a tagged <code>src=</code> segment, and only where the finding is genuinely multi-source, so single-source keys are unchanged. Two agents&rsquo; identical seam in shared or templated code produce two findings that triage separately instead of colliding into one.
+          A finding&rsquo;s key carries a tagged <code>src=</code> segment, and only where the finding is actually multi-source, so single-source keys are unchanged. Two agents&rsquo; identical seam in shared or templated code produce two findings that triage separately instead of colliding into one.
         </p>
 
         <p>
@@ -1803,13 +1803,13 @@ const answer = handle.result;</code></pre>
         <p>Two properties fall out of enforcing modes at the wire:</p>
 
         <ul>
-          <li><strong>Substrate integrity.</strong> Your production history stays production. A test that forgot its mode doesn't quietly become a production event when you read it back a month later.</li>
+          <li><strong>Substrate integrity.</strong> Your production history stays production. A test that forgot its mode doesn't become a production event when you read it back a month later.</li>
           <li><strong>Side-effect discipline.</strong> An <code>eval</code> run that touches a downstream system by accident is a serious incident. Fail-closed makes that failure loud instead of silent. The daemon rejects a call with no mode, and modes other than <code>production</code> suppress the side-effect channel.</li>
         </ul>
 
         <h4 id="how-to-use-it">How to use it</h4>
 
-        <h5 id="set-once-on-the-client">Set once, on the client</h5>
+        <h5 id="set-once-on-the-client">Setting the mode</h5>
 
         <p>The simplest wiring: pass <code>runMode</code> once at client construction. Every call the client makes carries it.</p>
 
@@ -1924,7 +1924,7 @@ app.post("/agent", async (req, res) =&gt; {
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry — and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
+          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry, and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
         </p>
 
         <h4 id="what-it-is">What it is</h4>
@@ -1945,7 +1945,7 @@ app.post("/agent", async (req, res) =&gt; {
         <h4 id="why-it-matters">Why it matters</h4>
 
         <p>
-          The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening quietly.
+          The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening without a trace.
         </p>
 
         <div class="guide-callout">
@@ -2046,7 +2046,7 @@ async function handleJob(job) {
         <h4 id="bounded-emit-buffer-and-otlp-export">Bounded emit buffer and OTLP export</h4>
 
         <p>
-          Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The <code>@holonograph/client</code> 0.3.0 release adds a bounded emit buffer with three drain modes — direct HTTP, OpenTelemetry OTLP spans, or both — so operators can move evaluation events off the request path when synchronous <code>POST /lens/events</code> is too expensive to await.
+          Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The <code>@holonograph/client</code> 0.3.0 release adds a bounded emit buffer with three drain modes (direct HTTP, OpenTelemetry OTLP spans, or both) so operators can move evaluation events off the request path when synchronous <code>POST /lens/events</code> is too expensive to await.
         </p>
 
         <p>
@@ -2169,7 +2169,7 @@ async function handleJob(job) {
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">A race is not a loss</span>
+          <span class="callout-label">A payload that lands late</span>
           A dual-mode span that arrives with no stored payload records a delivery-orphan candidate. The reconciliation read re-reconciles every candidate against the store before counting it, so an HTTP payload that landed after its OTLP span resolves rather than counting as dark. What remains dark is what is still missing after that check.
         </div>
 
@@ -2192,7 +2192,7 @@ async function handleJob(job) {
 
         <div class="guide-callout">
           <span class="callout-label">The guarantee</span>
-          Buffered delivery is <strong>at-most-once</strong>. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as <code>biasFlag</code>. What leaves the buffer either lands or is failed — nothing gets duplicated to make up for loss.
+          Buffered delivery is <strong>at-most-once</strong>. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as <code>biasFlag</code>. What leaves the buffer either lands or is failed: nothing gets duplicated to make up for loss.
         </div>
 
         <h4 id="reference">Reference</h4>
@@ -2259,7 +2259,7 @@ async function handleJob(job) {
 
         <ul>
           <li>A dimension gets added in code and the contract never gets updated. The lens sees it, the contract doesn't; downstream analyses skip it.</li>
-          <li>A dimension gets removed in code and the contract still declares it. Downstream analyses keep looking for it and quietly report it as always-null.</li>
+          <li>A dimension gets removed in code and the contract still declares it. Downstream analyses keep looking for it and report it as always-null.</li>
         </ul>
 
         <p>
@@ -2267,8 +2267,8 @@ async function handleJob(job) {
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">Three inputs, not two</span>
-          The scan is honest when it can compare against three inputs: <em>declared</em> (contract), <em>observed</em> (events), and <em>enumerated</em> (structural inventory). With two you can still find gaps; with three you can also tell a genuinely retired surface from a surface that just went quiet for a week.
+          <span class="callout-label">The third input</span>
+          The scan is complete when it can compare against three inputs: <em>declared</em> (contract), <em>observed</em> (events), and <em>enumerated</em> (structural inventory). With two you can still find gaps; with three you can also tell a retired surface from one that just went quiet for a week.
         </div>
 
         <h4 id="how-to-use-it">How to use it</h4>
@@ -2704,7 +2704,7 @@ await handle.reportOutcome({
 
         <div class="guide-callout">
           <span class="callout-label">How to read the four labels</span>
-          Attribute the <em>change</em>, not the <em>component</em>. The same component can move for different reasons, and each reason is a different source. When your judge model changes, the source is not "the judge" — it is decided by who controlled the change and whether it was visible to you. A vendor silently rerouting the model behind a fixed alias is <strong>light source</strong> drift. You deliberately swapping the judge model, or revising its rubric, is <strong>lens</strong> drift. Same component, same moved number, read apart by control and visibility. Always attribute a change to the source that produced it, never to the part of the system it happened to touch.
+          Attribute the <em>change</em>, not the <em>component</em>. The same component can move for different reasons, and each reason is a different source. When your judge model changes, the source is not "the judge": it is decided by who controlled the change and whether it was visible to you. A vendor silently rerouting the model behind a fixed alias is <strong>light source</strong> drift. You deliberately swapping the judge model, or revising its rubric, is <strong>lens</strong> drift. Same component, same moved number, read apart by control and visibility. Always attribute a change to the source that produced it, never to the part of the system it happened to touch.
         </div>
 
         <h4 id="why-it-matters">Why it matters</h4>
@@ -2868,7 +2868,7 @@ Content-Type: application/json
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>POST /lens/attribute</code></td><td>Run drift attribution over a window.</td></tr>
-              <tr><td><code>GET /lens/served-model-transitions</code></td><td>The served-model ledger: per alias, "served A over this interval, served B after it", derived from the stamped served-model column. A transition under a fixed requested alias is a vendor-reported reroute, which is the one observational light-source signal and what a stale-floor check consults. Honestly sparse for events whose column is not yet populated.</td></tr>
+              <tr><td><code>GET /lens/served-model-transitions</code></td><td>The served-model ledger: per alias, "served A over this interval, served B after it", derived from the stamped served-model column. A transition under a fixed requested alias is a vendor-reported reroute, which is the one observational light-source signal and what a stale-floor check consults. Sparse for events whose column is not yet populated.</td></tr>
             </tbody>
           </table>
         </div>
@@ -2916,7 +2916,7 @@ Content-Type: application/json
         <h4 id="what-it-is">What it is</h4>
 
         <p>
-          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
+          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the output to read first. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
         </p>
 
         <h4 id="what-you-get">What you get</h4>
@@ -3040,11 +3040,11 @@ Content-Type: application/json
 { "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
 
         <p>
-          A one-way analysis of variance per declared axis against the dimension, returning <code>confirmed</code>, <code>inert</code>, <code>insufficient-data</code> or <code>excluded</code>. A pure read: no calibration, no gate, no model call.
+          Grades every declared axis on how much of the dimension it accounts for, returning <code>confirmed</code>, <code>inert</code>, <code>insufficient-data</code> or <code>excluded</code>. A pure read: no calibration, no gate, no model call.
         </p>
 
         <p>
-          The <code>confirmed</code> decision is false-discovery controlled across the whole axis family by Benjamini-Yekutieli, so testing twelve axes does not manufacture one. Each axis carries its <code>pValue</code> and the adjusted one, and the <code>fdr</code> summary reports what the less conservative Benjamini-Hochberg instrument would have said, so the cost of the choice is visible rather than hidden.
+          The <code>confirmed</code> decision is false-discovery controlled across the entire axis family. Each axis carries both its original and adjusted <code>pValue</code>, and the <code>fdr</code> summary reports the trade-off.
         </p>
 
         <p>
@@ -3052,11 +3052,11 @@ Content-Type: application/json
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">An axis with a consumer is not demoted</span>
+          <span class="callout-label">When the demotion hint is withheld</span>
           The demotion hint fires only where an axis has no observed consumer. Two count. Every active axis is tested against all dimensions in the window, so one that explains a different dimension is protected. So is one a live conformance fixture references in a guard, an assertion or its required markers: a state-conditional guard that explains no scored dimension is still doing work for a deterministic check.
         </div>
 
-        <h5 id="propose-the-ones-you-did-not">Propose the ones you did not</h5>
+        <h5 id="propose-the-ones-you-did-not">Find the undeclared ones</h5>
 
         <pre><code>POST /lens/orthogonality/propose
 { "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
@@ -3066,7 +3066,7 @@ Content-Type: application/json
         </p>
 
         <p>
-          It needs a noise floor for the pair first, so calibrate before calling it. Then it decomposes the window, aggregates substrate emission over those same events, and takes the emitted-but-undeclared columns as the candidate set. Three gates have to pass: enough scored data, a lower bound on the agent-variance confidence interval above zero, and at least one undeclared column. Zero candidates is a <code>200</code> with a diagnostics block naming the gate that held, not an error.
+          It needs a noise floor for the pair first, so calibrate before calling it. Then it decomposes the window, aggregates substrate emission over those same events, and takes the emitted-but-undeclared columns as the candidate set. Three gates have to pass: enough scored data, agent variance established above zero, and at least one undeclared column. Zero candidates is a <code>200</code> with a diagnostics block naming the gate that held, not an error.
         </p>
 
         <p>
@@ -3107,7 +3107,7 @@ Content-Type: application/json
               <tr><td><code>POST /lens/replay</code></td><td>Re-issue captured requests through a target lens, window-stamped so the paired-window read works. Holds the input constant and varies the lens. Source events by <code>sourceEventIds</code> or <code>sourceCorrelationIdPrefix</code>; events carrying no stored raw request are reported skipped rather than silently dropped. Every replay is a real model call, so the count is capped.</td></tr>
               <tr><td><code>POST /lens/decomposition/evaluate</code></td><td>Return the confidence verdict for the analysis record.</td></tr>
               <tr><td><code>POST /lens/decomposition/lifecycle</code></td><td>Govern the reading: <code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
-              <tr><td><code>POST /lens/orthogonality/audit</code></td><td>Grade every declared axis against one dimension. One-way analysis of variance per axis, Benjamini-Yekutieli controlled across the family, lifecycle-aware and consumer-aware.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/audit</code></td><td>Grade every declared axis against one dimension. False-discovery controlled across the family, lifecycle-aware and consumer-aware.</td></tr>
               <tr><td><code>POST /lens/orthogonality/propose</code></td><td>Find emitted-but-undeclared columns worth declaring and enqueue each as a narrated candidate on the approver gate. Needs a calibrated floor. Zero candidates is an answer, with the gate that held.</td></tr>
               <tr><td><code>POST /lens/orthogonality/audit/compare</code></td><td>The audit over production against the audit over an input-constant panel, diffed per axis. Separates a robust axis from a sampling confound.</td></tr>
             </tbody>
@@ -3664,7 +3664,7 @@ Content-Type: application/json
           The dimension's own <code>rubricRef</code> is re-cast as the required default. An unknown or unmatched facet is scored against it rather than skipped, because skipping would manufacture the judge-liveness hole the instrument exists to close. It is scored, marked, and counted.
         </p>
 
-        <h5 id="one-normalization">One normalization, shared</h5>
+        <h5 id="one-normalization">The shared normalization</h5>
 
         <p>
           A facet value and its filename have to address the same rubric, so both the dispatch and the drafter that writes the bucket file call one function. It folds Unicode and strips combining marks, lowercases, collapses every run of non-alphanumerics to a single hyphen, and trims:
@@ -3684,7 +3684,7 @@ Content-Type: application/json
           Two properties make the loop auditable rather than hopeful.
         </p>
 
-        <h5 id="the-default-is-countable">The default is countable, and says why</h5>
+        <h5 id="the-default-is-countable">Why an event rode the default</h5>
 
         <p>
           Every scored event is stamped with which rubric judged it and, when that was the default, why. Four reasons, and they are different problems:
@@ -3779,8 +3779,8 @@ Content-Type: application/json
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">Functional, not statistical</span>
-          An earlier version of this check asked whether the score varies with the axis at all, by analysis of variance. That is the wrong question. A judge scoring the misuse 8.4 against a correct 9 varies significantly and still passes the misuse. Separability is not adequate penalization. The verdict is the pass-rate, which is also robust to a judge catching some of the misuse for an unrelated reason: it still reads blind on the fraction it lets through.
+          <span class="callout-label">The verdict is a pass-rate</span>
+          An earlier version of this check asked whether the score varies with the axis at all. That is the wrong question. A judge scoring the misuse 8.4 against a correct 9 varies significantly and still passes the misuse. Separability is not adequate penalization. The verdict is the pass-rate, which is also robust to a judge catching some of the misuse for an unrelated reason: it still reads blind on the fraction it lets through.
         </div>
 
         <p>
@@ -3826,7 +3826,7 @@ Content-Type: application/json
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">A misuse value is an output correlate</span>
+          <span class="callout-label">What a misuse value has to be</span>
           The audit keys on the grounding value, so a declared misuse value only discriminates when it is a value the producer consumed that correlates with the wrong output. A value that labels the grounding <em>situation</em> instead admits both a faithful and a faulty output under the same value: the pass-rate mixes the two, lands near half, and mislabels the judge blind. Such an axis is auditable only when the events are scoped to the faulty arm first.
         </div>
 
@@ -3900,7 +3900,7 @@ Content-Type: application/json
         </p>
 
         <p>
-          So the audit intervenes. Over a joint-state panel, events labelled by which facets' defects were injected, it runs a factorial and reads the directional cross-over-main ratio in each direction: how much facet F's score moves when F's own defect is injected, against how much it moves when G's is.
+          So the audit intervenes. Over a joint-state panel, events labelled by which facets' defects were injected, it reads each direction separately: how much facet F's score moves when F's own defect is injected, against how much it moves when G's is.
         </p>
 
         <div class="guide-table-wrap">
@@ -3937,7 +3937,7 @@ Content-Type: application/json
         <h4 id="how-to-use-it">How to use it</h4>
 
         <p>
-          Three reads, in order of cost. The screen proposes a hypothesis, the audit certifies it, the monitor watches it.
+          Three reads, in order of cost. The screen proposes a hypothesis, the audit certifies it, the monitor re-checks it cheaply.
         </p>
 
         <h5 id="screen-for-candidates">Screen for candidates</h5>
@@ -3978,7 +3978,7 @@ Content-Type: application/json
 
         <div class="guide-callout">
           <span class="callout-label">The audit inherits its panel's validity</span>
-          A facet whose own injected defect does not actually move its own score makes the cross-over-main ratio explode into a fake subsumption. Those pairs are reported as such rather than scored. The factorial is only as good as the ablation underneath it: if the defect you injected was not a defect, nothing downstream of it is a measurement.
+          A facet whose own injected defect does not move its own score reads as a fake subsumption. Those pairs are reported as such rather than scored. The audit is only as good as the ablation underneath it: if the defect you injected was not a defect, nothing downstream of it is a measurement.
         </div>
 
         <h5 id="watch-the-band">Watch the band</h5>
@@ -3987,7 +3987,7 @@ Content-Type: application/json
 { "surfaceId": "classify-intent" }</code></pre>
 
         <p>
-          The factorial is expensive and offline. The monitor is the cheap online guard on it. Over per-event defect co-firing it returns, per dimension pair, the co-trigger contingency and the marginal-adjusted phi coupling, which is the measure that disentangles real coupling from a shared score floor, plus the signal for a pair collapsing toward collinear while live.
+          The audit is expensive and offline. The monitor is the cheap online guard on it. Over per-event defect co-firing it returns, per dimension pair, the co-trigger counts and a <code>phi</code> coupling adjusted for how often each dimension fires on its own, which is what separates real coupling from a shared score floor, plus the signal for a pair collapsing toward collinear while live.
         </p>
 
         <p>
@@ -4004,7 +4004,7 @@ Content-Type: application/json
 { "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
 
         <p>
-          The adjacent question, converging on the same fields. For one judged dimension it partitions events by each candidate substrate-column cohort and tests whether the judge's fail-rate on a cohort value is systematically elevated against the rest of the population, by a two-by-two chi-square per cohort with the family under false-discovery control.
+          The adjacent question, converging on the same fields. For one judged dimension it partitions events by each candidate substrate-column cohort and tests whether the judge's fail-rate on a cohort value is elevated against the rest of the population, with the family under false-discovery control.
         </p>
 
         <p>
@@ -4018,7 +4018,7 @@ Content-Type: application/json
         <h4 id="reading-the-output">Reading the output</h4>
 
         <p>
-          Every read here is read-only and propose-only, and three of the attention spine's sources file from them: <code>redundancy-candidate</code>, which mints a <code>rejoin-dimension</code> proposal, plus <code>pairwise-drift</code> and <code>contested-cohort</code>, which mint nothing. A source with no default proposal is one where the remedy is a judgment the lens declines to make for you.
+          Every read here is read-only and propose-only, and three of the attention spine's sources file from them: <code>redundancy-candidate</code>, which mints a <code>rejoin-dimension</code> proposal, plus <code>pairwise-drift</code> and <code>contested-cohort</code>, which mint nothing. A source with no default proposal is one where the remedy is a judgment the lens leaves to the operator.
         </p>
 
         <p>
@@ -4034,8 +4034,8 @@ Content-Type: application/json
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>POST /lens/redundancy/screen</code></td><td>The collinearity matrix, with a scrap-pick and residual localization per collinear pair.</td></tr>
-              <tr><td><code>POST /lens/facet-topology/audit</code></td><td>The interventional factorial. Returns a verdict per unordered pair; <code>persist: true</code> also records the characterization and its band.</td></tr>
-              <tr><td><code>POST /lens/pairwise-monitor/run</code></td><td>The online guard: co-trigger contingency, marginal-adjusted phi, and a drift verdict against the characterized band.</td></tr>
+              <tr><td><code>POST /lens/facet-topology/audit</code></td><td>The interventional audit. Returns a verdict per unordered pair; <code>persist: true</code> also records the characterization and its band.</td></tr>
+              <tr><td><code>POST /lens/pairwise-monitor/run</code></td><td>The online guard: co-trigger counts, the adjusted <code>phi</code> coupling, and a drift verdict against the characterized band.</td></tr>
               <tr><td><code>POST /lens/contested-cohort/screen</code></td><td>Cohorts where the judge systematically rejects the producer, with the producer's within-cohort consistency.</td></tr>
             </tbody>
           </table>
@@ -4048,7 +4048,7 @@ Content-Type: application/json
         </p>
 
         <p>
-          The factorial, the coupling measure and the tuning constants ship inside the binary. The verdict vocabulary and the record shapes are public contract.
+          The audit procedure, the coupling measure and the tuning constants ship inside the binary. The verdict vocabulary and the record shapes are public contract.
         </p>
         </section>
 
@@ -4311,7 +4311,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
         <p>
           A schema boundary filters the catastrophic: wrong type, missing field, malformed JSON. It passes
           the shape-valid-but-wrong. So it raises the floor and, in the same motion, makes the residual
-          error insidious, because the value now looks right, types right, and fails quietly downstream.
+          error insidious, because the value now looks right, types right, and fails without a signal downstream.
         </p>
 
         <p>
@@ -4381,7 +4381,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           findings on the spine, and both reach authority. They sit on adjacent surfaces, not in separate
           systems. A seam is itself a light source, recorded as
           <code>seam/&lt;component&gt;/&lt;scan&gt;</code>, which is how a non-model interpreter takes the
-          same slot a vendor would without pretending to be one.
+          same slot a vendor would without being recorded as one.
         </p>
 
         <h4 id="reference">Reference</h4>
@@ -4519,7 +4519,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
             <tbody>
               <tr><td><code>provenance</code></td><td><code>seam</code>. The isolation key. It sits in neither the production-state nor the exploratory-state set, so soaks are excluded from every default analysis and cannot drown a small agent's readings.</td></tr>
               <tr><td><code>runMode</code></td><td>The shared enum. Isolation is provenance-keyed and independent of run mode, so <code>eval</code> and <code>replay</code> mean here what they mean everywhere.</td></tr>
-              <tr><td><code>lightSourceIdentifier</code></td><td><code>seam/&lt;component&gt;/&lt;scan&gt;</code>. A seam is a light source that is not a model, and it takes the slot honestly rather than faking a vendor.</td></tr>
+              <tr><td><code>lightSourceIdentifier</code></td><td><code>seam/&lt;component&gt;/&lt;scan&gt;</code>. A seam is a light source that is not a model, and it takes the slot under its own name rather than a vendor's.</td></tr>
             </tbody>
           </table>
         </div>
@@ -4530,7 +4530,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           rides in the payload and husks away like a judge rationale.
         </p>
 
-        <h4 id="three-layers-three-claims">Three layers, three claims</h4>
+        <h4 id="three-layers-three-claims">The three layers</h4>
 
         <p>
           The scan and the soak are the first two layers of one instrument. Both sit above a question neither answers: when a call went wrong, which seam on its path was involved?
@@ -4549,10 +4549,10 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
 
         <div class="guide-callout">
           <span class="callout-label">The lens trusts only what it observes at its own boundary</span>
-          One invariant discharges two constraints at once. Nothing is added to your code, because the evidence is the mediated traffic the lens already sees. And the subject never narrates itself: a seam's resolved arm counts only when it was recovered from the request and response bytes. An arm the builder asserts has its own grade, <code>self-reported</code>, which exists so the lens can refuse it rather than fold it silently into observed evidence.
+          One invariant discharges two constraints at once. Nothing is added to your code, because the evidence is the mediated traffic the lens already sees. And the subject&rsquo;s own account is never evidence: a seam's resolved arm counts only when it was recovered from the request and response bytes. An arm the builder asserts has its own grade, <code>self-reported</code>, which exists so the lens can refuse it rather than fold it silently into observed evidence.
         </div>
 
-        <h5 id="occurrence-is-not-participation">Occurrence is not participation</h5>
+        <h5 id="occurrence-is-not-participation">Why a linkage stays a candidate</h5>
 
         <p>
           Joining a call to a candidate seam through the call site proves the call site executed. It does not prove the seam took part. Every linkage from that join is graded <code>static-only</code>, including when the call itself was observed, and a deterministic join never promotes a candidate to <code>observed</code>. Only independent boundary evidence does, such as an arm value recovered injectively from the call's own bytes. A call-site frame that resolves to no node in the scan is <code>unknown</code>.
@@ -4573,7 +4573,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
         <pre><code>GET /lens/seam-call-analysis?since=2026-10-01T00:00:00Z</code></pre>
 
         <p>
-          Over those observations: the judge fail-rate on calls where a seam node appears against the rest of the panel, as a two-by-two chi-square per node, with the family under false-discovery control. A row reads the seam as a whole or conditions on one resolved arm.
+          Over those observations: the judge fail-rate on calls where a seam node appears against the rest of the panel, per node, with the family under false-discovery control. A row reads the seam as a whole or conditions on one resolved arm.
         </p>
 
         <p>
@@ -4674,7 +4674,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           on adjacent surfaces, and from the lifecycle's side they are the same object.
         </p>
 
-        <h5 id="one-surface-several-agents">One surface, several agents</h5>
+        <h5 id="one-surface-several-agents">Several agents on one surface</h5>
 
         <p>
           When several of a swarm's agents emit onto one surface, pooling them is sometimes right and sometimes fabricates a statistic. Every source declares which, so a new producer cannot pool two agents by omission.
@@ -4685,7 +4685,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
             <thead><tr><th>Partition</th><th>Behavior</th></tr></thead>
             <tbody>
               <tr><td><code>per-source</code></td><td>Pooling corrupts the statistic or destroys attribution, so the source runs once per agent and each finding is stamped with its <code>sourceId</code>. A no-op where one surface has one agent. The analytic reads over scores and variance sit here: pooling two score populations manufactures correlation that neither agent shows.</td></tr>
-              <tr><td><code>pooled-examine</code></td><td>Pooling is correct, because the instrument is shared, the contract is global, or the grouping is the operator's and not the lens's to override. The <code>source-conflation</code> alarm watches these for a hidden per-agent split and surfaces it without imposing a partition.</td></tr>
+              <tr><td><code>pooled-examine</code></td><td>Pooling is correct, because the instrument is shared, the contract is global, or the grouping is the operator's and not the lens's to override. The <code>source-conflation</code> alarm checks these for a hidden per-agent split and surfaces it without imposing a partition.</td></tr>
               <tr><td><code>pooled</code></td><td>Global, or keyed on a different axis entirely: the consumer's agent id, the rubric, the lens's own store. A per-agent split is not meaningful and the alarm ignores it.</td></tr>
             </tbody>
           </table>
@@ -4779,7 +4779,7 @@ Content-Type: application/json
           <code>rationale</code> and <code>approverId</code> are required: an annotation without a reason or an author is not a compliance record. Two optional fields pin what the operator saw, <code>evidenceSnapshotRef</code> for the denormalized slice and <code>asOf</code> for the substrate instant, so a decision stays reconstructible after the evidence moves on. The server stamps <code>occurredAt</code> itself.
         </p>
 
-        <h5 id="three-dispositions-five-states">Three dispositions, five states</h5>
+        <h5 id="three-dispositions-five-states">Dispositions and states</h5>
 
         <p>
           A disposition is what the operator wrote. A state is what the queue derives.
@@ -4825,7 +4825,7 @@ Content-Type: application/json
         </div>
 
         <p>
-          Fourteen of the twenty-six sources mint nothing by default, <code>source-conflation</code> among them. A source with no default proposal is not a lesser finding: it is one where the remedy is a judgment the lens declines to pre-empt.
+          Fourteen of the twenty-six sources mint nothing by default, <code>source-conflation</code> among them. A source with no default proposal is not a lesser finding: it is one where the remedy is a judgment the lens leaves to the operator.
         </p>
 
         <h4 id="reading-the-output">Reading the output</h4>
@@ -4942,7 +4942,7 @@ Content-Type: application/json
           the quietest: one is working as intended, the other is a coverage note rather than an alarm.
         </p>
 
-        <h5 id="re-derived-never-stored">Re-derived, never stored</h5>
+        <h5 id="re-derived-never-stored">Re-derived per read</h5>
 
         <p>
           A reading is computed from the recorded events at every read. No state is stored, so a reading
@@ -5058,7 +5058,7 @@ Content-Type: application/json
         </p>
 
         <p>
-          Who <em>may</em> act is a separate question, and the lens is honest about not owning the answer. Tier policy lives in the operator&rsquo;s identity system, so authorization is a pluggable resolver, absent by default. With none wired, any identified operator may proceed and the action is stamped with their id. Wire one and the same endpoints enforce its decision, denying with <code>403</code>. The lens records who acts before it constrains who may act.
+          Who <em>may</em> act is a separate question, and the lens does not answer it. Tier policy lives in the operator&rsquo;s identity system, so authorization is a pluggable resolver, absent by default. With none wired, any identified operator may proceed and the action is stamped with their id. Wire one and the same endpoints enforce its decision, denying with <code>403</code>. The lens records who acts before it constrains who may act.
         </p>
 
         <p>
@@ -5135,7 +5135,7 @@ Content-Type: application/json
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">A retry is not a second record</span>
+          <span class="callout-label">Retries and duplicates</span>
           The acknowledgement&rsquo;s event id is derived from the surface and the tear, so resubmitting the same acknowledgement is a keep-first no-op in the store. Acknowledging a tear that is already covered is a <code>409</code>, and under <code>per-tear</code>, acknowledging out of order is a <code>409</code> that names the older open tear.
         </div>
 
@@ -5164,7 +5164,7 @@ Content-Type: application/json
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">Compare-and-swap, not last-write-wins</span>
+          <span class="callout-label">Compare-and-swap on the write</span>
           If the policy moved since the operator reviewed it, the write is refused with <code>authority_policy_conflict</code> rather than overwriting someone else&rsquo;s change. Reload, re-review, re-submit. The retention policy works the same way.
         </div>
 
@@ -5173,7 +5173,7 @@ Content-Type: application/json
         </p>
 
         <p>
-          A backend that keeps no durable authority-policy store answers the <code>PUT</code> with <code>501</code> and says so in <code>writable</code>. The filesystem backend keeps one. There the policy in force is the file seed at <code>APERTURE_AUTHORITY_POLICY_PATH</code>, or the defaults.
+          A backend that keeps no durable authority-policy store answers the <code>PUT</code> with <code>501</code> and reports that in <code>writable</code>. The filesystem backend keeps one. There the policy in force is the file seed at <code>APERTURE_AUTHORITY_POLICY_PATH</code>, or the defaults.
         </p>
 
         <h5 id="where-the-operator-does-this">Where the operator does this</h5>
@@ -5249,7 +5249,7 @@ Content-Type: application/json
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The analysis chapters are <strong>detection</strong>: the lens reads what happened and forms a verdict. This chapter is the layer after it — <strong>defense</strong>. When a deterministic predicate over the lens's own verdicts fires, the lens POSTs an <strong>HMAC-signed webhook</strong> to a consumer you control: a pager, a chat channel, or an agent that picks up the work. It speaks only when something crosses a line — no "all quiet" pings.
+          The analysis chapters are <strong>detection</strong>: the lens reads what happened and forms a verdict. This chapter is the layer after it: <strong>defense</strong>. When a deterministic predicate over the lens's own verdicts fires, the lens POSTs an <strong>HMAC-signed webhook</strong> to a consumer you control: a pager, a chat channel, or an agent that picks up the work. It speaks only when something crosses a line. There are no "all quiet" pings.
         </p>
 
         <div class="guide-callout">
@@ -5265,7 +5265,7 @@ Content-Type: application/json
 
         <h4 id="create-a-subscription">Create a subscription</h4>
 
-        <p>Writes are approver-gated. The webhook <code>url</code> must be <code>https</code>, and the <code>secret</code> is 16–512 characters. The body is strict — an unknown field is rejected.</p>
+        <p>Writes are approver-gated. The webhook <code>url</code> must be <code>https</code>, and the <code>secret</code> is 16–512 characters. The body is strict: an unknown field is rejected.</p>
 
         <pre><code>POST /lens/subscriptions
 Authorization: Bearer &lt;token&gt;
@@ -5282,10 +5282,10 @@ Content-Type: application/json
 }</code></pre>
 
         <p>
-          Success returns <code>201</code> with a <strong>redacted</strong> view of the subscription: <code>id</code>, <code>agentId</code>, the predicate and window, <code>createdAt</code>/<code>createdBy</code>, and <code>webhook: { url }</code> — <strong>the secret is write-only and is never read back</strong>. Set it once at create; if you lose it, delete and recreate.
+          Success returns <code>201</code> with a <strong>redacted</strong> view of the subscription: <code>id</code>, <code>agentId</code>, the predicate and window, <code>createdAt</code>/<code>createdBy</code>, and <code>webhook: { url }</code>. <strong>The secret is write-only and is never read back</strong>. Set it once at create; if you lose it, delete and recreate.
         </p>
 
-        <h4 id="predicates-what-fires-an-alert">Predicates — what fires an alert</h4>
+        <h4 id="predicates-what-fires-an-alert">Predicates: what fires an alert</h4>
 
         <p>A predicate is a discriminated union on <code>kind</code>. Each names a <em>meaning</em>, never an opaque number. Three ship today:</p>
 
@@ -5294,7 +5294,7 @@ Content-Type: application/json
             <thead><tr><th>kind</th><th>Shape</th><th>Fires when</th></tr></thead>
             <tbody>
               <tr><td><code>conformance-fail</code></td><td><code>{ surfaceId, fixtureId? }</code></td><td>A conformance fixture FAILs on the surface (e.g. a required tool was never called). Omit <code>fixtureId</code> to fire on any fixture failure.</td></tr>
-              <tr><td><code>emission-breach</code></td><td><code>{ surfaceId, columnId? }</code></td><td>A substrate column declared <em>always-emitted</em> went silent in the window — a deployment is broken, not just underperforming.</td></tr>
+              <tr><td><code>emission-breach</code></td><td><code>{ surfaceId, columnId? }</code></td><td>A substrate column declared <em>always-emitted</em> went silent in the window: a deployment is broken, not just underperforming.</td></tr>
               <tr><td><code>dimension-below</code></td><td><code>{ surfaceId, dimensionId, threshold }</code></td><td>A judge dimension scored strictly below <code>threshold</code> in the window. The one predicate that reads a graded score.</td></tr>
             </tbody>
           </table>
@@ -5352,20 +5352,20 @@ Content-Type: application/json
   "subscriptionId": "sub_01H...",
   "agentId": "rupert-swarm",
   "predicate": { "kind": "conformance-fail", "surfaceId": "support.triage" },
-  "verdict": { /* structured, per predicate kind — the deterministic detail */ },
+  "verdict": { /* structured, per predicate kind: the deterministic detail */ },
   "summary": "save_report was never called on support.triage",
   "fingerprint": "conformance:support.triage:...",
   "firedAt": "2026-08-22T14:03:11Z"
 }</code></pre>
 
         <p>
-          <code>verdict</code> is a structured object, not a string — it carries the per-kind detail (the failing fixture and violating event ids, the silent column ids, or the dimension, threshold, and below-threshold event ids). <code>summary</code> is the one-line human sentence. <code>fingerprint</code> is the dedupe key.
+          <code>verdict</code> is a structured object, not a string: it carries the per-kind detail (the failing fixture and violating event ids, the silent column ids, or the dimension, threshold, and below-threshold event ids). <code>summary</code> is the one-line human sentence. <code>fingerprint</code> is the dedupe key.
         </p>
 
-        <h5 id="verify-the-signature-first-always">Verify the signature — first, always</h5>
+        <h5 id="verify-the-signature-first-always">Verify the signature first</h5>
 
         <p>
-          The <code>x-holonograph-signature</code> header is <code>sha256=</code> followed by the <strong>HMAC-SHA256 of the raw request body</strong>, keyed by the subscription's secret. Verify it over the <em>raw bytes you received</em> — before parsing JSON — and reject anything that does not match. This is the whole reason the secret exists.
+          The <code>x-holonograph-signature</code> header is <code>sha256=</code> followed by the <strong>HMAC-SHA256 of the raw request body</strong>, keyed by the subscription's secret. Verify it over the <em>raw bytes you received</em>, before parsing JSON, and reject anything that does not match. This is the whole reason the secret exists.
         </p>
 
         <pre><code>import { createHmac, timingSafeEqual } from "node:crypto";
@@ -5381,7 +5381,7 @@ function verifyHolonographWebhook(rawBody, signatureHeader, secret) {
         <h4 id="required-setup-the-allow-list">Required setup: the allow-list</h4>
 
         <p>
-          Delivery is <strong>deny-by-default</strong>. A webhook fires only to a host on the operator's allow-list; with no allow-list, <strong>nothing fires</strong>. Point the lens at the file with <code>APERTURE_WEBHOOK_ALLOWLIST_PATH</code> — keep it alongside your judge rubrics. It is a JSON array of hostnames:
+          Delivery is <strong>deny-by-default</strong>. A webhook fires only to a host on the operator's allow-list; with no allow-list, <strong>nothing fires</strong>. Point the lens at the file with <code>APERTURE_WEBHOOK_ALLOWLIST_PATH</code>. Keep it alongside your judge rubrics. It is a JSON array of hostnames:
         </p>
 
         <pre><code>// $APERTURE_WEBHOOK_ALLOWLIST_PATH
@@ -5395,7 +5395,7 @@ function verifyHolonographWebhook(rawBody, signatureHeader, secret) {
             <thead><tr><th>Rule</th><th>Behavior</th></tr></thead>
             <tbody>
               <tr><td>Deny-by-default</td><td>No allow-list (absent, empty, or malformed) ⇒ every host is denied and nothing fires.</td></tr>
-              <tr><td>Exact hostname</td><td>Case-insensitive exact match. <strong>No wildcards or suffixes</strong> — <code>*.example.com</code> is not a thing; list each host.</td></tr>
+              <tr><td>Exact hostname</td><td>Case-insensitive exact match. <strong>No wildcards or suffixes</strong>: <code>*.example.com</code> is not a thing; list each host.</td></tr>
               <tr><td>https required</td><td><code>https</code> for every remote host. <code>http</code> is tolerated only for loopback (<code>localhost</code>, <code>127.0.0.1</code>, <code>::1</code>) for local development.</td></tr>
               <tr><td>No internal targets</td><td>At fire time the lens pins the resolved address and refuses private, loopback, link-local (incl. the cloud metadata address), and CGNAT ranges. It does not follow redirects.</td></tr>
             </tbody>
@@ -5413,7 +5413,7 @@ function verifyHolonographWebhook(rawBody, signatureHeader, secret) {
         <pre><code>POST /lens/subscriptions/evaluate
 Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
 
-        <p>The response is <strong>counts only</strong> — the silence discipline again; there is no per-subscription "all quiet":</p>
+        <p>The response is <strong>counts only</strong>: the silence discipline again; there is no per-subscription "all quiet":</p>
 
         <pre><code>{
   "evaluated": 12,
@@ -5451,12 +5451,12 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         <h5 id="types">Types</h5>
 
         <p>
-          The wire types live in <code>@holonograph/types-public</code> — <code>CreateSubscriptionRequest</code>, <code>SubscriptionView</code>, <code>SubscriptionPredicate</code>, <code>SubscriptionWebhookPayload</code>, and <code>EvaluateSubscriptionsResponse</code>. There is no subscriptions helper in <code>@holonograph/client</code>; build the requests against the types and call the endpoints over HTTP.
+          The wire types live in <code>@holonograph/types-public</code>: <code>CreateSubscriptionRequest</code>, <code>SubscriptionView</code>, <code>SubscriptionPredicate</code>, <code>SubscriptionWebhookPayload</code>, and <code>EvaluateSubscriptionsResponse</code>. There is no subscriptions helper in <code>@holonograph/client</code>; build the requests against the types and call the endpoints over HTTP.
         </p>
 
         <div class="guide-callout">
           <span class="callout-label">Honest-null when unwired</span>
-          On a pure-collector lens with no subscription store configured, every route above answers <code>501</code> rather than pretending. The Defense layer is present only where an operator has wired it.
+          On a pure-collector lens with no subscription store configured, every route above answers <code>501</code> rather than appearing configured. The Defense layer is present only where an operator has wired it.
         </div>
         </section>
 
@@ -5517,7 +5517,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         </p>
 
         <p>
-          Each stage also declares whether the lens can see traversal. <code>declared</code> means the operator is telling the lens the stage exists while it emits nothing: the lens cannot verify delivery through it, so every verdict on that surface covers scoring only and the lens says so. <code>reconciled</code> means the stage emits a footprint per outcome, so the lens observes traversal and derives each outcome&rsquo;s fate.
+          Each stage also declares whether the lens can see traversal. <code>declared</code> means the operator is telling the lens the stage exists while it emits nothing: the lens cannot verify delivery through it, so every verdict on that surface covers scoring only, and the read reports that. <code>reconciled</code> means the stage emits a footprint per outcome, so the lens observes traversal and derives each outcome&rsquo;s fate.
         </p>
 
         <div class="guide-callout">
@@ -5568,7 +5568,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
             <thead><tr><th>State</th><th>Meaning</th><th>Report</th></tr></thead>
             <tbody>
               <tr><td><code>measured</code></td><td>The terminal stage is <code>reconciled</code> and outcomes have settled.</td><td>Present.</td></tr>
-              <tr><td><code>horizon</code></td><td>The terminal stage is <code>declared</code>. The lens is told it exists and cannot observe it.</td><td><code>null</code>. No rate is invented.</td></tr>
+              <tr><td><code>horizon</code></td><td>The terminal stage is <code>declared</code>. The lens is told it exists and cannot observe it.</td><td><code>null</code>. No rate is derived.</td></tr>
               <tr><td><code>no-outcomes</code></td><td>Reconciled, but nothing was scored on the surface in the window.</td><td><code>null</code>.</td></tr>
             </tbody>
           </table>
@@ -5600,7 +5600,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         <h4 id="reading-the-output">Reading the output</h4>
 
         <p>
-          <code>darkRate</code> is <code>dark / settled</code>, where <code>settled</code> is <code>delivered + dark</code>. In-flight outcomes are excluded from both sides, so an outcome whose fate is genuinely unknown is never counted as either. With nothing settled the rate is <code>null</code> rather than zero.
+          <code>darkRate</code> is <code>dark / settled</code>, where <code>settled</code> is <code>delivered + dark</code>. In-flight outcomes are excluded from both sides, so an outcome whose fate is still unknown is never counted as either. With nothing settled the rate is <code>null</code> rather than zero.
         </p>
 
         <p>
@@ -5612,7 +5612,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">Footprints are not substrate</span>
+          <span class="callout-label">Where footprints live</span>
           The footprint store is append-only and separate from the canonical event store, and it is never an input to the lens hash. Footprints are transient observations, so a backend may fold settled outcomes into per-surface, per-day tallies and prune past the rate window. The derived rate is what persists. Growth is bounded by the in-flight outcomes plus surfaces times days in window, never by every footprint ever emitted.
         </div>
 
@@ -5705,7 +5705,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
 
         <h4 id="why-it-matters">Why it matters</h4>
 
-        <h5 id="a-husk-is-a-projection-not-a-new-fact">A husk is a projection, not a new fact</h5>
+        <h5 id="a-husk-is-a-projection-not-a-new-fact">What a husk is</h5>
 
         <p>
           Husking keeps every structured field an estimator reads: ids, <code>occurredAt</code>, the whole
@@ -5835,7 +5835,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">Two credentials, two jobs</span>
+          <span class="callout-label">What each credential gates</span>
           Basic auth on the dashboard path gates the UI bundle and nothing else. The bearer token in the settings dialog is what reads the lens. Setting the first does not protect the API, and setting the second does not hide the page.
         </div>
 
@@ -5928,7 +5928,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         </div>
 
         <p>
-          What it cannot see is stated on the panel: the perturbation-response cliffs. Finding those means feeding the judge altered inputs, which is a live call and not an observation, so the lens declines. The distribution behind the characterization is in <code>GET /lens/events</code>, and the adjacent question of whether a rubric still discriminates at all is the saturation audit in <a href="./rubric-coverage#the-saturation-audit">Rubric coverage and de-saturation</a>.
+          What it cannot see is stated on the panel: the perturbation-response cliffs. Finding those means feeding the judge altered inputs, which is a live call rather than an observation, and outside what the lens does. The distribution behind the characterization is in <code>GET /lens/events</code>, and the adjacent question of whether a rubric still discriminates at all is the saturation audit in <a href="./rubric-coverage#the-saturation-audit">Rubric coverage and de-saturation</a>.
         </p>
 
         <h5 id="deep-links">Deep links</h5>
@@ -5957,7 +5957,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
         </p>
 
         <p>
-          The same discipline governs the version chip: with no contract registered it says <code>binary</code> rather than inventing a contract version.
+          The same discipline governs the version chip: with no contract registered it reports <code>binary</code> rather than a contract version it does not have.
         </p>
 
         <h4 id="reference">Reference</h4>

@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Rubric coverage and de-saturation — The Guide — Holonograph</title>
+<title>Rubric coverage and de-saturation · The Guide · Holonograph</title>
 <meta name="description" content="Scope a rubric per facet, see which facets have one, draft the rest, and check that what you drafted can still tell a wrong answer from a right one." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
@@ -13,7 +13,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
-<meta property="og:title" content="Rubric coverage and de-saturation — The Guide" />
+<meta property="og:title" content="Rubric coverage and de-saturation · The Guide" />
 <meta property="og:description" content="Scope a rubric per facet, see which facets have one, draft the rest, and check that what you drafted can still tell a wrong answer from a right one." />
 <meta property="og:url" content="https://holonograph.ai/guide/rubric-coverage" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
@@ -22,7 +22,7 @@
 <meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
-<meta name="twitter:title" content="Rubric coverage and de-saturation — The Guide" />
+<meta name="twitter:title" content="Rubric coverage and de-saturation · The Guide" />
 <meta name="twitter:description" content="Scope a rubric per facet, see which facets have one, draft the rest, and check that what you drafted can still tell a wrong answer from a right one." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
   <link rel="stylesheet" href="./_assets/guide.css?v=6" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -145,7 +145,7 @@
           The dimension's own <code>rubricRef</code> is re-cast as the required default. An unknown or unmatched facet is scored against it rather than skipped, because skipping would manufacture the judge-liveness hole the instrument exists to close. It is scored, marked, and counted.
         </p>
 
-        <h3 id="one-normalization">One normalization, shared</h3>
+        <h3 id="one-normalization">The shared normalization</h3>
 
         <p>
           A facet value and its filename have to address the same rubric, so both the dispatch and the drafter that writes the bucket file call one function. It folds Unicode and strips combining marks, lowercases, collapses every run of non-alphanumerics to a single hyphen, and trims:
@@ -165,7 +165,7 @@
           Two properties make the loop auditable rather than hopeful.
         </p>
 
-        <h3 id="the-default-is-countable">The default is countable, and says why</h3>
+        <h3 id="the-default-is-countable">Why an event rode the default</h3>
 
         <p>
           Every scored event is stamped with which rubric judged it and, when that was the default, why. Four reasons, and they are different problems:
@@ -260,8 +260,8 @@
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">Functional, not statistical</span>
-          An earlier version of this check asked whether the score varies with the axis at all, by analysis of variance. That is the wrong question. A judge scoring the misuse 8.4 against a correct 9 varies significantly and still passes the misuse. Separability is not adequate penalization. The verdict is the pass-rate, which is also robust to a judge catching some of the misuse for an unrelated reason: it still reads blind on the fraction it lets through.
+          <span class="callout-label">The verdict is a pass-rate</span>
+          An earlier version of this check asked whether the score varies with the axis at all. That is the wrong question. A judge scoring the misuse 8.4 against a correct 9 varies significantly and still passes the misuse. Separability is not adequate penalization. The verdict is the pass-rate, which is also robust to a judge catching some of the misuse for an unrelated reason: it still reads blind on the fraction it lets through.
         </div>
 
         <p>
@@ -307,7 +307,7 @@
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">A misuse value is an output correlate</span>
+          <span class="callout-label">What a misuse value has to be</span>
           The audit keys on the grounding value, so a declared misuse value only discriminates when it is a value the producer consumed that correlates with the wrong output. A value that labels the grounding <em>situation</em> instead admits both a faithful and a faulty output under the same value: the pass-rate mixes the two, lands near half, and mislabels the judge blind. Such an axis is auditable only when the events are scoped to the faulty arm first.
         </div>
 

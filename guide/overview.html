@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Overview &amp; first principles — The Guide — Holonograph</title>
+<title>Overview &amp; first principles · The Guide · Holonograph</title>
 <meta name="description" content="What Holonograph is, what it observes, and why observation-by-position is different from instrumentation. Capability-level introduction." />
 <meta name="discloses" content="capability-only" />
 <meta name="wave" content="1" />
@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
   <link rel="stylesheet" href="./_assets/guide.css?v=6" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -132,10 +132,10 @@
 
         <div class="guide-callout">
           <span class="callout-label">Reading this as an agent</span>
-          Increasingly the reader here is not a person browsing a dashboard but a coding agent, asked to fix a bug or to find one nobody reported. Before it changes anything, it consults the lens: what actually moved, whether that movement is real, and which verdicts can be trusted. Every read in this Guide is exposed over plain HTTP for exactly that &mdash; the pre-action check that decides the next step. The dashboard is one surface over the same reads.
+          Increasingly the reader here is not a person browsing a dashboard but a coding agent, asked to fix a bug or to find one nobody reported. Before it changes anything, it consults the lens: what actually moved, whether that movement is real, and which verdicts can be trusted. Every read in this Guide is exposed over plain HTTP for exactly that: the pre-action check that decides the next step. The dashboard is one surface over the same reads.
         </div>
 
-        <h2 id="why-position-not-instrumentation">Why position, not instrumentation</h2>
+        <h2 id="why-position-not-instrumentation">Why position beats instrumentation</h2>
 
         <p>
           Observability tools for LLM systems have converged on a pattern: sprinkle logging calls through the agent's code, ship traces to a dashboard. That pattern works when the thing you're observing is deterministic. Modern agentic systems built on foundation LLMs are not. The model can be silently re-routed by the vendor behind a stable alias, and the evaluation apparatus is itself an LLM that drifts on its own schedule. Instrumentation inside the agent's code can only see what the agent chose to log, and the log format ages the day the SDK changes.

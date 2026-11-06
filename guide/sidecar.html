@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Sidecar / OTel integration — The Guide — Holonograph</title>
-<meta name="description" content="Capturing what doesn't pass through the lens, via OpenTelemetry — baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
+<title>Sidecar / OTel integration · The Guide · Holonograph</title>
+<meta name="description" content="Capturing what doesn't pass through the lens, via OpenTelemetry: baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
 <meta name="discloses" content="capability-only" />
 <meta name="reflects-version" content="v0.26.0" />
 <meta name="reflects-client-version" content="0.3.0" />
@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
 <meta property="og:title" content="Sidecar / OTel integration · Holonograph Guide" />
-<meta property="og:description" content="Capturing what doesn't pass through the lens, via OpenTelemetry — baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
+<meta property="og:description" content="Capturing what doesn't pass through the lens, via OpenTelemetry: baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
 <meta property="og:url" content="https://holonograph.ai/guide/sidecar" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
 <meta property="og:image:width" content="2752" />
@@ -25,7 +25,7 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
 <meta name="twitter:title" content="Sidecar / OTel integration · Holonograph Guide" />
-<meta name="twitter:description" content="Capturing what doesn't pass through the lens, via OpenTelemetry — baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
+<meta name="twitter:description" content="Capturing what doesn't pass through the lens, via OpenTelemetry: baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
   <link rel="stylesheet" href="./_assets/guide.css?v=6" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -106,7 +106,7 @@
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry — and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
+          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry, and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
         </p>
 
         <h2 id="what-it-is">What it is</h2>
@@ -127,7 +127,7 @@
         <h2 id="why-it-matters">Why it matters</h2>
 
         <p>
-          The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening quietly.
+          The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening without a trace.
         </p>
 
         <div class="guide-callout">
@@ -228,7 +228,7 @@ async function handleJob(job) {
         <h2 id="bounded-emit-buffer-and-otlp-export">Bounded emit buffer and OTLP export</h2>
 
         <p>
-          Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The <code>@holonograph/client</code> 0.3.0 release adds a bounded emit buffer with three drain modes — direct HTTP, OpenTelemetry OTLP spans, or both — so operators can move evaluation events off the request path when synchronous <code>POST /lens/events</code> is too expensive to await.
+          Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The <code>@holonograph/client</code> 0.3.0 release adds a bounded emit buffer with three drain modes (direct HTTP, OpenTelemetry OTLP spans, or both) so operators can move evaluation events off the request path when synchronous <code>POST /lens/events</code> is too expensive to await.
         </p>
 
         <p>
@@ -351,7 +351,7 @@ async function handleJob(job) {
         </p>
 
         <div class="guide-callout">
-          <span class="callout-label">A race is not a loss</span>
+          <span class="callout-label">A payload that lands late</span>
           A dual-mode span that arrives with no stored payload records a delivery-orphan candidate. The reconciliation read re-reconciles every candidate against the store before counting it, so an HTTP payload that landed after its OTLP span resolves rather than counting as dark. What remains dark is what is still missing after that check.
         </div>
 
@@ -374,7 +374,7 @@ async function handleJob(job) {
 
         <div class="guide-callout">
           <span class="callout-label">The guarantee</span>
-          Buffered delivery is <strong>at-most-once</strong>. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as <code>biasFlag</code>. What leaves the buffer either lands or is failed — nothing gets duplicated to make up for loss.
+          Buffered delivery is <strong>at-most-once</strong>. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as <code>biasFlag</code>. What leaves the buffer either lands or is failed: nothing gets duplicated to make up for loss.
         </div>
 
         <h2 id="reference">Reference</h2>

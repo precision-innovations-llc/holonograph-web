@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>SDK reference — The Guide — Holonograph</title>
+<title>SDK reference · The Guide · Holonograph</title>
 <meta name="description" content="The HolonographClient end-to-end: the messages.create → reportOutcome flow, attaching a structured claim so the lens checks your judge deterministically (verdict reliability), plus contract, availability, and the emit modes." />
 <meta name="discloses" content="capability-only" />
 <meta name="reflects-version" content="v0.41.8" />
@@ -34,7 +34,7 @@
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
   <link rel="stylesheet" href="./_assets/guide.css?v=6" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -106,7 +106,7 @@
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in <a href="./sidecar">Sidecar / OTel integration</a>.
+          The <code>HolonographClient</code> is the surface an application, or a coding agent acting through one, uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in <a href="./sidecar">Sidecar / OTel integration</a>.
         </p>
 
         <h2 id="install">Install</h2>
@@ -395,7 +395,7 @@ const eventId = await handle.reportOutcome({
               <tr><td><code>passed</code></td><td>boolean</td><td>Whether the dimension passed the evaluation.</td></tr>
               <tr><td><code>expected</code></td><td>string</td><td>What good looked like: the expected shape of the response.</td></tr>
               <tr><td><code>actual</code></td><td>string</td><td>What the model actually produced (or a short summary).</td></tr>
-              <tr><td><code>claim</code></td><td>object (opt)</td><td>What the judge <em>asserted</em>, as fields the lens can verify — for the verdict-reliability layer to check (see below). A <code>JudgeClaimReport</code>; omit it and the dimension is simply not claim-instrumented.</td></tr>
+              <tr><td><code>claim</code></td><td>object (opt)</td><td>What the judge <em>asserted</em>, as fields the lens can verify, for the verdict-reliability layer to check (see below). A <code>JudgeClaimReport</code>; omit it and the dimension is simply not claim-instrumented.</td></tr>
             </tbody>
           </table>
         </div>
@@ -404,7 +404,7 @@ const eventId = await handle.reportOutcome({
           Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). It resolves to that event's id, which is the handle an asynchronous judge needs: a verdict minted later references it as its subject event. What Holonograph does with the event afterwards is the subject of the analysis chapters.
         </p>
 
-        <h2 id="verdict-reliability">Verdict reliability — let the lens check your judge</h2>
+        <h2 id="verdict-reliability">Verdict reliability: let the lens check your judge</h2>
 
         <p>
           A verdict does not have to come back in-request. Which timings are available to a judge, and what
@@ -413,7 +413,7 @@ const eventId = await handle.reportOutcome({
         </p>
 
         <p>
-          A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong> — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
+          A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong>, but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
         </p>
 
         <pre><code>await handle.reportOutcome({
@@ -423,7 +423,7 @@ const eventId = await handle.reportOutcome({
       passed: false,
       expected: "only facts present in the tool results",
       actual: "claimed a refund was issued and cited a total of $84.20",
-      // What the judge ASSERTED, as fields the lens can verify — not prose.
+      // What the judge ASSERTED, as fields the lens can verify, not prose.
       claim: {
         status: "emitted",
         assertions: [
@@ -438,7 +438,7 @@ const eventId = await handle.reportOutcome({
 });</code></pre>
 
         <p>
-          The lens checks each assertion <strong>against the captured call</strong> — is the accused value actually absent from everything the model read? was that tool really never invoked, anywhere across the whole conversation? — and reports, per assertion, whether the record <strong>corroborates</strong> or <strong>contradicts</strong> the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
+          The lens checks each assertion <strong>against the captured call</strong>. Is the accused value actually absent from everything the model read? Was that tool really never invoked, anywhere across the whole conversation? It reports, per assertion, whether the record <strong>corroborates</strong> or <strong>contradicts</strong> the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
         </p>
 
         <div class="guide-table-wrap">
@@ -452,13 +452,13 @@ const eventId = await handle.reportOutcome({
         </div>
 
         <p>
-          A dimension with no <code>claim</code> is simply not claim-instrumented — the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is <em>meant</em> to emit a claim but its output is malformed, report <code>{ status: "malformed", reflectionAttempted: &lt;boolean&gt; }</code> — the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The <code>JudgeClaimReport</code>, <code>JudgeAssertion</code>, and <code>JudgeAssertionKind</code> types are exported so you can build and validate the claim before you send it.
+          A dimension with no <code>claim</code> is simply not claim-instrumented: the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is <em>meant</em> to emit a claim but its output is malformed, report <code>{ status: "malformed", reflectionAttempted: &lt;boolean&gt; }</code>, the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The <code>JudgeClaimReport</code>, <code>JudgeAssertion</code>, and <code>JudgeAssertionKind</code> types are exported so you can build and validate the claim before you send it.
         </p>
 
-        <h3 id="reading-it-back-the-pre-action-check">Reading it back — the pre-action check</h3>
+        <h3 id="reading-it-back-the-pre-action-check">Reading it back: the pre-action check</h3>
 
         <p>
-          This is the read to run <em>before</em> you act on a verdict — before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use <code>client.callDirectly</code> or a plain <code>fetch</code> against your lens <code>endpoint</code>.
+          This is the read to run <em>before</em> you act on a verdict, before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use <code>client.callDirectly</code> or a plain <code>fetch</code> against your lens <code>endpoint</code>.
         </p>
 
         <pre><code>GET /holonograph/verdict-reliability?surfaceId=&lt;id&gt;&amp;since=&lt;iso&gt;&amp;until=&lt;iso&gt;</code></pre>
@@ -469,7 +469,7 @@ const eventId = await handle.reportOutcome({
             <tbody>
               <tr><td><code>eventCount</code></td><td>number</td><td>Evaluation events in the window.</td></tr>
               <tr><td><code>tierTally</code></td><td>object</td><td>How many verdicts fell into each reliability tier.</td></tr>
-              <tr><td><code>flagged[]</code></td><td>array</td><td>The verdicts the layer flagged as not safe to act on at face value — a judge the record <em>contradicted</em> is the loud case.</td></tr>
+              <tr><td><code>flagged[]</code></td><td>array</td><td>The verdicts the layer flagged as not safe to act on at face value: a judge the record <em>contradicted</em> is the loud case.</td></tr>
               <tr><td><code>trustDrivers</code></td><td>object</td><td>What most moved reliability over the window.</td></tr>
               <tr><td><code>corpusRates</code></td><td>object</td><td>Per-predicate firing rates from the reliability corpus (see below).</td></tr>
             </tbody>
@@ -567,7 +567,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
           For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see <a href="./run-modes">Run modes</a>.
         </p>
 
-        <h2 id="escape-hatch-calldirectly">Escape hatch: <code>callDirectly</code></h2>
+        <h2 id="escape-hatch-calldirectly">Bypassing mediation: <code>callDirectly</code></h2>
 
         <p>
           For scenarios that need the full request shape (a bespoke bridge, a replay tool, or an integration test that wants to prod an edge of the wire), the client exposes a lower-level <code>callDirectly</code> method that skips the <code>messages.create</code> ergonomics and forwards the request as-authored.
@@ -575,7 +575,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
         <pre><code>const result = await client.callDirectly(rawRequest);</code></pre>
 
-        <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is an escape hatch, not the everyday path.</p>
+        <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is for the cases above, not the everyday path.</p>
 
         <h2 id="reads-the-client-does-not-wrap">Reads the client does not wrap</h2>
 
@@ -737,7 +737,7 @@ try {
         </div>
 
         <div class="guide-callout">
-          <span class="callout-label">Read the code, not the status</span>
+          <span class="callout-label">The status does not identify the condition</span>
           Fourteen of the thirty-six share <code>409</code> and two share <code>501</code>, so the status alone does not identify the condition. <code>gate_blocked</code> is the sharpest case: it carries a <code>200</code>, because a blocked delivery is a completed call with a canned response, not a transport failure.
         </div>
 

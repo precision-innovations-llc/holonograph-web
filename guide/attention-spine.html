@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>The attention spine — The Guide — Holonograph</title>
+<title>The attention spine · The Guide · Holonograph</title>
 <meta name="description" content="One operator lifecycle for every finding the instrument produces: a stable identity, an append-only annotation, and a proposal." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
   <link rel="stylesheet" href="./_assets/guide.css?v=6" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -150,7 +150,7 @@
           on adjacent surfaces, and from the lifecycle's side they are the same object.
         </p>
 
-        <h3 id="one-surface-several-agents">One surface, several agents</h3>
+        <h3 id="one-surface-several-agents">Several agents on one surface</h3>
 
         <p>
           When several of a swarm's agents emit onto one surface, pooling them is sometimes right and sometimes fabricates a statistic. Every source declares which, so a new producer cannot pool two agents by omission.
@@ -161,7 +161,7 @@
             <thead><tr><th>Partition</th><th>Behavior</th></tr></thead>
             <tbody>
               <tr><td><code>per-source</code></td><td>Pooling corrupts the statistic or destroys attribution, so the source runs once per agent and each finding is stamped with its <code>sourceId</code>. A no-op where one surface has one agent. The analytic reads over scores and variance sit here: pooling two score populations manufactures correlation that neither agent shows.</td></tr>
-              <tr><td><code>pooled-examine</code></td><td>Pooling is correct, because the instrument is shared, the contract is global, or the grouping is the operator's and not the lens's to override. The <code>source-conflation</code> alarm watches these for a hidden per-agent split and surfaces it without imposing a partition.</td></tr>
+              <tr><td><code>pooled-examine</code></td><td>Pooling is correct, because the instrument is shared, the contract is global, or the grouping is the operator's and not the lens's to override. The <code>source-conflation</code> alarm checks these for a hidden per-agent split and surfaces it without imposing a partition.</td></tr>
               <tr><td><code>pooled</code></td><td>Global, or keyed on a different axis entirely: the consumer's agent id, the rubric, the lens's own store. A per-agent split is not meaningful and the alarm ignores it.</td></tr>
             </tbody>
           </table>
@@ -255,7 +255,7 @@ Content-Type: application/json
           <code>rationale</code> and <code>approverId</code> are required: an annotation without a reason or an author is not a compliance record. Two optional fields pin what the operator saw, <code>evidenceSnapshotRef</code> for the denormalized slice and <code>asOf</code> for the substrate instant, so a decision stays reconstructible after the evidence moves on. The server stamps <code>occurredAt</code> itself.
         </p>
 
-        <h3 id="three-dispositions-five-states">Three dispositions, five states</h3>
+        <h3 id="three-dispositions-five-states">Dispositions and states</h3>
 
         <p>
           A disposition is what the operator wrote. A state is what the queue derives.
@@ -301,7 +301,7 @@ Content-Type: application/json
         </div>
 
         <p>
-          Fourteen of the twenty-six sources mint nothing by default, <code>source-conflation</code> among them. A source with no default proposal is not a lesser finding: it is one where the remedy is a judgment the lens declines to pre-empt.
+          Fourteen of the twenty-six sources mint nothing by default, <code>source-conflation</code> among them. A source with no default proposal is not a lesser finding: it is one where the remedy is a judgment the lens leaves to the operator.
         </p>
 
         <h2 id="reading-the-output">Reading the output</h2>
