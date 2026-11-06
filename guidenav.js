@@ -38,6 +38,14 @@
     ver.className = 'gs-ver'; ver.setAttribute('data-guide-version', '');
     nav.appendChild(ver);
 
+    // The sidebar is hidden at this width, so its search trigger comes along.
+    var search = sidebar.querySelector('[data-guide-search]');
+    if (search) {
+      var copy = search.cloneNode(true);
+      copy.removeAttribute('id');
+      nav.appendChild(copy);
+    }
+
     if(header && header.parentNode){ header.parentNode.insertBefore(nav, header.nextSibling); }
     else { document.body.insertBefore(nav, document.body.firstChild); }
   }

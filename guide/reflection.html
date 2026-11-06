@@ -31,7 +31,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -54,6 +54,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -96,7 +101,7 @@
           When a response fails a judge, the judge’s grounded critique can go back to the producer for a capped retry. Holonograph grants that per judge, rubric, facet and surface, and only after that exact cell has certified. It is never a default and never an operator toggle.
         </p>
 
-        <h2>Why it is gated</h2>
+        <h2 id="why-it-is-gated">Why it is gated</h2>
 
         <p>
           Reflection turns a judge from an evaluator you read into an optimization target the producer
@@ -111,7 +116,7 @@
           way every time is reliability, and reliability does not imply validity.
         </p>
 
-        <h3>The specific hazard</h3>
+        <h3 id="the-specific-hazard">The specific hazard</h3>
 
         <p>
           Real dimensions are often requires-confirmation: an honest "I do not have the data" correctly
@@ -125,7 +130,7 @@
           pressure applied to the one behavior you most need preserved.
         </p>
 
-        <h2>What has to hold</h2>
+        <h2 id="what-has-to-hold">What has to hold</h2>
 
         <p>
           Reflection unlocks for a <code>judge &times; rubric &times; facet &times; surface</code> cell when
@@ -144,7 +149,7 @@
           said nothing about another.
         </p>
 
-        <h2>What it does</h2>
+        <h2 id="what-it-does">What it does</h2>
 
         <p>
           A failing response returns to the producer with the judge's grounded critique attached, and the
@@ -158,7 +163,7 @@
           construction. An asynchronous judge observes and nothing more.
         </p>
 
-        <h2>Revocation</h2>
+        <h2 id="revocation">Revocation</h2>
 
         <p>
           The grant is revoked on any change to the identity it was computed on. A new judge model, a
@@ -167,7 +172,7 @@
           way for the same reasons.
         </p>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
         <p>
           Your own reflection loop remains yours to run; nothing here prevents it. The claim is narrower
@@ -201,6 +206,7 @@
     <span>Chapter 20 · Reflection</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

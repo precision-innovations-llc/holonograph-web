@@ -29,7 +29,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -63,6 +63,13 @@
         <p class="guide-index-onepage">
           <a href="./all">Read the whole Guide as one page →</a>
         </p>
+        <div class="guide-index-search">
+          <a class="guide-search" href="./all" data-guide-search>
+            <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <span class="gs-label">Search the Guide</span>
+            <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
+        </div>
       </section>
 
       <section class="guide-router" aria-label="Start here">
@@ -319,6 +326,7 @@
     <span>© 2026 Precision Innovations LLC</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

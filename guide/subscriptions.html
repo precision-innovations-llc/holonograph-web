@@ -33,7 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -56,6 +56,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -103,13 +108,13 @@
           The webhook is a <em>trigger</em>, not a conclusion. The usual path is: a predicate fires → a human is alerted → the human asks a coding agent to act → and the agent, before it changes anything, <strong>consults the reliability and drift reads</strong> (see <a href="./sdk-reference">Verdict reliability</a> and <a href="./drift-attribution">Drift attribution</a>) to decide whether the alert reflects real, trustworthy movement. The alert says <em>what</em> crossed a line; the reads say whether it is safe to act on.
         </div>
 
-        <h2>The shape of it</h2>
+        <h2 id="the-shape-of-it">The shape of it</h2>
 
         <p>
           You register a <strong>subscription</strong>: a predicate to watch, a window, and a webhook to call. On a schedule you own (Cloud Scheduler is the intended trigger), the lens evaluates every subscription against recent verdicts, fires the ones whose predicate matched, and <strong>dedupes</strong> a repeat of the same finding inside the window. The webhook secret proves the call came from your lens and nobody else.
         </p>
 
-        <h2>Create a subscription</h2>
+        <h2 id="create-a-subscription">Create a subscription</h2>
 
         <p>Writes are approver-gated. The webhook <code>url</code> must be <code>https</code>, and the <code>secret</code> is 16–512 characters. The body is strict — an unknown field is rejected.</p>
 
@@ -131,7 +136,7 @@ Content-Type: application/json
           Success returns <code>201</code> with a <strong>redacted</strong> view of the subscription: <code>id</code>, <code>agentId</code>, the predicate and window, <code>createdAt</code>/<code>createdBy</code>, and <code>webhook: { url }</code> — <strong>the secret is write-only and is never read back</strong>. Set it once at create; if you lose it, delete and recreate.
         </p>
 
-        <h2>Predicates — what fires an alert</h2>
+        <h2 id="predicates-what-fires-an-alert">Predicates — what fires an alert</h2>
 
         <p>A predicate is a discriminated union on <code>kind</code>. Each names a <em>meaning</em>, never an opaque number. Three ship today:</p>
 
@@ -146,7 +151,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h2>Read and delete</h2>
+        <h2 id="read-and-delete">Read and delete</h2>
 
         <p>Reads are also served under the <code>/holonograph</code> alias. Every read redacts the webhook secret.</p>
 
@@ -186,7 +191,7 @@ Content-Type: application/json
           Subscriptions are create / read / delete. To change a predicate, window, or webhook, <strong>delete and recreate</strong>. There is no edit or pause endpoint on this release.
         </div>
 
-        <h2>The webhook a consumer receives</h2>
+        <h2 id="the-webhook-a-consumer-receives">The webhook a consumer receives</h2>
 
         <p>When a subscription fires, the lens POSTs this body to your <code>url</code>:</p>
 
@@ -208,7 +213,7 @@ Content-Type: application/json
           <code>verdict</code> is a structured object, not a string — it carries the per-kind detail (the failing fixture and violating event ids, the silent column ids, or the dimension, threshold, and below-threshold event ids). <code>summary</code> is the one-line human sentence. <code>fingerprint</code> is the dedupe key.
         </p>
 
-        <h3>Verify the signature — first, always</h3>
+        <h3 id="verify-the-signature-first-always">Verify the signature — first, always</h3>
 
         <p>
           The <code>x-holonograph-signature</code> header is <code>sha256=</code> followed by the <strong>HMAC-SHA256 of the raw request body</strong>, keyed by the subscription's secret. Verify it over the <em>raw bytes you received</em> — before parsing JSON — and reject anything that does not match. This is the whole reason the secret exists.
@@ -224,7 +229,7 @@ function verifyHolonographWebhook(rawBody, signatureHeader, secret) {
   return got.length === want.length &amp;&amp; timingSafeEqual(got, want);
 }</code></pre>
 
-        <h2>Required setup: the allow-list</h2>
+        <h2 id="required-setup-the-allow-list">Required setup: the allow-list</h2>
 
         <p>
           Delivery is <strong>deny-by-default</strong>. A webhook fires only to a host on the operator's allow-list; with no allow-list, <strong>nothing fires</strong>. Point the lens at the file with <code>APERTURE_WEBHOOK_ALLOWLIST_PATH</code> — keep it alongside your judge rubrics. It is a JSON array of hostnames:
@@ -250,7 +255,7 @@ function verifyHolonographWebhook(rawBody, signatureHeader, secret) {
 
         <p>A demo or local bundle ships an allow-list with <code>localhost</code> in it so webhooks fire against a dev consumer.</p>
 
-        <h2>Firing: the evaluate cycle</h2>
+        <h2 id="firing-the-evaluate-cycle">Firing: the evaluate cycle</h2>
 
         <p>
           Nothing fires on its own. Point <strong>Cloud Scheduler</strong> (bearer-gated) at the evaluate endpoint on the cadence you want; each call is one evaluation cycle across all subscriptions.
@@ -277,9 +282,9 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
           A match whose <code>fingerprint</code> already fired within its <code>windowMs</code> is suppressed (<code>deduped</code>), so one broken deployment is one alert, not a storm. Dedupe state is stamped only on a <em>successful</em> delivery, so a blocked or failed send re-attempts next cycle. Each cycle fires at most 100 webhooks; matches past that are <code>capped</code> and re-attempted next cycle.
         </p>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
-        <h3>Endpoints</h3>
+        <h3 id="endpoints">Endpoints</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -294,7 +299,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
           </table>
         </div>
 
-        <h3>Types</h3>
+        <h3 id="types">Types</h3>
 
         <p>
           The wire types live in <code>@holonograph/types-public</code> — <code>CreateSubscriptionRequest</code>, <code>SubscriptionView</code>, <code>SubscriptionPredicate</code>, <code>SubscriptionWebhookPayload</code>, and <code>EvaluateSubscriptionsResponse</code>. There is no subscriptions helper in <code>@holonograph/client</code>; build the requests against the types and call the endpoints over HTTP.
@@ -325,6 +330,7 @@ Authorization: Bearer &lt;scheduler-token&gt;</code></pre>
     <span>Chapter 21 · Route a verdict to a human</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

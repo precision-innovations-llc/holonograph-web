@@ -31,7 +31,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -54,6 +54,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -102,7 +107,7 @@
           <a href="./compaction">Compaction &amp; husking</a> for what is kept, what leaves, and who invokes it.
         </p>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
 
         <p>
           An event is the atomic unit. It's what <em>reportOutcome</em> writes when you finish an evaluation, and it's what <em>GET /lens/events</em> pages back to you when you're reading history. One event = one call to one surface at one moment.
@@ -126,7 +131,7 @@
           <code>run_mode</code> is <em>who is calling</em> (production, test, eval, replay, local_dev). <code>provenance</code> is <em>what kind of run this is from Holonograph's point of view</em> (<code>production-state</code> versus <code>exploratory-state</code>). Read queries default to <code>production-state</code>; pass <code>provenance=all</code> when you want the full stream.
         </div>
 
-        <h2>Why it matters</h2>
+        <h2 id="why-it-matters">Why it matters</h2>
 
         <p>
           Two properties fall out of binding these four layers per event:
@@ -137,9 +142,9 @@
           <li><strong>Changes at any layer are attributable independently.</strong> Because each layer is captured on its own and versioned on its own schedule, downstream analyses (Chapter 13, Chapter 14) can talk about <em>which layer changed</em>, not just <em>that the number moved</em>.</li>
         </ul>
 
-        <h2>How to use it</h2>
+        <h2 id="how-to-use-it">How to use it</h2>
 
-        <h3>Ingest an event</h3>
+        <h3 id="ingest-an-event">Ingest an event</h3>
 
         <p>
           Most integrations never call <code>POST /lens/events</code> directly; the SDK's <code>reportOutcome()</code> writes the event for you at the end of a call. It's documented here because a small number of ingest-only integrations (backfills, custom collectors) need the raw endpoint.
@@ -199,7 +204,7 @@ Content-Type: application/json
 
         <pre><code>{ "eventId": "evt_01H..." }</code></pre>
 
-        <h3>Read history</h3>
+        <h3 id="read-history">Read history</h3>
 
         <p>
           <code>GET /lens/events</code> pages events back to you. It supports the query parameters you'd expect from a time-ordered log with cohorts.
@@ -221,7 +226,7 @@ x-holonograph-run-mode: production</code></pre>
           Follow the <code>nextCursor</code> to page forward. When there is no more history in the window, <code>nextCursor</code> is absent.
         </p>
 
-        <h2>Reading the output</h2>
+        <h2 id="reading-the-output">Reading the output</h2>
 
         <p>
           One event is a snapshot; a query is a slice through them. Two habits keep the slice honest:
@@ -237,9 +242,9 @@ x-holonograph-run-mode: production</code></pre>
           This chapter is about the four-layer snapshot: one evaluation, one row. A <em>lens snapshot</em> is a different object, a versioned record of the lens configuration in force, and it has its own endpoints under <code>/lens/snapshots</code>. See <a href="./sdk-reference#lens-snapshots">Lens versioning and snapshots</a>.
         </div>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
-        <h3>Endpoints</h3>
+        <h3 id="endpoints">Endpoints</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -251,7 +256,7 @@ x-holonograph-run-mode: production</code></pre>
           </table>
         </div>
 
-        <h3><code>GET /lens/events</code> query parameters</h3>
+        <h3 id="get-lens-events-query-parameters"><code>GET /lens/events</code> query parameters</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -269,7 +274,7 @@ x-holonograph-run-mode: production</code></pre>
           </table>
         </div>
 
-        <h3>Headers</h3>
+        <h3 id="headers">Headers</h3>
 
         <ul>
           <li><code>Authorization: Bearer &lt;token&gt;</code>: when the deployment enables bearer auth.</li>
@@ -296,6 +301,7 @@ x-holonograph-run-mode: production</code></pre>
     <span>Chapter 03 · The four-layer snapshot</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

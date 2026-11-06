@@ -33,7 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -56,6 +56,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -98,7 +103,7 @@
           The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in <a href="./sidecar">Sidecar / OTel integration</a>.
         </p>
 
-        <h2>Install</h2>
+        <h2 id="install">Install</h2>
 
         <pre><code>npm install @holonograph/client
 # or
@@ -110,7 +115,7 @@ yarn add @holonograph/client</code></pre>
           Single self-contained ES module, <strong>no runtime dependencies</strong>. Targets Node 18+ and any runtime with a global <code>fetch</code>. Fully typed; the package ships its own type declarations.
         </p>
 
-        <h2>Construct a client</h2>
+        <h2 id="construct-a-client">Construct a client</h2>
 
         <pre><code>import { HolonographClient } from "@holonograph/client";
 
@@ -128,7 +133,7 @@ const client = new HolonographClient({
   }
 });</code></pre>
 
-        <h3>Constructor options</h3>
+        <h3 id="constructor-options">Constructor options</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -144,7 +149,7 @@ const client = new HolonographClient({
           </table>
         </div>
 
-        <h3>The <code>substrate</code> object</h3>
+        <h3 id="the-substrate-object">The <code>substrate</code> object</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -179,7 +184,7 @@ const client = new HolonographClient({
 
         <p>All three buffered modes share the same bounded buffer and the same completeness accounting. What differs is the drain channel.</p>
 
-        <h3>Configuration</h3>
+        <h3 id="configuration">Configuration</h3>
 
         <pre><code>const client = new HolonographClient({
   endpoint: "http://127.0.0.1:8080",
@@ -221,7 +226,7 @@ const client = new HolonographClient({
           </table>
         </div>
 
-        <h3><code>emit.otlp</code></h3>
+        <h3 id="emit-otlp"><code>emit.otlp</code></h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -234,7 +239,7 @@ const client = new HolonographClient({
           </table>
         </div>
 
-        <h3>Reading delivery completeness</h3>
+        <h3 id="reading-delivery-completeness">Reading delivery completeness</h3>
 
         <p>
           A bounded buffer with drop-on-overflow only produces trustworthy analysis if the drops are <em>counted</em>. The client publishes an accounting window every <code>emit.windowMs</code> and exposes the current window snapshot as a read.
@@ -283,7 +288,7 @@ if (window?.biasFlag) {
           Buffered modes are <strong>at-most-once</strong>. There is no reordering, no retry, no hidden growth. Drop-on-overflow is the only bound; the drops are counted and surfaced as <code>biasFlag</code>. Fire-and-forget stays fire-and-forget.
         </div>
 
-        <h2>The call flow</h2>
+        <h2 id="the-call-flow">The call flow</h2>
 
         <p>One evaluation is three calls: <code>messages.create</code>, then use <code>.result</code>, then <code>.reportOutcome(...)</code>.</p>
 
@@ -310,7 +315,7 @@ const eventId = await handle.reportOutcome({
           <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop; it persists the evaluation event that binds this call into your history and returns that event's id. Discard the id for a synchronous judge; keep it when a verdict arrives later and has to name its subject.
         </p>
 
-        <h3><code>messages.create(req)</code></h3>
+        <h3 id="messages-create-req"><code>messages.create(req)</code></h3>
 
         <p>
           Every field on the request is optional except <code>surfaceId</code> and <code>messages</code>. The rest are passed through to the model when relevant, or interpreted by the lens.
@@ -337,7 +342,7 @@ const eventId = await handle.reportOutcome({
           </table>
         </div>
 
-        <h3>The call handle</h3>
+        <h3 id="the-call-handle">The call handle</h3>
 
         <p>The object returned by <code>messages.create()</code>.</p>
 
@@ -353,7 +358,7 @@ const eventId = await handle.reportOutcome({
           </table>
         </div>
 
-        <h3><code>reportOutcome(outcome)</code></h3>
+        <h3 id="reportoutcome-outcome"><code>reportOutcome(outcome)</code></h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -440,7 +445,7 @@ const eventId = await handle.reportOutcome({
           A dimension with no <code>claim</code> is simply not claim-instrumented — the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is <em>meant</em> to emit a claim but its output is malformed, report <code>{ status: "malformed", reflectionAttempted: &lt;boolean&gt; }</code> — the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The <code>JudgeClaimReport</code>, <code>JudgeAssertion</code>, and <code>JudgeAssertionKind</code> types are exported so you can build and validate the claim before you send it.
         </p>
 
-        <h3>Reading it back — the pre-action check</h3>
+        <h3 id="reading-it-back-the-pre-action-check">Reading it back — the pre-action check</h3>
 
         <p>
           This is the read to run <em>before</em> you act on a verdict — before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use <code>client.callDirectly</code> or a plain <code>fetch</code> against your lens <code>endpoint</code>.
@@ -461,7 +466,7 @@ const eventId = await handle.reportOutcome({
           </table>
         </div>
 
-        <h3>Has the scale stopped discriminating? The saturation read</h3>
+        <h3 id="has-the-scale-stopped-discriminating-the-saturation-read">Has the scale stopped discriminating? The saturation read</h3>
 
         <p>
           One entry in that corpus is worth an agent's attention before it trusts a numeric score: <code>saturating-anchor-regime</code>. It reports a <strong>candidate</strong> when a reading has come to rest at an anchor, so distinct inputs stop being told apart. It is a candidate, not a settled verdict: the read names the measurement that would confirm or discharge it. An agent reading a graded score should check this first: when the candidate is present, rank by the reliability tier, not the score magnitude.
@@ -472,7 +477,7 @@ const eventId = await handle.reportOutcome({
           The read reports the condition on the event as a candidate, not a settled verdict, and does not pass the number through as an ordinary score. Where a surface is declared as separate facets, each is attributed on its own, and where two co-transition the read names the aliasing rather than guessing between them.
         </div>
 
-        <h3>Multiplex: grade the observers</h3>
+        <h3 id="multiplex-grade-the-observers">Multiplex: grade the observers</h3>
 
         <p>
           When the surface's contract routes to more than one vendor, the primary's response comes back as <code>handle.result</code> and the observers' captured records come back as <code>handle.observerRecords[]</code>. Grade the observers <em>before</em> <code>reportOutcome</code> so all vendors' outcomes land in the same evaluation.
@@ -499,9 +504,9 @@ await handle.reportOutcome({
 
         <p>See <a href="./multiplexer">The multiplexer</a> for how routings are declared.</p>
 
-        <h2>Contract</h2>
+        <h2 id="contract">Contract</h2>
 
-        <h3><code>contract.register(contract)</code></h3>
+        <h3 id="contract-register-contract"><code>contract.register(contract)</code></h3>
 
         <p>
           Registers or replaces the surface contract for this agent. Returns a <code>ContractSummary</code> reflecting the newly-active shape. See <a href="./surface-contracts">Surface contracts</a> for the full contract shape and the summary fields.
@@ -513,9 +518,9 @@ await handle.reportOutcome({
 });
 console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
-        <h2>Availability</h2>
+        <h2 id="availability">Availability</h2>
 
-        <h3><code>availability.mark(req, opts?)</code></h3>
+        <h3 id="availability-mark-req-opts"><code>availability.mark(req, opts?)</code></h3>
 
         <p>
           Records that a surface is (or is not) available for evaluation over a given interval. Two modes:
@@ -537,7 +542,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
         <pre><code>{ "eventIds": ["evt_..."], "pairing": null }</code></pre>
 
-        <h2>Headers &amp; run mode resolution</h2>
+        <h2 id="headers-run-mode-resolution">Headers &amp; run mode resolution</h2>
 
         <p>
           The client sends two headers on every request:
@@ -552,7 +557,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
           For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see <a href="./run-modes">Run modes</a>.
         </p>
 
-        <h2>Escape hatch: <code>callDirectly</code></h2>
+        <h2 id="escape-hatch-calldirectly">Escape hatch: <code>callDirectly</code></h2>
 
         <p>
           For scenarios that need the full request shape (a bespoke bridge, a replay tool, or an integration test that wants to prod an edge of the wire), the client exposes a lower-level <code>callDirectly</code> method that skips the <code>messages.create</code> ergonomics and forwards the request as-authored.
@@ -562,7 +567,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
         <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is an escape hatch, not the everyday path.</p>
 
-        <h2>Reads the client does not wrap</h2>
+        <h2 id="reads-the-client-does-not-wrap">Reads the client does not wrap</h2>
 
         <p>
           Five endpoints an integration reaches for that have no client method. Call them over HTTP; each is also served under the <code>/holonograph</code> alias.
@@ -604,7 +609,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
           All three answer <code>501</code> where no lens-snapshot store is wired.
         </p>
 
-        <h2>Errors</h2>
+        <h2 id="errors">Errors</h2>
 
         <p>Errors from the lens surface as <code>HolonographHttpError</code>, which carries the HTTP status, an error code, and any details the lens returned. There are additional typed error classes for the grading and availability flows so a catch block can discriminate on class.</p>
 
@@ -634,7 +639,7 @@ try {
           <code>4xx</code> covers validation, auth, and not-found. <code>5xx</code> is internal. <code>501</code> means the feature isn't wired on the given deployment.
         </p>
 
-        <h3>Typed error classes</h3>
+        <h3 id="typed-error-classes">Typed error classes</h3>
 
         <p>Four classes beyond <code>HolonographHttpError</code>, so a catch block can discriminate without reading a message string. The first three are ordering and shape errors in the multiplex grading flow; they are raised client-side and never reach the wire.</p>
 
@@ -650,7 +655,7 @@ try {
           </table>
         </div>
 
-        <h3>Error codes</h3>
+        <h3 id="error-codes">Error codes</h3>
 
         <p>Every <code>code</code> the lens emits, with its default status. A handler may override the status per call, so read the code rather than the number.</p>
 
@@ -726,7 +731,7 @@ try {
           Fourteen of the thirty-six share <code>409</code> and two share <code>501</code>, so the status alone does not identify the condition. <code>gate_blocked</code> is the sharpest case: it carries a <code>200</code>, because a blocked delivery is a completed call with a canned response, not a transport failure.
         </div>
 
-        <h2>Advanced: <code>HttpTransport</code></h2>
+        <h2 id="advanced-httptransport">Advanced: <code>HttpTransport</code></h2>
 
         <p>
           The client is built on an <code>HttpTransport</code> primitive that's exported for advanced use: swapping in a custom fetch, adding request interceptors, or running the transport under a different runtime harness. Most integrations never touch it. If yours does, the transport surface is fully typed; the tests in the package are the working reference.
@@ -752,6 +757,7 @@ try {
     <span>Chapter 05 · SDK reference</span>
     <span>Patent pending · v0.26.0 · client 0.3.0</span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

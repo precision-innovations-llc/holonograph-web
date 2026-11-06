@@ -31,7 +31,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -54,6 +54,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -96,7 +101,7 @@
           Substrate columns are the named fields Holonograph captures alongside every call so a later reading can be attributed to <em>what changed about your deployment</em>. Six are mandatory and captured automatically. The rest you declare on the contract and populate yourself, in one of two ways.
         </p>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
 
         <p>
           A substrate column is a stable, named slot in the four-layer snapshot's substrate layer. Two categories:
@@ -107,7 +112,7 @@
           <li><strong>Operator-declared columns</strong>: you declare them in the surface contract and populate them either at call time (<code>deployment-state</code>) or after the outcome is known (<code>diagnostic</code>).</li>
         </ul>
 
-        <h2>Why it matters</h2>
+        <h2 id="why-it-matters">Why it matters</h2>
 
         <p>
           A column you declared is a column Holonograph will hold you accountable for. When drift attribution or variance isolation runs later, they use those columns to distinguish <em>your deployment changed</em> from <em>the vendor moved</em> from <em>your evaluation config drifted</em>. Columns you didn't declare are columns those analyses can't use.
@@ -118,9 +123,9 @@
           Declare a column for every knob in your system that could plausibly change a score: prompt, tool schemas, retrieval index revision, feature flags. It's cheaper to declare too many than to reconstruct a slice you didn't foresee.
         </div>
 
-        <h2>How to use it</h2>
+        <h2 id="how-to-use-it">How to use it</h2>
 
-        <h3>Mandatory columns</h3>
+        <h3 id="mandatory-columns">Mandatory columns</h3>
 
         <p>These six are captured on every event, no declaration required:</p>
 
@@ -138,7 +143,7 @@
           </table>
         </div>
 
-        <h3>Operator-declared columns</h3>
+        <h3 id="operator-declared-columns">Operator-declared columns</h3>
 
         <p>Each declared column has this shape on the contract:</p>
 
@@ -155,7 +160,7 @@
           The two fields that decide <em>how</em> you set the column are <code>semantic</code> and <code>values</code>. The rest describe who controls the value, how visible its changes are, and (optionally) a fixed enum you must stay within.
         </p>
 
-        <h3><code>deployment-state</code>: set at call time</h3>
+        <h3 id="deployment-state-set-at-call-time"><code>deployment-state</code>: set at call time</h3>
 
         <p>
           These describe the state of your deployment at the moment of the call. Populate them via the <code>operatorColumns</code> map on the <code>SubstrateSnapshot</code> at client construction. The values then attach to every call the client makes until the client is reconstructed with new values.
@@ -182,7 +187,7 @@
           Set <code>prompt_hash</code> to a stable hash of your input. When your prompt changes, the hash changes; when it doesn't, the hash doesn't. Downstream analyses read the column expecting exactly that discipline.
         </p>
 
-        <h3><code>diagnostic</code>: set post-hoc via cohort tag</h3>
+        <h3 id="diagnostic-set-post-hoc-via-cohort-tag"><code>diagnostic</code>: set post-hoc via cohort tag</h3>
 
         <p>
           Diagnostic columns are set after the outcome is known, because the value is a category the evaluation itself decided. You set them by passing a cohort tag formatted as <code>&lt;column.id&gt;=&lt;value&gt;</code> to <code>reportOutcome()</code>.
@@ -206,7 +211,7 @@
           If the column declares a <code>values[]</code> enum, the value you pass must be one of them. Anything else is rejected at ingest, not silently accepted.
         </p>
 
-        <h3>Apparatus-owned columns</h3>
+        <h3 id="apparatus-owned-columns">Apparatus-owned columns</h3>
 
         <p>
           A third category, peer to mandatory and operator-declared: a small reserved namespace the apparatus writes and you cannot declare. Some facts are things Holonograph <em>observes</em>, not things you <em>assert</em> — which model a vendor actually served behind your requested alias, or the judge's own identity. Their column ids are reserved: a contract that tries to declare one is rejected, and the apparatus stamps the observed value itself on every event.
@@ -216,13 +221,13 @@
           This is deliberate, and it is the difference between discouraging an error and preventing one. An observed fact you were free to overwrite is a fact you could get wrong — silently, and in exactly the direction that flatters your own system. A column you cannot declare is a fact you cannot fake. The illegal state — an operator asserting an apparatus-observed value — is not merely warned against; it has no representation in a valid contract.
         </p>
 
-        <h2>Reading the output</h2>
+        <h2 id="reading-the-output">Reading the output</h2>
 
         <p>
           Substrate columns come back on every event via <code>GET /lens/events</code>. Filter queries on them the same way you filter on cohort tags: a slice is a set of column-value pairs, and the values you didn't declare aren't queryable. That's the whole point of declaring them ahead of time.
         </p>
 
-        <h2>Is the column actually emitting?</h2>
+        <h2 id="is-the-column-actually-emitting">Is the column actually emitting?</h2>
 
         <p>
           Declaring a column does not populate it, and a column that never populates reads as a clean one. <code>GET /lens/emission</code> is the audit: per declared column on a surface, the in-window emission rate, per-day tallies, and a verdict. An <code>always</code> column at 0% reads <code>missing</code>, which means broken; a <code>conditional</code> one reads <code>absent</code>, which may be legitimately sparse.
@@ -246,7 +251,7 @@
           The audit's set-difference runs both ways. <code>undeclaredObserved</code> catches the reverse case: a key arriving on events that no contract declares.
         </p>
 
-        <h2>Promote what you are already emitting</h2>
+        <h2 id="promote-what-you-are-already-emitting">Promote what you are already emitting</h2>
 
         <p>
           The usual loop is declare, deploy, audit, fix. <code>GET /lens/contract-promotion</code> inverts it. For every emitted-but-undeclared key the emission audit already found, it proposes a mergeable <code>SubstrateColumn</code> skeleton, with <code>semantic</code> inferred from the observed emission rate.
@@ -256,9 +261,9 @@
           The operator-judgment fields, <code>control</code> and <code>visibility</code>, carry a conservative default and are listed in <code>operatorMustConfirm</code>. Nothing is merged: the read proposes a stub and the operator reviews it and posts the contract. Reversing the loop this way means a column you have been emitting for a month becomes queryable without first guessing what to declare.
         </p>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
-        <h3>Endpoints</h3>
+        <h3 id="endpoints">Endpoints</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -270,7 +275,7 @@
           </table>
         </div>
 
-        <h3>Common diagnostic columns</h3>
+        <h3 id="common-diagnostic-columns">Common diagnostic columns</h3>
 
         <p>The set below appears often enough in real deployments to document as convention. Declare them if they apply; declare your own if you have a better name.</p>
 
@@ -286,7 +291,7 @@
           </table>
         </div>
 
-        <h3>Column shape</h3>
+        <h3 id="column-shape">Column shape</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -322,6 +327,7 @@
     <span>Chapter 04 · Substrate columns</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

@@ -31,7 +31,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -54,6 +54,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -96,7 +101,7 @@
           The monitor has a build-time half and a run-time half over one record. Source analysis produces evidence, a gate adjudicates it, a confirmed seam is registered as a surface, and soak measures whether the closure holds against real inputs.
         </p>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
 
         <p>
           Five stages, each with one job and one output. The separation matters: the scanner is an evidence
@@ -122,7 +127,7 @@
           the default path has a particular shape. It never emits a verdict.
         </p>
 
-        <h3>The three dispositions</h3>
+        <h3 id="the-three-dispositions">The three dispositions</h3>
 
         <p>
           The gate answers one question before the authority machine asks any of its own: is this a closure
@@ -146,9 +151,9 @@
           for a human.
         </p>
 
-        <h2>Why it matters</h2>
+        <h2 id="why-it-matters">Why it matters</h2>
 
-        <h3>The scanner is its own dark surface</h3>
+        <h3 id="the-scanner-is-its-own-dark-surface">The scanner is its own dark surface</h3>
 
         <p>
           Finding seams is itself a closure over an open domain, namely arbitrary code, so it reports its
@@ -168,7 +173,7 @@
           the hook that reports into a build session says so too rather than issuing a false all-clear.
         </p>
 
-        <h3>Propose only</h3>
+        <h3 id="propose-only">Propose only</h3>
 
         <p>
           The monitor flags and drafts. It does not edit code and it does not block on the lens's own
@@ -182,7 +187,7 @@
           instrument. Under rising uncertainty the detector must abstain more, not assert more.
         </p>
 
-        <h2>How to use it</h2>
+        <h2 id="how-to-use-it">How to use it</h2>
 
         <ul>
           <li>Scan a repository and push its seams to the lens, or run the hook so a seam is reported into the session that wrote it.</li>
@@ -191,7 +196,7 @@
           <li>Each reported seam names the authority sink it reaches, so the choice is to declare it or restructure around it.</li>
         </ul>
 
-        <h2>Soak: the run-time half</h2>
+        <h2 id="soak-the-run-time-half">Soak: the run-time half</h2>
 
         <p>
           A soak is the empirical life of a registered seam: how often its no-match or abstention path
@@ -222,7 +227,7 @@
           rides in the payload and husks away like a judge rationale.
         </p>
 
-        <h2>Reading the output</h2>
+        <h2 id="reading-the-output">Reading the output</h2>
 
         <p>
           Soaks file under one reserved surface, adjacent to the surface registered seams file under, with
@@ -231,9 +236,9 @@
           instrument produces.
         </p>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
-        <h3>Endpoints</h3>
+        <h3 id="endpoints">Endpoints</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -272,6 +277,7 @@
     <span>Chapter 17 · The seam monitor</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

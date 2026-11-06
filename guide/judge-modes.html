@@ -31,7 +31,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -54,6 +54,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -96,7 +101,7 @@
           Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
         </p>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
 
         <p>
           Two axes. <strong>Timing</strong> is <code>async</code> (the judge runs off the producer's hot
@@ -123,9 +128,9 @@
           and nothing more.</strong>
         </p>
 
-        <h2>Why it matters</h2>
+        <h2 id="why-it-matters">Why it matters</h2>
 
-        <h3>The judge never disposes</h3>
+        <h3 id="the-judge-never-disposes">The judge never disposes</h3>
 
         <p>
           Across all four modes the judge's authority stops at reflection. It can observe, and at most it
@@ -134,7 +139,7 @@
           holds in every mode.
         </p>
 
-        <h3>Inline and observing is the expensive cell</h3>
+        <h3 id="inline-and-observing-is-the-expensive-cell">Inline and observing is the expensive cell</h3>
 
         <p>
           A judge that runs in-request while its verdict touches nothing pays full latency for no in-band
@@ -143,7 +148,7 @@
           to async, or give it authority.
         </p>
 
-        <h2>How to use it</h2>
+        <h2 id="how-to-use-it">How to use it</h2>
 
         <ul>
           <li>Pick the mode per surface. A judge that only records belongs in async.</li>
@@ -151,7 +156,7 @@
           <li>A gate is deterministic code reading a verdict. Write the gate; do not ask the model to be one.</li>
         </ul>
 
-        <h2>Reading the output</h2>
+        <h2 id="reading-the-output">Reading the output</h2>
 
         <p>
           An asynchronous verdict lands after the producer has answered, as a linked judge event. A reader
@@ -160,7 +165,7 @@
           judge result from the producer-filtered one.
         </p>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
         <p>
           The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
@@ -188,6 +193,7 @@
     <span>Chapter 15 · Judge modes</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

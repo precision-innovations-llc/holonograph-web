@@ -1,0 +1,183 @@
+{
+  "$comment": "The chapter manifest. Single source of truth for chapter order, numbering, titles, groups and status. scripts/build-guide-search.mjs and scripts/build-guide-all.mjs read it; the per-page sidebar TOCs are checked against it. Adding a chapter: add an entry here, add guide/<slug>.html, rerun both scripts.",
+  "chapters": [
+    {
+      "num": "01",
+      "slug": "overview",
+      "title": "Overview & first principles",
+      "group": "Overview",
+      "status": "live",
+      "blurb": "What Holonograph is, what it observes, and why position beats instrumentation."
+    },
+    {
+      "num": "02",
+      "slug": "surface-contracts",
+      "title": "Surface contracts",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "What a surface declares it will do, checked against what it did."
+    },
+    {
+      "num": "03",
+      "slug": "snapshot",
+      "title": "The four-layer snapshot",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "The record that binds four layers of one call into a row you can query as history."
+    },
+    {
+      "num": "04",
+      "slug": "substrate-columns",
+      "title": "Substrate columns",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "The structured record every reading is computed from."
+    },
+    {
+      "num": "05",
+      "slug": "sdk-reference",
+      "title": "SDK reference",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "The client contract, and the reliability loop over your own judge.",
+      "noReferenceSection": true,
+      "note": "the whole chapter is reference; it has no Reference section of its own"
+    },
+    {
+      "num": "06",
+      "slug": "mediating-lens",
+      "title": "The mediating lens",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Where the lens sits, and why it captures every model call in both directions."
+    },
+    {
+      "num": "07",
+      "slug": "run-modes",
+      "title": "Run modes",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Separating evaluation from production with an enforced, fail-closed envelope."
+    },
+    {
+      "num": "08",
+      "slug": "sidecar",
+      "title": "Sidecar / OTel integration",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Emitting to the lens without changing your request path."
+    },
+    {
+      "num": "09",
+      "slug": "topology-scanner",
+      "title": "Surface topology scanner",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Declared surfaces, observed coverage, and the size of the blind spot."
+    },
+    {
+      "num": "10",
+      "slug": "multiplexer",
+      "title": "The multiplexer",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Comparing vendors on identical terms, routed or run on demand."
+    },
+    {
+      "num": "11",
+      "slug": "drift-attribution",
+      "title": "Drift attribution",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Assigning a change to one source, and recording both sides of the model identity."
+    },
+    {
+      "num": "12",
+      "slug": "variance-isolation",
+      "title": "Variance isolation",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Telling real change apart from sampling and chance."
+    },
+    {
+      "num": "13",
+      "slug": "lessons-pipeline",
+      "title": "The lessons pipeline",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Captured overrides and approvals becoming drafted, human-gated artifacts."
+    },
+    {
+      "num": "14",
+      "slug": "conformance",
+      "title": "Conformance & fixtures",
+      "group": "Variance controls for model seams",
+      "status": "live",
+      "blurb": "Whether a judge actually ran against its fixtures, or silently defaulted."
+    },
+    {
+      "num": "15",
+      "slug": "judge-modes",
+      "title": "Judge modes",
+      "group": "Variance controls for model seams",
+      "status": "design",
+      "blurb": "Four modes on two axes: does the producer wait, and may the verdict touch delivery."
+    },
+    {
+      "num": "16",
+      "slug": "seams",
+      "title": "Seams",
+      "group": "Seams, soak, and authority",
+      "status": "live",
+      "blurb": "An interpreted value driving a decision. Permanent, closeable, not removable."
+    },
+    {
+      "num": "17",
+      "slug": "seam-monitor",
+      "title": "The seam monitor",
+      "group": "Seams, soak, and authority",
+      "status": "live",
+      "blurb": "Finding seams in source, adjudicating them, registering them, and soaking them."
+    },
+    {
+      "num": "18",
+      "slug": "attention-spine",
+      "title": "The attention spine",
+      "group": "Seams, soak, and authority",
+      "status": "live",
+      "blurb": "One operator lifecycle over twenty-five sources of findings."
+    },
+    {
+      "num": "19",
+      "slug": "authority",
+      "title": "Authority",
+      "group": "Seams, soak, and authority",
+      "status": "live",
+      "blurb": "The per-surface state that the declared prerequisites are satisfied on the record."
+    },
+    {
+      "num": "20",
+      "slug": "reflection",
+      "title": "Reflection",
+      "group": "Seams, soak, and authority",
+      "status": "design",
+      "blurb": "A capped retry against a certified judge, granted per cell."
+    },
+    {
+      "num": "21",
+      "slug": "subscriptions",
+      "title": "Route a verdict to a human",
+      "group": "Operational utilities",
+      "status": "live",
+      "blurb": "Fire a signed webhook when a predicate over the lens’s own verdicts crosses a line."
+    },
+    {
+      "num": "22",
+      "slug": "compaction",
+      "title": "Compaction & husking",
+      "group": "Operational utilities",
+      "status": "live",
+      "blurb": "Removing bulky payload from an aging event while structured fields stay."
+    }
+  ]
+}
