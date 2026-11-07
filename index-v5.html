@@ -2521,7 +2521,7 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
     {src:'agent', to:'Your agent', metric:'tool_discipline', d:-3.8, pt:['agent'], note:{agent:'prompt v14 → v15'},
       ax:{agent:[3.1,'chance'], model:[0.2,'noise'], eval:[0.1,'noise'], noise:[0.4,'floor']},
       what:'The drop starts at prompt v15, which cut the tool-use rule.',
-      fix:'prompt v15 → v16', then:'Restores the tool-use rule.'},
+      fix:'Revert to prompt v14', then:'Restores the tool-use rule.'},
     {src:'model', to:'The model', metric:'analysis_quality_judged', d:-5.2, pt:['model'], note:{model:'model 4.1 → 4.2'},
       ax:{agent:[0.3,'noise'], model:[4.4,'chance'], eval:[0.2,'noise'], noise:[0.3,'floor']},
       what:'The vendor moved your alias from model 4.1 to 4.2. Your repo did not change.',
