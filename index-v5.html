@@ -845,7 +845,7 @@
   .lc-rail{position:absolute;top:21px;left:12.5%;right:12.5%;height:2px;background:#2e2c3b;border-radius:2px}
   .lc-fill{position:absolute;left:0;top:0;bottom:0;width:calc(var(--p,0) * 100%);border-radius:2px;
     background:linear-gradient(90deg,#5f3ddc,#8f7cf0);transition:width .9s var(--anim-ease)}
-  .lc[data-state="granted"] .lc-fill,.lc[data-state="inside"] .lc-fill,.lc[data-state="regranted"] .lc-fill{background:linear-gradient(90deg,#5f3ddc,#46c08a)}
+  .lc[data-state="granted"] .lc-fill,.lc[data-state="regrant-u"] .lc-fill,.lc[data-state="regranted"] .lc-fill{background:linear-gradient(90deg,#5f3ddc,#46c08a)}
   .lc-node{position:relative;z-index:1;min-width:0}
   .lc-node button{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px;border-radius:12px}
   .lc-node button:focus-visible{outline:2px solid #8f7cf0;outline-offset:4px}
@@ -935,6 +935,8 @@
   .lc-out:not(:disabled){border-color:rgba(233,85,43,.6);background:rgba(233,85,43,.1)}
   .lc-out:not(:disabled):hover{border-color:#ff8a65}
   .lc-replay{margin-left:auto;color:#a9a6b8}
+  .lc-ctl{align-items:center}
+  .lc-ctl-k{margin-right:2px}
   .lc-cap{margin-top:16px;font-size:13px;color:#8d8a9c;line-height:1.5;max-width:90ch}
 
   .ct{margin-top:clamp(22px,3.5vh,32px);border:1px solid var(--line);border-radius:18px;background:#fff;padding:clamp(18px,3vw,30px);box-shadow:0 30px 70px -50px rgba(23,22,29,.35)}
@@ -1044,56 +1046,51 @@
     .mx-c.c-smooth{box-shadow:inset 0 -3px 0 #46c08a}
   }
 
-  /* ── v12: spine investigation ── */
-  .si-setup{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .si-setup li{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:#cfccdb;border:1px solid #2a2836;background:#17161d;border-radius:999px;padding:5px 12px 5px 10px;transition:border-color .4s ease,color .4s ease,background .4s ease}
-  .si-setup li::before{content:"";width:7px;height:7px;border-radius:50%;background:#46c08a;box-shadow:0 0 8px rgba(70,192,138,.6);transition:background .4s ease,box-shadow .4s ease}
-  .si-setup li.gap{border-color:rgba(224,150,74,.6);color:#f0b878;background:rgba(224,150,74,.08)}
-  .si-setup li.gap::before{background:#e0964a;box-shadow:0 0 8px rgba(224,150,74,.8)}
-  .si-setup .si-pre{border:0;background:none;padding:0 4px 0 0;color:#8d8a9c;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
-  .si-setup .si-pre::before{display:none}
+  /* ── v14: spine investigation ── */
   .si-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}
-  .si-tab{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:12px;border:1px solid #2a2836;background:#17161d;transition:border-color .25s ease,background .25s ease,box-shadow .25s ease}
-  .si-tab span{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8d8a9c}
+  .si-tab{all:unset;box-sizing:border-box;position:relative;overflow:hidden;cursor:pointer;text-align:center;padding:12px 14px;border-radius:10px;border:1px solid #3a3848;background:#1f1d29;transition:border-color .25s ease,background .25s ease,transform .25s ease}
   .si-tab b{font-size:14.5px;color:#f1effa;font-weight:600}
-  .si-tab:hover{border-color:#8f7cf0}
+  .si-tab:hover{border-color:#8f7cf0;transform:translateY(-1px)}
   .si-tab:focus-visible{outline:2px solid #8f7cf0;outline-offset:3px}
-  .si-tab[aria-selected="true"]{border-color:#8f7cf0;background:#211b3d;box-shadow:inset 0 -2px 0 #8f7cf0}
-  .si-tab[aria-selected="true"] span{color:#c9bdfb}
-  .si .lc-track{margin-top:28px}
-  .si-fill2{position:absolute;top:0;bottom:0;left:33.333%;width:calc(var(--p2,0) * 100%);
-    background:repeating-linear-gradient(90deg,#e9552b 0 6px,transparent 6px 11px);transition:width .9s var(--anim-ease)}
-  .si .lc-rail{background:linear-gradient(90deg,#2e2c3b 33.333%,transparent 33.333%),repeating-linear-gradient(90deg,#2e2c3b 0 6px,transparent 6px 11px)}
+  .si-tab[aria-selected="true"]{border-color:#8f7cf0;background:#5f3ddc}
+  .si-tab[aria-selected="true"] b{color:#fff}
+  .si-tab i{position:absolute;left:0;right:0;bottom:0;height:3px;background:#c9bdfb;transform:scaleX(var(--t,0));transform-origin:left}
 
-  .si-body{display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);gap:14px;margin-top:28px}
-  .si-card{border:1px solid #2a2836;border-radius:14px;background:#17161d;padding:16px 18px;transition:opacity .45s ease,border-color .45s ease}
-  .si-card > .lc-k{display:block;margin-bottom:10px}
-  .si-grp{font-size:13px;color:#a9a6b8;line-height:1.4}
-  .si-metric{margin-top:8px;font-family:var(--mono);font-size:14px;color:#fff;overflow-wrap:anywhere}
-  .si-delta{margin-top:2px;font-size:clamp(32px,3.4vw,42px);font-weight:600;letter-spacing:-.02em;color:#ff8a65;font-variant-numeric:tabular-nums;transition:color .4s ease}
+  .si-flow{display:grid;grid-template-columns:minmax(210px,240px) minmax(0,1fr) minmax(240px,290px);gap:26px;margin-top:20px}
+  .si-card{position:relative;border:1px solid #2a2836;border-radius:14px;background:#17161d;padding:16px 18px;transition:opacity .7s ease,border-color .7s ease}
+  .si-card > .lc-k{display:block}
+  .si-card + .si-card::before{content:"";position:absolute;left:-20px;top:50%;width:10px;height:10px;border-top:2px solid #3a3848;border-right:2px solid #3a3848;transform:translateY(-50%) rotate(45deg);transition:border-color .7s ease}
+  .si.s-attr .si-attr::before,.si.s-pt .si-read::before{border-color:#8f7cf0}
+
+  .si-metric{margin-top:14px;font-family:var(--mono);font-size:14px;color:#fff;overflow-wrap:anywhere}
+  .si-delta{margin-top:4px;font-size:clamp(34px,3.4vw,42px);font-weight:600;letter-spacing:-.02em;color:#ff8a65;font-variant-numeric:tabular-nums}
   .si-delta small{font-size:14px;font-weight:500;color:#8d8a9c;margin-left:6px;letter-spacing:0}
   .si[data-dir="up"] .si-delta{color:#a998f0}
-  .si-spark{display:block;width:100%;height:60px;margin-top:8px;overflow:visible}
+  .si-spark{display:block;width:100%;height:60px;margin-top:12px;overflow:visible}
   .si-spark path{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
   .si-spark .base{stroke:#2a2836;stroke-width:1}
   .si-spark .ln{stroke:#ff8a65;stroke-dasharray:var(--len,600);stroke-dashoffset:var(--len,600)}
   .si[data-dir="up"] .si-spark .ln{stroke:#a998f0}
-  .si-spark.draw .ln{stroke-dashoffset:0;transition:stroke-dashoffset 1.2s var(--anim-ease)}
+  .si-spark.draw .ln{stroke-dashoffset:0;transition:stroke-dashoffset 1.6s var(--anim-ease)}
 
-  .si-attr{opacity:.4}
+  .si-attr{opacity:.5}
   .si.s-attr .si-attr{opacity:1}
-  .si-rows{display:grid;gap:4px}
-  .si-row{display:grid;grid-template-columns:190px minmax(0,1fr) 44px 128px;gap:12px;align-items:center;padding:8px 10px;border-radius:10px;border:1px solid transparent;transition:background .45s ease,border-color .45s ease,opacity .45s ease}
+  .si-rows{display:grid;gap:4px;margin-top:10px}
+  .si-row{display:grid;grid-template-columns:132px minmax(0,1fr) 30px;grid-template-areas:"l b v" "l t t";gap:3px 12px;align-items:center;padding:7px 10px;border-radius:10px;border:1px solid transparent;transition:background .7s ease,border-color .7s ease,opacity .7s ease}
+  .si-l{grid-area:l}
+  .si-v{grid-area:v}
   .si-l b{display:block;font-size:14px;color:#f1effa;font-weight:600}
-  .si-l small{display:block;font-family:var(--mono);font-size:12px;color:#8d8a9c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .si-bar{height:10px;border-radius:5px;background:#22202b;overflow:hidden}
-  .si-bar i{display:block;height:100%;width:0;border-radius:5px;background:#4a4858;transition:width .9s var(--anim-ease)}
+  .si-l small{display:block;min-height:17px;font-family:var(--mono);font-size:12px;color:#a9a6b8;white-space:nowrap;opacity:0;transition:opacity .7s ease}
+  .si.s-pt .si-row.pt small{opacity:1}
+  .si-bar{grid-area:b;height:10px;border-radius:5px;background:#22202b;overflow:hidden}
+  .si-bar i{display:block;height:100%;width:0;border-radius:5px;background:#4a4858;transition:width 1.4s var(--anim-ease)}
   .si.s-attr .si-bar i{width:calc(var(--w,0) * 100%)}
-  .si-v{font-family:var(--mono);font-size:13px;color:#cfccdb;text-align:right;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .4s ease .3s}
-  .si-t{font-family:var(--mono);font-size:12px;letter-spacing:.03em;color:#8d8a9c;border:1px solid #2e2c3b;border-radius:6px;padding:2px 7px;justify-self:start;white-space:nowrap;opacity:0;transition:opacity .4s ease .45s}
-  .si.s-attr .si-v,.si.s-attr .si-t{opacity:1}
+  .si-v{font-family:var(--mono);font-size:13px;color:#cfccdb;text-align:right;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .7s ease .5s}
+  .si.s-attr .si-v{opacity:1}
+  .si-t{grid-area:t;font-family:var(--mono);font-size:12px;letter-spacing:.03em;border-radius:6px;padding:1px 7px;justify-self:start;white-space:nowrap;visibility:hidden;opacity:0;transition:opacity .7s ease}
+  .si-row.pt .si-t{visibility:visible;color:#c9bdfb;border:1px solid rgba(143,124,240,.5)}
+  .si.s-pt .si-row.pt .si-t{opacity:1}
   .si-row.k-chance .si-bar i{background:linear-gradient(90deg,#5f3ddc,#a998f0)}
-  .si-row.k-chance .si-t{color:#c9bdfb;border-color:rgba(143,124,240,.5)}
   .si-row.k-floor .si-bar i{background:repeating-linear-gradient(135deg,#5a5868 0 3px,#2a2836 3px 6px)}
   .si-row.k-conf .si-bar i{background:repeating-linear-gradient(135deg,rgba(233,85,43,.9) 0 3px,rgba(233,85,43,.22) 3px 6px)}
   .si-row.k-conf .si-t{color:#ff9a7a;border-color:rgba(233,85,43,.5)}
@@ -1101,40 +1098,35 @@
   .si.s-pt .si-row.pt{background:rgba(95,61,220,.13);border-color:rgba(143,124,240,.55)}
   .si.s-pt .si-row.pt.k-conf{background:rgba(233,85,43,.08);border-color:rgba(233,85,43,.45)}
 
-  .si-read{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;margin-top:14px;padding:18px;border-radius:14px;border:1px solid #2a2836;background:#17161d;opacity:.3;transition:opacity .45s ease,border-color .45s ease}
+  .si-read{opacity:.3}
   .si.s-pt .si-read{opacity:1;border-color:#3a3848}
-  .si-to{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
-  .si-src{font-family:var(--mono);font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:6px 12px;border-radius:8px;color:#fff;background:#5f3ddc;transition:background .4s ease}
+  .si-src{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:14px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:5px 11px;border-radius:8px;color:#fff;background:#5f3ddc}
   .si[data-src="vis"] .si-src{background:#a8611f}
-  .si-msg{transition:opacity .25s ease}
-  .si-msg.swap{opacity:0}
-  .si-why{margin-top:10px;font-family:var(--mono);font-size:12.5px;color:#c9bdfb;border:1px solid rgba(143,124,240,.45);background:rgba(95,61,220,.1);border-radius:7px;padding:5px 10px;display:inline-block}
-  .si[data-src="vis"] .si-why{color:#f0b878;border-color:rgba(224,150,74,.5);background:rgba(224,150,74,.08)}
-  .si-fix{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
-  .si-fix .lc-k{margin-right:4px}
-  .si-fix b{font-weight:500;font-size:13.5px;color:#fff;border:1px solid rgba(70,192,138,.5);background:rgba(31,125,89,.2);border-radius:999px;padding:5px 12px;opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease}
-  .si-fix b:nth-of-type(2){transition-delay:.12s}
-  .si-fix b:nth-of-type(3){transition-delay:.24s}
+  .si-what{margin-top:12px;font-size:15px;color:#f1effa;line-height:1.45}
+  .si-fix-k{margin-top:16px}
+  .si-fix{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .si-fix b{font-weight:500;font-size:13px;color:#fff;border:1px solid rgba(70,192,138,.5);background:rgba(31,125,89,.2);border-radius:999px;padding:4px 11px;opacity:0;transform:translateY(6px);transition:opacity .6s ease,transform .6s ease}
+  .si-fix b:nth-child(2){transition-delay:.18s}
+  .si-fix b:nth-child(3){transition-delay:.36s}
   .si.s-fix .si-fix b{opacity:1;transform:none}
-  .si-replay{margin-left:auto}
+  .si .lc-cap{margin-top:14px}
   .sp-cta{margin-top:clamp(48px,8vh,84px)}
   @media (max-width:720px){.hero .eyebrow{align-items:flex-start}.hero .eyebrow .dot{margin-top:6px;flex:none}}
   .sf-seams{margin-top:22px;font-size:15px;color:var(--ink-2)}
 
-  @media (max-width:900px){
-    .si-body{grid-template-columns:1fr}
-    .si-row{grid-template-columns:150px minmax(0,1fr) 40px auto}
+  @media (max-width:1040px){
+    .si-flow{grid-template-columns:1fr;gap:24px}
+    .si-card + .si-card::before{left:50%;top:-17px;transform:translateX(-50%) rotate(135deg)}
   }
   @media (max-width:720px){
     .si-tabs{grid-template-columns:1fr 1fr}
-    .si-row{grid-template-columns:minmax(0,1fr) 36px auto;gap:6px 10px}
-    .si-l{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px}
-    .si-l small{white-space:normal}
-    .si-read{grid-template-columns:1fr;gap:12px}
-    .si-replay{margin-left:0}
+    .si-row{grid-template-columns:minmax(0,1fr) 128px;grid-template-areas:"l t" "b v";gap:6px 10px}
+    .si-t{justify-self:end}
+    .si-l small:empty{display:none}
+    .si-l small{min-height:0}
   }
   @media (prefers-reduced-motion:reduce){
-    .si-bar i,.si-fix b,.si-spark.draw .ln,.si-v,.si-t{transition:none}
+    .si-bar i,.si-fix b,.si-spark.draw .ln,.si-v,.si-t,.si-card,.si-row,.si-l small{transition:none}
   }
 </style>
 <link rel="stylesheet" href="mobilenav.css">
@@ -1358,63 +1350,40 @@
       <p class="lead">Attribution depends on setup. Surfaces are declared, set up orthogonally, variance controlled, and cohort tagged with relevant substrate columns. Each alarm then arrives with its attributed source: what moved with it, and by how much.</p>
       <figure class="lc si" id="si">
         <div class="lc-top">
-          <span class="lc-surf"><b>support-agent</b><span>Four alarms on one declared surface</span></span>
+          <span class="lc-surf"><b>support-agent</b><span>Four example alarms. Select one.</span></span>
           <span class="il-tag">Illustrative</span>
         </div>
-        <ul class="si-setup" aria-label="Setup">
-          <li class="si-pre">Setup</li>
-          <li data-c="decl">Declared</li>
-          <li data-c="orth">Orthogonal</li>
-          <li data-c="var">Variance controlled</li>
-          <li data-c="tag">Cohort tagged &middot; substrate columns</li>
-        </ul>
         <div class="si-tabs" role="tablist" aria-label="Example alarms">
-          <button type="button" class="si-tab" role="tab" data-i="0"><span>Alarm 01</span><b>Agent change</b></button>
-          <button type="button" class="si-tab" role="tab" data-i="1"><span>Alarm 02</span><b>Model change</b></button>
-          <button type="button" class="si-tab" role="tab" data-i="2"><span>Alarm 03</span><b>Eval change</b></button>
-          <button type="button" class="si-tab" role="tab" data-i="3"><span>Alarm 04</span><b>Visibility gap</b></button>
+          <button type="button" class="si-tab" role="tab" data-i="0"><b>Agent change</b><i aria-hidden="true"></i></button>
+          <button type="button" class="si-tab" role="tab" data-i="1"><b>Model change</b><i aria-hidden="true"></i></button>
+          <button type="button" class="si-tab" role="tab" data-i="2"><b>Eval change</b><i aria-hidden="true"></i></button>
+          <button type="button" class="si-tab" role="tab" data-i="3"><b>Visibility gap</b><i aria-hidden="true"></i></button>
         </div>
-
-        <ol class="lc-track">
-          <li class="lc-rail" aria-hidden="true"><span class="lc-fill"></span><span class="si-fill2"></span></li>
-          <li class="lc-node" data-n="0"><button type="button" data-k="0"><span class="lc-dot">01</span><b>Alarm</b><small>A score moves</small></button></li>
-          <li class="lc-node" data-n="1"><button type="button" data-k="1"><span class="lc-dot">02</span><b>What moved</b><small>Attribution, in pts</small></button></li>
-          <li class="lc-node" data-n="2"><button type="button" data-k="2"><span class="lc-dot">03</span><b>Where it points</b><small>The attributed source</small></button></li>
-          <li class="lc-node lc-g" data-n="3"><button type="button" data-k="3"><span class="lc-dot">04</span><b>Correction</b><small>Proposed, approved, observed</small></button></li>
-        </ol>
-
-        <div class="si-body">
+        <div class="si-flow" role="tabpanel">
           <div class="si-card si-alarm">
             <span class="lc-k">Alarm</span>
-            <div class="si-grp"></div>
             <div class="si-metric"></div>
             <div class="si-delta"><span></span><small>pts</small></div>
             <svg class="si-spark" viewBox="0 0 280 60" preserveAspectRatio="none" aria-hidden="true"><path class="base" d="M0 59.5H280"/><path class="ln" d=""/></svg>
           </div>
           <div class="si-card si-attr">
-            <span class="lc-k">What moved with it</span>
+            <span class="lc-k">What moved with it &middot; pts</span>
             <div class="si-rows">
-              <div class="si-row" data-ax="agent"><span class="si-l"><b>Your agent</b><small>substrate</small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
-              <div class="si-row" data-ax="model"><span class="si-l"><b>The model</b><small>light_source_served_model</small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
-              <div class="si-row" data-ax="eval"><span class="si-l"><b>Your eval</b><small>judge identity</small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
-              <div class="si-row" data-ax="noise"><span class="si-l"><b>Noise</b><small>noise floor</small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
+              <div class="si-row" data-ax="agent"><span class="si-l"><b>Your agent</b><small></small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
+              <div class="si-row" data-ax="model"><span class="si-l"><b>The model</b><small></small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
+              <div class="si-row" data-ax="eval"><span class="si-l"><b>Your eval</b><small></small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
+              <div class="si-row" data-ax="noise"><span class="si-l"><b>Noise</b><small></small></span><span class="si-bar"><i></i></span><span class="si-v"></span><span class="si-t"></span></div>
             </div>
           </div>
-        </div>
-
-        <div class="si-read">
-          <div class="si-to"><span class="lc-k">Points to</span><span class="si-src"></span></div>
-          <div class="si-msg">
-            <p class="lc-what"></p>
-            <span class="si-why"></span>
-            <div class="si-fix"><span class="lc-k">Candidate corrections</span></div>
-            <p class="lc-next"><span>Next</span><em></em></p>
+          <div class="si-card si-read">
+            <span class="lc-k">Where it points</span>
+            <span class="si-src"></span>
+            <p class="si-what"></p>
+            <span class="lc-k si-fix-k">Correction</span>
+            <div class="si-fix"></div>
           </div>
         </div>
-        <div class="lc-ctl">
-          <button type="button" class="lc-btn lc-replay si-replay"><span aria-hidden="true">&#8635;</span> Replay</button>
-        </div>
-        <figcaption class="lc-cap">Illustrative scenarios in dashboard terms. Values are examples, not results. The alarm and its attribution are recorded; where it points and the correction are investigation, which the spine supports and does not perform on its own. Every correction is a proposal a person approves.</figcaption>
+        <figcaption class="lc-cap">Every correction is a proposal a person approves.</figcaption>
       </figure>
       <p class="sf-seams">Seams are mapped from the other direction, during the build. Once mapped, a seam reports into the same spine. <a class="term" href="#seams">Seams &rarr;</a></p>
       <div class="cta-card sp-cta">
@@ -1479,7 +1448,7 @@
           <li class="lc-node" data-n="1"><button type="button" data-go="declared"><span class="lc-dot">02</span><b>Declared</b><small>Specify the conditions</small></button></li>
           <li class="lc-node" data-n="2"><button type="button" data-go="qualifying"><span class="lc-dot">03</span><b>Qualifying</b><small>Observe live behavior</small></button></li>
           <li class="lc-node lc-g" data-n="3"><button type="button" data-go="granted"><span class="lc-dot">04</span><b>Granted</b><small>Conditions satisfied</small></button></li>
-          <li class="lc-ret" aria-hidden="true"><span>Requalify on the post-change record</span></li>
+          <li class="lc-ret" aria-hidden="true"><span>Re-soak on post-change evidence</span></li>
           <li class="lc-node lc-s" data-n="4"><button type="button" data-go="suspended"><span class="lc-dot">!</span><b>Suspended</b><small>Grant withdrawn, reason named</small></button></li>
         </ol>
 
@@ -1487,17 +1456,17 @@
           <div class="lc-col">
             <span class="lc-k">Authority stack</span>
             <ul class="lc-stack">
-              <li data-dep="impl"><span class="d-n">Implementation</span><span class="d-e">identity</span><span class="d-v">hash 7c41e2</span><span class="d-s"></span></li>
-              <li data-dep="model"><span class="d-n">Served model</span><span class="d-e">identity</span><span class="d-v">2026-06 snapshot</span><span class="d-s"></span></li>
-              <li data-dep="rubric"><span class="d-n">Routing rubric</span><span class="d-e">equivalence</span><span class="d-v">v3</span><span class="d-s"></span></li>
+              <li data-dep="impl"><span class="d-n">lens_version</span><span class="d-e">identity</span><span class="d-v">0.20.0</span><span class="d-s"></span></li>
+              <li data-dep="model"><span class="d-n">served_model</span><span class="d-e">identity</span><span class="d-v">2026-06 snapshot</span><span class="d-s"></span></li>
+              <li data-dep="rubric"><span class="d-n">judge_model</span><span class="d-e">identity</span><span class="d-v">2026-03 snapshot</span><span class="d-s"></span></li>
             </ul>
           </div>
           <div class="lc-col">
             <span class="lc-k">Contract gates</span>
             <div class="lc-gates">
-              <div class="lg" data-g="0"><span class="lg-n">Identity and dependencies</span><span class="lg-s"></span><i><b></b></i></div>
-              <div class="lg" data-g="1"><span class="lg-n">Behavioral evidence</span><span class="lg-s"></span><i><b></b></i></div>
-              <div class="lg" data-g="2"><span class="lg-n">Sufficient observation</span><span class="lg-s"></span><i><b></b></i></div>
+              <div class="lg" data-g="0"><span class="lg-n">Authority stack</span><span class="lg-s"></span><i><b></b></i></div>
+              <div class="lg" data-g="1"><span class="lg-n">Certainty condition</span><span class="lg-s"></span><i><b></b></i></div>
+              <div class="lg" data-g="2"><span class="lg-n">Live evidence</span><span class="lg-s"></span><i><b></b></i></div>
             </div>
           </div>
         </div>
@@ -1505,7 +1474,7 @@
         <div class="lc-col lc-record">
           <span class="lc-k">Record</span>
           <div class="lc-ticks" aria-hidden="true"></div>
-          <div class="lc-legend"><span class="k-o">Observed</span><span class="k-q">Qualifying evidence</span><span class="k-x">Retained, no longer establishing this grant</span><span class="k-m">Dependency change</span></div>
+          <div class="lc-legend"><span class="k-o">Observed</span><span class="k-q">Qualifying evidence</span><span class="k-x">Retained, no longer establishing this grant</span><span class="k-m">Departure</span></div>
         </div>
 
         <div class="lc-read" aria-live="polite">
@@ -1518,11 +1487,11 @@
         </div>
 
         <div class="lc-ctl">
-          <button type="button" class="lc-btn lc-in" disabled>Change inside its envelope</button>
-          <button type="button" class="lc-btn lc-out" disabled>Change outside its envelope</button>
+          <span class="lc-k lc-ctl-k">Departure cause</span>
+          <button type="button" class="lc-btn lc-in" disabled>System update</button>
+          <button type="button" class="lc-btn lc-out" disabled>Unexpected drift</button>
           <button type="button" class="lc-btn lc-replay"><span aria-hidden="true">&#8635;</span> Replay</button>
         </div>
-        <figcaption class="lc-cap">Illustrative scenario. No thresholds or live results are shown. Six states are documented: unmapped, mapped, declared, qualifying, granted, and suspended. Unmapped and mapped share the first step here. What a change does depends on the envelope each dependency declares.</figcaption>
       </figure>
     </div>
   </section>
@@ -1536,9 +1505,9 @@
         <div class="ct-head"><span class="ct-k">Example decision surface &middot; <b>ticket-routing</b></span><span class="il-tag il-light">Illustrative contract</span></div>
         <p class="ct-surf">A classification result influences a consequential routing decision.</p>
         <div class="ct-flow">
-          <div class="ct-c"><span class="ct-n">01</span><h3>Identity and dependencies</h3><p>Implementation and upstream dependencies remain within their declared change envelopes.</p><div class="ct-env"><span>identity</span><span>equivalence</span><span>reach</span><span>band</span></div></div>
-          <div class="ct-c"><span class="ct-n">02</span><h3>Behavioral evidence</h3><p>The decision&rsquo;s outcomes and its abstention path stay within the criteria the contract declares.</p></div>
-          <div class="ct-c"><span class="ct-n">03</span><h3>Sufficient observation</h3><p>The observation the contract requires is met on live traffic. A surface without traffic cannot qualify.</p></div>
+          <div class="ct-c"><span class="ct-n">01</span><h3>Authority stack</h3><p>Every dependency stays within its declared dependency condition.</p><div class="ct-env"><span>identity</span><span>equivalence</span><span>reach</span><span>band</span></div></div>
+          <div class="ct-c"><span class="ct-n">02</span><h3>Certainty condition</h3><p>What must hold for the decision to be certain, with abstention surfaced.</p></div>
+          <div class="ct-c"><span class="ct-n">03</span><h3>Live evidence</h3><p>The condition is established on live traffic. A surface without traffic cannot qualify.</p></div>
           <div class="ct-out"><span class="ct-k">Derived reading</span><b>granted</b><p>Only while all three hold. Re-derived at every read.</p></div>
         </div>
         <p class="ct-foot">The state is derived from these conditions, not from an evaluator&rsquo;s approval or a developer&rsquo;s confidence.</p>
@@ -1884,7 +1853,7 @@
         </div>
       </div>
     </div>
-    <p class="readout-fn"><sup>*</sup> The example readings above are illustrative, showing the format of a reading in the instrument&rsquo;s own layout rather than measurements from a specific deployment.</p>
+    <p class="readout-fn"><sup>*</sup> Illustrative</p>
     </div>
   </section>
 
@@ -2348,43 +2317,49 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
   var S = {
     mapped:{node:0, read:'mapped', deps:'off', rec:{o:6},
       gates:[[0,'not declared',''],[0,'not declared',''],[0,'not declared','']],
-      what:'A decision is identified: a classification result routes a support ticket. Nothing asserts authority over it yet. Traffic is observed, but nothing is measured against a contract.',
-      next:'Declare the contract: what the decision concludes, on what evidence, under which prerequisites.'},
+      what:'A decision is identified: a classification result routes a support ticket. No authority is asserted over it yet.',
+      next:'Declare the contract: the certainty condition, the authority stack, and the abstention path.'},
     declared:{node:1, read:'declared', deps:'hold', rec:{o:10},
       gates:[[0,'pending',''],[0,'pending',''],[0,'pending','']],
-      what:'The contract names its conditions: versioned dependencies, each with a change envelope, behavioral criteria, and an observation requirement. No qualifying evidence is accruing yet.',
-      next:'Live traffic has to exercise the surface. That is why declared and qualifying are separate states.'},
+      what:'Authority is asserted and the gate is live. No qualifying evidence is accruing yet.',
+      next:'Live traffic has to exercise the surface.'},
     qualifying:{node:2, read:'qualifying', deps:'hold', rec:{o:10,q:12},
       gates:[[1,'holds','ok'],[.58,'accruing','run'],[.44,'accruing','run']],
-      what:'Live traffic exercises the surface. Each observation is read against the contract, and evidence accumulates toward every gate.',
-      next:'Every gate satisfied on the current record.'},
+      what:'Live traffic exercises the surface. Evidence accumulates toward the certainty condition.',
+      next:'The condition established on live evidence, with every dependency holding.'},
     granted:{node:3, read:'granted', deps:'hold', rec:{o:10,q:20}, gates:SAT, chg:true,
-      what:'Every gate is satisfied on the current record and every dependency holds. The reading is granted. Nothing is stored: it is re-derived each time the record is read.',
-      next:'Change a dependency to see how the reading responds.'},
-    inside:{node:3, read:'granted', deps:'inside', rec:{o:10,q:20}, gates:SAT, chg:true,
-      what:'The routing rubric moves from v3 to v3.1, a change its contract declares equivalent. The change is inside its envelope: recorded and raised for review, with no transition.',
-      next:'Try a change outside its envelope.'},
-    suspended:{node:4, read:'suspended', deps:'outside', rec:{o:10,x:20,m:1},
-      gates:[[0,'left its envelope','bad'],[0,'restarts','bad'],[0,'restarts','bad']],
-      why:'Reason: implementation hash left its identity envelope',
-      what:'The implementation hash changes outside its identity envelope. Earlier observations remain in the record, but they no longer establish authority for the changed surface. The grant is withdrawn and the reason is named.',
-      next:'Requalification takes every gate again, on the post-change record. An acknowledgement does not restore the grant.'},
-    requal:{node:2, read:'qualifying', deps:'new', req:true, rec:{o:10,x:20,m:1,n:12},
+      what:'The certainty condition is established on live evidence and every dependency holds. The reading is re-derived at every read.',
+      next:'A stack member leaves its dependency condition. Pick a departure cause.'},
+    resoak:{node:2, read:'qualifying', deps:'resoak', rec:{o:10,x:20,m:1,n:12},
       gates:[[1,'holds','ok'],[.55,'accruing','run'],[.4,'accruing','run']],
-      what:'The changed surface accumulates its own evidence. Observations from before the change stay in the record, and stay out of this grant.',
-      next:'Every gate satisfied again, on the post-change record alone.'},
-    regranted:{node:3, read:'granted', deps:'new', req:true, rec:{o:10,x:20,m:1,n:20}, gates:SAT, chg:true,
-      what:'Every gate is satisfied again, on the post-change record alone. The grant is new, and so is the identity it was computed on.',
-      next:'The same reading continues to be re-derived at every read.'}
+      why:'Departure: lens_version \u00b7 cause: system-update',
+      what:'A deliberate lens update. The seam re-soaks on the new version and reads qualifying.',
+      next:'Re-closes automatically once post-change evidence passes the floor.'},
+    'regrant-u':{node:3, read:'granted', deps:'newlens', rec:{o:10,x:20,m:1,n:20}, gates:SAT, chg:true,
+      what:'Re-soaked on the new version, with no acknowledgement required.',
+      next:'The reading continues to be re-derived at every read.'},
+    suspended:{node:4, read:'suspended', deps:'tear', rec:{o:10,x:20,m:1},
+      gates:[[0,'departed','bad'],[0,'restarts','bad'],[0,'restarts','bad']],
+      why:'Departure: served_model \u00b7 cause: unexpected-drift',
+      what:'The served model changed out from under the grant. That is a tear, and the grant is withdrawn.',
+      next:'A tear never self-clears. An operator acknowledgement releases it.'},
+    requal:{node:2, read:'qualifying', deps:'newmodel', req:true, rec:{o:10,x:20,m:1,n:12},
+      gates:[[1,'holds','ok'],[.55,'accruing','run'],[.4,'accruing','run']],
+      what:'The tear is released and recorded. The soak window starts no earlier than the acknowledged tear.',
+      next:'Every gate satisfied on the post-change record.'},
+    regranted:{node:3, read:'granted', deps:'newmodel', req:true, rec:{o:10,x:20,m:1,n:20}, gates:SAT, chg:true,
+      what:'Every gate is satisfied again, on the post-change record.',
+      next:'The reading continues to be re-derived at every read.'}
   };
   var SEQ = ['mapped','declared','qualifying','granted','suspended','requal','regranted'];
-  var DWELL = {mapped:3200, declared:3600, qualifying:4200, granted:4600, suspended:5400, requal:4200, regranted:4600};
+  var DWELL = {mapped:3200, declared:3600, qualifying:4200, granted:4600, resoak:5400, 'regrant-u':4600, suspended:5400, requal:4600, regranted:4600};
   var DEP = {
-    off:{impl:['off','hash 7c41e2','not declared'], model:['off','2026-06 snapshot','not declared'], rubric:['off','v3','not declared']},
-    hold:{impl:['hold','hash 7c41e2','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','v3','holds']},
-    inside:{impl:['hold','hash 7c41e2','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['inside','v3 → v3.1','inside envelope · review']},
-    outside:{impl:['outside','7c41e2 → a90d3f','outside envelope'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','v3','holds']},
-    'new':{impl:['hold','hash a90d3f','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','v3','holds']}
+    off:{impl:['off','0.20.0','not declared'], model:['off','2026-06 snapshot','not declared'], rubric:['off','2026-03 snapshot','not declared']},
+    hold:{impl:['hold','0.20.0','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','2026-03 snapshot','holds']},
+    resoak:{impl:['inside','0.20.0 \u2192 0.21.0','system update'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','2026-03 snapshot','holds']},
+    newlens:{impl:['hold','0.21.0','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','2026-03 snapshot','holds']},
+    tear:{impl:['hold','0.20.0','holds'], model:['outside','2026-06 \u2192 2026-09','unexpected drift'], rubric:['hold','2026-03 snapshot','holds']},
+    newmodel:{impl:['hold','0.20.0','holds'], model:['hold','2026-09 snapshot','holds'], rubric:['hold','2026-03 snapshot','holds']}
   };
 
   function recClasses(r){
@@ -2446,108 +2421,93 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
     bIn.disabled = bOut.disabled = !st.chg;
   }
   function stop(){ playing = false; clearTimeout(timer); }
-  function play(){
+  function play(list){
     stop(); playing = true;
     var i = 0;
     (function step(){
       if(!playing) return;
-      go(SEQ[i], true);
-      var wait = DWELL[SEQ[i]];
+      go(list[i], true);
+      var wait = DWELL[list[i]];
       i++;
-      if(i < SEQ.length) timer = setTimeout(step, wait); else playing = false;
+      if(i < list.length) timer = setTimeout(step, wait); else playing = false;
     })();
   }
 
   [].forEach.call(lc.querySelectorAll('[data-go]'), function(b){
     b.addEventListener('click', function(){ go(b.getAttribute('data-go')); });
   });
-  bIn.addEventListener('click', function(){ go('inside'); });
-  bOut.addEventListener('click', function(){ go('suspended'); });
-  bReplay.addEventListener('click', play);
+  bIn.addEventListener('click', function(){ play(['resoak','regrant-u']); });
+  bOut.addEventListener('click', function(){ play(['suspended','requal','regranted']); });
+  bReplay.addEventListener('click', function(){ play(SEQ); });
 
   go('mapped', true);
   var started = false;
   function start(){
     if(started) return; started = true;
-    if(reduce) go('granted', true); else play();
+    if(reduce) go('granted', true); else play(SEQ);
   }
   if(sec) sec.addEventListener('reveal:in', start); else start();
 })();
 
 </script>
 <script>
-/* spine investigation: four illustrative alarms, staged alarm, attribution, source, correction */
+/* spine investigation: one illustrative alarm at a time, with slow tab progress until a tab is chosen */
 (function(){
   var si = document.getElementById('si'); if(!si) return;
-  var sec = si.closest('[data-reveal]');
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function q(s){ return si.querySelector(s); }
-  var tabs = si.querySelectorAll('.si-tab'), nodes = si.querySelectorAll('.lc-node');
+  var tabs = si.querySelectorAll('.si-tab');
   var rows = {}; [].forEach.call(si.querySelectorAll('.si-row'), function(r){ rows[r.getAttribute('data-ax')] = r; });
-  var chips = {}; [].forEach.call(si.querySelectorAll('.si-setup li[data-c]'), function(c){ chips[c.getAttribute('data-c')] = c; });
-  var fill = q('.lc-fill'), fill2 = q('.si-fill2'), msg = q('.si-msg'), spark = q('.si-spark'), line = q('.si-spark .ln');
-  var fixEl = q('.si-fix'), MAX = 5.5;
-  var KIND = {chance:'not chance', noise:'within noise', floor:'noise floor', conf:'confounded axis'};
+  var spark = q('.si-spark'), line = q('.si-spark .ln'), fixEl = q('.si-fix');
+  var MAX = 5.5, DWELL = 12000, AT_ATTR = 900, AT_PT = 2800, AT_FIX = 3800;
+  var KIND = {chance:'not chance', noise:'', floor:'', conf:'confounded axis'};
   var SC = [
-    {src:'agent', to:'Your agent', grp:'Drift and anomalous behavior', metric:'tool_discipline', d:-3.8,
-      ax:{agent:[3.1,'chance'], model:[0.2,'noise'], eval:[0.1,'noise'], noise:[0.4,'floor']}, pt:['agent'],
-      what:'The drop moved with your agent’s substrate. The model and judge identity columns did not move.',
-      why:'substrate column: prompt · v14 → v15',
-      fix:['Prompt change','Code change'],
-      next:'A person approves the proposal. The change enters the record and the surface is observed again.'},
-    {src:'model', to:'The model', grp:'Drift and anomalous behavior', metric:'analysis_quality_judged', d:-5.2,
-      ax:{agent:[0.3,'noise'], model:[4.4,'chance'], eval:[0.2,'noise'], noise:[0.3,'floor']}, pt:['model'],
-      what:'The served model changed under the same name: a vendor switch, or your own update. Your code and prompt did not move.',
-      why:'light_source_served_model · 2026-06 → 2026-09 snapshot',
-      fix:['Prompt change','Code change','Model revert'],
-      next:'Each option is a proposal. A revert is recorded and observed like any other change.'},
-    {src:'eval', to:'Your eval', grp:'Unreliable evaluations', metric:'hypothesis_grounding', d:2.9,
-      ax:{agent:[0.1,'noise'], model:[0.2,'noise'], eval:[2.6,'chance'], noise:[0.3,'floor']}, pt:['eval'],
-      what:'The score rose with a rubric revision. The agent and model columns did not move, so the gain sits with the judge.',
-      why:'judge identity · rubric v4 → v5 · same model · same scope',
-      fix:['Rubric review','Judge review'],
-      next:'Settle the rubric change before the gain is read as an improvement.'},
-    {src:'vis', to:'Visibility', grp:'Blind spots and missing coverage', metric:'title_quality', d:-2.2, gap:'tag',
-      ax:{agent:[1.6,'conf'], model:[1.6,'conf'], eval:[0.1,'noise'], noise:[0.5,'floor']}, pt:['agent','model'],
-      what:'Your agent and the model changed in the same window, and no substrate column separates them. The record cannot attribute the drop to either.',
-      why:'Waiting on Confounded axis · title_quality',
-      fix:['Add a substrate column','Cohort tag the change','Separate the changes'],
-      next:'No code fix is indicated yet. With the columns in place, the next change is attributable.'}
+    {src:'agent', to:'Your agent', metric:'tool_discipline', d:-3.8, pt:['agent'], note:{agent:'prompt v14 → v15'},
+      ax:{agent:[3.1,'chance'], model:[0.2,'noise'], eval:[0.1,'noise'], noise:[0.4,'floor']},
+      what:'The drop moved with a prompt change.',
+      fix:['Prompt change','Code change']},
+    {src:'model', to:'The model', metric:'analysis_quality_judged', d:-5.2, pt:['model'], note:{model:'2026-06 → 2026-09'},
+      ax:{agent:[0.3,'noise'], model:[4.4,'chance'], eval:[0.2,'noise'], noise:[0.3,'floor']},
+      what:'The served model changed: a vendor switch or your own update.',
+      fix:['Prompt change','Code change','Model revert']},
+    {src:'eval', to:'Your eval', metric:'hypothesis_grounding', d:2.9, pt:['eval'], note:{eval:'rubric v4 → v5'},
+      ax:{agent:[0.1,'noise'], model:[0.2,'noise'], eval:[2.6,'chance'], noise:[0.3,'floor']},
+      what:'The score rose with a rubric revision. The agent did not change.',
+      fix:['Rubric review']},
+    {src:'vis', to:'Visibility', metric:'title_quality', d:-2.2, pt:['agent','model'], note:{},
+      ax:{agent:[1.6,'conf'], model:[1.6,'conf'], eval:[0.1,'noise'], noise:[0.5,'floor']},
+      what:'Your agent and the model changed together. No substrate column separates them.',
+      fix:['Add a substrate column','Cohort tag the change']}
   ];
-  var W = [0,1.2,-.8,.6,-1.4,.9,-.3,1.1,-1,.4,-.6,1.3,-.9,.2,.8,-1.2,.5,  -.7,1,-.4,.9,-1.1,.3,.7,-.5,1.2,-.8,.4];
+  var W = [0,1.2,-.8,.6,-1.4,.9,-.3,1.1,-1,.4,-.6,1.3,-.9,.2,.8,-1.2,.5,-.7,1,-.4,.9,-1.1,.3,.7,-.5,1.2,-.8,.4];
   function sparkPath(d){
     var n = W.length, step = 17, amp = Math.abs(d) * 6.2, up = d > 0;
     var a = up ? 44 : 16, b = up ? a - amp : a + amp, out = [];
     for(var i=0;i<n;i++){
       var x = i * 280 / (n - 1), t = i < step ? 0 : Math.min(1, (i - step + 1) / 3);
-      var y = a + (b - a) * t + W[i] * 1.6;
-      out.push((i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1));
+      out.push((i ? 'L' : 'M') + x.toFixed(1) + ' ' + (a + (b - a) * t + W[i] * 1.6).toFixed(1));
     }
     return out.join('');
   }
 
-  var cur = 0, stage = 0, timer = null;
+  var cur = 0, stage = -1, elapsed = 0, shown = 0, auto = !reduce, hover = false, raf = 0, last = 0;
   function setStage(k){
+    if(k === stage) return;
     stage = k;
-    si.setAttribute('data-stage', k);
     si.classList.toggle('s-attr', k >= 1);
     si.classList.toggle('s-pt', k >= 2);
     si.classList.toggle('s-fix', k >= 3);
-    [].forEach.call(nodes, function(n){
-      var i = +n.getAttribute('data-n');
-      n.classList.toggle('on', i === k);
-      n.classList.toggle('done', i < k);
-    });
-    fill.style.setProperty('--p', Math.min(k, 1) / 3);
-    fill2.style.setProperty('--p2', Math.max(k - 1, 0) / 3);
   }
   function load(i){
-    var s = SC[i]; cur = i;
-    [].forEach.call(tabs, function(t, j){ t.setAttribute('aria-selected', j === i ? 'true' : 'false'); });
+    var s = SC[i]; cur = i; elapsed = 0; shown = 0;
+    [].forEach.call(tabs, function(t, j){
+      t.setAttribute('aria-selected', j === i ? 'true' : 'false');
+      t.tabIndex = j === i ? 0 : -1;
+      t.style.setProperty('--t', 0);
+    });
+    setStage(0);
     si.setAttribute('data-src', s.src);
     si.setAttribute('data-dir', s.d > 0 ? 'up' : 'down');
-    Object.keys(chips).forEach(function(k){ chips[k].classList.toggle('gap', s.gap === k); });
-    q('.si-grp').textContent = s.grp;
     q('.si-metric').textContent = s.metric;
     q('.si-delta span').textContent = (s.d > 0 ? '+' : '−') + Math.abs(s.d).toFixed(1);
     Object.keys(rows).forEach(function(k){
@@ -2556,52 +2516,62 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
       r.querySelector('.si-bar i').style.setProperty('--w', Math.min(v[0] / MAX, 1));
       r.querySelector('.si-v').textContent = v[0].toFixed(1);
       r.querySelector('.si-t').textContent = KIND[v[1]];
+      r.querySelector('small').textContent = s.note[k] || '';
     });
     spark.classList.remove('draw');
     line.setAttribute('d', sparkPath(s.d));
-    var len = line.getTotalLength ? Math.ceil(line.getTotalLength()) + 2 : 600;
-    line.style.setProperty('--len', len);
+    line.style.setProperty('--len', line.getTotalLength ? Math.ceil(line.getTotalLength()) + 2 : 600);
     void spark.getBoundingClientRect();
-    spark.classList.add('draw');
-    msg.classList.add('swap');
-    setTimeout(function(){
-      q('.si-src').textContent = s.to;
-      q('.lc-what').textContent = s.what;
-      q('.si-why').textContent = s.why;
-      [].forEach.call(fixEl.querySelectorAll('b'), function(b){ b.remove(); });
-      s.fix.forEach(function(f){ var b = document.createElement('b'); b.textContent = f; fixEl.appendChild(b); });
-      q('.lc-next em').textContent = s.next;
-      msg.classList.remove('swap');
-    }, reduce ? 0 : 220);
+    q('.si-src').textContent = s.to;
+    q('.si-what').textContent = s.what;
+    fixEl.textContent = '';
+    s.fix.forEach(function(f){ var b = document.createElement('b'); b.textContent = f; fixEl.appendChild(b); });
   }
-  function stop(){ clearTimeout(timer); timer = null; }
-  function run(i, dt, hold, then){
-    stop(); load(i); setStage(0);
-    var k = 0;
-    (function step(){
-      timer = setTimeout(function(){
-        k++; setStage(k);
-        if(k < 3) step(); else if(then) timer = setTimeout(then, hold);
-      }, dt);
-    })();
+  function inView(){
+    var r = si.getBoundingClientRect(), h = window.innerHeight;
+    return r.height > 0 && r.top < h * .7 && r.bottom > h * .3 && !document.hidden;
   }
-  function playAll(i){ run(i, 1300, 2800, i < SC.length - 1 ? function(){ playAll(i + 1); } : null); }
+  function tick(now){
+    raf = 0;
+    var dt = Math.min(now - last, 100); last = now;
+    if(inView()){
+      spark.classList.add('draw');
+      elapsed += dt;
+      setStage(elapsed >= AT_FIX ? 3 : elapsed >= AT_PT ? 2 : elapsed >= AT_ATTR ? 1 : 0);
+      if(auto && !hover){
+        shown += dt;
+        tabs[cur].style.setProperty('--t', Math.min(shown / DWELL, 1));
+        if(shown >= DWELL){
+          if(cur < SC.length - 1) load(cur + 1);
+          else { auto = false; tabs[cur].style.setProperty('--t', 0); }
+        }
+      }
+    }
+    if(auto || elapsed < AT_FIX) schedule();
+  }
+  function schedule(){ if(!raf) raf = requestAnimationFrame(tick); }
+  function choose(i){
+    auto = false; load(i);
+    if(reduce){ spark.classList.add('draw'); setStage(3); }
+    else { last = performance.now(); schedule(); }
+  }
 
-  [].forEach.call(tabs, function(t){
-    t.addEventListener('click', function(){
-      var i = +t.getAttribute('data-i');
-      if(reduce){ stop(); load(i); setStage(3); } else run(i, 520, 0, null);
+  [].forEach.call(tabs, function(t, i){
+    t.addEventListener('click', function(){ choose(i); });
+    t.addEventListener('keydown', function(e){
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if(!d) return;
+      e.preventDefault();
+      var n = (i + d + tabs.length) % tabs.length;
+      choose(n); tabs[n].focus();
     });
   });
-  [].forEach.call(si.querySelectorAll('.lc-node button'), function(b){
-    b.addEventListener('click', function(){ stop(); setStage(+b.getAttribute('data-k')); });
-  });
-  q('.si-replay').addEventListener('click', function(){ if(reduce){ load(0); setStage(3); } else playAll(0); });
+  si.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse') hover = true; });
+  si.addEventListener('pointerleave', function(){ hover = false; });
 
-  load(0); setStage(reduce ? 3 : 0);
-  var started = false;
-  function start(){ if(started || reduce) return; started = true; playAll(0); }
-  if(sec) sec.addEventListener('reveal:in', start); else start();
+  load(0);
+  if(reduce){ spark.classList.add('draw'); setStage(3); }
+  else { last = performance.now(); schedule(); }
 })();
 </script>
 </body>
