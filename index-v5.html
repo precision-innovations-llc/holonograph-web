@@ -1128,51 +1128,30 @@
     .si-bar i,.si-fix b,.si-then,.si-spark.draw .ln,.si-v,.si-t,.si-card,.si-row,.si-l small{transition:none}
   }
 
-  /* ── v15: what is a seam ── */
-  .sm{margin:clamp(24px,4vh,36px) 0 0;background:#fff;border:1px solid var(--line);border-radius:18px;padding:clamp(18px,3vw,28px);box-shadow:0 30px 70px -50px rgba(23,22,29,.35)}
-  .sm-tog{display:inline-flex;padding:4px;border:1px solid var(--line);border-radius:11px;background:var(--paper)}
-  .sm-tog button{all:unset;box-sizing:border-box;cursor:pointer;padding:8px 14px;border-radius:8px;font-size:14px;font-weight:500;color:var(--ink-2);transition:background .3s ease,color .3s ease}
-  .sm-tog button:hover{color:var(--ink)}
-  .sm-tog button:focus-visible{outline:2px solid var(--iris);outline-offset:2px}
-  .sm[data-st="closed"] .sm-tog [data-s="closed"]{background:var(--good);color:#fff}
-  .sm[data-st="open"] .sm-tog [data-s="open"]{background:var(--sun);color:#fff}
-  .sm-map{display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr) 56px minmax(0,1fr);row-gap:30px;align-items:stretch;margin-top:22px}
-  .sm-n{position:relative;border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 16px;transition:border-color .45s ease,background .45s ease,box-shadow .45s ease}
-  .sm-n span{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
-  .sm-n b{display:block;margin-top:6px;font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.3}
-  .sm-n small{display:block;margin-top:3px;font-size:13px;color:var(--ink-2);line-height:1.4}
-  .sm-i{background:var(--iris-soft);border-color:rgba(95,61,220,.35)}
-  .sm-i span{color:var(--iris)}
-  .sm-dp{border-color:var(--iris)}
-  .sm-dp::after{content:"";position:absolute;left:50%;bottom:-31px;height:30px;width:2px;margin-left:-1px;background:var(--good);transition:background .45s ease}
-  .sm-e{align-self:center;height:2px;background:var(--iris);position:relative}
-  .sm-e::after{content:"";position:absolute;right:0;top:-4px;border-left:7px solid var(--iris);border-top:5px solid transparent;border-bottom:5px solid transparent}
-  .sm-x{grid-column:3;grid-row:2;border-color:rgba(31,125,89,.5);background:rgba(31,125,89,.06)}
-  .sm-x span{color:var(--good)}
-  .sm-l1,.sm-l2{grid-row:2;opacity:0;transition:opacity .45s ease}
-  .sm-l1{grid-column:4;align-self:center;border-top:2px dashed var(--sun)}
-  .sm-l2{grid-column:5;width:50%;height:calc(50% + 30px);margin-top:-30px;border-right:2px dashed var(--sun);border-bottom:2px dashed var(--sun);border-bottom-right-radius:12px}
-  .sm[data-st="open"] .sm-dp::after{background:var(--sun)}
-  .sm[data-st="open"] .sm-x{border-color:var(--sun);background:rgba(233,85,43,.07)}
-  .sm[data-st="open"] .sm-x span{color:var(--sun-ink)}
-  .sm[data-st="open"] .sm-c{border-color:var(--sun);box-shadow:0 0 0 4px rgba(233,85,43,.12)}
-  .sm[data-st="open"] .sm-c span{color:var(--sun-ink)}
-  .sm[data-st="open"] .sm-l1,.sm[data-st="open"] .sm-l2{opacity:1}
-  .sm .cf-trace{margin-top:18px}
-  .sm-terms{margin-top:clamp(24px,4vh,36px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.6vw,30px)}
-  .sm-hook{margin-top:clamp(22px,3.5vh,32px);display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;border:1px solid var(--line);border-left:3px solid var(--iris);border-radius:12px;background:#fff;padding:14px 18px;font-size:15px;color:var(--ink-2)}
-  .sm-hook .lc-k{color:var(--iris)}
+  /* ── v17: seams body copy ── */
+  .seam-sec .body-p b{color:var(--ink);font-weight:600}
+  .seam-sec .body-p sub{font-size:12px;line-height:0}
+  .seam-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,5vw,64px);margin-top:clamp(20px,3.5vh,32px)}
+  .seam-2 h3{font-size:19px;font-weight:600}
+  .seam-2 h3 + .body-p{margin-top:10px}
+  .walk{margin:clamp(24px,4vh,36px) 0;padding:16px 0;background:#17161d;border-radius:16px;overflow:hidden}
+  .wk-l{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:center;min-height:34px;padding:4px 22px;border-left:3px solid transparent}
+  .wk-l code{grid-column:1;font-family:var(--mono);font-size:14px;line-height:1.5;color:#b9b6c6;white-space:pre-wrap;overflow-wrap:anywhere}
+  .wk-n{grid-column:2;font-size:13.5px;color:#cfccdb;line-height:1.35}
+  .wk-n b{display:inline-block;margin-right:9px;font-family:var(--mono);font-size:12.5px;font-weight:600;padding:1px 8px;border-radius:6px;color:#fff;background:#5f3ddc}
+  .wk-n sub{font-size:12px;line-height:0}
+  .wk-i code,.wk-d code,.wk-s code,.wk-o code{color:#fff}
+  .wk-i,.wk-d{border-left-color:#8f7cf0;background:rgba(95,61,220,.12)}
+  .wk-o{border-left-color:#e9552b;background:rgba(233,85,43,.1)}
+  .wk-o .wk-n b{background:#c2461f}
+  .wk-s{border-left-color:#8f7cf0;background:rgba(95,61,220,.26)}
   .next-cta{margin-top:clamp(40px,7vh,72px)}
-  @media (max-width:760px){
-    .sm-map{grid-template-columns:1fr;row-gap:0}
-    .sm-e{justify-self:center;align-self:auto;width:2px;height:22px}
-    .sm-e::after{right:-4px;top:auto;bottom:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--iris);border-bottom:0}
-    .sm-dp::after,.sm-l1,.sm-l2{display:none}
-    .sm-x{grid-column:auto;grid-row:auto;order:1;margin-top:14px}
-    .sm-c{order:0}
-    .sm-terms{grid-template-columns:1fr}
+  @media (max-width:860px){
+    .seam-2{grid-template-columns:1fr}
+    .wk-l{grid-template-columns:minmax(0,1fr);gap:4px;padding:6px 16px}
+    .wk-n{grid-column:1}
+    .wk-l code{font-size:13px}
   }
-  @media (min-width:761px) and (max-width:980px){.sm-terms{grid-template-columns:1fr 1fr}}
 </style>
 <link rel="stylesheet" href="mobilenav.css">
 </head>
@@ -1606,37 +1585,78 @@
     </div>
   </section>
 
-  <section class="sec-pad bg-b" id="what-is-a-seam" data-reveal>
+  <section class="sec-pad bg-b seam-sec" id="what-is-a-seam" data-reveal>
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>What is a seam?</p>
       <h2>An edge from interpretation to decision</h2>
-      <p class="lead">A seam is the path a value travels from an interpretive source to the decision point that consumes it.</p>
-      <figure class="sm" id="sm" data-st="closed">
-        <div class="sm-tog" role="group" aria-label="Seam state">
-          <button type="button" data-s="closed" aria-pressed="true">Closed seam</button>
-          <button type="button" data-s="open" aria-pressed="false">Open seam</button>
-        </div>
-        <div class="sm-map">
-          <div class="sm-n sm-i"><span>Interpretive</span><b>Keyword pattern</b><small>Matches &ldquo;down&rdquo; in a support ticket</small></div>
-          <i class="sm-e" aria-hidden="true"></i>
-          <div class="sm-n sm-dp"><span>Decision point</span><b>Page, reply, or queue</b><small>A branch on the value</small></div>
-          <i class="sm-e" aria-hidden="true"></i>
-          <div class="sm-n sm-c"><span>Consequence</span><b>Wake the on-call engineer</b><small>At 3am</small></div>
-          <div class="sm-n sm-x"><span class="sm-x-k"></span><b class="sm-x-b"></b><small class="sm-x-s"></small></div>
-          <i class="sm-l1" aria-hidden="true"></i>
-          <i class="sm-l2" aria-hidden="true"></i>
-        </div>
-        <div class="cf-trace"><span>Provenance: interpreted</span></div>
+      <p class="lead">An inference has authority the moment downstream code acts on it as fact. In most systems nobody granted that authority, and nothing records that it happened. A seam is where Holonograph maps it.</p>
+      <p class="body-p">The map has two kinds of node. An <b>interpretive</b> is a value whose meaning is not fixed by its representation: a model output, a classifier, an approximate match, a pattern over free text, an external feed, a recorded human judgment. A <b>decision point</b> is where code acts on that value: a branch, a threshold, a pattern, a lookup key. A seam is the edge between them, written I &rarr; DP.</p>
+      <p class="body-p">Being interpreted is a property of the edge, not the field. The same field can be deterministic to one consumer and interpreted to another. An exact match over a closed domain is mechanical and carries no seam. A seam ends only where the value stops deciding anything: a log line, a rendered field, a return nothing branches on.</p>
+      <p class="body-p">A seam matters because of its <b>consequence</b>, the transition the decision governs: a page, a tool choice, a recipient, a filter on what a model is shown. A decision that governs one is an authority sink.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-a seam-sec" id="taint-walk" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Following the value</p>
+      <h2>A modified taint walk</h2>
+      <p class="lead">Taint analysis marks a value at its source, follows it through a program, and reports where it reaches a sensitive sink. Security tools use it to trace untrusted input into a query, and they stop following a value once it passes a sanitizer.</p>
+      <p class="body-p">Holonograph changes what the walk looks for. The seed is an interpreted value, the sink is a decision, and nothing downstream clears the mark. Where a request came from is as important as the request itself, so <b>provenance</b> is monotone: the output of a decision on interpreted data is itself interpreted, and the walk continues through it to the next decision.</p>
+      <p class="body-p">Validation is not a sanitizer. A schema stops a wrong type or a malformed value, and it passes the value that is well formed and wrong. A pattern that pulls &ldquo;success&rdquo; out of &ldquo;I hope you are a great success in life&rdquo; resolves to <code>route.SUCCESS</code>, and every check downstream reads it as valid.</p>
+      <figure class="walk" aria-label="A taint walk through a support ticket decision">
+        <div class="wk-l"><code>function decide(ticket): 'page' | 'auto-reply' | 'queue' {</code></div>
+        <div class="wk-l wk-i"><code>  const msg = (ticket.subject + ticket.body).toLowerCase();</code><span class="wk-n"><b>I<sub>0</sub></b>Free text enters</span></div>
+        <div class="wk-l wk-d"><code>  if (INCIDENT.test(msg)) return 'page';</code><span class="wk-n"><b>DP</b>A pattern decides</span></div>
+        <div class="wk-l wk-d"><code>  if (FAQ.test(msg)) return 'auto-reply';</code></div>
+        <div class="wk-l wk-o"><code>  return 'queue';</code><span class="wk-n"><b>Default path</b>No abstention</span></div>
+        <div class="wk-l"><code>}</code></div>
+        <div class="wk-l wk-i"><code>const action = decide(ticket);</code><span class="wk-n"><b>I<sub>1</sub></b>Exact value, interpreted provenance</span></div>
+        <div class="wk-l wk-s"><code>if (action === 'page') pageOnCall();</code><span class="wk-n"><b>DP<sub>1</sub></b>Authority sink</span></div>
       </figure>
-      <div class="sm-terms">
-        <div class="tg"><h3>Interpretives</h3><p>A model output, a classifier, an approximate match, a pattern over free text, an external feed.</p></div>
-        <div class="tg"><h3>Decision points</h3><p>A branch, threshold, pattern, or key that acts on the value.</p></div>
-        <div class="tg"><h3>Open seams</h3><p>A decision point with no answer for what it does not recognize. The defective state.</p></div>
-        <div class="tg"><h3>Abstention</h3><p>The defined path for what a decision does not recognize. A decision point with one is attended.</p></div>
-        <div class="tg"><h3>Consequence</h3><p>The transition a decision governs. It is what makes a seam matter.</p></div>
-        <div class="tg"><h3>Provenance</h3><p>Where a request came from is as important as the request itself.</p></div>
+      <p class="body-p">The return type is the decision&rsquo;s codomain. <code>action</code> holds one of three exact strings and still carries the inference behind it, so the walk runs I<sub>0</sub> &rarr; DP &rarr; I<sub>1</sub> &rarr; DP<sub>1</sub> and reaches the page. Moving the decision upstream moves the decision point. The next scan finds it there.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-b seam-sec" id="abstention" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Abstention</p>
+      <h2>Open and closed seams</h2>
+      <p class="lead">Every decision meets input it does not recognize. Abstention is the defined path for that input: the code throws or returns a distinguished no-value, and the gap stays visible.</p>
+      <p class="body-p">A decision point with that path is attended. A seam is <b>closed</b> when every decision point on its chain is attended and the chain ends in sinks that do not decide.</p>
+      <p class="body-p">A seam is <b>open</b> when the remainder falls through to an ordinary value, or when there is no remainder at all. In the example above, a ticket neither pattern recognized returns <code>'queue'</code>, and nothing downstream can separate it from a ticket the code read and queued. Open is the defective state.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-a seam-sec" id="finding-seams" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Mapping</p>
+      <h2>Repo scans and builder hooks</h2>
+      <div class="seam-2">
+        <div>
+          <h3>Repo scan</h3>
+          <p class="body-p">A scan walks the repository and produces candidate edges as structural facts: a value starts at a known source, flows through named identifiers, reaches a branch, threshold, pattern, or key, and has a default path of a given form.</p>
+          <p class="body-p">An interpretation gate then adjudicates each edge as certain-interpreted, certain-mechanical, or unresolved. Only certain-interpreted edges are registered as seams. Unresolved edges stay under measurement.</p>
+          <p class="body-p">The scan reports its own coverage. What the walk could not follow is listed, and partial coverage never reads as no seams.</p>
+        </div>
+        <div>
+          <h3>Builder hooks</h3>
+          <p class="body-p">The scan also runs as a hook inside the coding session, on every edit, at the moment of writing.</p>
+          <p class="body-p">When a seam reaches an authority sink, a note lands in the session that wrote it, naming the interpretation, the decision, the sink, and anything the scan could not follow. The builder declares the seam or restructures around it.</p>
+          <p class="body-p">The monitor flags and drafts. It does not edit code. <a href="#builders">Builders &rarr;</a></p>
+        </div>
       </div>
-      <p class="sm-hook"><span class="lc-k">Real-time attendance</span><span><a class="term" href="#builders">Builder hooks</a> report each seam into the session that wrote it, at the moment of writing.</span></p>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-b seam-sec" id="seam-soak" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Seam soak</p>
+      <h2>Evidence from live traffic</h2>
+      <p class="lead">The walk shows that a value can reach a decision. It cannot show that the decision reads the value correctly. Closing a seam makes a decision attended and monitorable, and soak measures the rest.</p>
+      <p class="body-p">A registered seam soaks on live traffic. The lens records how often its abstention path fires, the rate of each branch, and how the decided value&rsquo;s identity churns over time. An else that fires constantly shows in those rates. So does one input landing on two different branches.</p>
+      <p class="body-p">Rates show behavior, and a pattern with proper abstention can still send the wrong information. Occasional judge assessments, run offline over a seam&rsquo;s stored observations, score whether the value was efficacious.</p>
+      <p class="body-p">Soak observations carry their own provenance, so they stay out of an agent&rsquo;s default readings, and findings reach the <a href="#attention-spine">Attention Spine</a>.</p>
+      <p class="body-p">This is how an inference moves from authority nobody granted to <a href="#authority-governance">authority on evidence</a>. A seam is mapped, declared with a contract, and qualifies on live evidence. It reads granted once its certainty condition is established and every dependency holds.</p>
     </div>
   </section>
 
@@ -2629,26 +2649,6 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
   load(0);
   if(reduce){ spark.classList.add('draw'); setStage(3); }
   else { last = performance.now(); schedule(); }
-})();
-</script>
-<script>
-/* what is a seam: closed and open states of one illustrative edge */
-(function(){
-  var sm = document.getElementById('sm'); if(!sm) return;
-  var T = {
-    closed:['Abstention','Defined no-match path','Attended. Ready to observe, not proven correct.'],
-    open:['No answer','No defined no-match path','The gap falls through into the consequence.']
-  };
-  var btns = sm.querySelectorAll('.sm-tog button');
-  function set(s){
-    sm.setAttribute('data-st', s);
-    [].forEach.call(btns, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-s') === s ? 'true' : 'false'); });
-    sm.querySelector('.sm-x-k').textContent = T[s][0];
-    sm.querySelector('.sm-x-b').textContent = T[s][1];
-    sm.querySelector('.sm-x-s').textContent = T[s][2];
-  }
-  [].forEach.call(btns, function(b){ b.addEventListener('click', function(){ set(b.getAttribute('data-s')); }); });
-  set('closed');
 })();
 </script>
 </body>
