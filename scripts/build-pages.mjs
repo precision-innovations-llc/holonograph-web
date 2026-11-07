@@ -27,13 +27,13 @@ const PAGES = {
     file: "index.html",
     title: "Holonograph | Authority Governance",
     description:
-      "Build at machine speed, govern authority with evidence. An independent observation and governance instrument for measuring interpreted decisions across complex software systems.",
+      "Build at machine speed, govern authority with evidence. An independent observation and governance instrument for interpreted decisions.",
   },
   "ai-attribution": {
     file: "ai-attribution.html",
     title: "AI Attribution · Holonograph",
     description:
-      "Complex agents introduce variance. Holonograph attributes a changed score to your agent, the model, your eval, or noise, and compares vendors on cost, latency, and judged quality.",
+      "Holonograph attributes a changed score to your agent, the model, your eval, or noise, and compares vendors on cost, latency, and judged quality.",
   },
   "attention-spine": {
     file: "attention-spine.html",
@@ -62,7 +62,7 @@ const PAGES = {
   papers: {
     file: "papers.html",
     title: "Research · Holonograph",
-    description: "Holonograph research and papers.",
+    description: "What does an LLM judge actually measure? Research on evaluation frames and construct discrimination, with the paper and poster.",
   },
 };
 
@@ -143,6 +143,9 @@ function head(route) {
     `<meta property="og:description" content="${p.description}">`,
     `<meta property="og:url" content="${url}">`,
     `<meta property="og:image" content="${OG_IMAGE}">`,
+    '<meta property="og:image:width" content="2752">',
+    '<meta property="og:image:height" content="626">',
+    '<meta property="og:image:type" content="image/webp">',
     '<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid">',
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta name="twitter:site" content="@holonograph">',
@@ -195,6 +198,40 @@ ${isHome ? '<script type="module" src="/holon-light.js?v=15"></script>\n' : ""}<
 `;
 }
 
+// ---- JS-driven copy, also served as text --------------------------------
+function literal(open, close) {
+  const start = src.indexOf(open);
+  if (start < 0) throw new Error("missing " + open);
+  const from = start + open.length - 1;
+  const end = src.indexOf(close, from);
+  return src.slice(from, end + close.length - 1);
+}
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const ALARMS = new Function("return " + literal("var SC = [", "\n  ];"))();
+const TABS = ["Agent change", "Model change", "Eval change", "Visibility gap"];
+const spineText =
+  '<div class="sr-only"><h3>Example alarms</h3><ul>' +
+  ALARMS.map(
+    (a, i) =>
+      `<li>${TABS[i]}: ${esc(a.metric)} ${a.d > 0 ? "+" : "-"}${Math.abs(a.d).toFixed(1)} pts. Where it points: ${esc(a.to)}. ${esc(a.what)} Correction: ${esc(a.fix)}. ${esc(a.then)}</li>`,
+  ).join("") +
+  "</ul></div>";
+view["attention-spine"] = view["attention-spine"].replace("</figure>", "</figure>\n      " + spineText);
+
+const STATES = new Function("SAT", "return " + literal("var S = {", "\n  };"))([]);
+const lifecycleText =
+  '<div class="sr-only"><h3>Authority lifecycle</h3><ul>' +
+  Object.values(STATES)
+    .map((st) => `<li>${esc(st.read)}: ${esc(st.what)}${st.why ? " " + esc(st.why) : ""} ${esc(st.next)}</li>`)
+    .join("") +
+  "</ul></div>";
+{
+  const id = view["authority-governance"].indexOf('id="lc"');
+  const end = view["authority-governance"].indexOf("</figure>", id) + "</figure>".length;
+  view["authority-governance"] = view["authority-governance"].slice(0, end) + "\n      " + lifecycleText + view["authority-governance"].slice(end);
+}
+
 for (const route of Object.keys(PAGES)) {
   const out = join(ROOT, PAGES[route].file);
   mkdirSync(dirname(out), { recursive: true });
@@ -202,3 +239,67 @@ for (const route of Object.keys(PAGES)) {
   console.log("  " + PAGES[route].file);
 }
 console.log("  site-v6.css, site-v6.js");
+
+// ---- secondary pages: header, footer and changelog as served HTML ---------
+function chrome(active) {
+  const slots = {};
+  const el = (id) => (slots[id] = { className: "", innerHTML: "" });
+  const stub = {
+    documentElement: { style: { setProperty() {} } },
+    body: { getAttribute: () => active },
+    head: { appendChild() {} },
+    createElement: () => ({}),
+    getElementById: (id) => (id === "siteHeader" || id === "siteFooter" ? el(id) : null),
+    querySelector: () => ({}),
+    querySelectorAll: () => [],
+  };
+  const win = { gtag() {}, matchMedia: () => ({ matches: false }) };
+  new Function("window", "document", "gtag", readFileSync(join(ROOT, "site.js"), "utf8"))(win, stub, win.gtag);
+  return slots;
+}
+
+const SECONDARY = ["about", "changelog", "contact", "glossary", "lens-facets", "pricing", "privacy", "terms", "guide/index"];
+for (const name of SECONDARY) {
+  const file = join(ROOT, name + ".html");
+  let html = readFileSync(file, "utf8");
+  const active = (/<body data-nav="([^"]*)"/.exec(html) || [])[1] || "";
+  const { siteHeader, siteFooter } = chrome(active);
+  html = html.replace(/<header id="siteHeader"[^>]*>[\s\S]*?<\/header>/, `<header id="siteHeader" class="site-header">${siteHeader.innerHTML}</header>`);
+  html = html.replace(/<footer id="siteFooter"[^>]*>[\s\S]*?<\/footer>/, `<footer id="siteFooter" class="site-footer">${siteFooter.innerHTML}</footer>`);
+  writeFileSync(file, html);
+}
+
+{
+  const data = JSON.parse(readFileSync(join(ROOT, "changelog.json"), "utf8"));
+  const cmp = (a, b) => {
+    const x = a.split(".").map(Number), y = b.split(".").map(Number);
+    for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0);
+    return 0;
+  };
+  const tracks = data.tracks, rels = data.releases, order = Object.keys(tracks);
+  const current = {};
+  for (const r of rels) if (!current[r.track] || cmp(r.version, current[r.track].version) > 0) current[r.track] = r;
+  const cur = order.map((key) => {
+    const t = tracks[key], c = current[key];
+    if (!c) return "";
+    const npm = t.npm ? `<a class="npm" href="${t.npm}" target="_blank" rel="noopener">npm &#8599;</a>` : "";
+    return `<div class="cur-card"><div class="meta"><div class="track">Current <b>${esc(t.name)}</b></div><div class="sub">${esc(t.sub || "")}</div><div class="ver">v<span class="v">${esc(c.version)}</span></div></div>${npm}</div>`;
+  }).join("");
+  const relHtml = (r) =>
+    `<article class="rel"><div class="top"><span class="ver">v${esc(r.version)}</span><span class="date">${esc(r.date)}</span></div><h3>${esc(r.title || "")}</h3><ul>${(r.notes || []).map((n) => `<li>${esc(n)}</li>`).join("")}</ul></article>`;
+  const LIMIT = 10;
+  const cols = order.map((key) => {
+    const t = tracks[key];
+    const mine = rels.filter((r) => r.track === key).sort((a, b) => cmp(b.version, a.version));
+    const rest = mine.slice(LIMIT);
+    const body = mine.slice(0, LIMIT).map(relHtml).join("") +
+      (rest.length ? `<div class="rel-more" hidden>${rest.map(relHtml).join("")}</div><button class="more-btn" type="button" data-more>Show ${rest.length} more &darr;</button>` : "");
+    return `<div class="col ${esc(key)}"><h2><span class="dot"></span>${esc(t.name)}<span class="sub">${esc(t.sub || "")}</span></h2>${body}</div>`;
+  }).join("");
+  const file = join(ROOT, "changelog.html");
+  let html = readFileSync(file, "utf8");
+  html = html.replace(/(<section class="current" id="current"[^>]*>)[\s\S]*?(<\/section>)/, (m, a, b) => a + cur.replaceAll("$", "$") + b);
+  html = html.replace(/(<section class="cols" id="cols"[^>]*>)[\s\S]*?(<\/section>)/, (m, a, b) => a + cols + b);
+  writeFileSync(file, html);
+}
+console.log("  secondary chrome and changelog served as HTML");

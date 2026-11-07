@@ -1101,6 +1101,7 @@
   }
 
   html{scroll-padding-top:90px}
+  .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
   /* ── v20: home risks flow ── */
   .risks-top{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:clamp(32px,5vw,64px);align-items:start}
   .risks-top .ic{margin-top:20px}
@@ -1399,7 +1400,7 @@
   <section class="page-head sec-pad bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Is your agent behaving properly?</p>
-      <h2 class="page-h1">Correct-looking behavior is not always correct</h2>
+      <h1 class="page-h1">Correct-looking behavior is not always correct</h1>
       <p class="lead">An agent can return a plausible answer while the judge scoring it has stopped discriminating, a dimension it depends on goes unobserved, or an interpreted value reaches a <a class="term" href="#seams">decision point</a> without the evidence to justify it. The attention spine reads the record for these conditions: judge behavior, evaluation structure, coverage and reach, surface lifecycle, seams and authority, and the integrity of the store itself. Every finding source reports into one queue, ranked by what needs attention, with its evidence attached.</p>
     </div>
   </section>
@@ -1524,7 +1525,7 @@
   <section class="page-head sec-pad ag-head bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Authority governance</p>
-      <h2 class="page-h1">Authority, derived from the record</h2>
+      <h1 class="page-h1">Authority, derived from the record</h1>
       <div class="ag-open">
         <div class="ag-open-text">
           <p class="ag-prop">A decision can be permitted, approved, confidently made, and even correct without having established authority.</p>
@@ -1666,7 +1667,7 @@
   <section class="page-head sec-pad bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Seams</p>
-      <h2 class="page-h1">Where inference becomes a decision</h2>
+      <h1 class="page-h1">Where inference becomes a decision</h1>
       <p class="lead">An interpreted value driving a decision that governs a consequential transition is a seam. It is permanent. You can close it and you can <a class="term" href="guide/seam-monitor.html">monitor it</a>. You cannot validate it away.</p>
     </div>
   </section>
@@ -1802,7 +1803,7 @@
   <section class="page-head sec-pad bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Observability is not Attribution</p>
-      <h2 class="page-h1">Complex agents introduce variance, challenging the role of observability alone</h2>
+      <h1 class="page-h1">Complex agents introduce variance, challenging the role of observability alone</h1>
       <p class="lead">A well-structured substrate and compulsive versioning allow statistical analysis of every agentic and LLM-as-a-judge call, generating honest adjudication and evidence-backed triage.</p>
     </div>
   </section>
@@ -2099,7 +2100,7 @@
   <section class="page-head sec-pad bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Builders</p>
-      <h2 class="page-h1">Reported in the session that wrote it</h2>
+      <h1 class="page-h1">Reported in the session that wrote it</h1>
       <p class="lead">Coding agents are agents. They are subject to the same inference violations, drift, and stochastic behavior as any other LLM agent, and teams now often use them to build agentic software.</p>
       <p class="body-p">The <a class="term" href="guide/seam-monitor.html">seam monitor</a> runs inside the build loop. When a coding agent writes a decision that acts on an interpreted value and reaches something consequential, the note arrives in that same session, before the change is anywhere else.</p>
     </div>
@@ -2187,7 +2188,7 @@
   <section class="page-head sec-pad bg-a">
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Research</p>
-      <h2 class="page-h1">What Does an LLM Judge Actually Measure?</h2>
+      <h1 class="page-h1">What Does an LLM Judge Actually Measure?</h1>
       <p class="lead">The Role of Evaluation Frames in Construct Discrimination. Brian Kerrigan, 2026.</p>
     </div>
   </section>

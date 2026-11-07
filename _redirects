@@ -1,3 +1,7 @@
+# The home page has always been /, but old links and Nigel's site map use home.html.
+/home         /                 301
+/home.html    /                 301
+
 # The Value page was folded into AI Attribution for the v6 site.
 /value        /ai-attribution   301
 /value.html   /ai-attribution   301

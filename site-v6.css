@@ -1081,6 +1081,7 @@
   }
 
   html{scroll-padding-top:90px}
+  .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
   /* ── v20: home risks flow ── */
   .risks-top{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:clamp(32px,5vw,64px);align-items:start}
   .risks-top .ic{margin-top:20px}
