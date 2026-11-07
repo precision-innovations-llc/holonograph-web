@@ -78,7 +78,7 @@ function tocFull() {
           `        <li data-status="${row.status}">`,
           `          <span class="t-num">${row.num}</span>`,
           `          <span class="t-body">`,
-          `            <a href="./${row.slug}" class="t-ttl">${esc(row.title)}</a>`,
+          `            <a href="./${row.slug}" class="t-ttl" target="_blank" rel="noopener">${esc(row.title)}</a>`,
           `            <span class="t-gloss">${esc(row.blurb)}</span>`,
           `          </span>`,
           `          <span class="t-status">${row.status}</span>`,

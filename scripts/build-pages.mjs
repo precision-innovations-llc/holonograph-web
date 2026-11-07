@@ -126,7 +126,9 @@ function links(html, route) {
     }
     const [path, hash] = href.split("#");
     const clean = "/" + path.replace(/\.html$/, "");
-    return `href="${clean}${hash ? "#" + hash : ""}"`;
+    // Guide chapters open in a new tab; the Guide index stays in this one.
+    const tab = clean.startsWith("/guide/") && clean !== "/guide/" ? ' target="_blank" rel="noopener"' : "";
+    return `href="${clean}${hash ? "#" + hash : ""}"${tab}`;
   });
 }
 
