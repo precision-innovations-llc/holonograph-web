@@ -1501,8 +1501,8 @@
             <span class="lc-k">Authority stack</span>
             <ul class="lc-stack">
               <li data-dep="impl"><span class="d-n">lens_version</span><span class="d-e">identity</span><span class="d-v">0.20.0</span><span class="d-s"></span></li>
-              <li data-dep="model"><span class="d-n">served_model</span><span class="d-e">identity</span><span class="d-v">2026-06 snapshot</span><span class="d-s"></span></li>
-              <li data-dep="rubric"><span class="d-n">judge_model</span><span class="d-e">identity</span><span class="d-v">2026-03 snapshot</span><span class="d-s"></span></li>
+              <li data-dep="model"><span class="d-n">served_model</span><span class="d-e">identity</span><span class="d-v">model 4.1</span><span class="d-s"></span></li>
+              <li data-dep="rubric"><span class="d-n">judge_model</span><span class="d-e">identity</span><span class="d-v">model 3.0</span><span class="d-s"></span></li>
             </ul>
           </div>
           <div class="lc-col">
@@ -2410,12 +2410,12 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
   var SEQ = ['mapped','declared','qualifying','granted','suspended','requal','regranted'];
   var DWELL = {mapped:3200, declared:3600, qualifying:4200, granted:4600, resoak:5400, 'regrant-u':4600, suspended:5400, requal:4600, regranted:4600};
   var DEP = {
-    off:{impl:['off','0.20.0','not declared'], model:['off','2026-06 snapshot','not declared'], rubric:['off','2026-03 snapshot','not declared']},
-    hold:{impl:['hold','0.20.0','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','2026-03 snapshot','holds']},
-    resoak:{impl:['inside','0.20.0 \u2192 0.21.0','system update'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','2026-03 snapshot','holds']},
-    newlens:{impl:['hold','0.21.0','holds'], model:['hold','2026-06 snapshot','holds'], rubric:['hold','2026-03 snapshot','holds']},
-    tear:{impl:['hold','0.20.0','holds'], model:['outside','2026-06 \u2192 2026-09','unexpected drift'], rubric:['hold','2026-03 snapshot','holds']},
-    newmodel:{impl:['hold','0.20.0','holds'], model:['hold','2026-09 snapshot','holds'], rubric:['hold','2026-03 snapshot','holds']}
+    off:{impl:['off','0.20.0','not declared'], model:['off','model 4.1','not declared'], rubric:['off','model 3.0','not declared']},
+    hold:{impl:['hold','0.20.0','holds'], model:['hold','model 4.1','holds'], rubric:['hold','model 3.0','holds']},
+    resoak:{impl:['inside','0.20.0 \u2192 0.21.0','system update'], model:['hold','model 4.1','holds'], rubric:['hold','model 3.0','holds']},
+    newlens:{impl:['hold','0.21.0','holds'], model:['hold','model 4.1','holds'], rubric:['hold','model 3.0','holds']},
+    tear:{impl:['hold','0.20.0','holds'], model:['outside','model 4.1 \u2192 4.2','unexpected drift'], rubric:['hold','model 3.0','holds']},
+    newmodel:{impl:['hold','0.20.0','holds'], model:['hold','model 4.2','holds'], rubric:['hold','model 3.0','holds']}
   };
 
   function recClasses(r){
@@ -2522,18 +2522,18 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
       ax:{agent:[3.1,'chance'], model:[0.2,'noise'], eval:[0.1,'noise'], noise:[0.4,'floor']},
       what:'The drop starts at prompt v15, which cut the tool-use rule.',
       fix:'prompt v15 → v16', then:'Restores the tool-use rule.'},
-    {src:'model', to:'The model', metric:'analysis_quality_judged', d:-5.2, pt:['model'], note:{model:'2026-06 → 2026-09'},
+    {src:'model', to:'The model', metric:'analysis_quality_judged', d:-5.2, pt:['model'], note:{model:'model 4.1 → 4.2'},
       ax:{agent:[0.3,'noise'], model:[4.4,'chance'], eval:[0.2,'noise'], noise:[0.3,'floor']},
-      what:'The vendor moved your alias to a new snapshot. Your repo did not change.',
-      fix:'Pin served_model to 2026-06', then:'Tune the prompt against 2026-09 on a cohort, then move up.'},
+      what:'The vendor moved your alias from model 4.1 to 4.2. Your repo did not change.',
+      fix:'Pin back to model 4.1', then:'Adjust the prompt for 4.2, test it on a cohort, then upgrade.'},
     {src:'eval', to:'Your eval', metric:'hypothesis_grounding', d:2.9, pt:['eval'], note:{eval:'rubric v4 → v5'},
       ax:{agent:[0.1,'noise'], model:[0.2,'noise'], eval:[2.6,'chance'], noise:[0.3,'floor']},
       what:'The score rose at rubric v5. The agent did not change.',
       fix:'Rebaseline on rubric v5', then:'The rise is a scoring change. The trend restarts at v5.'},
-    {src:'vis', to:'Visibility', metric:'title_quality', d:-2.2, pt:['agent','model'], note:{agent:'prompt v8 → v9', model:'2026-06 → 2026-09'},
+    {src:'vis', to:'Visibility', metric:'title_quality', d:-2.2, pt:['agent','model'], note:{agent:'prompt v8 → v9', model:'model 4.1 → 4.2'},
       ax:{agent:[1.6,'conf'], model:[1.6,'conf'], eval:[0.1,'noise'], noise:[0.5,'floor']},
-      what:'Prompt v9 and the new model shipped together. No substrate column separates them.',
-      fix:'Hold a cohort on 2026-06', then:'Cohort tag it. The next runs separate the two axes.'}
+      what:'Prompt v9 and model 4.2 shipped together. No substrate column separates them.',
+      fix:'Hold a cohort on model 4.1', then:'Cohort tag it. The next runs separate the two axes.'}
   ];
   var W = [0,1.2,-.8,.6,-1.4,.9,-.3,1.1,-1,.4,-.6,1.3,-.9,.2,.8,-1.2,.5,-.7,1,-.4,.9,-1.1,.3,.7,-.5,1.2,-.8,.4];
   function sparkPath(d){
