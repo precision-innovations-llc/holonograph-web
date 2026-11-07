@@ -22,3 +22,7 @@ index-v5.html
 # Repo and editor config, never served
 .claude/
 .gitignore
+
+# Superseded, nothing references these
+holon.js
+holonograph-mobile.webp

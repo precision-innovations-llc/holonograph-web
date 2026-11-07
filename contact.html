@@ -33,12 +33,21 @@
 <link rel="stylesheet" href="nigel.css?v=10">
 <style>
   .contact{display:grid;grid-template-columns:0.85fr 1.15fr;gap:clamp(30px,5vw,64px);padding:clamp(20px,4vh,40px) 0 clamp(40px,7vh,72px);align-items:start}
-  .contact .aside h2{font-size:19px;font-weight:600;letter-spacing:-.01em}
-  .contact .aside p{margin-top:10px;font-size:15px;color:var(--ink-2);line-height:1.62}
-  .contact .aside .direct{margin-top:24px;display:flex;flex-direction:column;gap:14px}
-  .contact .aside .direct a{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);font-size:14.5px}
-  .contact .aside .direct .ic{width:34px;height:34px;border-radius:9px;background:var(--iris-soft);color:var(--iris);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;flex:none}
-  .contact .aside .direct span.sub{display:block;font-size:12.5px;color:var(--ink-3)}
+  .contact .aside{background:#17161d;color:#f1effa;border-radius:16px;padding:clamp(24px,3vw,34px);position:sticky;top:96px}
+  .contact .aside h2{font-size:clamp(22px,2.4vw,28px);font-weight:500;letter-spacing:-.01em;color:#fff}
+  .steps{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-direction:column;gap:20px}
+  .steps li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding-top:18px;border-top:1px solid #2a2836}
+  .steps li > span{font-family:var(--mono);font-size:12.5px;color:#a998f0;line-height:1.7}
+  .steps h3{font-size:17px;font-weight:600;color:#fff}
+  .steps p{margin-top:6px;font-size:15px;color:#cfccdb;line-height:1.55}
+  .next{padding:0 0 clamp(48px,8vh,84px)}
+  .next h2{font-size:clamp(24px,2.8vw,32px);font-weight:500;letter-spacing:-.015em}
+  .next-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:20px}
+  .next-c{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:#fff;padding:20px;text-decoration:none;color:var(--ink);transition:border-color .2s ease,transform .2s ease}
+  .next-c:hover{border-color:var(--iris);transform:translateY(-2px)}
+  .next-c h3{font-size:17px;font-weight:600}
+  .next-c p{margin:8px 0 16px;font-size:15px;color:var(--ink-2);line-height:1.5}
+  .next-c span{margin-top:auto;font-size:14px;font-weight:500;color:var(--iris)}
 
   form.card{border:1px solid var(--line);border-radius:16px;background:#fff;padding:clamp(22px,3vw,30px);display:flex;flex-direction:column;gap:16px}
   .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:7px}
@@ -54,8 +63,10 @@
   .fine{font-size:12.5px;color:var(--ink-3);line-height:1.5}
   .agree{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;color:var(--ink-2);line-height:1.5;cursor:pointer}
   .agree input{margin-top:2px;flex:none;width:16px;height:16px;accent-color:var(--iris)}
-  .agree a{color:var(--iris)}
-  @media (max-width:860px){ .contact{grid-template-columns:1fr} .row{grid-template-columns:1fr} }
+  .agree a{color:var(--iris);text-decoration:none}
+  @media (max-width:980px){ .next-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:860px){ .contact{grid-template-columns:1fr} .contact .aside{position:static} .row{grid-template-columns:1fr} }
+  @media (max-width:560px){ .next-grid{grid-template-columns:1fr} }
 </style>
 </head>
 <body data-nav="">
@@ -66,17 +77,17 @@
   <section class="page-hero" data-hero data-reveal>
     <p class="eyebrow"><span class="dot"></span>Request a demo</p>
     <h1>See the instrument run on your agents</h1>
-    <p class="sub">A working walkthrough: one prompt through the lens, a shift attributed to the model, the substrate, or the judges, and the reliability of every verdict read back. Tell us what you are building and we will aim the session at it.</p>
+    <p class="sub">One agent through the lens: a shift attributed to its source, an alarm on the Attention Spine, and a seam traced from inference to decision. Tell us what you are building and we will aim the session at it.</p>
   </section>
 
   <section class="contact" data-reveal>
     <div class="aside">
       <h2>In the session</h2>
-      <p>A live lens against a real agent, walked end to end: four-source attribution, verdict reliability, lens facets, and the dashboard. Come with a workload in mind and we point the demo straight at it.</p>
-      <div class="direct">
-        <a href="docs.html"><span class="ic">&rarr;</span><span>Skim the docs first<span class="sub">The method, in one read</span></span></a>
-        <a href="lens-facets.html"><span class="ic">&#9633;</span><span>Read on lens facets<span class="sub">The saturated-rubric science</span></span></a>
-      </div>
+      <ol class="steps">
+        <li><span>01</span><div><h3>Your workload</h3><p>Bring an agent or a use case. The session is pointed at it from the start.</p></div></li>
+        <li><span>02</span><div><h3>A live lens</h3><p>Attribution, the Attention Spine, seams, and authority, walked end to end.</p></div></li>
+        <li><span>03</span><div><h3>Your first surfaces</h3><p>What to declare first, and what it takes to run on your hardware.</p></div></li>
+      </ol>
     </div>
 
     <form class="card" id="contactForm" novalidate>
@@ -94,6 +105,16 @@
       </div>
       <p class="fine">We will be in touch to schedule. No mailing list, no spam.</p>
     </form>
+  </section>
+
+  <section class="next" data-reveal>
+    <h2>Before the session</h2>
+    <div class="next-grid">
+      <a class="next-c" href="#" data-nigel-open><h3>Ask Nigel</h3><p>Our public agent, running through the lens. Ask it anything about Holonograph.</p><span>Start a chat &rarr;</span></a>
+      <a class="next-c" href="/#lens"><h3>See the Lens dashboard</h3><p>The live dashboard behind Nigel, with real findings.</p><span>Open the dashboard &rarr;</span></a>
+      <a class="next-c" href="/papers"><h3>Read the research</h3><p>What does an LLM judge actually measure?</p><span>Read the paper &rarr;</span></a>
+      <a class="next-c" href="/pricing"><h3>See pricing</h3><p>Surface, Facet, and Authority Governance tiers.</p><span>View pricing &rarr;</span></a>
+    </div>
   </section>
 </main>
 

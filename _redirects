@@ -2,6 +2,10 @@
 /value        /ai-attribution   301
 /value.html   /ai-attribution   301
 
+# The Docs page duplicated the Guide index.
+/docs         /guide/           301
+/docs.html    /guide/           301
+
 # The reflection chapter merged into judge-modes (it is cell 3 of the same matrix).
 /guide/reflection        /guide/judge-modes   301
 /guide/reflection.html   /guide/judge-modes   301

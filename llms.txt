@@ -4,7 +4,7 @@
 
 Holonograph runs as a localhost daemon inside the operator's own infrastructure, sitting as a bidirectional mediating gateway between an agentic system and the language models that drive its behavior. It captures every interaction at the wire-format boundary. The Lens Architecture is the underlying methodology; Holonograph is the implementation. A patent-pending product of Precision Innovations LLC.
 
-The site (https://holonograph.ai) is a single-page presentation. The sections below describe its concept areas.
+The site (https://holonograph.ai) has pages for AI Attribution, the Attention Spine, Authority Governance, Seams, Builders, Pricing, and Research, with full documentation in the Guide. The sections below describe its concept areas.
 
 ## About
 

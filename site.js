@@ -35,7 +35,7 @@
     { key:'authority-governance', label:'Authority', href:'/authority-governance/' },
     { key:'seams', label:'Seams', href:'/seams' },
     { key:'builders', label:'Builders', href:'/builders' },
-    { key:'docs', label:'Docs', href:'/docs' }
+    { key:'docs', label:'Docs', href:'/guide/' }
   ];
   var active = document.body.getAttribute('data-nav') || '';
 
@@ -56,7 +56,7 @@
           '<p class="f-tag">The self-hosted instrument for authority governance.</p>' +
           '<p class="f-pp">Patent pending</p></div>' +
         '<div class="f-col"><h4>Platform</h4><a href="/ai-attribution">AI Attribution</a><a href="/lens-facets">Lens facets</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority governance</a><a href="/seams">Seams</a><a href="/builders">Builders</a></div>' +
-        '<div class="f-col"><h4>Resources</h4><a href="/docs">Docs</a><a href="/guide/">Guide</a><a href="/glossary">Glossary</a><a href="/papers">Research</a><a href="/changelog">Changelog</a></div>' +
+        '<div class="f-col"><h4>Resources</h4><a href="/guide/">Guide</a><a href="/glossary">Glossary</a><a href="/papers">Research</a><a href="/changelog">Changelog</a></div>' +
         '<div class="f-col"><h4>Company</h4><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></div>' +
       '</div>' +
       '<div class="footer-bar">' +

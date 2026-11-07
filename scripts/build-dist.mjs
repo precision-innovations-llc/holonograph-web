@@ -43,3 +43,4 @@ for (const bad of ["assets", "scripts", ".claude", "README.md", "index-v5.html",
   if (existsSync(join(DIST, bad))) throw new Error("dist contains " + bad);
 }
 console.log("dist/ ready");
+await import("./check-site.mjs");
