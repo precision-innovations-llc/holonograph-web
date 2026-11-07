@@ -20,7 +20,7 @@ import { dirname, join } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://holonograph.ai";
 const OG_IMAGE = `${SITE}/holonograph.webp`;
-const ASSET_V = "1";
+const ASSET_V = "2";
 
 const PAGES = {
   home: {
@@ -168,7 +168,7 @@ function head(route) {
     h.push(importmapRe.exec(src)[0].replaceAll('"./vendor/', '"/vendor/'));
   }
   h.push(`<link rel="stylesheet" href="/site-v6.css?v=${ASSET_V}">`);
-  h.push('<link rel="stylesheet" href="/mobilenav.css">');
+  h.push('<link rel="stylesheet" href="/mobilenav.css?v=2">');
   h.push('<link rel="stylesheet" href="/nigel.css?v=10">');
   return h.join("\n");
 }
@@ -192,7 +192,7 @@ ${links(view[route], route)}
 ${links(footer, route)}
 <script src="/site-v6.js?v=${ASSET_V}"></script>
 <script src="/nigel.js?v=16"></script>
-<script src="/mobilenav.js"></script>
+<script src="/mobilenav.js?v=2"></script>
 ${isHome ? '<script type="module" src="/holon-light.js?v=15"></script>\n' : ""}</body>
 </html>
 `;
@@ -258,14 +258,14 @@ function chrome(active) {
   return slots;
 }
 
-const SECONDARY = ["about", "changelog", "contact", "glossary", "lens-facets", "pricing", "privacy", "terms", "guide/index"];
+const SECONDARY = ["about", "changelog", "contact", "glossary", "lens-facets", "pricing", "privacy", "terms", "guide/index", "404"];
 for (const name of SECONDARY) {
   const file = join(ROOT, name + ".html");
   let html = readFileSync(file, "utf8");
   const active = (/<body data-nav="([^"]*)"/.exec(html) || [])[1] || "";
   const { siteHeader, siteFooter } = chrome(active);
   html = html.replace(/<header id="siteHeader"[^>]*>[\s\S]*?<\/header>/, `<header id="siteHeader" class="site-header">${siteHeader.innerHTML}</header>`);
-  html = html.replace(/<footer id="siteFooter"[^>]*>[\s\S]*?<\/footer>/, `<footer id="siteFooter" class="site-footer">${siteFooter.innerHTML}</footer>`);
+  if (name !== "404") html = html.replace(/<footer id="siteFooter"[^>]*>[\s\S]*?<\/footer>/, `<footer id="siteFooter" class="site-footer">${siteFooter.innerHTML}</footer>`);
   writeFileSync(file, html);
 }
 
