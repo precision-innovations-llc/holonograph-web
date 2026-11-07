@@ -34,3 +34,4 @@ holonograph-loop*.mp4
 # Source assets (psd, original-resolution png, manuscript drafts) — kept on disk
 # locally; the deployed bundle uses the optimized webp at the root.
 assets/
+dist/

@@ -6,6 +6,75 @@
   },
   "releases": [
     {
+      "track": "sdk", "version": "0.20.0", "date": "2026-11-06",
+      "title": "The pending-verdict contract",
+      "notes": [
+        "The client carries the surface's judgePendingStalenessMs field and types the judge-pending-stale finding, including which verdicts were dropped in transit."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.44.3", "date": "2026-11-06",
+      "title": "Asynchronous judge verdicts, with a stale-verdict alarm",
+      "notes": [
+        "A verdict can land as its own linked judge event. The attention queue, and event reads on request, resolve it onto its subject on production and eval runs, with several judges per subject.",
+        "Declare judgePendingStalenessMs on a surface and a verdict pending past that window raises a judge-pending-stale finding.",
+        "The finding separates verdicts dropped in transit from verdicts never emitted, so a channel drop is not read as a stopped worker."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.19.0", "date": "2026-11-05",
+      "title": "Inline images and the primary event id",
+      "notes": [
+        "Send inline images on user messages, in one content block across vendors.",
+        "reportOutcome returns the primary event id, which an asynchronous judge uses to link its verdict, and accepts your own id and per-call substrate columns.",
+        "Types for per-agent sources, the source-conflation finding, and the forced-tool record."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.44.0", "date": "2026-11-05",
+      "title": "Per-agent reads on a shared lens",
+      "notes": [
+        "Each agent can authenticate with its own operator token, and its events carry that verified source.",
+        "Analytic findings and gating partition per agent, so two agents on one surface keep separate findings and one agent's finding never gates another's.",
+        "A new source-conflation finding flags a pooled read hiding a per-agent split and leaves the grouping to the operator.",
+        "Mediated calls carry inline images and Anthropic extended-thinking traces, and the seam registry holds across instances."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.43.9", "date": "2026-11-04",
+      "title": "Seam data per agent source",
+      "notes": [
+        "Seam scans from several agents coexist on one lens, each held under its own source.",
+        "The source is stamped at ingest from the verified operator, and seam findings, observations, soak, and analysis all read per source. A lens with one token behaves as before.",
+        "A forced tool choice is served on models that reject forced tool selection, and the call record shows when that path ran."
+      ]
+    },
+    {
+      "track": "sdk", "version": "0.18.0", "date": "2026-11-02",
+      "title": "Call-site capture",
+      "notes": [
+        "The client records where in your code each mediated call originated, the key that joins a call to its candidate seams. On by default; set captureCallSite to false to turn it off.",
+        "Types for seam-call observations, the candidate map, and the seam-call analysis read."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.43.8", "date": "2026-10-31",
+      "title": "Seam-to-call attribution",
+      "notes": [
+        "With a seam scan on the lens, each mediated call reads back with the candidate seams on its path, graded by the evidence behind the link.",
+        "A seam-to-call analysis monitor shows seam reach, arm distribution, and which seams associate with failing judge dimensions.",
+        "Each association carries its evidence grade and makes no causal claim."
+      ]
+    },
+    {
+      "track": "lens", "version": "0.43.7", "date": "2026-10-29",
+      "title": "The seam-soak monitor",
+      "notes": [
+        "A dashboard monitor shows each seam's abstention rate, arm distribution, and judged value efficacy from its runtime observations.",
+        "Builder-seam and seam-soak findings stay on their own monitors, out of the default attention queue."
+      ]
+    },
+    {
       "track": "sdk", "version": "0.17.0", "date": "2026-10-22",
       "title": "The seam-soak contract",
       "notes": [
