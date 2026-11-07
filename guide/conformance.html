@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Conformance &amp; fixtures — The Guide — Holonograph</title>
-<meta name="description" content="Turn a capability surface — tools plus prose rules — into reproducible, mechanically-checkable fixtures. Derive candidates, approve fixtures, run checks." />
+<title>Conformance &amp; fixtures · The Guide · Holonograph</title>
+<meta name="description" content="Turn a capability surface (tools plus prose rules) into reproducible, mechanically-checkable fixtures. Derive candidates, approve fixtures, run checks." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
 <meta property="og:title" content="Conformance &amp; fixtures · Holonograph Guide" />
-<meta property="og:description" content="Turn a capability surface — tools plus prose rules — into reproducible, mechanically-checkable fixtures. Derive candidates, approve fixtures, run checks." />
+<meta property="og:description" content="Turn a capability surface (tools plus prose rules) into reproducible, mechanically-checkable fixtures. Derive candidates, approve fixtures, run checks." />
 <meta property="og:url" content="https://holonograph.ai/guide/conformance" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
 <meta property="og:image:width" content="2752" />
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
 <meta name="twitter:title" content="Conformance &amp; fixtures · Holonograph Guide" />
-<meta name="twitter:description" content="Turn a capability surface — tools plus prose rules — into reproducible, mechanically-checkable fixtures. Derive candidates, approve fixtures, run checks." />
+<meta name="twitter:description" content="Turn a capability surface (tools plus prose rules) into reproducible, mechanically-checkable fixtures. Derive candidates, approve fixtures, run checks." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -31,8 +31,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+  <link rel="stylesheet" href="./_assets/guide.css?v=7" />
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -44,9 +44,9 @@
 <body>
   <header class="site-header">
     <div class="wrap"><nav>
-      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
-      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
-      <a class="pill" href="../pricing.html">Get started</a>
+      <a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a>
+      <span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/" class="on">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
     </nav></div>
   </header>
 
@@ -54,6 +54,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -63,32 +68,38 @@
         <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
         <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
         <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
-        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
-        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
-        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
-        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li class="s-part">Variance controls for model seams</li>
-        <li class="current"><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
-        <li class="s-part">Seams, soak, and authority</li>
-        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
-        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
-        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
-        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
-        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li><span class="s-num">07</span><a href="./swarms-and-sources" class="s-ttl">Swarms and sources</a></li>
+        <li><span class="s-num">08</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">09</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">10</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">13</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
+        <li><span class="s-num">14</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity</li>
+        <li class="current"><span class="s-num">15</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">16</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">17</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">18</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams and soak</li>
+        <li><span class="s-num">19</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">20</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">21</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
+        <li><span class="s-num">22</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">23</span><a href="./authority-governance" class="s-ttl">Authority governance</a></li>
         <li class="s-part">Operational utilities</li>
-        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">24</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">25</span><a href="./outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">26</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">27</span><a href="./dashboard" class="s-ttl">The dashboard</a></li>
       </ol>
     </aside>
 
     <main class="guide-main">
       <article>
 
-        <p class="guide-eyebrow">Chapter 14</p>
+        <p class="guide-eyebrow">Chapter 15</p>
         <h1 class="guide-h1">Conformance &amp; fixtures</h1>
         <p class="guide-meta"></p>
 
@@ -96,7 +107,7 @@
           A capability surface is what you say your agent can do: the tools it exposes, the rules it should follow. Conformance turns that description into reproducible checks: a set of fixtures a scheduled run can execute, and a verdict that tells you whether each rule held. The flow is <em>derive → approve → check</em>.
         </p>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
 
         <p>
           Three moving pieces:
@@ -108,7 +119,7 @@
           <li><strong>The check step</strong> runs the approved fixtures against real events over a window and returns a verdict per fixture plus a summary.</li>
         </ul>
 
-        <h3>Enforceability taxonomy</h3>
+        <h3 id="enforceability-taxonomy">Enforceability taxonomy</h3>
 
         <p>
           Not every rule can be checked mechanically. The derive step labels each candidate with one of three enforceability categories, so the coverage report is honest about which rules the machine can actually hold you to:
@@ -125,15 +136,15 @@
           </table>
         </div>
 
-        <h2>Why it matters</h2>
+        <h2 id="why-it-matters">Why it matters</h2>
 
         <p>
           A prose rule that can't be checked is a rule the system will drift on. Conformance moves rules from "our team believes this" to "the last check confirmed this at 06:00 Tuesday". The coverage report tells you exactly how many of the surface's rules you have mechanical accountability for, and the needs-repair panel tells you which ones the derive step couldn't formalize on its own.
         </p>
 
-        <h2>How to use it</h2>
+        <h2 id="how-to-use-it">How to use it</h2>
 
-        <h3>1. Derive candidates from the surface</h3>
+        <h3 id="1-derive-candidates-from-the-surface">1. Derive candidates from the surface</h3>
 
         <p>
           Send the capability surface (its tools and its rules) and get back a set of candidate fixtures with per-rule enforceability labels.
@@ -157,7 +168,7 @@ Content-Type: application/json
           The response gives you the candidates, a coverage summary (e.g. "2 of 3 rules mechanically enforceable"), and a needs-repair list for rules the derive step could not fully formalize.
         </p>
 
-        <h3>2. Review and approve</h3>
+        <h3 id="2-review-and-approve">2. Review and approve</h3>
 
         <p>
           Each candidate is a JSON fixture describing an assertion (or a set of assertions, guarded by a <code>when</code> predicate). Review the derived shape, edit if needed, and submit each approved fixture with an <code>approverId</code>.
@@ -189,7 +200,7 @@ Content-Type: application/json
 
         <p>Response: an <code>eventId</code> for the approval event. The fixture is now live in the store and will be picked up by subsequent checks.</p>
 
-        <h3>3. Run a check</h3>
+        <h3 id="3-run-a-check">3. Run a check</h3>
 
         <p>Point the checker at either an inline fixture or a stored one, plus a window and a surface filter.</p>
 
@@ -206,7 +217,7 @@ Content-Type: application/json
 
         <p>The response includes a top-level <code>verdict</code>, a per-event breakdown, the count of events checked, and the window actually used.</p>
 
-        <h2>Reading the output</h2>
+        <h2 id="reading-the-output">Reading the output</h2>
 
         <p>
           Conformance findings share the operator lifecycle described in
@@ -214,7 +225,7 @@ Content-Type: application/json
           into a proposal.
         </p>
 
-        <h3>Assertion kinds</h3>
+        <h3 id="assertion-kinds">Assertion kinds</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -231,7 +242,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3>Guarded assertions</h3>
+        <h3 id="guarded-assertions">Guarded assertions</h3>
 
         <p>
           A fixture can carry a <code>when</code> predicate that decides whether the assertions apply to a given event. The predicate uses the same assertion kinds as the assertions themselves. If <code>when</code> is absent, the assertions apply to every event in the window.
@@ -245,7 +256,7 @@ Content-Type: application/json
 
         <p>An event that fails the <code>when</code> predicate returns <code>not-applicable</code> for this fixture instead of pass/fail.</p>
 
-        <h3>Verdict precedence</h3>
+        <h3 id="verdict-precedence">Verdict precedence</h3>
 
         <p>
           When multiple assertions run against one event, the overall event verdict is the strongest of the individual assertion verdicts, in this order:
@@ -261,19 +272,19 @@ Content-Type: application/json
 
         <p>The check's top-level verdict is the strongest across events, using the same precedence.</p>
 
-        <h3>Coverage report</h3>
+        <h3 id="coverage-report">Coverage report</h3>
 
         <p>The derive response's coverage summary is the honest headline: <em>K of N rules are mechanically enforceable</em>. It's the number to track over time. As your rules mature and the derive step's classifier improves, the ratio should climb. What it can't yet cover ends up in the needs-repair panel.</p>
 
-        <h3>Needs-repair panel</h3>
+        <h3 id="needs-repair-panel">Needs-repair panel</h3>
 
         <p>
           A rule ends up in <code>needsRepair</code> when the derive step couldn't turn it into a check on its own, usually because the rule is ambiguous, or references a system state the fixture format doesn't reach yet. Two ways to clear the entry: rephrase the rule so the derive step can formalize it, or hand-author a fixture and approve it directly.
         </p>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
-        <h3>Endpoints</h3>
+        <h3 id="endpoints">Endpoints</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -286,7 +297,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/conformance/derive</code>: response fields</h3>
+        <h3 id="post-lens-conformance-derive-response-fields"><code>POST /lens/conformance/derive</code>: response fields</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -303,7 +314,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/conformance/check</code>: request &amp; response</h3>
+        <h3 id="post-lens-conformance-check-request-response"><code>POST /lens/conformance/check</code>: request &amp; response</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -328,9 +339,9 @@ Content-Type: application/json
             <span class="nav-label">Previous</span>
             <span class="nav-title">The lessons pipeline</span>
           </a>
-          <a href="./judge-modes" class="nav-next">
+          <a href="./rubric-coverage" class="nav-next">
             <span class="nav-label">Next</span>
-            <span class="nav-title">Judge modes</span>
+            <span class="nav-title">Rubric coverage and de-saturation</span>
           </a>
         </nav>
 
@@ -340,9 +351,10 @@ Content-Type: application/json
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>Chapter 14 · Conformance &amp; fixtures</span>
+    <span>Chapter 15 · Conformance &amp; fixtures</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

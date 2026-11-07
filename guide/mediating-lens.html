@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>The mediating lens: placement &amp; call flow — The Guide — Holonograph</title>
+<title>The mediating lens: placement &amp; call flow · The Guide · Holonograph</title>
 <meta name="description" content="Where the lens sits in the call path between your agent and the model, and what it captures at the boundary." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
@@ -31,8 +31,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+  <link rel="stylesheet" href="./_assets/guide.css?v=7" />
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -44,9 +44,9 @@
 <body>
   <header class="site-header">
     <div class="wrap"><nav>
-      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
-      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
-      <a class="pill" href="../pricing.html">Get started</a>
+      <a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a>
+      <span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/" class="on">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
     </nav></div>
   </header>
 
@@ -54,6 +54,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -63,25 +68,31 @@
         <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
         <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
         <li class="current"><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
-        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
-        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
-        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
-        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li class="s-part">Variance controls for model seams</li>
-        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
-        <li class="s-part">Seams, soak, and authority</li>
-        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
-        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
-        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
-        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
-        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li><span class="s-num">07</span><a href="./swarms-and-sources" class="s-ttl">Swarms and sources</a></li>
+        <li><span class="s-num">08</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">09</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">10</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">13</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
+        <li><span class="s-num">14</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity</li>
+        <li><span class="s-num">15</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">16</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">17</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">18</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams and soak</li>
+        <li><span class="s-num">19</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">20</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">21</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
+        <li><span class="s-num">22</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">23</span><a href="./authority-governance" class="s-ttl">Authority governance</a></li>
         <li class="s-part">Operational utilities</li>
-        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">24</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">25</span><a href="./outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">26</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">27</span><a href="./dashboard" class="s-ttl">The dashboard</a></li>
       </ol>
     </aside>
 
@@ -96,7 +107,7 @@
           Holonograph's central affordance, the lens, is <em>where it sits</em>. This chapter is about the physical placement of the lens in your call path and the shape of a single call as it moves through it.
         </p>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
 
         <p>
           The lens is a bidirectional in-process mediator between your agent and the model. Your agent doesn't call the vendor directly; it calls <code>POST /holonograph/messages</code> on the local Holonograph daemon, and Holonograph forwards to the vendor on your behalf. Both directions of the exchange (request out and response back) pass through the same code path.
@@ -112,7 +123,7 @@
           <li><strong>No SDK version coupling in your code.</strong> When a vendor changes their SDK, the change is absorbed at the lens, not in every consumer.</li>
         </ul>
 
-        <h2>Why it matters</h2>
+        <h2 id="why-it-matters">Why it matters</h2>
 
         <p>
           The alternative, instrumenting the agent's code with logging calls, has two structural weaknesses. Log lines can only record what the developer thought to log, and the log format is coupled to the agent's version of the vendor SDK. Placement side-steps both. Because the lens owns the boundary, capture is a property of the architecture, not a discipline the developer must remember.
@@ -123,9 +134,9 @@
           Treat <code>POST /holonograph/messages</code> as your model provider's endpoint from the agent's point of view. The vendor call still happens. It just happens on the daemon's side of a stable, local wire.
         </div>
 
-        <h2>How to use it</h2>
+        <h2 id="how-to-use-it">How to use it</h2>
 
-        <h3>Direct HTTP</h3>
+        <h3 id="direct-http">Direct HTTP</h3>
 
         <p>The endpoint accepts a shape closely mirroring a vendor's messages call, plus a required <code>surfaceId</code> that ties the call to your contract.</p>
 
@@ -152,14 +163,14 @@ Content-Type: application/json
   "callId": "call_01H...",
   "correlationId": "corr_01H...",
   "surfaceId": "classify-intent",
-  "lightSourceId": "anthropic/claude-sonnet-5",
+  "lightSourceId": "anthropic/claude-sonnet/5",
   "result": { /* the primary model's response */ },
   "observerRecords": [ /* multiplex observers, if any */ ],
   "gateOutcome": null,
   "substituted": false
 }</code></pre>
 
-        <h3>Via the SDK</h3>
+        <h3 id="via-the-sdk">Via the SDK</h3>
 
         <p>
           Most integrations use the SDK's <code>messages.create()</code>, which wraps the endpoint and returns a call handle documented in <a href="./sdk-reference">SDK reference</a>. The wire shape above is what the handle's <code>.result</code> is unpacked from.
@@ -174,7 +185,7 @@ Content-Type: application/json
 });
 const answer = handle.result;</code></pre>
 
-        <h3>Overrides that ride along</h3>
+        <h3 id="overrides-that-ride-along">Overrides that ride along</h3>
 
         <p>Two request fields let you override the surface's contract for a single call, when you know what you're doing:</p>
 
@@ -183,9 +194,9 @@ const answer = handle.result;</code></pre>
           <li><code>lightSourceIdOverride</code>: routes this call to a specific vendor instead of the surface's default routing. Useful for reproducing an issue against a known-good model.</li>
         </ul>
 
-        <h2>Reading the output</h2>
+        <h2 id="reading-the-output">Reading the output</h2>
 
-        <p>The response carries five load-bearing fields:</p>
+        <p>Five fields on the response matter:</p>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -203,9 +214,9 @@ const answer = handle.result;</code></pre>
           </table>
         </div>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
-        <h3>Request fields</h3>
+        <h3 id="request-fields">Request fields</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -233,9 +244,9 @@ const answer = handle.result;</code></pre>
             <span class="nav-label">Previous</span>
             <span class="nav-title">SDK reference</span>
           </a>
-          <a href="./run-modes" class="nav-next">
+          <a href="./swarms-and-sources" class="nav-next">
             <span class="nav-label">Next</span>
-            <span class="nav-title">Run modes</span>
+            <span class="nav-title">Swarms and sources</span>
           </a>
         </nav>
 
@@ -248,6 +259,7 @@ const answer = handle.result;</code></pre>
     <span>Chapter 06 · The mediating lens</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

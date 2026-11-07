@@ -6,7 +6,7 @@
   var A = window.HOLO_ANIM, rs = document.documentElement.style;
   rs.setProperty('--anim-dur', (A.dur/1000)+'s'); rs.setProperty('--anim-ease', A.ease);
 
-  // Google Analytics (GA4) — inject once. home.html/value.html carry their own
+  // Google Analytics (GA4) — inject once. the marketing pages carry their own
   // inline snippet (they don't load site.js); this covers the 6 chromed pages.
   if(!window.gtag && !document.getElementById('ga4-lib')){
     var ga=document.createElement('script'); ga.async=true; ga.id='ga4-lib';
@@ -29,32 +29,34 @@
   }
 
   var NAV = [
-    { key:'product', label:'Product', href:'/' },
-    { key:'value',   label:'Value',   href:'value.html' },
-    { key:'pricing', label:'Pricing', href:'pricing.html' },
-    { key:'docs',    label:'Docs',    href:'docs.html' }
+    { key:'ai-attribution', label:'AI Attribution', href:'/ai-attribution' },
+    { key:'attention-spine', label:'Attention Spine', href:'/attention-spine' },
+    { key:'authority-governance', label:'Authority', href:'/authority-governance/' },
+    { key:'seams', label:'Seams', href:'/seams' },
+    { key:'builders', label:'Builders', href:'/builders' },
+    { key:'guide', label:'Guide', href:'/guide/' }
   ];
   var active = document.body.getAttribute('data-nav') || '';
 
   var header =
     '<div class="wrap"><nav aria-label="Primary">' +
-      '<span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>' +
-      '<span class="pp">patent&nbsp;pending</span></span>' +
+      '<a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span>' +
+      '<span class="pp">patent&nbsp;pending</span></a>' +
       '<span class="nav-links">' +
         NAV.map(function(n){ return '<a href="'+n.href+'"'+(n.key===active?' class="on"':'')+'>'+n.label+'</a>'; }).join('') +
       '</span>' +
-      '<a class="pill" href="contact.html">Request a demo</a>' +
+      '<a class="pill" href="/contact">Request a demo</a>' +
     '</nav></div>';
 
   var footer =
     '<div class="wrap">' +
       '<div class="footer-grid">' +
-        '<div class="f-brand"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span>' +
-          '<p class="f-tag">The calibrated instrument for agentic behavioral attribution.</p>' +
-          '<p class="f-pp">Patent pending</p></div>' +
-        '<div class="f-col"><h4>Product</h4><a href="value.html">Value</a><a href="lens-facets.html">Lens facets</a><a href="pricing.html">Pricing</a><a href="docs.html">Docs</a><a href="changelog.html">Changelog</a></div>' +
-        '<div class="f-col"><h4>Resources</h4><a href="docs.html">Guide</a><a href="glossary.html">Glossary</a><a href="#">Papers</a></div>' +
-        '<div class="f-col"><h4>Company</h4><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div>' +
+        '<div class="f-brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>' +
+          '<p class="f-tag">The self-hosted instrument for authority governance.</p>' +
+          '<p class="f-pp"><a href="/">Patent pending</a></p></div>' +
+        '<div class="f-col"><h4><a href="/">Platform</a></h4><a href="/ai-attribution">AI Attribution</a><a href="/lens-facets">Lens facets</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority governance</a><a href="/seams">Seams</a><a href="/builders">Builders</a></div>' +
+        '<div class="f-col"><h4>Resources</h4><a href="/guide/">Guide</a><a href="/glossary">Glossary</a><a href="/papers">Research</a><a href="/changelog">Changelog</a></div>' +
+        '<div class="f-col"><h4>Company</h4><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></div>' +
       '</div>' +
       '<div class="footer-bar">' +
         '<span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span>' +
@@ -80,5 +82,5 @@
   }
 
   // Nigel lives in nigel.js — one copy, loaded by every page. He used to be
-  // duplicated here, in home.html, and in value.html; all three were scripted mocks.
+  // duplicated here and in the home page; all three were scripted mocks.
 })();

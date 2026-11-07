@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>SDK reference — The Guide — Holonograph</title>
+<title>SDK reference · The Guide · Holonograph</title>
 <meta name="description" content="The HolonographClient end-to-end: the messages.create → reportOutcome flow, attaching a structured claim so the lens checks your judge deterministically (verdict reliability), plus contract, availability, and the emit modes." />
 <meta name="discloses" content="capability-only" />
 <meta name="reflects-version" content="v0.41.8" />
@@ -33,8 +33,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+  <link rel="stylesheet" href="./_assets/guide.css?v=7" />
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -46,9 +46,9 @@
 <body>
   <header class="site-header">
     <div class="wrap"><nav>
-      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
-      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
-      <a class="pill" href="../pricing.html">Get started</a>
+      <a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a>
+      <span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/" class="on">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
     </nav></div>
   </header>
 
@@ -56,6 +56,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -65,25 +70,31 @@
         <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
         <li class="current"><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
         <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
-        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
-        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
-        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
-        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li class="s-part">Variance controls for model seams</li>
-        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
-        <li class="s-part">Seams, soak, and authority</li>
-        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
-        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
-        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
-        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
-        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li><span class="s-num">07</span><a href="./swarms-and-sources" class="s-ttl">Swarms and sources</a></li>
+        <li><span class="s-num">08</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">09</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">10</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">13</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
+        <li><span class="s-num">14</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity</li>
+        <li><span class="s-num">15</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">16</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">17</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">18</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams and soak</li>
+        <li><span class="s-num">19</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">20</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">21</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
+        <li><span class="s-num">22</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">23</span><a href="./authority-governance" class="s-ttl">Authority governance</a></li>
         <li class="s-part">Operational utilities</li>
-        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">24</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">25</span><a href="./outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">26</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">27</span><a href="./dashboard" class="s-ttl">The dashboard</a></li>
       </ol>
     </aside>
 
@@ -95,10 +106,10 @@
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The <code>HolonographClient</code> is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method.
+          The <code>HolonographClient</code> is the surface an application, or a coding agent acting through one, uses end-to-end: construct it once, run the call flow (<code>messages.create → handle → reportOutcome</code>), and, when you want the lens to check the judge for you, attach a structured <code>claim</code> to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (<code>contract</code>, <code>availability</code>) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in <a href="./sidecar">Sidecar / OTel integration</a>.
         </p>
 
-        <h2>Install</h2>
+        <h2 id="install">Install</h2>
 
         <pre><code>npm install @holonograph/client
 # or
@@ -110,7 +121,7 @@ yarn add @holonograph/client</code></pre>
           Single self-contained ES module, <strong>no runtime dependencies</strong>. Targets Node 18+ and any runtime with a global <code>fetch</code>. Fully typed; the package ships its own type declarations.
         </p>
 
-        <h2>Construct a client</h2>
+        <h2 id="construct-a-client">Construct a client</h2>
 
         <pre><code>import { HolonographClient } from "@holonograph/client";
 
@@ -128,7 +139,7 @@ const client = new HolonographClient({
   }
 });</code></pre>
 
-        <h3>Constructor options</h3>
+        <h3 id="constructor-options">Constructor options</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -144,14 +155,14 @@ const client = new HolonographClient({
           </table>
         </div>
 
-        <h3>The <code>substrate</code> object</h3>
+        <h3 id="the-substrate-object">The <code>substrate</code> object</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
             <thead><tr><th>Field</th><th>Shape</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td><code>lensVersion</code></td><td>string</td><td>Which lens configuration was in effect.</td></tr>
-              <tr><td><code>lightSourceIdentifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/model/version</code>.</td></tr>
+              <tr><td><code>lightSourceIdentifier</code></td><td>string</td><td>Which model produced the output, as <code>vendor/family/version</code>, with an optional fourth <code>keyId</code> segment. A two-segment value is rejected.</td></tr>
               <tr><td><code>runMode</code></td><td>enum</td><td>Which run mode the evaluation ran under.</td></tr>
               <tr><td><code>provenance</code></td><td>string</td><td>Origin category of the run; see <a href="./substrate-columns">Substrate columns</a>.</td></tr>
               <tr><td><code>operatorColumns</code></td><td>object</td><td>The operator-declared deployment-state columns, keyed by column id. For example: <code>{ prompt_hash: "v2-sha256-…", tool_schema_version: "3.1.0" }</code>.</td></tr>
@@ -179,7 +190,7 @@ const client = new HolonographClient({
 
         <p>All three buffered modes share the same bounded buffer and the same completeness accounting. What differs is the drain channel.</p>
 
-        <h3>Configuration</h3>
+        <h3 id="configuration">Configuration</h3>
 
         <pre><code>const client = new HolonographClient({
   endpoint: "http://127.0.0.1:8080",
@@ -221,7 +232,7 @@ const client = new HolonographClient({
           </table>
         </div>
 
-        <h3><code>emit.otlp</code></h3>
+        <h3 id="emit-otlp"><code>emit.otlp</code></h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -234,7 +245,7 @@ const client = new HolonographClient({
           </table>
         </div>
 
-        <h3>Reading delivery completeness</h3>
+        <h3 id="reading-delivery-completeness">Reading delivery completeness</h3>
 
         <p>
           A bounded buffer with drop-on-overflow only produces trustworthy analysis if the drops are <em>counted</em>. The client publishes an accounting window every <code>emit.windowMs</code> and exposes the current window snapshot as a read.
@@ -283,7 +294,7 @@ if (window?.biasFlag) {
           Buffered modes are <strong>at-most-once</strong>. There is no reordering, no retry, no hidden growth. Drop-on-overflow is the only bound; the drops are counted and surfaced as <code>biasFlag</code>. Fire-and-forget stays fire-and-forget.
         </div>
 
-        <h2>The call flow</h2>
+        <h2 id="the-call-flow">The call flow</h2>
 
         <p>One evaluation is three calls: <code>messages.create</code>, then use <code>.result</code>, then <code>.reportOutcome(...)</code>.</p>
 
@@ -296,7 +307,7 @@ if (window?.biasFlag) {
 const answer = handle.result;             // read/act on the model's response
 const isCorrect = grade(answer);          // your evaluation logic
 
-await handle.reportOutcome({
+const eventId = await handle.reportOutcome({
   dimensions: [{
     dimensionId: "correctness",
     passed: isCorrect,
@@ -304,13 +315,17 @@ await handle.reportOutcome({
     actual: summarize(answer)
   }],
   cohortTags: ["customer-tier=enterprise"]
-});</code></pre>
+});                                       // the primary event's id</code></pre>
 
         <p>
-          <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop; it persists the evaluation event that binds this call into your history.
+          <code>messages.create()</code> mediates the model call and returns a handle. <code>handle.result</code> is the response you use in your agent. <code>handle.reportOutcome()</code> closes the loop; it persists the evaluation event that binds this call into your history and returns that event's id. Discard the id for a synchronous judge; keep it when a verdict arrives later and has to name its subject.
         </p>
 
-        <h3><code>messages.create(req)</code></h3>
+        <p>
+          On the wire those are two endpoints: <code>POST /aperture/messages</code>, which mediates the call and returns the record, and <code>POST /lens/events</code>, which commits the event the client assembles from it. The server holds nothing between them. That is why outcome reporting is a post of a complete event rather than a write against a call the server is remembering, and why a client in another language needs only those two paths.
+        </p>
+
+        <h3 id="messages-create-req"><code>messages.create(req)</code></h3>
 
         <p>
           Every field on the request is optional except <code>surfaceId</code> and <code>messages</code>. The rest are passed through to the model when relevant, or interpreted by the lens.
@@ -337,7 +352,7 @@ await handle.reportOutcome({
           </table>
         </div>
 
-        <h3>The call handle</h3>
+        <h3 id="the-call-handle">The call handle</h3>
 
         <p>The object returned by <code>messages.create()</code>.</p>
 
@@ -347,13 +362,13 @@ await handle.reportOutcome({
             <tbody>
               <tr><td><code>.result</code></td><td>object</td><td>The primary model's response. Use this as the answer in your agent.</td></tr>
               <tr><td><code>.observerRecords[]</code></td><td>array</td><td>Under multiplex routing, the observer vendors' captured records. Empty when not multiplexing.</td></tr>
-              <tr><td><code>.reportOutcome(outcome)</code></td><td>method</td><td>Persist the evaluation event that closes this call.</td></tr>
+              <tr><td><code>.reportOutcome(outcome)</code></td><td>method &rarr; <code>Promise&lt;string&gt;</code></td><td>Persist the evaluation event that closes this call. Resolves to the <strong>primary event's id</strong>: the event carrying the light snapshot, the dimensions and any <code>judge.pending</code> tag. Observer-event ids are not returned.</td></tr>
               <tr><td><code>.gradeObserver(recordOrId, outcome)</code></td><td>method</td><td>Attach grades to a cross-vendor observer call before reporting, when the lens returned observer records. Call this <em>before</em> <code>reportOutcome</code>.</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3><code>reportOutcome(outcome)</code></h3>
+        <h3 id="reportoutcome-outcome"><code>reportOutcome(outcome)</code></h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -362,7 +377,10 @@ await handle.reportOutcome({
               <tr><td><code>dimensions[]</code></td><td>array (req)</td><td>One entry per dimension declared on the surface. Each entry: <code>{ dimensionId, passed, expected, actual }</code>.</td></tr>
               <tr><td><code>cohortTags[]</code></td><td>string[] (opt)</td><td>Discrete labels to slice on later. For diagnostic substrate columns, use the <code>&lt;column.id&gt;=&lt;value&gt;</code> form.</td></tr>
               <tr><td><code>sideEffects[]</code></td><td>array (opt)</td><td>Any downstream actions this call triggered; useful for correlated fixtures and lessons later.</td></tr>
-              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>The fixture this call satisfied, when the call was run as part of a conformance check.</td></tr>
+              <tr><td><code>fixtureId</code></td><td>string (opt)</td><td>The fixture this call satisfied, when the call was run as part of a conformance check. Omit it on a production call and the client derives a synthetic id from the correlation id.</td></tr>
+              <tr><td><code>eventId</code></td><td>string (opt)</td><td>Pre-generate the primary event's id instead of letting <code>reportOutcome</code> mint one. Format it with <code>newEventId</code> from the types package. Use it to hand an async judge worker the subject-event id before the event is written, or to keep a client-side fail-open landing under a known id. The store is keep-first, so re-posting the same id is a no-op. Observer events always mint their own.</td></tr>
+              <tr><td><code>judgeIdentity</code></td><td>object (opt)</td><td>The judge lens that produced this outcome, for <code>llm-judge</code> dimensions. Take it from the scorer's <code>ScoringResult.judgeIdentity</code>; the SDK stamps it into the reserved <code>judge.*</code> substrate columns so variance analyses can separate a judge change from a producer change. A <code>lensVersion</code> string alone under-specifies it. Omit for <code>exact-match</code>.</td></tr>
+              <tr><td><code>rubricDispatch</code></td><td>object (opt)</td><td>The resolved facet-scoped rubric for this outcome, when the dimension declares <code>rubricDispatch</code>. Take it from the scorer's <code>ScoringResult.rubricDispatch</code>; the SDK stamps <code>judge.rubric_source</code>, <code>judge.rubric_facet</code> and <code>judge.rubric_default_reason</code>, which is what makes the default-versus-bespoke split countable. Omit for single-rubric dimensions.</td></tr>
             </tbody>
           </table>
         </div>
@@ -377,16 +395,16 @@ await handle.reportOutcome({
               <tr><td><code>passed</code></td><td>boolean</td><td>Whether the dimension passed the evaluation.</td></tr>
               <tr><td><code>expected</code></td><td>string</td><td>What good looked like: the expected shape of the response.</td></tr>
               <tr><td><code>actual</code></td><td>string</td><td>What the model actually produced (or a short summary).</td></tr>
-              <tr><td><code>claim</code></td><td>object (opt)</td><td>What the judge <em>asserted</em>, as fields the lens can verify — for the verdict-reliability layer to check (see below). A <code>JudgeClaimReport</code>; omit it and the dimension is simply not claim-instrumented.</td></tr>
+              <tr><td><code>claim</code></td><td>object (opt)</td><td>What the judge <em>asserted</em>, as fields the lens can verify, for the verdict-reliability layer to check (see below). A <code>JudgeClaimReport</code>; omit it and the dimension is simply not claim-instrumented.</td></tr>
             </tbody>
           </table>
         </div>
 
         <p>
-          Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+          Calling <code>reportOutcome</code> persists the evaluation event to Holonograph's substrate: one row, four layers bound (see <a href="./snapshot">The four-layer snapshot</a>). It resolves to that event's id, which is the handle an asynchronous judge needs: a verdict minted later references it as its subject event. What Holonograph does with the event afterwards is the subject of the analysis chapters.
         </p>
 
-        <h2>Verdict reliability — let the lens check your judge</h2>
+        <h2 id="verdict-reliability">Verdict reliability: let the lens check your judge</h2>
 
         <p>
           A verdict does not have to come back in-request. Which timings are available to a judge, and what
@@ -395,7 +413,7 @@ await handle.reportOutcome({
         </p>
 
         <p>
-          A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong> — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
+          A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that <strong>deterministically</strong>, but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a <code>claim</code> to any judged dimension:
         </p>
 
         <pre><code>await handle.reportOutcome({
@@ -405,7 +423,7 @@ await handle.reportOutcome({
       passed: false,
       expected: "only facts present in the tool results",
       actual: "claimed a refund was issued and cited a total of $84.20",
-      // What the judge ASSERTED, as fields the lens can verify — not prose.
+      // What the judge ASSERTED, as fields the lens can verify, not prose.
       claim: {
         status: "emitted",
         assertions: [
@@ -420,7 +438,7 @@ await handle.reportOutcome({
 });</code></pre>
 
         <p>
-          The lens checks each assertion <strong>against the captured call</strong> — is the accused value actually absent from everything the model read? was that tool really never invoked, anywhere across the whole conversation? — and reports, per assertion, whether the record <strong>corroborates</strong> or <strong>contradicts</strong> the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
+          The lens checks each assertion <strong>against the captured call</strong>. Is the accused value actually absent from everything the model read? Was that tool really never invoked, anywhere across the whole conversation? It reports, per assertion, whether the record <strong>corroborates</strong> or <strong>contradicts</strong> the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
         </p>
 
         <div class="guide-table-wrap">
@@ -434,13 +452,13 @@ await handle.reportOutcome({
         </div>
 
         <p>
-          A dimension with no <code>claim</code> is simply not claim-instrumented — the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is <em>meant</em> to emit a claim but its output is malformed, report <code>{ status: "malformed", reflectionAttempted: &lt;boolean&gt; }</code> — the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The <code>JudgeClaimReport</code>, <code>JudgeAssertion</code>, and <code>JudgeAssertionKind</code> types are exported so you can build and validate the claim before you send it.
+          A dimension with no <code>claim</code> is simply not claim-instrumented: the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is <em>meant</em> to emit a claim but its output is malformed, report <code>{ status: "malformed", reflectionAttempted: &lt;boolean&gt; }</code>, the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The <code>JudgeClaimReport</code>, <code>JudgeAssertion</code>, and <code>JudgeAssertionKind</code> types are exported so you can build and validate the claim before you send it.
         </p>
 
-        <h3>Reading it back — the pre-action check</h3>
+        <h3 id="reading-it-back-the-pre-action-check">Reading it back: the pre-action check</h3>
 
         <p>
-          This is the read to run <em>before</em> you act on a verdict — before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use <code>client.callDirectly</code> or a plain <code>fetch</code> against your lens <code>endpoint</code>.
+          This is the read to run <em>before</em> you act on a verdict, before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use <code>client.callDirectly</code> or a plain <code>fetch</code> against your lens <code>endpoint</code>.
         </p>
 
         <pre><code>GET /holonograph/verdict-reliability?surfaceId=&lt;id&gt;&amp;since=&lt;iso&gt;&amp;until=&lt;iso&gt;</code></pre>
@@ -451,14 +469,14 @@ await handle.reportOutcome({
             <tbody>
               <tr><td><code>eventCount</code></td><td>number</td><td>Evaluation events in the window.</td></tr>
               <tr><td><code>tierTally</code></td><td>object</td><td>How many verdicts fell into each reliability tier.</td></tr>
-              <tr><td><code>flagged[]</code></td><td>array</td><td>The verdicts the layer flagged as not safe to act on at face value — a judge the record <em>contradicted</em> is the loud case.</td></tr>
+              <tr><td><code>flagged[]</code></td><td>array</td><td>The verdicts the layer flagged as not safe to act on at face value: a judge the record <em>contradicted</em> is the loud case.</td></tr>
               <tr><td><code>trustDrivers</code></td><td>object</td><td>What most moved reliability over the window.</td></tr>
               <tr><td><code>corpusRates</code></td><td>object</td><td>Per-predicate firing rates from the reliability corpus (see below).</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3>Has the scale stopped discriminating? The saturation read</h3>
+        <h3 id="has-the-scale-stopped-discriminating-the-saturation-read">Has the scale stopped discriminating? The saturation read</h3>
 
         <p>
           One entry in that corpus is worth an agent's attention before it trusts a numeric score: <code>saturating-anchor-regime</code>. It reports a <strong>candidate</strong> when a reading has come to rest at an anchor, so distinct inputs stop being told apart. It is a candidate, not a settled verdict: the read names the measurement that would confirm or discharge it. An agent reading a graded score should check this first: when the candidate is present, rank by the reliability tier, not the score magnitude.
@@ -469,7 +487,7 @@ await handle.reportOutcome({
           The read reports the condition on the event as a candidate, not a settled verdict, and does not pass the number through as an ordinary score. Where a surface is declared as separate facets, each is attributed on its own, and where two co-transition the read names the aliasing rather than guessing between them.
         </div>
 
-        <h3>Multiplex: grade the observers</h3>
+        <h3 id="multiplex-grade-the-observers">Multiplex: grade the observers</h3>
 
         <p>
           When the surface's contract routes to more than one vendor, the primary's response comes back as <code>handle.result</code> and the observers' captured records come back as <code>handle.observerRecords[]</code>. Grade the observers <em>before</em> <code>reportOutcome</code> so all vendors' outcomes land in the same evaluation.
@@ -496,9 +514,9 @@ await handle.reportOutcome({
 
         <p>See <a href="./multiplexer">The multiplexer</a> for how routings are declared.</p>
 
-        <h2>Contract</h2>
+        <h2 id="contract">Contract</h2>
 
-        <h3><code>contract.register(contract)</code></h3>
+        <h3 id="contract-register-contract"><code>contract.register(contract)</code></h3>
 
         <p>
           Registers or replaces the surface contract for this agent. Returns a <code>ContractSummary</code> reflecting the newly-active shape. See <a href="./surface-contracts">Surface contracts</a> for the full contract shape and the summary fields.
@@ -510,9 +528,9 @@ await handle.reportOutcome({
 });
 console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
-        <h2>Availability</h2>
+        <h2 id="availability">Availability</h2>
 
-        <h3><code>availability.mark(req, opts?)</code></h3>
+        <h3 id="availability-mark-req-opts"><code>availability.mark(req, opts?)</code></h3>
 
         <p>
           Records that a surface is (or is not) available for evaluation over a given interval. Two modes:
@@ -534,7 +552,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
         <pre><code>{ "eventIds": ["evt_..."], "pairing": null }</code></pre>
 
-        <h2>Headers &amp; run mode resolution</h2>
+        <h2 id="headers-run-mode-resolution">Headers &amp; run mode resolution</h2>
 
         <p>
           The client sends two headers on every request:
@@ -549,7 +567,7 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
           For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see <a href="./run-modes">Run modes</a>.
         </p>
 
-        <h2>Escape hatch: <code>callDirectly</code></h2>
+        <h2 id="escape-hatch-calldirectly">Bypassing mediation: <code>callDirectly</code></h2>
 
         <p>
           For scenarios that need the full request shape (a bespoke bridge, a replay tool, or an integration test that wants to prod an edge of the wire), the client exposes a lower-level <code>callDirectly</code> method that skips the <code>messages.create</code> ergonomics and forwards the request as-authored.
@@ -557,9 +575,51 @@ console.log(summary.surfaces[0].dimensionCount);</code></pre>
 
         <pre><code>const result = await client.callDirectly(rawRequest);</code></pre>
 
-        <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is an escape hatch, not the everyday path.</p>
+        <p>Prefer <code>messages.create</code> for anything user-facing. <code>callDirectly</code> is for the cases above, not the everyday path.</p>
 
-        <h2>Errors</h2>
+        <h2 id="reads-the-client-does-not-wrap">Reads the client does not wrap</h2>
+
+        <p>
+          The reads an integration reaches for that have no client method. Call them over HTTP; each is also served under the <code>/holonograph</code> alias.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/version</code></td><td>The ledger-issued <code>lensVersion</code> in force. Stamp this into an event you build by hand; a placeholder is refused at ingest.</td></tr>
+              <tr><td><code>GET /aperture/health</code></td><td><code>{ status, lessons }</code>, where <code>lessons</code> is the boot-resolved capability state: available, unavailable or degraded, with a reason. A degrade is retrievable here as a first-class state rather than having gone to a log line at boot. Exempt from the run-mode header gate, still bearer-authed.</td></tr>
+              <tr><td><code>POST /lens/availability/mark</code></td><td>The HTTP form of <code>availability.mark</code>, for operator-side uptime automation that posts markers without the SDK.</td></tr>
+              <tr><td><code>GET /lens/availability</code></td><td>The read twin of <code>availability.mark</code>: the bracketed unreachable windows and the pairing summary over the whole marker history, so the summary covers the store rather than one write.</td></tr>
+              <tr><td><code>GET /lens/judge-claim-coverage</code></td><td>Declared against observed, per dimension declaring a <code>judgeClaimContract</code>: <code>emitted</code>, <code>malformed</code>, or <code>absent</code>. The third is the gap that matters, a judge that declared a claim contract and is not emitting one. Empty when no dimension declares one.</td></tr>
+              <tr><td><code>GET /lens/events/:eventId</code><br /><code>GET /lens/events/:eventId/judge-verdicts</code></td><td>One event, and the verdicts linked to it. The id is what <code>reportOutcome</code> returned.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="lens-snapshots">Lens versioning and snapshots</h2>
+
+        <div class="guide-callout">
+          <span class="callout-label">Two different snapshots</span>
+          A <em>four-layer snapshot</em> is one evaluation event, the subject of <a href="./snapshot">The four-layer snapshot</a>. A <em>lens snapshot</em> is a versioned record of the lens configuration itself: which lessons, fixtures and composition were in force. The endpoints below are the second kind.
+        </div>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /lens/snapshots</code></td><td>The version history with per-version metadata: <code>versionId</code>, <code>capturedAt</code>, <code>curatedBy</code>, <code>changeSummary</code>, <code>predecessorVersionId</code>, and lesson and fixture counts. The bodies are excluded so a timeline renders without paging.</td></tr>
+              <tr><td><code>GET /lens/snapshots/:versionId</code></td><td>The full composition for one version.</td></tr>
+              <tr><td><code>POST /lens/snapshots</code></td><td>Publish one. Append-only: re-publishing an existing <code>versionId</code> is a no-op and the original is preserved. Returns the assigned id.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          All three answer <code>501</code> where no lens-snapshot store is wired.
+        </p>
+
+        <h2 id="errors">Errors</h2>
 
         <p>Errors from the lens surface as <code>HolonographHttpError</code>, which carries the HTTP status, an error code, and any details the lens returned. There are additional typed error classes for the grading and availability flows so a catch block can discriminate on class.</p>
 
@@ -589,7 +649,99 @@ try {
           <code>4xx</code> covers validation, auth, and not-found. <code>5xx</code> is internal. <code>501</code> means the feature isn't wired on the given deployment.
         </p>
 
-        <h2>Advanced: <code>HttpTransport</code></h2>
+        <h3 id="typed-error-classes">Typed error classes</h3>
+
+        <p>Four classes beyond <code>HolonographHttpError</code>, so a catch block can discriminate without reading a message string. The first three are ordering and shape errors in the multiplex grading flow; they are raised client-side and never reach the wire.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Class</th><th>Raised when</th></tr></thead>
+            <tbody>
+              <tr><td><code>HolonographGradeAfterReportError</code></td><td><code>gradeObserver</code> was called after <code>reportOutcome</code> already flushed. Grade every observer first, then report once.</td></tr>
+              <tr><td><code>HolonographObserverNotFoundError</code></td><td><code>gradeObserver</code> was given a <code>lightSourceId</code> matching no record in <code>observerRecords</code>. Iterate the array rather than naming ids.</td></tr>
+              <tr><td><code>HolonographNoObserversError</code></td><td><code>gradeObserver</code> was called on a single-vendor routing, where there is nothing to grade.</td></tr>
+              <tr><td><code>HolonographMarkerPairingWarningError</code></td><td><code>availability.mark(req, { strict: true })</code> and the server's pairing feedback came back with a severity other than <code>ok</code>, such as a closer that paired no open window. The default posture warns and returns the response instead, since a marker write is best-effort; the error carries the full pairing summary.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="error-codes">Error codes</h3>
+
+        <p>Every <code>code</code> the lens emits, with its default status. A handler may override the status per call, so read the code rather than the number.</p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Code</th><th>Status</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td colspan="3"><strong>Request validation</strong></td></tr>
+              <tr><td><code>invalid_request</code></td><td>400</td><td>Body or query failed schema validation. <code>details</code> carries the flattened field errors.</td></tr>
+              <tr><td><code>not_implemented</code></td><td>501</td><td>The endpoint exists but is not wired on this deployment.</td></tr>
+              <tr><td><code>streaming_not_yet_implemented</code></td><td>501</td><td>The endpoint exists but its feature flag is off.</td></tr>
+
+              <tr><td colspan="3"><strong>Auth</strong></td></tr>
+              <tr><td><code>unauthenticated</code></td><td>401</td><td>Missing or invalid bearer token.</td></tr>
+              <tr><td><code>forbidden</code></td><td>403</td><td>Token valid, scope insufficient for the action.</td></tr>
+
+              <tr><td colspan="3"><strong>Not found</strong></td></tr>
+              <tr><td><code>not_found</code></td><td>404</td><td>The named correlationId, surfaceId, draftId, lessonId or eventId does not exist.</td></tr>
+
+              <tr><td colspan="3"><strong>runMode discipline</strong></td></tr>
+              <tr><td><code>runmode_mismatch</code></td><td>403</td><td>The active run mode does not authorize this action against the targeted resource class. See <a href="./run-modes">Run modes</a>.</td></tr>
+              <tr><td><code>missing_runmode</code></td><td>400</td><td>No run mode, or an invalid one, at the entry boundary.</td></tr>
+
+              <tr><td colspan="3"><strong>Lens-side guards</strong></td></tr>
+              <tr><td><code>validation_required</code></td><td>409</td><td>The surface is in validation-required state; declaration is blocked.</td></tr>
+              <tr><td><code>baseline_gate</code></td><td>409</td><td>A baseline declaration failed a gate: a missing annotation, unlabeled fixtures.</td></tr>
+              <tr><td><code>lens_incompatible</code></td><td>409</td><td>A lens-snapshot composition reference is incompatible with the current substrate.</td></tr>
+
+              <tr><td colspan="3"><strong>Gateway and mediation</strong></td></tr>
+              <tr><td><code>no_routing_for_surface</code></td><td>404</td><td>No routing is configured for the surface. The usual cause is a <code>routings</code> array declared inside a surface instead of at the contract root; see <a href="./surface-contracts">Surface contracts</a>.</td></tr>
+              <tr><td><code>gate_blocked</code></td><td>200</td><td>A gate executed and blocked delivery; the canned message is returned. A 200 because the call completed: the block is the outcome, not a failure. See <a href="./judge-modes">Judge modes</a>.</td></tr>
+              <tr><td><code>light_source_error</code></td><td>502</td><td>The vendor returned an error.</td></tr>
+
+              <tr><td colspan="3"><strong>Curation and lessons</strong></td></tr>
+              <tr><td><code>invalid_gate_transition</code></td><td>409</td><td>The draft is not in a state that permits this transition.</td></tr>
+              <tr><td><code>duplicate_enqueue</code></td><td>409</td><td>The draft is already enqueued, or already in the requested state.</td></tr>
+              <tr><td><code>missing_decision_comment</code></td><td>400</td><td>An approver decision arrived without its required annotation.</td></tr>
+              <tr><td><code>missing_existing_lesson</code></td><td>404</td><td>The publisher could not find the lesson the draft claimed to update.</td></tr>
+              <tr><td><code>duplicate_publish</code></td><td>409</td><td>Publish was called with a stable artifact id that already exists in the destination store. <code>details</code> carries the existing <code>artifactId</code>, so an idempotent re-publish is distinguishable from a fault.</td></tr>
+              <tr><td><code>invalid_seed_event</code></td><td>400</td><td>The pinned seed event's surface does not match the fixture's parent surface.</td></tr>
+              <tr><td><code>seed_event_not_seedable</code></td><td>409</td><td>The pinned seed event exists but carries no usable <code>rawRequest</code>, having been size-stripped or written by an older client.</td></tr>
+              <tr><td><code>runmode_seed_bypass_forbidden</code></td><td>403</td><td>A non-production <code>seedRawRequest</code> bypass was supplied under <code>production</code>.</td></tr>
+
+              <tr><td colspan="3"><strong>Live multiplex run</strong></td></tr>
+              <tr><td><code>multiplex_raw_request_missing</code></td><td>409</td><td>The resolved source run carries no <code>light.rawRequest</code>, so there is nothing to re-issue across vendors. The dashboard's run button is gated on a stored payload for the same reason.</td></tr>
+
+              <tr><td colspan="3"><strong>Resource limits</strong></td></tr>
+              <tr><td><code>rate_limited</code></td><td>429</td><td>Request rate exceeded for the caller's key. Carries <code>Retry-After</code>.</td></tr>
+              <tr><td><code>payload_too_large</code></td><td>413</td><td>Body exceeds the JSON cap, 1&nbsp;MB per request by default.</td></tr>
+              <tr><td><code>request_timeout</code></td><td>408</td><td>The body did not finish arriving within the read timeout.</td></tr>
+              <tr><td><code>store_insufficient_storage</code></td><td>507</td><td>The event store is out of space. Writes are temp-and-rename, so nothing partial landed and retrying the same <code>eventId</code> is safe.</td></tr>
+              <tr><td><code>store_unavailable</code></td><td>503</td><td>The store refused the write: read-only mount, or permission denied. Retry once write access is restored.</td></tr>
+
+              <tr><td colspan="3"><strong>Compaction</strong></td></tr>
+              <tr><td><code>compaction_plan_stale</code></td><td>409</td><td>The store changed since the plan was reviewed: new or sealed events, pins, a day rollover. Re-plan. See <a href="./compaction">Compaction &amp; husking</a>.</td></tr>
+              <tr><td><code>compaction_conflict</code></td><td>409</td><td>The compaction cannot proceed as asked: already unsealed, a delete-mode unseal, a member gone.</td></tr>
+              <tr><td><code>compaction_verification_failed</code></td><td>500</td><td>A seal's per-day verification found a consumer that differs on husks. Nothing was sealed or moved.</td></tr>
+
+              <tr><td colspan="3"><strong>Retention and authority</strong></td></tr>
+              <tr><td><code>retention_policy_conflict</code></td><td>409</td><td>The retention policy changed since the operator reviewed it; <code>basePolicyId</code> is stale. Reload and re-review.</td></tr>
+              <tr><td><code>authority_tear_already_acknowledged</code></td><td>409</td><td>An acknowledgement at or after this tear already exists on the surface.</td></tr>
+              <tr><td><code>authority_tear_ack_out_of_order</code></td><td>409</td><td>Acknowledgements apply oldest first and an older tear is still open. The error names it. See <a href="./authority">Authority</a>.</td></tr>
+              <tr><td><code>authority_policy_conflict</code></td><td>409</td><td>The authority policy changed since review; <code>basePolicyId</code> is stale.</td></tr>
+
+              <tr><td colspan="3"><strong>Catch-all</strong></td></tr>
+              <tr><td><code>internal</code></td><td>500</td><td>An uncaught exception. Report it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="guide-callout">
+          <span class="callout-label">The status does not identify the condition</span>
+          Fourteen of the thirty-six share <code>409</code> and two share <code>501</code>, so the status alone does not identify the condition. <code>gate_blocked</code> is the sharpest case: it carries a <code>200</code>, because a blocked delivery is a completed call with a canned response, not a transport failure.
+        </div>
+
+        <h2 id="advanced-httptransport">Advanced: <code>HttpTransport</code></h2>
 
         <p>
           The client is built on an <code>HttpTransport</code> primitive that's exported for advanced use: swapping in a custom fetch, adding request interceptors, or running the transport under a different runtime harness. Most integrations never touch it. If yours does, the transport surface is fully typed; the tests in the package are the working reference.
@@ -615,6 +767,7 @@ try {
     <span>Chapter 05 · SDK reference</span>
     <span>Patent pending · v0.26.0 · client 0.3.0</span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

@@ -1,0 +1,223 @@
+{
+  "$comment": "The chapter manifest. Single source of truth for chapter order, numbering, titles, groups and status. scripts/build-guide-search.mjs and scripts/build-guide-all.mjs read it; the per-page sidebar TOCs are checked against it. Adding a chapter: add an entry here, add guide/<slug>.html, rerun both scripts.",
+  "chapters": [
+    {
+      "num": "01",
+      "slug": "overview",
+      "title": "Overview & first principles",
+      "group": "Overview",
+      "status": "live",
+      "blurb": "What Holonograph is, what it observes, and why position beats instrumentation."
+    },
+    {
+      "num": "02",
+      "slug": "surface-contracts",
+      "title": "Surface contracts",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "What a surface declares it will do, checked against what it did."
+    },
+    {
+      "num": "03",
+      "slug": "snapshot",
+      "title": "The four-layer snapshot",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "The record that binds four layers of one call into a row you can query as history."
+    },
+    {
+      "num": "04",
+      "slug": "substrate-columns",
+      "title": "Substrate columns",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "The structured record every reading is computed from."
+    },
+    {
+      "num": "05",
+      "slug": "sdk-reference",
+      "title": "SDK reference",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "The client contract, and the reliability loop over your own judge.",
+      "noReferenceSection": true,
+      "note": "the whole chapter is reference; it has no Reference section of its own"
+    },
+    {
+      "num": "06",
+      "slug": "mediating-lens",
+      "title": "The mediating lens",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Where the lens sits, and why it captures every model call in both directions."
+    },
+    {
+      "num": "07",
+      "slug": "swarms-and-sources",
+      "title": "Swarms and sources",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Reading several agents through one lens: the source that keeps them apart, and where pooling them is still right."
+    },
+    {
+      "num": "08",
+      "slug": "run-modes",
+      "title": "Run modes",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Separating evaluation from production with an enforced, fail-closed envelope."
+    },
+    {
+      "num": "09",
+      "slug": "sidecar",
+      "title": "Sidecar / OTel integration",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Emitting to the lens without changing your request path."
+    },
+    {
+      "num": "10",
+      "slug": "topology-scanner",
+      "title": "Surface topology scanner",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Declared surfaces, observed coverage, and the size of the blind spot."
+    },
+    {
+      "num": "11",
+      "slug": "multiplexer",
+      "title": "The multiplexer",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Comparing vendors on identical terms, routed or run on demand."
+    },
+    {
+      "num": "12",
+      "slug": "drift-attribution",
+      "title": "Drift attribution",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Assigning a change to one source, and recording both sides of the model identity."
+    },
+    {
+      "num": "13",
+      "slug": "variance-isolation",
+      "title": "Variance isolation and declared axes",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Telling real change apart from sampling and chance, then grading the axes you declared to explain it."
+    },
+    {
+      "num": "14",
+      "slug": "lessons-pipeline",
+      "title": "The lessons pipeline",
+      "group": "Operating the lens",
+      "status": "live",
+      "blurb": "Captured overrides and approvals becoming drafted, human-gated artifacts."
+    },
+    {
+      "num": "15",
+      "slug": "conformance",
+      "title": "Conformance & fixtures",
+      "group": "Judge validity",
+      "status": "live",
+      "blurb": "Whether a judge actually ran against its fixtures, or silently defaulted."
+    },
+    {
+      "num": "16",
+      "slug": "rubric-coverage",
+      "title": "Rubric coverage and de-saturation",
+      "group": "Judge validity",
+      "status": "live",
+      "blurb": "A rubric per facet, a worklist of the facets without one, and a check that what you wrote still discriminates."
+    },
+    {
+      "num": "17",
+      "slug": "facet-separability",
+      "title": "Facet separability",
+      "group": "Judge validity",
+      "status": "live",
+      "blurb": "Whether a decomposition is a real topology, one axis wearing two names, or a prerequisite dressed as a peer."
+    },
+    {
+      "num": "18",
+      "slug": "judge-modes",
+      "title": "Judge modes and reflection",
+      "group": "Judge validity",
+      "status": "design",
+      "blurb": "Four modes on two axes, and the third cell: a capped retry granted per cell, never defaulted."
+    },
+    {
+      "num": "19",
+      "slug": "seams",
+      "title": "Seams",
+      "group": "Seams and soak",
+      "status": "live",
+      "blurb": "An interpreted value driving a decision. Permanent, closeable, not removable."
+    },
+    {
+      "num": "20",
+      "slug": "seam-monitor",
+      "title": "The seam monitor",
+      "group": "Seams and soak",
+      "status": "live",
+      "blurb": "Finding seams in source, adjudicating them, registering them, and soaking them."
+    },
+    {
+      "num": "21",
+      "slug": "attention-spine",
+      "title": "The attention spine",
+      "group": "Seams and soak",
+      "status": "live",
+      "blurb": "One operator lifecycle over twenty-six sources of findings."
+    },
+    {
+      "num": "22",
+      "slug": "authority",
+      "title": "Authority",
+      "group": "Authority and governance",
+      "status": "live",
+      "blurb": "The per-surface state that the declared prerequisites are satisfied on the record."
+    },
+    {
+      "num": "23",
+      "slug": "authority-governance",
+      "title": "Authority governance",
+      "group": "Authority and governance",
+      "status": "live",
+      "blurb": "The approver gate, the acknowledgement that releases a tear, and the policy that sets what one release covers."
+    },
+    {
+      "num": "24",
+      "slug": "subscriptions",
+      "title": "Route a verdict to a human",
+      "group": "Operational utilities",
+      "status": "live",
+      "blurb": "Fire a signed webhook when a predicate over the lens’s own verdicts crosses a line."
+    },
+    {
+      "num": "25",
+      "slug": "outcome-delivery",
+      "title": "Outcome delivery",
+      "group": "Operational utilities",
+      "status": "live",
+      "blurb": "Whether a scored outcome ever reached the user, and where the lens stops being able to observe it."
+    },
+    {
+      "num": "26",
+      "slug": "compaction",
+      "title": "Compaction & husking",
+      "group": "Operational utilities",
+      "status": "live",
+      "blurb": "Removing bulky payload from an aging event while structured fields stay."
+    },
+    {
+      "num": "27",
+      "slug": "dashboard",
+      "title": "The dashboard",
+      "group": "Operational utilities",
+      "status": "live",
+      "blurb": "Four tabs, fourteen slide-overs, and the documented read behind every panel."
+    }
+  ]
+}

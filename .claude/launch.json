@@ -2,15 +2,33 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "guide",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "scripts/serve.py",
+        "8643"
+      ],
+      "port": 8643,
+      "url": "http://localhost:8643"
+    },
+    {
       "name": "static",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8765"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765"
+      ],
       "port": 8765
     },
     {
       "name": "site",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8642"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8642"
+      ],
       "port": 8642
     },
     {

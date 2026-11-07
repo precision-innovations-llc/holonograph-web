@@ -4,18 +4,18 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Variance isolation — The Guide — Holonograph</title>
-<meta name="description" content="Separating real movement in your scores from the noise of measuring with a language model. A cleaned reading, a confidence verdict, and governance actions to hold one still." />
+<title>Variance isolation and declared axes · The Guide · Holonograph</title>
+<meta name="description" content="Separating real movement in your scores from the noise of measuring with a language model, then grading the substrate columns you declared to explain it." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="true" />
-<meta name="signed-off-by" content="Brian Kerrigan — 2026-07-06" />
+<meta name="signed-off-by" content="Brian Kerrigan · 2026-07-06" />
 <link rel="canonical" href="https://holonograph.ai/guide/variance-isolation" />
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
-<meta property="og:title" content="Variance isolation · Holonograph Guide" />
-<meta property="og:description" content="Separating real movement in your scores from the noise of measuring with a language model. A cleaned reading, a confidence verdict, and governance actions to hold one still." />
+<meta property="og:title" content="Variance isolation and declared axes · Holonograph Guide" />
+<meta property="og:description" content="Separating real movement in your scores from the noise of measuring with a language model, then grading the substrate columns you declared to explain it." />
 <meta property="og:url" content="https://holonograph.ai/guide/variance-isolation" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
 <meta property="og:image:width" content="2752" />
@@ -23,8 +23,8 @@
 <meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
-<meta name="twitter:title" content="Variance isolation · Holonograph Guide" />
-<meta name="twitter:description" content="Separating real movement in your scores from the noise of measuring with a language model. A cleaned reading, a confidence verdict, and governance actions to hold one still." />
+<meta name="twitter:title" content="Variance isolation and declared axes · Holonograph Guide" />
+<meta name="twitter:description" content="Separating real movement in your scores from the noise of measuring with a language model, then grading the substrate columns you declared to explain it." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,8 +32,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+  <link rel="stylesheet" href="./_assets/guide.css?v=7" />
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -45,9 +45,9 @@
 <body>
   <header class="site-header">
     <div class="wrap"><nav>
-      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
-      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
-      <a class="pill" href="../pricing.html">Get started</a>
+      <a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a>
+      <span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/" class="on">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
     </nav></div>
   </header>
 
@@ -55,6 +55,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -64,46 +69,52 @@
         <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
         <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
         <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
-        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
-        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
-        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li class="current"><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
-        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li class="s-part">Variance controls for model seams</li>
-        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
-        <li class="s-part">Seams, soak, and authority</li>
-        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
-        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
-        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
-        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
-        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li><span class="s-num">07</span><a href="./swarms-and-sources" class="s-ttl">Swarms and sources</a></li>
+        <li><span class="s-num">08</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">09</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">10</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li class="current"><span class="s-num">13</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
+        <li><span class="s-num">14</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity</li>
+        <li><span class="s-num">15</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">16</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">17</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">18</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams and soak</li>
+        <li><span class="s-num">19</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">20</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">21</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
+        <li><span class="s-num">22</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">23</span><a href="./authority-governance" class="s-ttl">Authority governance</a></li>
         <li class="s-part">Operational utilities</li>
-        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">24</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">25</span><a href="./outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">26</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">27</span><a href="./dashboard" class="s-ttl">The dashboard</a></li>
       </ol>
     </aside>
 
     <main class="guide-main">
       <article>
 
-        <p class="guide-eyebrow">Chapter 12</p>
-        <h1 class="guide-h1">Variance isolation</h1>
+        <p class="guide-eyebrow">Chapter 13</p>
+        <h1 class="guide-h1">Variance isolation and declared axes</h1>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
           When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a <strong>cleaned</strong> reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
         </p>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
 
         <p>
-          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
+          A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a <strong>confidence verdict</strong>. The verdict is the output to read first. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
         </p>
 
-        <h2>What you get</h2>
+        <h2 id="what-you-get">What you get</h2>
 
         <p>A cleaned variance figure and a <strong>confidence verdict</strong>. There are four:</p>
 
@@ -123,11 +134,11 @@
           The verdict is what decides whether the number is worth acting on. A <code>viable</code> reading is the one you use; the other three are diagnostic. Each names <em>why</em> the reading isn't ready and <em>what</em> would fix it.
         </p>
 
-        <h2>How to run it</h2>
+        <h2 id="how-to-run-it">How to run it</h2>
 
         <p>Three endpoints, in order. The first produces the reading; the second gives it a verdict; the third governs what happens to it.</p>
 
-        <h3>1. Produce the reading</h3>
+        <h3 id="1-produce-the-reading">1. Produce the reading</h3>
 
         <pre><code>POST /lens/decomposeVariance
 Authorization: Bearer &lt;token&gt;
@@ -149,7 +160,7 @@ Content-Type: application/json
   "dimensionId": "correctness"
 }</code></pre>
 
-        <h3>2. Get the verdict</h3>
+        <h3 id="2-get-the-verdict">2. Get the verdict</h3>
 
         <pre><code>POST /lens/decomposition/evaluate
 Content-Type: application/json
@@ -158,7 +169,7 @@ Content-Type: application/json
 
         <p>Response: the confidence verdict and guidance for what to do next.</p>
 
-        <h3>3. Govern the result</h3>
+        <h3 id="3-govern-the-result">3. Govern the result</h3>
 
         <p>Once you've seen the verdict, decide what to do with the reading. Governance is one of four actions:</p>
 
@@ -186,7 +197,7 @@ Content-Type: application/json
 
         <p>The lifecycle response returns the persisted status alongside the original <code>targetEventId</code>. Governance decisions are themselves substrate events. They become part of the record, attributable in future drift readings like any other change.</p>
 
-        <h2>What to do with each verdict</h2>
+        <h2 id="what-to-do-with-each-verdict">What to do with each verdict</h2>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -212,22 +223,93 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h2>Reference</h2>
+        <h2 id="declared-axes">Declared axes</h2>
 
-        <h3>Endpoints</h3>
+        <p>
+          The decomposition says how much of the movement is real. The next question is which of your declared substrate columns explains any of it. An axis is a column you declared because you believed it accounted for outcome variance; an audit says whether the record agrees.
+        </p>
+
+        <h3 id="audit-what-you-declared">Audit what you declared</h3>
+
+        <pre><code>POST /lens/orthogonality/audit
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
+
+        <p>
+          Grades every declared axis on how much of the dimension it accounts for, returning <code>confirmed</code>, <code>inert</code>, <code>insufficient-data</code> or <code>excluded</code>. A pure read: no calibration, no gate, no model call.
+        </p>
+
+        <p>
+          The <code>confirmed</code> decision is false-discovery controlled across the entire axis family. Each axis carries both its original and adjusted <code>pValue</code>, and the <code>fdr</code> summary reports the trade-off.
+        </p>
+
+        <p>
+          The audit is lifecycle-aware, which is the axis-altitude twin of surface retirement. A <code>forward-declared</code> or <code>deprecated</code> axis is <code>excluded</code>, since a deliberate stub is not a failure. An <code>inert</code> active axis carries a <code>recommendedStatus</code> of <code>forward-declared</code>, which defers it and excludes it from evaluation, and is reversible. The lens recommends; the operator decides.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">When the demotion hint is withheld</span>
+          The demotion hint fires only where an axis has no observed consumer. Two count. Every active axis is tested against all dimensions in the window, so one that explains a different dimension is protected. So is one a live conformance fixture references in a guard, an assertion or its required markers: a state-conditional guard that explains no scored dimension is still doing work for a deterministic check.
+        </div>
+
+        <h3 id="propose-the-ones-you-did-not">Find the undeclared ones</h3>
+
+        <pre><code>POST /lens/orthogonality/propose
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }</code></pre>
+
+        <p>
+          The mirror of the audit. Where the audit grades what you declared, this looks for what you are already emitting and have not declared, and proposes it as a candidate axis.
+        </p>
+
+        <p>
+          It needs a noise floor for the pair first, so calibrate before calling it. Then it decomposes the window, aggregates substrate emission over those same events, and takes the emitted-but-undeclared columns as the candidate set. Three gates have to pass: enough scored data, agent variance established above zero, and at least one undeclared column. Zero candidates is a <code>200</code> with a diagnostics block naming the gate that held, not an error.
+        </p>
+
+        <p>
+          Each candidate is narrated and enqueued on the approver gate. The narration is prose only: the evidence and the target ids are copied verbatim from the deterministic candidate, and the narrator has no channel through which to emit a number. The lens never declares the axis. Declaring the column and re-decomposing is the operator's.
+        </p>
+
+        <h3 id="tell-an-axis-from-a-confound">Tell an axis from a confound</h3>
+
+        <pre><code>POST /lens/orthogonality/audit/compare
+{
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness",
+  "correlationIdPrefix": "replay:nov-panel:"
+}</code></pre>
+
+        <p>
+          The audit run twice: once over all production, once over the input-constant panel the prefix selects, then diffed per axis. An axis confirmed on production that collapses under input constancy was never explaining the outcome; its effect size was entanglement between the lens and the input mix. One confirmed in both is robust.
+        </p>
+
+        <p>
+          The response names the confounded columns and the robust ones, with a per-axis diff carrying each read's verdict, its effect size, and the delta between them. The panel has to exist in the substrate already, as a replay whose scores you re-posted under that prefix. An empty panel reads as insufficient per axis rather than failing.
+        </p>
+
+        <p>
+          Orthogonality is symmetric: it can say an axis explains variance, never that breaking A degrades B while B leaves A intact. That asymmetry is a different instrument at a lower altitude, in <a href="./facet-separability">Facet separability</a>.
+        </p>
+
+        <h2 id="reference">Reference</h2>
+
+        <h3 id="endpoints">Endpoints</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
             <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
             <tbody>
               <tr><td><code>POST /lens/decomposeVariance</code></td><td>Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record <code>eventId</code>.</td></tr>
+              <tr><td><code>POST /lens/fixtures/calibrate-floor</code></td><td>Source the noise floor the decomposition reads against. Reads replay-provenance events only, so production traffic is not conflated with the floor. Per-fixture-and-dimension sample variance, with a sample-count-weighted pooled mean per dimension. Idempotent and retry-safe.</td></tr>
+              <tr><td><code>POST /lens/replay</code></td><td>Re-issue captured requests through a target lens, window-stamped so the paired-window read works. Holds the input constant and varies the lens. Source events by <code>sourceEventIds</code> or <code>sourceCorrelationIdPrefix</code>; events carrying no stored raw request are reported skipped rather than silently dropped. Every replay is a real model call, so the count is capped.</td></tr>
               <tr><td><code>POST /lens/decomposition/evaluate</code></td><td>Return the confidence verdict for the analysis record.</td></tr>
               <tr><td><code>POST /lens/decomposition/lifecycle</code></td><td>Govern the reading: <code>quarantine</code>, <code>approve</code>, <code>lock</code>, or <code>reject</code>.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/audit</code></td><td>Grade every declared axis against one dimension. False-discovery controlled across the family, lifecycle-aware and consumer-aware.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/propose</code></td><td>Find emitted-but-undeclared columns worth declaring and enqueue each as a narrated candidate on the approver gate. Needs a calibrated floor. Zero candidates is an answer, with the gate that held.</td></tr>
+              <tr><td><code>POST /lens/orthogonality/audit/compare</code></td><td>The audit over production against the audit over an input-constant panel, diffed per axis. Separates a robust axis from a sampling confound.</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3><code>POST /lens/decomposeVariance</code>: request</h3>
+        <h3 id="post-lens-decomposevariance-request"><code>POST /lens/decomposeVariance</code>: request</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -241,7 +323,7 @@ Content-Type: application/json
           </table>
         </div>
 
-        <h3><code>POST /lens/decomposition/lifecycle</code>: request</h3>
+        <h3 id="post-lens-decomposition-lifecycle-request"><code>POST /lens/decomposition/lifecycle</code>: request</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -255,6 +337,12 @@ Content-Type: application/json
             </tbody>
           </table>
         </div>
+
+        <h3 id="where-this-sits">Where this sits</h3>
+
+        <p>
+          Two of the attention spine's sources file from the axis reads: <code>orthogonality-hypothesis</code>, which proposes declaring a column, and <code>primary-axis-orthogonality</code>, reported as a confounded axis. Both are partitioned per source, because pooling two agents' score populations manufactures correlation neither of them shows. See <a href="./attention-spine">The attention spine</a>.
+        </p>
 
         <nav class="guide-nav" aria-label="Chapter navigation">
           <a href="./drift-attribution" class="nav-prev">
@@ -273,9 +361,10 @@ Content-Type: application/json
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>Chapter 12 · Variance isolation</span>
+    <span>Chapter 13 · Variance isolation and declared axes</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

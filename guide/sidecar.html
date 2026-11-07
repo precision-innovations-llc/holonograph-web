@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Sidecar / OTel integration — The Guide — Holonograph</title>
-<meta name="description" content="Capturing what doesn't pass through the lens, via OpenTelemetry — baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
+<title>Sidecar / OTel integration · The Guide · Holonograph</title>
+<meta name="description" content="Capturing what doesn't pass through the lens, via OpenTelemetry: baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
 <meta name="discloses" content="capability-only" />
 <meta name="reflects-version" content="v0.26.0" />
 <meta name="reflects-client-version" content="0.3.0" />
@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
 <meta property="og:title" content="Sidecar / OTel integration · Holonograph Guide" />
-<meta property="og:description" content="Capturing what doesn't pass through the lens, via OpenTelemetry — baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
+<meta property="og:description" content="Capturing what doesn't pass through the lens, via OpenTelemetry: baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
 <meta property="og:url" content="https://holonograph.ai/guide/sidecar" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
 <meta property="og:image:width" content="2752" />
@@ -25,7 +25,7 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
 <meta name="twitter:title" content="Sidecar / OTel integration · Holonograph Guide" />
-<meta name="twitter:description" content="Capturing what doesn't pass through the lens, via OpenTelemetry — baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
+<meta name="twitter:description" content="Capturing what doesn't pass through the lens, via OpenTelemetry: baggage propagation, message-attribute fallback, the bounded emit buffer, OTLP export, and delivery-completeness accounting." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -33,8 +33,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+  <link rel="stylesheet" href="./_assets/guide.css?v=7" />
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -46,9 +46,9 @@
 <body>
   <header class="site-header">
     <div class="wrap"><nav>
-      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
-      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
-      <a class="pill" href="../pricing.html">Get started</a>
+      <a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a>
+      <span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/" class="on">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
     </nav></div>
   </header>
 
@@ -56,6 +56,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -65,40 +70,46 @@
         <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
         <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
         <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
-        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
-        <li class="current"><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
-        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
-        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li class="s-part">Variance controls for model seams</li>
-        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
-        <li class="s-part">Seams, soak, and authority</li>
-        <li><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
-        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
-        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
-        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
-        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li><span class="s-num">07</span><a href="./swarms-and-sources" class="s-ttl">Swarms and sources</a></li>
+        <li><span class="s-num">08</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li class="current"><span class="s-num">09</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">10</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">13</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
+        <li><span class="s-num">14</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity</li>
+        <li><span class="s-num">15</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">16</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">17</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">18</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams and soak</li>
+        <li><span class="s-num">19</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">20</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">21</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
+        <li><span class="s-num">22</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">23</span><a href="./authority-governance" class="s-ttl">Authority governance</a></li>
         <li class="s-part">Operational utilities</li>
-        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">24</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">25</span><a href="./outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">26</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">27</span><a href="./dashboard" class="s-ttl">The dashboard</a></li>
       </ol>
     </aside>
 
     <main class="guide-main">
       <article>
 
-        <p class="guide-eyebrow">Chapter 08</p>
+        <p class="guide-eyebrow">Chapter 09</p>
         <h1 class="guide-h1">Sidecar / OTel integration</h1>
         <p class="guide-meta"></p>
 
         <p class="guide-lede">
-          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry — and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
+          The lens sees every call that goes through it. Real systems have work that <em>doesn't</em> go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry, and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
         </p>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
 
         <p>
           Holonograph composes on top of OpenTelemetry rather than replacing it. Two pieces of the OTel spec do the work:
@@ -113,10 +124,10 @@
           Where auto-instrumentation doesn't reach, there's a manual fallback: encode the same values as message attributes on the payload and reconstruct them on the receiving side.
         </p>
 
-        <h2>Why it matters</h2>
+        <h2 id="why-it-matters">Why it matters</h2>
 
         <p>
-          The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening quietly.
+          The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening without a trace.
         </p>
 
         <div class="guide-callout">
@@ -124,15 +135,15 @@
           If work happens outside the request that made it, propagate. If work happens inside the same request (same process, same call stack), the SDK's <code>correlationId</code> is enough. You don't need Baggage.
         </div>
 
-        <h2>How to use it</h2>
+        <h2 id="how-to-use-it">How to use it</h2>
 
-        <h3>Enable OTel in your service</h3>
+        <h3 id="enable-otel-in-your-service">Enable OTel in your service</h3>
 
         <p>
           Use any OTel SDK for your language. Enable auto-instrumentation for the transports you use (HTTP, gRPC, your queue library, your pub-sub client). Nothing Holonograph-specific here; the standard OTel setup is enough.
         </p>
 
-        <h3>Set Baggage on the originating side</h3>
+        <h3 id="set-baggage-on-the-originating-side">Set Baggage on the originating side</h3>
 
         <p>
           At the top of the request that started the work, put the run mode and correlation id into Baggage:
@@ -158,7 +169,7 @@ context.with(ctx, async () =&gt; {
           Auto-instrumentation on the queue publish serializes Baggage into the message; no message-body changes required.
         </p>
 
-        <h3>Read Baggage on the receiving side</h3>
+        <h3 id="read-baggage-on-the-receiving-side">Read Baggage on the receiving side</h3>
 
         <p>
           The worker or subscriber picks up the Baggage after auto-instrumentation extracts it. Use it to construct the <code>HolonographClient</code>:
@@ -190,7 +201,7 @@ async function handleJob(job) {
           The call in the worker now shares a <code>correlationId</code> with the request that produced the job, and it inherits the originator's run mode, so a <code>test</code> request that enqueued a job doesn't turn into a <code>production</code> call on the worker.
         </p>
 
-        <h3>Message-attribute fallback</h3>
+        <h3 id="message-attribute-fallback">Message-attribute fallback</h3>
 
         <p>
           For transports where Baggage propagation isn't automatic (some managed queues, some pub-sub platforms), encode the two values as explicit message attributes on the payload, and reconstruct them on the receiving side before setting Baggage manually.
@@ -208,23 +219,23 @@ async function handleJob(job) {
           On the receiver, read the attributes and set them into Baggage the same way you would in a fully-instrumented setup. The rest of your code doesn't need to know which path they took.
         </p>
 
-        <h2>Reading the output</h2>
+        <h2 id="reading-the-output">Reading the output</h2>
 
         <p>
           Nothing changes at read time. Events written from the worker come back through <code>GET /lens/events</code> with the same <code>correlationId</code> as the originating request, and their <code>run_mode</code> column matches the originator's. That's what makes them queryable as one evaluation across the async boundary.
         </p>
 
-        <h2>Bounded emit buffer and OTLP export</h2>
+        <h2 id="bounded-emit-buffer-and-otlp-export">Bounded emit buffer and OTLP export</h2>
 
         <p>
-          Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The <code>@holonograph/client</code> 0.3.0 release adds a bounded emit buffer with three drain modes — direct HTTP, OpenTelemetry OTLP spans, or both — so operators can move evaluation events off the request path when synchronous <code>POST /lens/events</code> is too expensive to await.
+          Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The <code>@holonograph/client</code> 0.3.0 release adds a bounded emit buffer with three drain modes (direct HTTP, OpenTelemetry OTLP spans, or both) so operators can move evaluation events off the request path when synchronous <code>POST /lens/events</code> is too expensive to await.
         </p>
 
         <p>
-          The buffer is <strong>bounded</strong>, drops the oldest events when full, and <strong>counts every drop</strong>. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full <a href="./sdk-reference.html#delivery-modes"><code>emit</code> option shape</a>; this section is about the wire.
+          The buffer is <strong>bounded</strong>, drops the oldest events when full, and <strong>counts every drop</strong>. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full <a href="./sdk-reference#delivery-modes"><code>emit</code> option shape</a>; this section is about the wire.
         </p>
 
-        <h3>The four delivery modes</h3>
+        <h3 id="the-four-delivery-modes">The four delivery modes</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -242,7 +253,7 @@ async function handleJob(job) {
           <code>sync</code> is the default. The three buffered modes share the same ring buffer, the same accounting window, and the same drop semantics; only the drain differs.
         </p>
 
-        <h3>What lands on the OTLP wire</h3>
+        <h3 id="what-lands-on-the-otlp-wire">What lands on the OTLP wire</h3>
 
         <p>
           Under <code>otlp</code> and <code>dual</code>, each evaluation becomes one span. Its dimensions become span events. Every attribute is namespaced under <code>holonograph.*</code>, so nothing collides with the rest of your OTel signal.
@@ -302,13 +313,13 @@ async function handleJob(job) {
           </table>
         </div>
 
-        <h3>Session sentinels: gap detection</h3>
+        <h3 id="session-sentinels-gap-detection">Session sentinels: gap detection</h3>
 
         <p>
           Every <code>emit.sentinelIntervalMs</code> (default 30s), the client emits a <code>holonograph.session.sentinel</code> span on span-carrying channels. Sentinels carry <code>emission.stream</code> and <code>emission.seq</code> just like evaluation spans. Their purpose is <em>gap detection</em>: a consumer that sees an ordinal jump knows an event was dropped, even if the client crashed before it could tell anyone. The <code>emission.final</code> attribute goes <code>true</code> on the last event emitted by a graceful <code>shutdown()</code>, so a consumer can distinguish "the client stopped cleanly" from "the connection went dead."
         </p>
 
-        <h3>Delivery completeness: the read</h3>
+        <h3 id="delivery-completeness-the-read">Delivery completeness: the read</h3>
 
         <p>
           A bounded buffer with drop-on-overflow only produces trustworthy analysis if the drops are visible. The client publishes an accounting window every <code>emit.windowMs</code> (default 10s), and exposes it two ways:
@@ -319,15 +330,38 @@ async function handleJob(job) {
           <li><strong>Push</strong>: <code>emit.onWindow(window)</code> fires once per completed window.</li>
         </ul>
 
-        <p>The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so <code>http</code> loss and <code>otlp</code> loss are distinguishable), a <code>completenessLowerBound</code> ratio, and a <code>biasFlag</code> that goes <code>true</code> whenever drops occurred. Downstream analyses read <code>biasFlag</code> and treat the affected interval as potentially non-random. See <a href="./sdk-reference.html#delivery-modes">SDK reference § Delivery modes</a> for the full <code>CompletenessWindow</code> shape.</p>
+        <p>The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so <code>http</code> loss and <code>otlp</code> loss are distinguishable), a <code>completenessLowerBound</code> ratio, and a <code>biasFlag</code> that goes <code>true</code> whenever drops occurred. Downstream analyses read <code>biasFlag</code> and treat the affected interval as potentially non-random. See <a href="./sdk-reference#delivery-modes">SDK reference § Delivery modes</a> for the full <code>CompletenessWindow</code> shape.</p>
 
-        <h3>Extreme sustained load</h3>
+        <h3 id="the-server-side-read">The server-side read</h3>
+
+        <p>
+          The window above is the emitter's own account of what it sent. The lens reads the same quantity from the other end, over what actually arrived, which is the account that does not depend on a healthy emitter to be true.
+        </p>
+
+        <pre><code>GET /lens/delivery-completeness</code></pre>
+
+        <p>
+          Per stream: the persisted coverage observations folded together and scored by a gap-and-sentinel oracle, plus the fleet summary over all of them. The session sentinels above are what make a gap visible; a stream that has gone quiet past the stale threshold reports an honest dark-region floor rather than a clean score, since a dead emitter and a silent one look identical from here.
+        </p>
+
+        <pre><code>GET /lens/reconciliation?since=2026-11-01T00:00:00Z&amp;emissionStreamId=orders-worker-7</code></pre>
+
+        <p>
+          Per-emitter completeness for stateless emitters, as <code>persisted / (persisted + dark)</code> over the window. Raw facts rather than a baked view, so a poller, the dashboard or your own tool assembles what it needs. <code>emissionStreamId</code> scopes it to one emitter.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">A payload that lands late</span>
+          A dual-mode span that arrives with no stored payload records a delivery-orphan candidate. The reconciliation read re-reconciles every candidate against the store before counting it, so an HTTP payload that landed after its OTLP span resolves rather than counting as dark. What remains dark is what is still missing after that check.
+        </div>
+
+        <h3 id="extreme-sustained-load">Extreme sustained load</h3>
 
         <p>
           The buffer is designed for occasional overflow, not sustained overrun. When the drop rate exceeds <code>emit.extremeSustainedLoad.dropRateThreshold</code> (default 1%) for longer than <code>emit.extremeSustainedLoad.sustainedForMs</code> (default 60s), the client fires <code>onExtremeSustainedLoad</code> with a summary event. Route it to your alerting; that is the signal to raise the <code>bufferSize</code>, add drain workers, or step down evaluation coverage rather than let the sample bias grow silently.
         </p>
 
-        <h3>Graceful shutdown</h3>
+        <h3 id="graceful-shutdown">Graceful shutdown</h3>
 
         <p>
           Under buffered modes, call <code>client.shutdown()</code> before the process exits. It flushes any remaining buffered events, stops the drain, and marks the last-emitted span as <code>emission.final = true</code> so downstream consumers know the stream ended cleanly. No-op under <code>sync</code>.
@@ -340,12 +374,12 @@ async function handleJob(job) {
 
         <div class="guide-callout">
           <span class="callout-label">The guarantee</span>
-          Buffered delivery is <strong>at-most-once</strong>. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as <code>biasFlag</code>. What leaves the buffer either lands or is failed — nothing gets duplicated to make up for loss.
+          Buffered delivery is <strong>at-most-once</strong>. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as <code>biasFlag</code>. What leaves the buffer either lands or is failed: nothing gets duplicated to make up for loss.
         </div>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
-        <h3>Baggage keys</h3>
+        <h3 id="baggage-keys">Baggage keys</h3>
 
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -357,9 +391,26 @@ async function handleJob(job) {
           </table>
         </div>
 
-        <h3>Message-attribute keys</h3>
+        <h3 id="message-attribute-keys">Message-attribute keys</h3>
 
         <p>Same keys as above, used verbatim as message attributes when Baggage propagation isn't available on the transport.</p>
+
+        <h3 id="endpoints">Endpoints</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Method &amp; path</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST /v1/traces</code></td><td>The OTLP ingest. Rejected spans come back in <code>partialSuccess</code> with the count and the reason rather than failing the batch.</td></tr>
+              <tr><td><code>GET /lens/delivery-completeness</code></td><td>Per-stream completeness with the fleet summary. Scored by the gap-and-sentinel oracle, with a dark-region floor for a stream past the stale threshold.</td></tr>
+              <tr><td><code>GET /lens/reconciliation</code></td><td>Per-emitter completeness over a window, as raw facts. Takes <code>since</code>, <code>until</code>, <code>emissionStreamId</code>. Orphan candidates are re-reconciled before they count as dark.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          These two read whether an event reached the store. Whether the agent's <em>outcome</em> reached the user is a different question, measured separately in <a href="./outcome-delivery">Outcome delivery</a>.
+        </p>
 
         <nav class="guide-nav" aria-label="Chapter navigation">
           <a href="./run-modes" class="nav-prev">
@@ -378,9 +429,10 @@ async function handleJob(job) {
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>Chapter 08 · Sidecar / OTel integration</span>
+    <span>Chapter 09 · Sidecar / OTel integration</span>
     <span>Patent pending · v0.26.0 · client 0.3.0</span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

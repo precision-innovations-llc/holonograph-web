@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f6f5f9" />
+<title>The dashboard · The Guide · Holonograph</title>
+<meta name="description" content="The operator interface that ships in the binary: four tabs, the slide-overs they open, and the documented read behind every panel." />
+<meta name="discloses" content="capability-only" />
+<meta name="status" content="live" />
+<meta name="sign-off-required" content="false" />
+<link rel="canonical" href="https://holonograph.ai/guide/dashboard" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="The dashboard · The Guide" />
+<meta property="og:description" content="The operator interface that ships in the binary: four tabs, the slide-overs they open, and the documented read behind every panel." />
+<meta property="og:url" content="https://holonograph.ai/guide/dashboard" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta property="og:image:width" content="2752" />
+<meta property="og:image:height" content="626" />
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@holonograph" />
+<meta name="twitter:title" content="The dashboard · The Guide" />
+<meta name="twitter:description" content="The operator interface that ships in the binary: four tabs, the slide-overs they open, and the documented read behind every panel." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="../mobilenav.css" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=7" />
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MX42B47LTP', { client_storage: 'none' });
+</script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a>
+      <span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/" class="on">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
+    </nav></div>
+  </header>
+
+  <div class="guide-shell">
+
+    <aside class="guide-sidebar" aria-label="Chapter list">
+      <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
+      <ol>
+        <li class="s-part">Overview</li>
+        <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
+        <li class="s-part">Operating the lens</li>
+        <li><span class="s-num">02</span><a href="./surface-contracts" class="s-ttl">Surface contracts</a></li>
+        <li><span class="s-num">03</span><a href="./snapshot" class="s-ttl">The four-layer snapshot</a></li>
+        <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
+        <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
+        <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
+        <li><span class="s-num">07</span><a href="./swarms-and-sources" class="s-ttl">Swarms and sources</a></li>
+        <li><span class="s-num">08</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">09</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">10</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">13</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
+        <li><span class="s-num">14</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity</li>
+        <li><span class="s-num">15</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">16</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">17</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">18</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams and soak</li>
+        <li><span class="s-num">19</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">20</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">21</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
+        <li><span class="s-num">22</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">23</span><a href="./authority-governance" class="s-ttl">Authority governance</a></li>
+        <li class="s-part">Operational utilities</li>
+        <li><span class="s-num">24</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">25</span><a href="./outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">26</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li class="current"><span class="s-num">27</span><a href="./dashboard" class="s-ttl">The dashboard</a></li>
+      </ol>
+    </aside>
+
+    <main class="guide-main">
+      <article>
+
+
+
+        <p class="guide-eyebrow">Chapter 27</p>
+        <h1 class="guide-h1">The dashboard</h1>
+        <p class="guide-meta"></p>
+
+        <p class="guide-lede">
+          An operator interface ships in the binary. It is a thin client over the reads in the rest of this Guide: every number on it comes from a documented endpoint, so this chapter is an index from the panel you are looking at to the chapter that explains it, not a second account of the instrument.
+        </p>
+
+        <h2 id="what-it-is">What it is</h2>
+
+        <p>
+          The server mounts it when asked, at <code>/dashboard</code> or a configured base path. With it mounted, a request to <code>/</code> redirects there, so an operator who browses the server&rsquo;s URL with no path lands on the interface instead of an error about the run mode.
+        </p>
+
+        <p>
+          The bundle is served ahead of the authenticated router, so its HTML, JS and CSS load without a bearer token. Every <code>/lens/*</code> fetch the page then makes goes through the same auth as any other client. Optional HTTP Basic credentials gate the bundle path itself, which a production deploy should set; local development usually leaves it unset.
+        </p>
+
+        <div class="guide-callout">
+          <span class="callout-label">What each credential gates</span>
+          Basic auth on the dashboard path gates the UI bundle and nothing else. The bearer token in the settings dialog is what reads the lens. Setting the first does not protect the API, and setting the second does not hide the page.
+        </div>
+
+        <p>
+          Settings holds three things: the lens endpoint, the bearer token, and whether to poll. They persist in the browser. Three URL parameters change the mode without being saved: <code>?mock=true</code> renders canned data for a demo, <code>?embed=1</code> hides the operator chrome for an iframed lens and defaults the palette to dark, and <code>?theme=light</code> or <code>dark</code> pins the palette for that load only.
+        </p>
+
+        <p>
+          The header carries a version chip. It shows the active contract version when one is registered, and falls back to the binary&rsquo;s own stamp, labelled as such, when none is.
+        </p>
+
+        <h2 id="why-it-matters">Why it matters</h2>
+
+        <p>
+          The interface is organized by the four questions an operator actually arrives with, not by the shape of the API. Each tab owns one, and the deeper instruments open over the tab that owns them, so a ceremony has one home.
+        </p>
+
+        <p>
+          Nothing on it writes the lens. The exceptions are the gated ceremonies, and each goes through the one shared approver gate described in <a href="./authority-governance">Authority governance</a>: a triage annotation, a conformance approval, a retention or authority policy, a multiplex run. The apparatus proposes and the operator disposes, on the interface exactly as on the API.
+        </p>
+
+        <h2 id="how-to-use-it">How to use it</h2>
+
+        <h3 id="the-four-tabs">The four tabs</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Tab</th><th>The question</th><th>Reads</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Act</strong></td><td>What needs attention now.</td><td><code>GET /lens/attention</code>, <code>GET /lens/attention/evidence</code>, <code>POST /lens/attention/triage</code></td></tr>
+              <tr><td><strong>Trust</strong></td><td>Can I believe the numbers, and where am I blind.</td><td><code>GET /lens/reach</code>, <code>GET /lens/facet-coverage</code>, <code>GET /lens/judge-claim-coverage</code>, <code>POST /lens/co-groundedness/screen</code></td></tr>
+              <tr><td><strong>Curate</strong></td><td>What change should I propose and approve.</td><td><code>GET /aperture/contract</code>, <code>GET /lens/facet-coverage</code>, plus the desk cards below</td></tr>
+              <tr><td><strong>Explore</strong></td><td>What do the raw events say.</td><td><code>GET /lens/events</code>, <code>GET /lens/events/{id}</code>, <code>GET /aperture/contract</code>, <code>GET /lens/availability</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Act is the landing. It is one severity-ranked queue over every finding source, with the jargon moved into the drawer: a row reads &ldquo;Judge check,&rdquo; opens into the driver and the sample calls, and takes a disposition with a required rationale. A confirmed defect mints a proposal into Curate. Trust is the standing-health counterpart: the readouts you check before believing a clean verdict. Explore is the bench the other three route down into, scoped by whatever row sent you there.
+        </p>
+
+        <h3 id="the-slide-overs">The slide-overs</h3>
+
+        <p>
+          Fourteen instruments open over a tab rather than competing with it for a tab of their own.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Panel</th><th>Reads</th><th>Chapter</th></tr></thead>
+            <tbody>
+              <tr><td>Lens Health <code>#lens-health</code></td><td><code>/aperture/contract</code>, <code>/lens/topology/scan</code>, <code>/lens/events</code>, <code>/lens/snapshots</code></td><td><a href="./topology-scanner">Topology scanner</a></td></tr>
+              <tr><td>Lens Health operations</td><td><code>/aperture/health</code>, <code>/lens/availability</code>, <code>/lens/authority/tears</code>, <code>/lens/attribute</code></td><td><a href="./authority-governance">Authority governance</a></td></tr>
+              <tr><td>Multiplexer</td><td><code>/lens/events</code>, <code>POST /lens/multiplex/run</code> (gated)</td><td><a href="./multiplexer">Multiplexer</a></td></tr>
+              <tr><td>Eval workbench</td><td><code>/lens/events</code>, <code>POST /lens/decomposition/evaluate</code>, <code>POST /lens/decomposition/lifecycle</code></td><td><a href="./variance-isolation">Variance isolation</a></td></tr>
+              <tr><td>Lessons pipeline</td><td><code>/aperture/contract</code>, <code>/lens/events</code></td><td><a href="./lessons-pipeline">Lessons pipeline</a></td></tr>
+              <tr><td>Conformance authoring</td><td><code>POST /lens/conformance/derive</code>, <code>/lens/conformance/check</code>, <code>/lens/conformance/fixtures</code></td><td><a href="./conformance">Conformance</a></td></tr>
+              <tr><td>Judge transfer curve</td><td><code>/lens/events</code></td><td>below</td></tr>
+              <tr><td>Verdict reliability</td><td><code>/lens/verdict-reliability</code></td><td><a href="./sdk-reference#verdict-reliability">SDK reference</a></td></tr>
+              <tr><td>Trajectory</td><td><code>/lens/trajectory-findings</code></td><td><a href="./attention-spine">Attention spine</a></td></tr>
+              <tr><td>Seam-soak monitor <code>#seam-soak</code></td><td><code>/lens/attention?surfaceId=system.seam-soak</code></td><td><a href="./seam-monitor">Seam monitor</a></td></tr>
+              <tr><td>Builder-seam monitor <code>#builder-seam</code></td><td><code>/lens/attention?surfaceId=system.builder-seam</code></td><td><a href="./seam-monitor">Seam monitor</a></td></tr>
+              <tr><td>Seam to call analysis <code>#seam-call-analysis</code></td><td><code>/lens/seam-call-analysis</code></td><td><a href="./seam-monitor">Seam monitor</a></td></tr>
+              <tr><td>Retention desk <code>#curate?desk=retention</code></td><td><code>/lens/retention/policy</code>, <code>/plan</code>, <code>/compact</code>, <code>/unseal</code>, <code>/schedule</code>, the archive routes</td><td><a href="./compaction">Compaction</a></td></tr>
+              <tr><td>Authority policy desk</td><td><code>/lens/authority/policy</code>, <code>/policy/history</code>, <code>PUT /lens/authority/policy</code></td><td><a href="./authority-governance">Authority governance</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The three monitors are deliberately outside the Act queue. A seam backlog is a coverage list to work through, not a firefighting queue, and the evidence rides inline on each item, so opening one costs a single read.
+        </p>
+
+        <h3 id="the-judge-transfer-curve">The judge transfer curve</h3>
+
+        <p>
+          One panel has no endpoint of its own. It asks whether a surface&rsquo;s judge is a graded transfer function or a step function, and it answers from the score distribution the lens already captured, with no new calls to the judge.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Characterization</th><th>What a bad reading looks like</th></tr></thead>
+            <tbody>
+              <tr><td>Quantization</td><td>A handful of distinct scores over a decent sample. The judge is stepping, not grading.</td></tr>
+              <tr><td>Dead zones</td><td>Large gaps between consecutive achieved scores. Ranges the judge never lands in.</td></tr>
+              <tr><td>Concentration</td><td>The most common score holds most of the mass. Barely discriminating.</td></tr>
+              <tr><td>Saturation</td><td>Events piled at the low or high end of the observed range.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          What it cannot see is stated on the panel: the perturbation-response cliffs. Finding those means feeding the judge altered inputs, which is a live call rather than an observation, and outside what the lens does. The distribution behind the characterization is in <code>GET /lens/events</code>, and the adjacent question of whether a rubric still discriminates at all is the saturation audit in <a href="./rubric-coverage#the-saturation-audit">Rubric coverage and de-saturation</a>.
+        </p>
+
+        <h3 id="deep-links">Deep links</h3>
+
+        <p>
+          The hash is a route and carries a query string, so a finding, a facet or a desk can be linked directly. An unrecognized tab name falls back to Act.
+        </p>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Link</th><th>Opens</th></tr></thead>
+            <tbody>
+              <tr><td><code>#act?severity=&amp;state=&amp;surface=&amp;source=</code></td><td>The queue, filtered.</td></tr>
+              <tr><td><code>#explore?surface=&amp;facet=&amp;dimension=</code></td><td>The rubric drill for one facet.</td></tr>
+              <tr><td><code>#explore?event=</code></td><td>One event.</td></tr>
+              <tr><td><code>#curate?desk=retention&amp;preset=</code></td><td>The retention desk, preset applied.</td></tr>
+              <tr><td><code>#lens-health</code> · <code>#seam-soak</code> · <code>#builder-seam</code> · <code>#seam-call-analysis</code></td><td>The named monitor, over the tab beneath it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="reading-the-output">Reading the output</h2>
+
+        <p>
+          Where a read is an honest null, the panel says which null it is rather than rendering a zero. Trust shows <code>horizon</code> on a surface whose delivery the lens cannot observe, instead of a reach rate. Trajectory puts its unmeasured accounting first, so events with no boundary key are never read as clean. Verdict reliability shows its review tier separately, labelled as no deterministic check applied, which is not the same as a pass.
+        </p>
+
+        <p>
+          The same discipline governs the version chip: with no contract registered it reports <code>binary</code> rather than a contract version it does not have.
+        </p>
+
+        <h2 id="reference">Reference</h2>
+
+        <h3 id="serving-it">Serving it</h3>
+
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead><tr><th>Route</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /dashboard</code></td><td>The bundle. Served ahead of auth; optional HTTP Basic gates this path only.</td></tr>
+              <tr><td><code>GET /</code></td><td>A <code>302</code> to the dashboard when it is mounted. Unprotected, so the browser follows it into the credential prompt.</td></tr>
+              <tr><td><code>GET /lens/version</code></td><td>The header chip&rsquo;s read: the active contract version, or the binary stamp.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="where-this-sits">Where this sits</h3>
+
+        <p>
+          Every panel above is a rendering, and the chapter column is where the measurement itself is explained. Two ceremonies on the interface are the only writes an operator makes often: the triage disposition in Act, covered in <a href="./attention-spine">The attention spine</a>, and the policy desks, covered in <a href="./authority-governance">Authority governance</a> and <a href="./compaction">Compaction &amp; husking</a>.
+        </p>
+
+        <p>
+          The interface ships with the binary and tracks it. Where this chapter and a panel disagree, the panel is newer.
+        </p>
+        <nav class="guide-nav" aria-label="Chapter navigation">
+          <a href="./compaction" class="nav-prev">
+            <span class="nav-label">Previous</span>
+            <span class="nav-title">Compaction &amp; husking</span>
+          </a>
+          <a href="./" class="nav-next">
+            <span class="nav-label">Back to</span>
+            <span class="nav-title">All chapters</span>
+          </a>
+        </nav>
+
+      </article>
+    </main>
+  </div>
+
+  <footer class="guide-footer">
+    <span>© 2026 Precision Innovations LLC</span>
+    <span>Chapter 27 · The dashboard</span>
+    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
+  </footer>
+<script src="./_assets/guide-search.js"></script>
+<script src="../guidenav.js"></script>
+<script src="../mobilenav.js"></script>
+</body>
+</html>

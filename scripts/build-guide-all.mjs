@@ -18,40 +18,21 @@ import { dirname, join } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
-const CHAPTERS = [
-  ["01", "overview", "Overview & first principles"],
-  ["02", "surface-contracts", "Surface contracts"],
-  ["03", "snapshot", "The four-layer snapshot"],
-  ["04", "substrate-columns", "Substrate columns"],
-  ["05", "sdk-reference", "SDK reference"],
-  ["06", "mediating-lens", "The mediating lens"],
-  ["07", "run-modes", "Run modes"],
-  ["08", "sidecar", "Sidecar / OTel integration"],
-  ["09", "topology-scanner", "Surface topology scanner"],
-  ["10", "multiplexer", "The multiplexer"],
-  ["11", "drift-attribution", "Drift attribution"],
-  ["12", "variance-isolation", "Variance isolation"],
-  ["13", "lessons-pipeline", "The lessons pipeline"],
-  ["14", "conformance", "Conformance & fixtures"],
-  ["15", "judge-modes", "Judge modes"],
-  ["16", "seams", "Seams"],
-  ["17", "seam-monitor", "The seam monitor"],
-  ["18", "attention-spine", "The attention spine"],
-  ["19", "authority", "Authority"],
-  ["20", "reflection", "Reflection"],
-  ["21", "subscriptions", "Route a verdict to a human"],
-  ["22", "compaction", "Compaction & husking"],
-];
+// Chapter order, numbering, titles and parts all come from the manifest, so
+// this script and build-guide-nav.mjs cannot disagree about what the Guide is.
+const { chapters: MANIFEST } = JSON.parse(
+  readFileSync(join(ROOT, "guide/_assets/chapters.json"), "utf8"),
+);
+const CHAPTERS = MANIFEST.map((c) => [c.num, c.slug, c.title]);
 
-// Parts, mirroring the per-chapter sidebar. Each entry is [part title, first chapter slug].
-const PARTS = [
-  ["Overview", "overview"],
-  ["Operating the lens", "surface-contracts"],
-  ["Variance controls for model seams", "conformance"],
-  ["Seams, soak, and authority", "seams"],
-  ["Operational utilities", "subscriptions"],
-];
-const PART_BY_FIRST_SLUG = new Map(PARTS.map(([t, slug], i) => [slug, { title: t, roman: ["I","II","III","IV","V"][i] }]));
+// Parts, in manifest order: [part title, first chapter slug].
+const PARTS = (() => {
+  const seen = new Map();
+  for (const c of MANIFEST) if (!seen.has(c.group)) seen.set(c.group, c.slug);
+  return [...seen.entries()];
+})();
+const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+const PART_BY_FIRST_SLUG = new Map(PARTS.map(([t, slug], i) => [slug, { title: t, roman: ROMAN[i] }]));
 
 // ------- extract <article> body from a chapter file, strip prev/next nav -------
 function extractChapterBody(slug) {
@@ -96,6 +77,14 @@ function htmlToPlain(html) {
       .replace(/<[^>]+>/g, "")
       // decode entities
       .replace(/&nbsp;/g, " ")
+      .replace(/&rsquo;/g, "\u2019")
+      .replace(/&lsquo;/g, "\u2018")
+      .replace(/&ldquo;/g, "\u201c")
+      .replace(/&rdquo;/g, "\u201d")
+      .replace(/&hellip;/g, "\u2026")
+      .replace(/&middot;/g, "\u00b7")
+      .replace(/&times;/g, "\u00d7")
+      .replace(/&rarr;/g, "\u2192")
       .replace(/&mdash;/g, "—")
       .replace(/&ndash;/g, "–")
       .replace(/&amp;/g, "&")
@@ -116,6 +105,14 @@ function stripTags(s) {
 function decode(s) {
   return s
     .replace(/&nbsp;/g, " ")
+    .replace(/&rsquo;/g, "\u2019")
+    .replace(/&lsquo;/g, "\u2018")
+    .replace(/&ldquo;/g, "\u201c")
+    .replace(/&rdquo;/g, "\u201d")
+    .replace(/&hellip;/g, "\u2026")
+    .replace(/&middot;/g, "\u00b7")
+    .replace(/&times;/g, "\u00d7")
+    .replace(/&rarr;/g, "\u2192")
     .replace(/&mdash;/g, "—")
     .replace(/&ndash;/g, "–")
     .replace(/&lt;/g, "<")
@@ -192,12 +189,22 @@ const allHtml = `<!DOCTYPE html>
 <meta name="status" content="live" />
 <meta name="sign-off-required" content="false" />
 <meta name="generator" content="build-guide-all.mjs" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Holonograph" />
+<meta property="og:title" content="The Guide Mark II · Holonograph" />
+<meta property="og:description" content="The complete Holonograph guide on a single page, for offline reading and LLM ingestion." />
+<meta property="og:url" content="https://holonograph.ai/guide/all" />
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="The Guide Mark II · Holonograph" />
+<meta name="twitter:description" content="The complete Holonograph guide on a single page, for offline reading and LLM ingestion." />
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="canonical" href="https://holonograph.ai/guide/all" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%235f3ddc' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%235f3ddc' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./_assets/guide.css?v=5" />
+<link rel="stylesheet" href="./_assets/guide.css?v=6" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -209,7 +216,7 @@ const allHtml = `<!DOCTYPE html>
 </head>
 <body>
   <header class="guide-topbar">
-    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH<sup style="font-size:.52em;letter-spacing:0;font-weight:500">&trade;</sup></a>
     <span class="guide-topbar-sep">/</span>
     <span class="guide-crumb"><a href="./">The Guide</a> · Mark II</span>
     <span class="guide-topbar-right">

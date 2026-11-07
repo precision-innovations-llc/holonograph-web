@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="mobilenav.css">
 <link rel="stylesheet" href="nigel.css?v=10">
 <style>
-  .about-sec{max-width:740px;padding:clamp(24px,4vh,44px) 0;border-top:1px solid var(--line)}
+  .about-sec{padding:clamp(24px,4vh,44px) 0;border-top:1px solid var(--line)}
   .about-sec:first-of-type{border-top:0;padding-top:clamp(8px,2vh,20px)}
   .about-sec h2{font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--sun-ink);margin-bottom:14px}
   .about-sec p{font-size:17px;color:var(--ink-2);line-height:1.68}
@@ -49,24 +49,24 @@
   .founder .fbio{margin-top:12px;font-size:16px;color:var(--ink-2);line-height:1.62}
   .founder .fbio b{color:var(--ink);font-weight:600}
 
-  .about-cta{max-width:740px;margin:clamp(18px,3vh,32px) 0 clamp(44px,8vh,84px);display:flex;gap:12px;flex-wrap:wrap}
+  .about-cta{margin:clamp(18px,3vh,32px) 0 clamp(44px,8vh,84px);display:flex;gap:12px;flex-wrap:wrap}
   @media (max-width:600px){ .founder{flex-direction:column;gap:16px} }
 </style>
 </head>
 <body data-nav="">
 <a class="skip" href="#main">Skip to content</a>
-<header id="siteHeader"></header>
+<header id="siteHeader" class="site-header"><div class="wrap"><nav aria-label="Primary"><a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a><span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/">Guide</a></span><a class="pill" href="/contact">Request a demo</a></nav></div></header>
 
 <main class="wrap" id="main">
-  <section class="page-hero" data-hero data-reveal>
+  <section class="page-hero" style="max-width:none" data-hero data-reveal>
     <p class="eyebrow"><span class="dot"></span>About</p>
-    <h1>Built by the person who needed it first.</h1>
-    <p class="sub">Holonograph is built by Precision Innovations. It began with a question every operator of an agentic system runs into: did this change fix the problem, and did it quietly cause a new one?</p>
+    <h1>Born of necessity</h1>
+    <p class="sub">Holonograph is built by Precision Innovations. It began with a question every operator of an agentic system runs into: did this change fix the problem, and did it cause a new one nobody noticed?</p>
   </section>
 
   <section class="about-sec" data-reveal>
     <h2>The origin</h2>
-    <p>Holonograph started with a practical need, not a philosophy. Running a real agentic system in production, one question kept coming back: when you change something, did the change fix the problem, and did it quietly cause a new one? Answering that honestly means attributing what changed to its real source. The formal version of that argument is written up in <a href="https://briankerrigan.us/potentiality-field" target="_blank" rel="noopener">The Potentiality Field</a>.</p>
+    <p>Holonograph started with a practical need, not a philosophy. Running a real agentic system in production, one question kept coming back: when you change something, did the change fix the problem, and did it cause a new one nobody noticed? Answering that means attributing what changed to its real source. The formal version of that argument is written up in <a href="https://briankerrigan.us/potentiality-field" target="_blank" rel="noopener">The Potentiality Field</a>.</p>
     <p>The honesty came second. Holonograph can attribute a change in full some of the time, in part other times, and not at all in others. What makes it an instrument rather than a guess is that <b>it knows which case it is in, and says so.</b> An honest account of what it cannot resolve is the byproduct of measuring what it can.</p>
   </section>
 
@@ -89,14 +89,14 @@
   </section>
 
   <div class="about-cta" data-reveal>
-    <a class="btn" href="docs.html">Read the docs</a>
+    <a class="btn" href="/guide/">Read the docs</a>
     <a class="btn-ghost" href="contact.html">Talk to us</a>
   </div>
 </main>
 
-<footer id="siteFooter"></footer>
+<footer id="siteFooter" class="site-footer"><div class="wrap"><div class="footer-grid"><div class="f-brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a><p class="f-tag">The self-hosted instrument for authority governance.</p><p class="f-pp"><a href="/">Patent pending</a></p></div><div class="f-col"><h4><a href="/">Platform</a></h4><a href="/ai-attribution">AI Attribution</a><a href="/lens-facets">Lens facets</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority governance</a><a href="/seams">Seams</a><a href="/builders">Builders</a></div><div class="f-col"><h4>Resources</h4><a href="/guide/">Guide</a><a href="/glossary">Glossary</a><a href="/papers">Research</a><a href="/changelog">Changelog</a></div><div class="f-col"><h4>Company</h4><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></div></div><div class="footer-bar"><span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span><span class="right"><a href="#" data-nigel-open>Chat with Nigel</a><a href="#">GitHub</a></span></div></div></footer>
 <script src="site.js"></script>
-<script src="nigel.js?v=15"></script>
+<script src="nigel.js?v=16"></script>
 <script src="mobilenav.js"></script>
 </body>
 </html>

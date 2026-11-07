@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lens facets · Holonograph</title>
-<meta name="description" content="Lens facets: why a scale can come to rest at an anchor and stop discriminating, how Holonograph reports it as a candidate, and how facets of rubric, judge, and context scope are attributed on their own.">
+<meta name="description" content="Why scores can concentrate at an anchor, how Holonograph reports it as a candidate, and how facets of rubric, judge, and context scope are attributed.">
 <link rel="canonical" href="https://holonograph.ai/lens-facets">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#f6f5f9">
@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Holonograph">
 <meta property="og:locale" content="en_US">
 <meta property="og:title" content="Lens facets: when a scale stops discriminating">
-<meta property="og:description" content="Why one judge grading many concerns collapses to pass/fail, how Holonograph detects it, and how lens facets split it back into separately-tracked dimensions.">
+<meta property="og:description" content="Why scores can concentrate at an anchor, how Holonograph reports it as a candidate, and how facets of rubric, judge, and context scope are attributed.">
 <meta property="og:url" content="https://holonograph.ai/lens-facets">
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp">
 <meta property="og:image:width" content="2752">
@@ -24,7 +24,7 @@
 <meta name="twitter:site" content="@holonograph">
 <meta name="twitter:creator" content="@holonograph">
 <meta name="twitter:title" content="Lens facets: when a scale stops discriminating">
-<meta name="twitter:description" content="Why a scale can rest at an anchor and stop discriminating, and how facets of rubric, judge, and context scope are attributed on their own.">
+<meta name="twitter:description" content="Why scores can concentrate at an anchor, how Holonograph reports it as a candidate, and how facets of rubric, judge, and context scope are attributed.">
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="site.css">
@@ -75,14 +75,14 @@
 </head>
 <body data-nav="">
 <a class="skip" href="#main">Skip to content</a>
-<header id="siteHeader"></header>
+<header id="siteHeader" class="site-header"><div class="wrap"><nav aria-label="Primary"><a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a><span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/">Guide</a></span><a class="pill" href="/contact">Request a demo</a></nav></div></header>
 
 <main class="wrap" id="main">
   <section class="page-hero lf-hero" data-hero data-reveal>
     <div class="copy">
       <p class="eyebrow"><span class="dot"></span>Lens facets</p>
-      <h1>When a scale stops discriminating.</h1>
-      <p class="sub">When one judge scores many concerns at once, its scale can come to rest at an anchor: a ten and a nine stop being different readings, and a failure tells you only that something went wrong, not how many things did. Holonograph reports that as a candidate on the event, not a settled verdict, and names the measurement that would confirm it.</p>
+      <h1>When a scale stops discriminating</h1>
+      <p class="sub">When one judge scores many concerns at once, scores can concentrate at an anchor: a ten and a nine stop being different readings, and a failure shows only that something went wrong. Holonograph reports that as a candidate on the event and names the measurement that would confirm it.</p>
     </div>
     <div class="viz" data-reveal>
       <svg class="facet-cube" viewBox="0 0 230 230" aria-hidden="true">
@@ -129,13 +129,13 @@
 
   <section class="lf-sec" data-reveal>
     <p class="lf-k">The condition</p>
-    <h2>A scale at rest carries less than it shows.</h2>
-    <p>Ask one judge to score correctness, tone, concision, and safety in a single number and the scale can settle at an <b>anchor</b>, the top or the floor. At that point distinct inputs map to the same reading: a ten and a nine are no longer told apart, and a low score no longer says how many concerns failed, only that one did. That is a <b>candidate</b>, not a verdict. A reading at rest can mean the scale has stopped discriminating, or that the reading is simply correct and stable there; the measurement that separates them is whether distinct subject states still land on the same anchor. Holonograph reports the candidate on the event and names that measurement, rather than passing the number through as an ordinary score.</p>
+    <h2>Scores concentrated at an anchor</h2>
+    <p>Ask one judge to score correctness, tone, concision, and safety in a single number and scores can concentrate at an <b>anchor</b>, the top or the floor of the scale. Concentration alone is a candidate, not a verdict: the scale may have stopped discriminating, or the reading may be correct and stable there. The measurement that separates them is whether distinct subject states land on the same anchor. A scale that fails that measurement is saturated.</p>
     <div class="sat">
       <div class="panel">
-        <p class="cap">A reading at rest at an anchor</p>
+        <p class="cap">Scores at an anchor</p>
         <div class="scale"><span class="bar hot" style="height:96%"></span><span class="bar hot" style="height:88%"></span><span class="bar" style="height:10%"></span><span class="bar" style="height:6%"></span><span class="bar" style="height:5%"></span><span class="bar" style="height:4%"></span></div>
-        <p class="lab"><b>Readings resting at an anchor.</b> The number moves like a switch; you cannot read a cause out of it.</p>
+        <p class="lab"><b>One anchor value.</b> The number shows no cause.</p>
       </div>
       <div class="panel">
         <p class="cap">Resolved into facets</p>
@@ -147,8 +147,8 @@
 
   <section class="lf-sec" data-reveal>
     <p class="lf-k">The detection</p>
-    <h2>Holonograph reports the candidate, deterministically.</h2>
-    <p>The reading does not have to announce the condition for the lens to catch it. A deterministic check reads whether a reading has come to rest at an anchor, and reports a <b>candidate</b> on that event when it has. It runs at window scope, on the reliability read, and returns a machine-readable signal an agent checks before it trusts a graded score, right alongside the rest of a reading&rsquo;s reliability. The check runs over data already captured, so it makes no fresh model call and returns the same result every time.</p>
+    <h2>Holonograph reports the candidate</h2>
+    <p>The lens detects it. A check reads whether scores have concentrated at an anchor and reports a <b>candidate</b> on that event. It runs at window scope on the reliability read and returns a machine-readable signal a coding agent can check before ranking on a graded score. The check runs over data already captured, so it makes no fresh model call and returns the same result every time.</p>
   </section>
 
   <section class="lf-sec" data-reveal>
@@ -195,12 +195,12 @@
       </svg>
       </div>
       <div>
-        <h2>Facets, each attributed on its own.</h2>
-        <p>A rubric can resolve into separate facets of rubric, judge, and context scope. Where it does, Holonograph groups and attributes each facet on its own, so a reading is tied to the facet it belongs to. And where two facets move together, the apparatus reports the <b>co-transition</b>: it names the aliasing rather than guessing which of the two to credit. That honesty about what cannot yet be separated is the feature. The single flat face becomes a cut surface: many facets, each catching its own light.</p>
+        <h2>Attribution by facet</h2>
+        <p>A rubric can resolve into facets of rubric, judge, and context scope. Holonograph groups and attributes each one, so a reading is tied to the facet it belongs to.</p>
         <div class="lf-steps">
-          <div class="lf-step"><span class="n">01</span><h3>Report</h3><p>The candidate surfaces on the event, as a signal you can read.</p></div>
-          <div class="lf-step"><span class="n">02</span><h3>Attribute</h3><p>Each declared facet, of rubric, judge, and context scope, is grouped and read on its own.</p></div>
-          <div class="lf-step"><span class="n">03</span><h3>Alias</h3><p>Where two facets co-transition, the apparatus says so instead of guessing between them.</p></div>
+          <div class="lf-step"><span class="n">01</span><h3>Report</h3><p>The candidate appears on the event as a readable signal.</p></div>
+          <div class="lf-step"><span class="n">02</span><h3>Attribute</h3><p>Each declared facet is grouped and read on its own scale.</p></div>
+          <div class="lf-step"><span class="n">03</span><h3>Mark</h3><p>Where two facets change together, Holonograph marks the reading as confounded.</p></div>
         </div>
       </div>
     </div>
@@ -208,23 +208,23 @@
 
   <section class="lf-sec" data-reveal>
     <p class="lf-k">Why it matters</p>
-    <h2>A reading you can trust, and honesty about what it cannot separate.</h2>
-    <p>A reading at rest is worse than a missing one: it looks graded while carrying almost nothing. Reporting the condition first means a coding agent consulting the lens knows <b>not to rank by a number that has stopped discriminating</b>. And where facets co-transition, the apparatus names the aliasing rather than manufacturing a clean attribution, so what you act on is what the record supports, not a guess.</p>
+    <h2>Readings you can act on</h2>
+    <p>A saturated score looks graded and carries almost no information. A coding agent that checks the signal first can <b>rank by reliability tier instead of score magnitude</b>.</p>
   </section>
 
   <section class="lf-close" data-reveal>
     <div class="t">
-      <h3>The reference, in full.</h3>
+      <h3>The reference, in full</h3>
       <p>The reliability read and the saturation signal are documented in the guide.</p>
     </div>
-    <a class="btn" href="guide/sdk-reference.html">Read the SDK reference &rarr;</a>
+    <a class="btn" href="/guide/sdk-reference" target="_blank" rel="noopener">Read the SDK reference &rarr;</a>
     <a class="btn-ghost" href="contact.html">Request a demo</a>
   </section>
 </main>
 
-<footer id="siteFooter"></footer>
+<footer id="siteFooter" class="site-footer"><div class="wrap"><div class="footer-grid"><div class="f-brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a><p class="f-tag">The self-hosted instrument for authority governance.</p><p class="f-pp"><a href="/">Patent pending</a></p></div><div class="f-col"><h4><a href="/">Platform</a></h4><a href="/ai-attribution">AI Attribution</a><a href="/lens-facets">Lens facets</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority governance</a><a href="/seams">Seams</a><a href="/builders">Builders</a></div><div class="f-col"><h4>Resources</h4><a href="/guide/">Guide</a><a href="/glossary">Glossary</a><a href="/papers">Research</a><a href="/changelog">Changelog</a></div><div class="f-col"><h4>Company</h4><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></div></div><div class="footer-bar"><span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span><span class="right"><a href="#" data-nigel-open>Chat with Nigel</a><a href="#">GitHub</a></span></div></div></footer>
 <script src="site.js"></script>
-<script src="nigel.js?v=15"></script>
+<script src="nigel.js?v=16"></script>
 <script src="mobilenav.js"></script>
 </body>
 </html>

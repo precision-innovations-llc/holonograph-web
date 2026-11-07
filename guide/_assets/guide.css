@@ -540,19 +540,19 @@ html, body {
 .guide-footer a:hover { color: var(--accent); }
 
 /* ---------- index page: hero + card grid ----------
-   All three top-level sections (hero / router / TOC) share the same outer
-   bounds — max-width 900px, centered, 24px horizontal padding — so content
+   Both top-level sections (hero / TOC) share the same outer
+   bounds — max-width 1180px, centered, 24px horizontal padding — so content
    edges line up at the same x. The TOC selector is prefixed with .guide-main
    because the generic `.guide-main ol` rule outranks a plain `.guide-toc-full`
    on specificity and would otherwise override its centering + padding. */
 .guide-index-hero {
-  max-width: 900px;
+  max-width: 1180px;
   margin: 0 auto 44px;
   padding: 0 24px;
   text-align: left;
 }
 .guide-index-hero .guide-h1 { margin-bottom: 14px; }
-.guide-index-hero .guide-lede { border-bottom: 0; padding-bottom: 0; }
+.guide-index-hero .guide-lede { border-bottom: 0; padding-bottom: 0; max-width: none; }
 .guide-index-hero .guide-epigraph {
   font-style: italic;
   font-size: 15px;
@@ -561,27 +561,32 @@ html, body {
   padding: 4px 0 4px 16px;
   margin: 4px 0 22px;
 }
+.guide-index-search { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .guide-index-onepage {
-  margin-top: 18px;
   font-family: var(--font-mono);
   font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.guide-index-onepage a {
-  color: var(--accent);
+  color: var(--fg-dim);
   text-decoration: none;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  padding: 3px 9px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
   transition: border-color 200ms ease, color 200ms ease;
 }
-.guide-index-onepage a:hover { color: var(--accent-hover); border-bottom-color: var(--accent-hover); }
+.guide-index-onepage:hover { color: var(--accent); border-color: var(--accent); }
 
 .guide-main .guide-toc-full {
-  max-width: 900px;
+  max-width: 1180px;
   margin: 0 auto;
   padding: 0 24px;
   list-style: none;
   color: var(--fg);
+  columns: 2;
+  column-gap: 56px;
+}
+.guide-toc-full li { break-inside: avoid; }
+.guide-toc-full li.t-part { break-after: avoid; }
+@media (max-width: 960px) {
+  .guide-main .guide-toc-full { columns: 1; }
 }
 .guide-toc-full li {
   display: grid;
@@ -591,7 +596,7 @@ html, body {
   padding: 18px 4px;
   border-bottom: 1px solid var(--rule);
 }
-.guide-toc-full li:first-child { border-top: 1px solid var(--rule); }
+.guide-main .guide-toc-full .t-ttl { border-bottom: 0; }
 .guide-toc-full .t-num {
   font-family: var(--font-mono);
   font-size: 13px;
@@ -656,32 +661,6 @@ html, body {
   .guide-toc-full li { grid-template-columns: 32px 1fr; gap: 10px; padding: 14px 2px; }
   .guide-toc-full .t-status { grid-column: 2; justify-self: start; margin-top: 8px; align-self: start; }
 }
-
-/* ---------- audience router (index page) ---------- */
-.guide-router {
-  max-width: 900px;
-  margin: 0 auto 40px;
-  padding: 22px 24px;
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-}
-.guide-router h2 {
-  margin: 0 0 4px !important;
-  font-size: 13px !important;
-  font-family: var(--font-mono) !important;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--fg-faint) !important;
-  font-weight: 500 !important;
-  padding-top: 0 !important;
-}
-.guide-router h2::before { display: none !important; }
-.guide-router table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
-.guide-router th, .guide-router td { text-align: left; padding: 8px 8px; border-bottom: 1px solid var(--rule); }
-.guide-router th { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-faint); font-weight: 500; }
-.guide-router td:first-child { font-weight: 600; color: var(--fg); }
-.guide-router tr:last-child td { border-bottom: 0; }
 
 /* ---------- phones ---------- */
 /* Phone-tier tuning. Below 720px the sticky-sidebar layout becomes a flat block
@@ -870,3 +849,244 @@ html, body {
   margin: 22px 0 6px;
   color: var(--fg);
 }
+
+/* -----------------------------------------------------------------------------
+   Search (guide-search.js)
+   ----------------------------------------------------------------------------- */
+
+/* The sidebar trigger. A link to /guide/all until the script wires it. */
+.guide-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 18px;
+  padding: 7px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  background: var(--bg-elev);
+  color: var(--fg-faint);
+  font: inherit;
+  font-size: 0.82rem;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.guide-search:hover,
+.guide-search:focus-visible {
+  border-color: var(--accent);
+  color: var(--fg-dim);
+}
+.guide-search .gs-icon { flex: none; opacity: 0.65; }
+.guide-search .gs-label { flex: 1 1 auto; text-align: left; }
+.guide-search .gs-key {
+  flex: none;
+  padding: 1px 5px;
+  border: 1px solid var(--fg-ghost);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: var(--fg-faint);
+}
+
+html.gq-open { overflow: hidden; }
+
+.gq-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  /* flex-start, not the default stretch: otherwise the panel is pulled to the
+     full 72vh and two results sit above a screenful of nothing. */
+  align-items: flex-start;
+  padding: 10vh 16px 16px;
+  background: rgba(23, 22, 29, 0.42);
+  backdrop-filter: blur(2px);
+}
+.gq-overlay[hidden] { display: none; }
+
+.gq-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(720px, 100%);
+  max-height: 72vh;
+  overflow: hidden;
+  border: 1px solid var(--fg-ghost);
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: 0 24px 64px rgba(23, 22, 29, 0.28);
+}
+
+.gq-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg-elev);
+}
+.gq-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.gq-input::placeholder { color: var(--fg-faint); }
+.gq-input::-webkit-search-cancel-button { display: none; }
+.gq-count {
+  flex: none;
+  color: var(--fg-faint);
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+.gq-close {
+  flex: none;
+  padding: 2px 7px;
+  border: 1px solid var(--fg-ghost);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--fg-faint);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+.gq-close:hover { border-color: var(--accent); color: var(--accent); }
+
+.gq-results {
+  /* 0 1 auto, not 1 1 auto: the panel shrinks to its results and only scrolls
+     once they overflow, so a one-line answer is not a half-screen of nothing. */
+  flex: 0 1 auto;
+  overflow-y: auto;
+  padding: 8px 0 12px;
+  overscroll-behavior: contain;
+}
+
+.gq-hint {
+  margin: 10px 18px;
+  color: var(--fg-faint);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+.gq-hint kbd {
+  padding: 1px 5px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--bg-elev);
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  color: var(--fg-dim);
+}
+
+.gq-group {
+  margin: 14px 18px 4px;
+  color: var(--fg-faint);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.gq-group:first-child { margin-top: 6px; }
+
+.gq-row {
+  display: block;
+  padding: 7px 18px;
+  border-left: 2px solid transparent;
+  color: inherit;
+  text-decoration: none;
+}
+.gq-row.is-current {
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+}
+.gq-primary {
+  display: block;
+  color: var(--fg);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.gq-primary.gq-e,
+.gq-primary.gq-t {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--code-fg);
+  word-break: break-all;
+}
+.gq-method {
+  display: inline-block;
+  min-width: 3.6em;
+  color: var(--accent);
+  font-weight: 600;
+}
+.gq-meta {
+  display: block;
+  margin-top: 1px;
+  color: var(--fg-faint);
+  font-size: 0.72rem;
+}
+.gq-snip {
+  display: block;
+  margin-top: 3px;
+  color: var(--fg-dim);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+.gq-row em {
+  font-style: normal;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.gq-row.is-current em { background: transparent; }
+
+@media (max-width: 900px) {
+  .gq-overlay { padding: 6vh 10px 10px; }
+  .gq-panel { max-height: 84vh; }
+
+  /* The sidebar is hidden below 900px; guidenav.js clones the trigger into the
+     sticky sub-nav. There it is an icon button: the row already carries a
+     chapter select and the version stamp, and a keyboard hint means nothing on
+     a touch device. */
+  .guide-subnav .guide-search {
+    flex: none;
+    width: auto;
+    margin: 0;
+    padding: 6px 8px;
+    white-space: nowrap;
+  }
+  .guide-subnav .guide-search .gs-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .guide-subnav .guide-search .gs-key { display: none; }
+  .guide-subnav .guide-search .gs-icon { opacity: 0.8; }
+}
+
+/* A pointer-less device gets no keyboard hint anywhere. */
+@media (hover: none) {
+  .guide-search .gs-key { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide-search { transition: none; }
+}
+
+/* index.html has no sidebar; the trigger sits under the one-page link. */
+.guide-index-search { margin: 18px 0 4px; }
+.guide-index-search .guide-search { flex: 0 1 320px; }
+.gq-hint.gq-relaxed { margin: 8px 18px 2px; font-size: 0.78rem; }

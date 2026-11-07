@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Builders · Holonograph</title>
+<meta name="description" content="Coding agents are agents. The seam monitor reports each seam into the session that wrote it, with knowledge of the running system the builder cannot readily reach.">
+<link rel="canonical" href="https://holonograph.ai/builders">
+<meta name="theme-color" content="#f6f5f9">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Holonograph">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Builders · Holonograph">
+<meta property="og:description" content="Coding agents are agents. The seam monitor reports each seam into the session that wrote it, with knowledge of the running system the builder cannot readily reach.">
+<meta property="og:url" content="https://holonograph.ai/builders">
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp">
+<meta property="og:image:width" content="2752">
+<meta property="og:image:height" content="626">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@holonograph">
+<meta name="twitter:creator" content="@holonograph">
+<meta name="twitter:title" content="Builders · Holonograph">
+<meta name="twitter:description" content="Coding agents are agents. The seam monitor reports each seam into the session that wrote it, with knowledge of the running system the builder cannot readily reach.">
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MX42B47LTP', { client_storage: 'none' });</script>
+<link rel="stylesheet" href="/site-v6.css?v=1">
+<link rel="stylesheet" href="/mobilenav.css">
+<link rel="stylesheet" href="/nigel.css?v=10">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header" id="siteHeader">
+  <div class="wrap nav-wrap">
+    <nav aria-label="Primary">
+      <a class="brand" href="/">
+        <span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span>
+        <span class="pp">patent&nbsp;pending</span>
+      </a>
+      <span class="nav-links"><a href="/ai-attribution" data-nav="ai-attribution">AI Attribution</a><a href="/attention-spine" data-nav="attention-spine">Attention Spine</a><a href="/authority-governance/" data-nav="authority-governance">Authority</a><a href="/seams" data-nav="seams">Seams</a><a href="/builders" data-nav="builders" class="on" aria-current="page">Builders</a><a href="/guide/">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="view" data-route="builders" data-url="/builders">
+  <section class="page-head sec-pad bg-a">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Builders</p>
+      <h1 class="page-h1">Reported in the session that wrote it</h1>
+      <p class="lead">Coding agents are agents. They are subject to the same inference violations, drift, and stochastic behavior as any other LLM agent, and teams now often use them to build agentic software.</p>
+      <p class="body-p">The <a class="term" href="/guide/seam-monitor" target="_blank" rel="noopener">seam monitor</a> runs inside the build loop. When a coding agent writes a decision that acts on an interpreted value and reaches something consequential, the note arrives in that same session, before the change is anywhere else.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-b" data-reveal>
+    <div class="wrap">
+      <h2>Inside the build loop</h2>
+      <figure class="loop">
+        <div class="lp lp-a"><span class="lp-n">1</span><h3>The agent edits a file</h3><p>Any coding agent, in its own session.</p></div>
+        <div class="lp lp-b"><span class="lp-n">2</span><h3>The hook reads the change</h3><p>On every edit, at the moment of writing.</p></div>
+        <div class="lp-fork">
+          <div class="lp lp-quiet"><span class="lp-n">3a</span><h3>Nothing consequential</h3><p>The hook stays silent. No noise in the session.</p></div>
+          <div class="lp lp-note"><span class="lp-n">3b</span><h3>A seam reaches authority</h3><p>A note in the session: the interpretation, the decision, the sink it reaches, and anything the scan could not follow.</p></div>
+        </div>
+        <div class="lp lp-c"><span class="lp-n">4</span><h3>Declare or restructure</h3><p>The builder decides. Candidate sinks and skips are proposed from code already read.</p></div>
+        <div class="lp lp-d"><span class="lp-n">5</span><h3>Into the lens</h3><p>Declarations go to the record. Accepted ones drop from the scan and the lens together.</p></div>
+        <div class="lp lp-e"><span class="lp-n">6</span><h3>Soak and alarms</h3><p>Live traffic measures the seam; anything worth attention reaches the <a class="term" href="/attention-spine">attention spine</a>.</p></div>
+        <figcaption class="dg-cap"><span class="dot"></span>The monitor flags seams and proposes candidate sinks and skip paths. It does not edit code and does not block a build on its own authority; whether a build stops is operator or CI policy.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-a" data-reveal>
+    <div class="wrap">
+      <h2>Why a builder reads the note</h2>
+      <p class="lead">Any coding agent can write its own code walker in an afternoon. A note worth reading has to carry what a local walk cannot produce: knowledge of the running system not readily or easily accessible to the builder.</p>
+      <div class="carrot">
+        <div class="cr"><span class="st st-now">Now</span><h3>The resolved path</h3><p>This value, through these hops, lands at that decision and reaches that consequence, followed across files the local walk would stop at.</p></div>
+        <div class="cr"><span class="st st-next">Next</span><h3>Already governed elsewhere</h3><p>A declared boundary on another surface, with its contract ready to reuse.</p></div>
+        <div class="cr"><span class="st st-grow">With production</span><h3>What happened to seams like this</h3><p>How often decisions shaped like this one needed their fallback on real inputs, from observed runs.</p></div>
+        <div class="cr"><span class="st st-grow">With production</span><h3>What this shape caused before</h3><p>An incident a similar decision produced, remembered by the record.</p></div>
+      </div>
+      <div class="checkpoints">
+        <div class="ck"><span class="st st-now">Now</span><b>At authorship</b><span>The hook, in the session</span></div>
+        <div class="ck"><span class="st st-next">Next</span><b>Before merge</b><span>A CI backstop on declared, exercised seams</span></div>
+        <div class="ck"><span class="st st-next">Next</span><b>At session start</b><span>The live alarms, before work begins</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-b" id="case-study" data-reveal>
+    <div class="wrap">
+      <span class="ev-tag">Case study</span>
+      <h2>A rule-based calendaring agent</h2>
+      <dl class="case">
+        <dt>The system</dt>
+        <dd>A rule-based agent that calendars deadlines, under development.</dd>
+        <dt>What review missed</dt>
+        <dd>A conventional implementation review left an authority-bearing dependency unresolved.</dd>
+        <dt>What seam analysis found</dt>
+        <dd><ul><li>A heuristic inference presented as established information, which then filtered the rules the model was shown.</li><li>A fuzzy match carrying the same label as an exact one.</li></ul></dd>
+        <dt>What changed</dt>
+        <dd>The producer's code did not need to change. The consequential behavior downstream did. Further investigation found more authority-bearing dependencies in rule selection and evaluation context.</dd>
+        <dt>What it does not show</dt>
+        <dd>A development account, not an independently reproduced study. It shows the gap between a correct producer and an unjustified downstream decision, not a prevented failure.</dd>
+      </dl>
+      <a class="arrow-link" href="/guide/seam-monitor" target="_blank" rel="noopener">The seam monitor in the Guide <span aria-hidden="true">&rarr;</span></a>
+      <div class="cta-card next-cta">
+        <svg class="cta-cube" viewBox="0 0 96 96" aria-hidden="true">
+          <polygon points="48,48 48,6 84.4,27 84.4,69" fill="#a998f0" opacity="0.12"/>
+          <polygon points="48,48 11.6,69 11.6,27 48,6" fill="#a998f0" opacity="0.2"/>
+          <polygon points="48,48 84.4,69 48,90 11.6,69" fill="#a998f0" opacity="0.3"/>
+          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="none" stroke="#c9bdfb" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M48,48 L48,6 M48,48 L84.4,69 M48,48 L11.6,69" fill="none" stroke="#c9bdfb" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+          <circle cx="48" cy="48" r="6.5" fill="#e9552b"/>
+        </svg>
+        <div class="cta-text">
+          <p class="cta-k">From the build to the record</p>
+          <p class="close-line">Follow the seam</p>
+        </div>
+        <div class="cta">
+          <a class="btn solid" href="/attention-spine">Attention Spine <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn ghost" href="/authority-governance/">Authority <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="f-brand">
+        <a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>
+        <p class="f-tag">The self-hosted instrument for authority governance.</p>
+        <p class="f-pp"><a href="/">Patent pending</a></p>
+      </div>
+      <div class="f-col"><h4><a href="/">Platform</a></h4><a href="/ai-attribution">AI Attribution</a><a href="/lens-facets">Lens facets</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority governance</a><a href="/seams">Seams</a><a href="/builders">Builders</a></div>
+      <div class="f-col"><h4>Resources</h4><a href="/guide/">Guide</a><a href="/glossary">Glossary</a><a href="/papers">Research</a><a href="/changelog">Changelog</a></div>
+      <div class="f-col"><h4>Company</h4><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></div>
+    </div>
+    <div class="footer-bar">
+      <span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span>
+      <span class="right"><a href="#" data-nigel-open>Chat with Nigel</a><a href="#">GitHub</a></span>
+    </div>
+  </div>
+</footer>
+<script src="/site-v6.js?v=1"></script>
+<script src="/nigel.js?v=16"></script>
+<script src="/mobilenav.js"></script>
+</body>
+</html>

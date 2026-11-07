@@ -14,10 +14,12 @@
 .mobile-menu a{display:block;padding:14px 2px;font-size:16px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
 .mobile-menu a.cta{margin-top:16px;background:var(--iris);color:#fff;text-align:center;border-radius:10px;font-weight:500;padding:14px;border-bottom:0}
 
-@media (max-width:860px){
+.nav-links a{white-space:nowrap}
+@media (max-width:1100px){
+  .nav-links{display:none}
   .nav-toggle{display:block}
   nav .pill{display:none}
 }
-@media (min-width:861px){
+@media (min-width:1101px){
   .mobile-menu{display:none}
 }

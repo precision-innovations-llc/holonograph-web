@@ -172,28 +172,58 @@ Holonograph itself is a patent-pending commercial product of Precision Innovatio
 
 ### Where can I read more?
 
-Full operator documentation lives at https://holonograph.ai/guide/ — fourteen chapters across three arcs (integration, workflow, attribution), capability-only by design. The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
+Full operator documentation lives at https://holonograph.ai/guide/ — 27 chapters in 6 parts, capability-only by design. The site at https://holonograph.ai presents the high-level concepts. To request a pilot, use the contact form on the site.
 
 ---
 
 ## The Guide
 
-The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface — how to call the lens, declare surfaces, populate substrate columns, and read attribution. Fourteen chapters across three arcs: integration (how to wire the lens in), workflow (day-to-day operation), and attribution (the analyses that answer *which layer changed?* and *how much of this movement is real?*).
+The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, read attribution, and govern authority. 27 chapters in 6 parts, with the complete text of every one of them below.
 
-- Overview & first principles: https://holonograph.ai/guide/overview
-- Surface contracts: https://holonograph.ai/guide/surface-contracts
-- The four-layer snapshot: https://holonograph.ai/guide/snapshot
-- Substrate columns: https://holonograph.ai/guide/substrate-columns
-- SDK reference: https://holonograph.ai/guide/sdk-reference
-- The mediating lens — placement & call flow: https://holonograph.ai/guide/mediating-lens
-- Run modes: https://holonograph.ai/guide/run-modes
-- Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
-- Surface topology scanner: https://holonograph.ai/guide/topology-scanner
-- Conformance & fixtures: https://holonograph.ai/guide/conformance
-- The multiplexer: https://holonograph.ai/guide/multiplexer
-- The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
-- Drift attribution: https://holonograph.ai/guide/drift-attribution
-- Variance isolation: https://holonograph.ai/guide/variance-isolation
+**Overview**
+
+- 01 Overview & first principles: https://holonograph.ai/guide/overview
+
+**Operating the lens**
+
+- 02 Surface contracts: https://holonograph.ai/guide/surface-contracts
+- 03 The four-layer snapshot: https://holonograph.ai/guide/snapshot
+- 04 Substrate columns: https://holonograph.ai/guide/substrate-columns
+- 05 SDK reference: https://holonograph.ai/guide/sdk-reference
+- 06 The mediating lens: https://holonograph.ai/guide/mediating-lens
+- 07 Swarms and sources: https://holonograph.ai/guide/swarms-and-sources
+- 08 Run modes: https://holonograph.ai/guide/run-modes
+- 09 Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
+- 10 Surface topology scanner: https://holonograph.ai/guide/topology-scanner
+- 11 The multiplexer: https://holonograph.ai/guide/multiplexer
+- 12 Drift attribution: https://holonograph.ai/guide/drift-attribution
+- 13 Variance isolation and declared axes: https://holonograph.ai/guide/variance-isolation
+- 14 The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
+
+**Judge validity**
+
+- 15 Conformance & fixtures: https://holonograph.ai/guide/conformance
+- 16 Rubric coverage and de-saturation: https://holonograph.ai/guide/rubric-coverage
+- 17 Facet separability: https://holonograph.ai/guide/facet-separability
+- 18 Judge modes and reflection: https://holonograph.ai/guide/judge-modes
+
+**Seams and soak**
+
+- 19 Seams: https://holonograph.ai/guide/seams
+- 20 The seam monitor: https://holonograph.ai/guide/seam-monitor
+- 21 The attention spine: https://holonograph.ai/guide/attention-spine
+
+**Authority and governance**
+
+- 22 Authority: https://holonograph.ai/guide/authority
+- 23 Authority governance: https://holonograph.ai/guide/authority-governance
+
+**Operational utilities**
+
+- 24 Route a verdict to a human: https://holonograph.ai/guide/subscriptions
+- 25 Outcome delivery: https://holonograph.ai/guide/outcome-delivery
+- 26 Compaction & husking: https://holonograph.ai/guide/compaction
+- 27 The dashboard: https://holonograph.ai/guide/dashboard
 
 The Guide is capability-only by design. It documents *what* the operator does with each feature — the endpoints, the SDK methods, the labels the analyses return — and stops at the SDK boundary. Deeper technical validation of the underlying methodology (the variance model, the confidence-interval math, the calibration mechanism) is deliberately absent from the public pages; that layer is available under NDA.
 
@@ -258,9 +288,9 @@ Chapter 01
         Every one of those is a capability the operator uses. This Guide teaches you how to use them.
 
           Reading this as an agent
-          Increasingly the reader here is not a person browsing a dashboard but a coding agent, asked to fix a bug or to find one nobody reported. Before it changes anything, it consults the lens: what actually moved, whether that movement is real, and which verdicts can be trusted. Every read in this Guide is exposed over plain HTTP for exactly that — the pre-action check that decides the next step. The dashboard is one surface over the same reads.
+          Increasingly the reader here is not a person browsing a dashboard but a coding agent, asked to fix a bug or to find one nobody reported. Before it changes anything, it consults the lens: what actually moved, whether that movement is real, and which verdicts can be trusted. Every read in this Guide is exposed over plain HTTP for exactly that: the pre-action check that decides the next step. The dashboard is one surface over the same reads.
 
-## Why position, not instrumentation
+## Why position beats instrumentation
 
         Observability tools for LLM systems have converged on a pattern: sprinkle logging calls through the agent's code, ship traces to a dashboard. That pattern works when the thing you're observing is deterministic. Modern agentic systems built on foundation LLMs are not. The model can be silently re-routed by the vendor behind a stable alias, and the evaluation apparatus is itself an LLM that drifts on its own schedule. Instrumentation inside the agent's code can only see what the agent chose to log, and the log format ages the day the SDK changes.
 
@@ -336,7 +366,7 @@ Chapter 02
 
         A **surface** is the operator's unit of evaluation: one addressable thing your agent calls, with a stable id and a shape you expect it to satisfy. A **contract** is the versioned declaration of that shape.
 
-        Contracts declare four things per surface:
+        Contracts declare three things per surface:
 
           - **Dimensions**: the scoring axes an evaluation returns (e.g. `correctness`, `tone`, `schema-conformance`).
 
@@ -344,9 +374,12 @@ Chapter 02
 
           - **Substrate columns**: the named columns Holonograph captures with every call, so a later reading can be attributed to *what changed about your deployment*. See [Substrate columns](./substrate-columns).
 
-          - **Routings**: which vendor(s) this surface calls, including multiplex arrays for head-to-head comparison. See [The multiplexer](./multiplexer).
+        **Routings** are declared once at the contract *root*, not inside a surface. Each entry names the surface it applies to by `surfaceId`, and may carry a multiplex array for head-to-head comparison. See [The multiplexer](./multiplexer).
 
-        A handful of column ids are **reserved** to the apparatus; declaring one is a contract error. These are values Holonograph observes and stamps for you (see [Substrate columns → apparatus-owned columns](./substrate-columns)) — you read them, you do not write them.
+          A nested routing is dropped
+          A `routings` array placed inside a surface object is stripped at registration rather than rejected. The contract registers, the surface has no light source, and the first mediated call fails with `no_routing_for_surface`. Declare routings at the root.
+
+        A handful of column ids are **reserved** to the apparatus; declaring one is a contract error. These are values Holonograph observes and stamps for you (see [Substrate columns → apparatus-owned columns](./substrate-columns)): you read them, you do not write them.
 
         Contracts are versioned by replacement, not mutation: you register a new contract, the agent identifier stays, and Holonograph records a `versionId` so past events remain readable against the shape they were captured under.
 
@@ -354,9 +387,9 @@ Chapter 02
 
         Two things become possible once a contract exists:
 
-          - **The lens knows what to expect.** Ingested events are validated against the contract's declared dimensions and columns; anything that doesn't match is flagged, not silently accepted.
+          - **Ingest is validated.** Ingested events are validated against the contract's declared dimensions and columns; anything that doesn't match is flagged, not silently accepted.
 
-          - **Coverage becomes measurable.** The topology scanner (Chapter 09) compares what you *declared* against what the lens *observed* and surfaces the gaps: declared-but-never-observed dimensions, observed-but-never-declared ones, retirement candidates. That whole comparison exists because there is a contract to compare against.
+          - **Coverage becomes measurable.** The [topology scanner](./topology-scanner) compares what you *declared* against what the lens *observed* and surfaces the gaps: declared-but-never-observed dimensions, observed-but-never-declared ones, retirement candidates. That whole comparison exists because there is a contract to compare against.
 
           When to re-version
           Adding a dimension, removing a cohort tag, splitting one surface into two, changing routings: any of these should ship as a new contract version, not an in-place edit. The prior version's events remain queryable and attributable against the shape they were captured under.
@@ -375,21 +408,54 @@ const summary = await client.contract.register({
     {
       id: "classify-intent",
       dimensions: [
-        { id: "correctness", type: "score" },
-        { id: "schema-conformance", type: "boolean" }
+        { id: "correctness", scoring: "llm-judge" },
+        { id: "schema-conformance", scoring: "exact-match" }
       ],
       cohortTags: ["customer-tier", "fix_tier"],
       substrateColumns: [
         { id: "prompt_hash", control: "operator", visibility: "transparent", semantic: "deployment-state" },
         { id: "tool_schema_version", control: "operator", visibility: "transparent", semantic: "deployment-state" }
-      ],
-      routings: [
-        { surfaceId: "classify-intent", lightSourceId: "anthropic/claude-sonnet-5" }
       ]
     }
+  ],
+  routings: [
+    { surfaceId: "classify-intent", lightSourceId: "anthropic/claude-sonnet/5" }
   ]
 });
 ```
+
+        `scoring` is required on every dimension and is one of `exact-match`, `llm-judge` or `custom`. It sets the score codomain, so it also fixes the scale a `passThreshold` is read against: `llm-judge` emits 0–10, `exact-match` emits 0 or 1. Registration rejects a threshold outside the declared strategy's range.
+
+### What a dimension declares
+
+        The example above declares the minimum. A dimension carries eleven fields, and most of the lens's judge-side analysis keys on them: the rubric it scores against, the threshold it passes at, the gate it drives, the grounding it claims to depend on, and the judge surface that produces its verdict.
+
+Field	Shape	What it declares
+
+`id`	string (req)	The dimension identifier within this surface.
+
+`description`	string (opt)	Shown in operator interfaces.
+
+`scoring`	enum (req)	`exact-match`, `llm-judge` or `custom`. Sets the score codomain, and gates which of the fields below are legal.
+
+`rubricRef`	string (opt)	Path to the rubric, for `llm-judge`. When the dimension is a live gate, registration *resolves and reads* the file: an unresolvable gate rubric is rejected at `POST`, not warned about at runtime. A relative path resolves against the daemon's rubric root. A non-gated ref is left to your own eval pipeline and is not resolved.
+
+`passThreshold`	number (opt)	Where this dimension passes, on the `scoring` strategy's scale. Omit for pass/fail-only dimensions. Registration rejects an out-of-range value, which is what catches a `0.5` meant as a probability on a 0–10 judge.
+
+`gatePolicy`	object (opt)	Makes this dimension a live gate: the gateway grades the response inline in the declared `activeRunModes` and takes `failureAction`, one of `retry`, `flag` or `block`, when the score falls below the gate's own `passThreshold`. Absent, or `enabled: false`, leaves the dimension drift-monitoring only. See [Judge modes](./judge-modes).
+
+`valueDomain`	object (opt)	The legal value set, checked before any scorer runs. An out-of-domain value is forced to `passed: false` with a structured rationale, so a hallucinated-brand check costs nothing and never reaches a judge call. `kind: 'enum'` is the only variant today.
+
+`rubricDispatch`	object (opt)	Facet-scoped rubric selection for `llm-judge`: `facet` names a declared cohort-tag key, `refsFrom` the bucket a per-facet rubric resolves from by convention, `refs` optional pins. `rubricRef` then becomes the required default an unmatched facet falls back to, so a judge never silently skips. Requires `rubricRef`; rejected on any other strategy.
+
+`judgeClaimContract`	object (opt)	Declares the judge claim-instrumented: it owes the structured assertions named in `assertionKinds` as fields rather than prose. Its presence is what flips the deterministic reliability checks from honest-null to reading the field. Valid only on `llm-judge`. See [Verdict reliability](./sdk-reference#verdict-reliability).
+
+`judgeSurfaceId`	string or string[] (opt)	Which `role: 'judge'` surface grades this dimension. The operator-legible half of a pair: `role` on a surface says it *is* a judge, this says the subject is graded *by* it. Many-to-many, so an array holds a holistic judge alongside focused ones. Each id is checked at registration to name a declared judge surface, and not this dimension's own.
+
+`expectsGrounding`	array (opt)	Declare-your-reach for judgment fidelity. Each entry names a substrate `column` and the `misuseValues` of it the judge must penalize. A value can sit in the judge's sight and go unused, and the score then saturates: visible, blind to its meaning. Each `column` must be a declared substrate column.
+
+          A misuse value is an output correlate, not a situation label
+          A `misuseValues` entry has to be a value the producer consumed that correlates with the *wrong output*. A label of the grounding situation, which a correct output could carry just as easily, admits both a faithful and a faulty output under one value and reads as false saturation.
 
         Or over HTTP:
 
@@ -399,7 +465,7 @@ Authorization: Bearer
 x-holonograph-run-mode: production
 Content-Type: application/json
 
-{ "agentId": "billing-triage", "surfaces": [ ... ] }
+{ "agentId": "billing-triage", "surfaces": [ ... ], "routings": [ ... ] }
 ```
 
 ### Read back the active contract
@@ -511,7 +577,7 @@ Chapter 03
 
           - **Every reading can be traced to the exact deployment, model, and evaluation config that produced it.** When you look at last week's numbers, you're not looking at a lossy summary. You're looking at the substrate that was in effect for each specific call.
 
-          - **Changes at any layer are attributable independently.** Because each layer is captured on its own and versioned on its own schedule, downstream analyses (Chapter 13, Chapter 14) can talk about *which layer changed*, not just *that the number moved*.
+          - **Changes at any layer are attributable independently.** Because each layer is captured on its own and versioned on its own schedule, downstream analyses ([Drift attribution](./drift-attribution), [Variance isolation](./variance-isolation)) can talk about *which layer changed*, not just *that the number moved*.
 
 ## How to use it
 
@@ -526,20 +592,49 @@ x-holonograph-run-mode: production
 Content-Type: application/json
 
 {
+  "eventId": "evt_01H...",
+  "occurredAt": "2026-07-05T18:22:14.812Z",
   "surfaceId": "classify-intent",
   "correlationId": "corr_01H...",
-  "dimensions": [{
-    "dimensionId": "correctness",
+  "lensVersion": "lv_2026_07_01",
+
+  "light": { "rawResponse": { /* the vendor response as returned */ } },
+
+  "substrate": {
+    "lensVersion": "lv_2026_07_01",
+    "lightSourceIdentifier": "anthropic/claude-sonnet/5",
+    "runMode": "production",
+    "correlationId": "corr_01H...",
+    "provenance": "scheduled_production_eval",
+    "timestamp": "2026-07-05T18:22:14.812Z",
+    "columns": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" }
+  },
+
+  "surface": {
+    "surfaceId": "classify-intent",
+    "fixtureId": "fx-intent-replacement-order",
     "passed": true,
-    "expected": "a correct answer to the user's question",
-    "actual": "offered to open a replacement order"
-  }],
-  "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
-  "substrate": { "prompt_hash": "v2-sha256-...", "tool_schema_version": "3.1.0" },
-  "lightSourceId": "anthropic/claude-sonnet-5",
-  "timestamp": "2026-07-05T18:22:14.812Z"
+    "dimensions": [{
+      "dimensionId": "correctness",
+      "passed": true,
+      "expected": "a correct answer to the user's question",
+      "actual": "offered to open a replacement order"
+    }],
+    "cohortTags": ["customer-tier=enterprise", "fix_tier=tool-input-schema"],
+    "sideEffects": []
+  }
 }
 ```
+
+        The endpoint validates the whole `EvaluationEvent`, so the layers arrive assembled rather than flat. Four things to note if you are posting by hand:
+
+          - `eventId` is yours to mint and the write is idempotent on it. Re-posting the same id is a no-op, which is what makes a backfill safely restartable.
+
+          - `lensVersion` appears twice, at the top level and inside the substrate, and a placeholder is rejected. Take a ledger-issued value from `GET /lens/version` or register a snapshot first; `'unknown'` and the boot sentinel would both seed a phantom lens-variance bucket.
+
+          - Operator columns live under `substrate.columns`. The substrate's own fields (`lightSourceIdentifier`, `runMode`, `provenance`) are apparatus-owned and sit alongside, not inside.
+
+          - `surface.fixtureId` is required on the raw event even though the SDK's `reportOutcome` treats it as optional. The SDK supplies one; a hand-built event has to name it.
 
         Response:
 
@@ -575,7 +670,10 @@ x-holonograph-run-mode: production
 
           - **Filter on cohort tags at read time**, not at write time. Cohort tags are the query keys; write them liberally and filter narrowly. Do the opposite and you'll be re-ingesting to recover slices you didn't foresee.
 
-          - **Default reads to `production-state`**. When you're diagnosing something unusual, pass `provenance=all`. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports `hiddenByProvenanceScope` — how many events the current scope filtered out — so a `count: 0` with a non-zero hidden count reads as &ldquo;wrong scope, add `?provenance=all`&rdquo;, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.
+          - **Default reads to `production-state`**. When you're diagnosing something unusual, pass `provenance=all`. But the default filter is what keeps replay traffic and local-dev noise out of dashboards. The response reports `hiddenByProvenanceScope` (how many events the current scope filtered out), so a `count: 0` with a non-zero hidden count reads as “wrong scope, add `?provenance=all`”, not a failed emit. An agent running an eval probe should check it before concluding nothing landed.
+
+          Two objects called a snapshot
+          This chapter is about the four-layer snapshot: one evaluation, one row. A *lens snapshot* is a different object, a versioned record of the lens configuration in force, and it has its own endpoints under `/lens/snapshots`. See [Lens versioning and snapshots](./sdk-reference#lens-snapshots).
 
 ## Reference
 
@@ -593,7 +691,7 @@ Param	Shape	Notes
 
 `surfaceId`	string (opt)	Restrict to one surface.
 
-`fixtureId`	string (opt)	Restrict to events produced by one fixture (Conformance, Chapter 10).
+`fixtureId`	string (opt)	Restrict to events produced by one fixture (see [Conformance & fixtures](./conformance)).
 
 `provenance`	enum (opt)	`production-state` (default), `exploratory-state`, or `all`.
 
@@ -726,15 +824,43 @@ await handle.reportOutcome({
 
 ### Apparatus-owned columns
 
-        A third category, peer to mandatory and operator-declared: a small reserved namespace the apparatus writes and you cannot declare. Some facts are things Holonograph *observes*, not things you *assert* — which model a vendor actually served behind your requested alias, or the judge's own identity. Their column ids are reserved: a contract that tries to declare one is rejected, and the apparatus stamps the observed value itself on every event.
+        A third category, peer to mandatory and operator-declared: a small reserved namespace the apparatus writes and you cannot declare. Some facts are things Holonograph *observes*, not things you *assert*: which model a vendor actually served behind your requested alias, or the judge's own identity. Their column ids are reserved: a contract that tries to declare one is rejected, and the apparatus stamps the observed value itself on every event.
 
-        This is deliberate, and it is the difference between discouraging an error and preventing one. An observed fact you were free to overwrite is a fact you could get wrong — silently, and in exactly the direction that flatters your own system. A column you cannot declare is a fact you cannot fake. The illegal state — an operator asserting an apparatus-observed value — is not merely warned against; it has no representation in a valid contract.
+        This is deliberate, and it is the difference between discouraging an error and preventing one. An observed fact you were free to overwrite is a fact you could get wrong, silently, and in exactly the direction that flatters your own system. A column you cannot declare is a fact you cannot fake. The illegal state, an operator asserting an apparatus-observed value, is not merely warned against; it has no representation in a valid contract.
 
 ## Reading the output
 
         Substrate columns come back on every event via `GET /lens/events`. Filter queries on them the same way you filter on cohort tags: a slice is a set of column-value pairs, and the values you didn't declare aren't queryable. That's the whole point of declaring them ahead of time.
 
+## Is the column actually emitting?
+
+        Declaring a column does not populate it, and a column that never populates reads as a clean one. `GET /lens/emission` is the audit: per declared column on a surface, the in-window emission rate, per-day tallies, and a verdict. An `always` column at 0% reads `missing`, which means broken; a `conditional` one reads `absent`, which may be legitimately sparse.
+
+        Two fields on the column shape set what the audit measures against:
+
+Field	Shape	What it declares
+
+`emissionExpectation`	`always`, `conditional`, or `{ whenever }` (opt)	Omit it and the expectation is derived from `semantic`, so existing contracts are unaffected. The co-occurrence form `{ whenever }` resolves to `conditional` and carries a predicate the audit scopes its denominator to, which turns a conditional column's silence from unverifiable into testable.
+
+`expectationMismatchMaxRate`	number in (0, 1) (opt)	For an `always` column, the rate below which it is behaving `conditional`. The audit runs a one-sided binomial test and reports `expectation-mismatch` only when it rejects. Defaults to 0.05. Set it where the sparsity is known: a column legitimately present on a fifth of events can declare 0.25 rather than arguing with the general default.
+
+        The audit's set-difference runs both ways. `undeclaredObserved` catches the reverse case: a key arriving on events that no contract declares.
+
+## Promote what you are already emitting
+
+        The usual loop is declare, deploy, audit, fix. `GET /lens/contract-promotion` inverts it. For every emitted-but-undeclared key the emission audit already found, it proposes a mergeable `SubstrateColumn` skeleton, with `semantic` inferred from the observed emission rate.
+
+        The operator-judgment fields, `control` and `visibility`, carry a conservative default and are listed in `operatorMustConfirm`. Nothing is merged: the read proposes a stub and the operator reviews it and posts the contract. Reversing the loop this way means a column you have been emitting for a month becomes queryable without first guessing what to declare.
+
 ## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/emission`	Per-column emission rate, per-day tallies, verdict, and the undeclared-but-observed set.
+
+`GET /lens/contract-promotion`	A mergeable column stub per undeclared key, with the fields needing operator judgment flagged.
 
 ### Common diagnostic columns
 
@@ -776,7 +902,7 @@ Chapter 05
 
 # SDK reference
 
-        The `HolonographClient` is the surface an application — or a coding agent acting through one — uses end-to-end: construct it once, run the call flow (`messages.create → handle → reportOutcome`), and, when you want the lens to check the judge for you, attach a structured `claim` to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (`contract`, `availability`) declare shape and gaps. This chapter documents every method.
+        The `HolonographClient` is the surface an application, or a coding agent acting through one, uses end-to-end: construct it once, run the call flow (`messages.create → handle → reportOutcome`), and, when you want the lens to check the judge for you, attach a structured `claim` to a dimension so a verdict's trustworthiness becomes machine-readable. Two auxiliary namespaces (`contract`, `availability`) declare shape and gaps. This chapter documents every method on the client. The package also exports an emit layer, a polling layer, the OTel span writers and the typed error classes, each covered in its own section below or in [Sidecar / OTel integration](./sidecar).
 
 ## Install
 
@@ -832,7 +958,7 @@ Field	Shape	Notes
 
 `lensVersion`	string	Which lens configuration was in effect.
 
-`lightSourceIdentifier`	string	Which model produced the output, as `vendor/model/version`.
+`lightSourceIdentifier`	string	Which model produced the output, as `vendor/family/version`, with an optional fourth `keyId` segment. A two-segment value is rejected.
 
 `runMode`	enum	Which run mode the evaluation ran under.
 
@@ -978,7 +1104,7 @@ const handle = await client.messages.create({
 const answer = handle.result;             // read/act on the model's response
 const isCorrect = grade(answer);          // your evaluation logic
 
-await handle.reportOutcome({
+const eventId = await handle.reportOutcome({
   dimensions: [{
     dimensionId: "correctness",
     passed: isCorrect,
@@ -986,10 +1112,12 @@ await handle.reportOutcome({
     actual: summarize(answer)
   }],
   cohortTags: ["customer-tier=enterprise"]
-});
+});                                       // the primary event's id
 ```
 
-        `messages.create()` mediates the model call and returns a handle. `handle.result` is the response you use in your agent. `handle.reportOutcome()` closes the loop; it persists the evaluation event that binds this call into your history.
+        `messages.create()` mediates the model call and returns a handle. `handle.result` is the response you use in your agent. `handle.reportOutcome()` closes the loop; it persists the evaluation event that binds this call into your history and returns that event's id. Discard the id for a synchronous judge; keep it when a verdict arrives later and has to name its subject.
+
+        On the wire those are two endpoints: `POST /aperture/messages`, which mediates the call and returns the record, and `POST /lens/events`, which commits the event the client assembles from it. The server holds nothing between them. That is why outcome reporting is a post of a complete event rather than a write against a call the server is remembering, and why a client in another language needs only those two paths.
 
 ### messages.create(req)
 
@@ -1033,7 +1161,7 @@ Member	Shape	Notes
 
 `.observerRecords[]`	array	Under multiplex routing, the observer vendors' captured records. Empty when not multiplexing.
 
-`.reportOutcome(outcome)`	method	Persist the evaluation event that closes this call.
+`.reportOutcome(outcome)`	method → `Promise`	Persist the evaluation event that closes this call. Resolves to the **primary event's id**: the event carrying the light snapshot, the dimensions and any `judge.pending` tag. Observer-event ids are not returned.
 
 `.gradeObserver(recordOrId, outcome)`	method	Attach grades to a cross-vendor observer call before reporting, when the lens returned observer records. Call this *before* `reportOutcome`.
 
@@ -1047,7 +1175,13 @@ Field	Shape	Notes
 
 `sideEffects[]`	array (opt)	Any downstream actions this call triggered; useful for correlated fixtures and lessons later.
 
-`fixtureId`	string (opt)	The fixture this call satisfied, when the call was run as part of a conformance check.
+`fixtureId`	string (opt)	The fixture this call satisfied, when the call was run as part of a conformance check. Omit it on a production call and the client derives a synthetic id from the correlation id.
+
+`eventId`	string (opt)	Pre-generate the primary event's id instead of letting `reportOutcome` mint one. Format it with `newEventId` from the types package. Use it to hand an async judge worker the subject-event id before the event is written, or to keep a client-side fail-open landing under a known id. The store is keep-first, so re-posting the same id is a no-op. Observer events always mint their own.
+
+`judgeIdentity`	object (opt)	The judge lens that produced this outcome, for `llm-judge` dimensions. Take it from the scorer's `ScoringResult.judgeIdentity`; the SDK stamps it into the reserved `judge.*` substrate columns so variance analyses can separate a judge change from a producer change. A `lensVersion` string alone under-specifies it. Omit for `exact-match`.
+
+`rubricDispatch`	object (opt)	The resolved facet-scoped rubric for this outcome, when the dimension declares `rubricDispatch`. Take it from the scorer's `ScoringResult.rubricDispatch`; the SDK stamps `judge.rubric_source`, `judge.rubric_facet` and `judge.rubric_default_reason`, which is what makes the default-versus-bespoke split countable. Omit for single-rubric dimensions.
 
 #### Dimension entry shape
 
@@ -1061,17 +1195,17 @@ Field	Shape	Notes
 
 `actual`	string	What the model actually produced (or a short summary).
 
-`claim`	object (opt)	What the judge *asserted*, as fields the lens can verify — for the verdict-reliability layer to check (see below). A `JudgeClaimReport`; omit it and the dimension is simply not claim-instrumented.
+`claim`	object (opt)	What the judge *asserted*, as fields the lens can verify, for the verdict-reliability layer to check (see below). A `JudgeClaimReport`; omit it and the dimension is simply not claim-instrumented.
 
-        Calling `reportOutcome` persists the evaluation event to Holonograph's substrate: one row, four layers bound (see [The four-layer snapshot](./snapshot)). What Holonograph does with that event afterwards is the subject of the analysis chapters.
+        Calling `reportOutcome` persists the evaluation event to Holonograph's substrate: one row, four layers bound (see [The four-layer snapshot](./snapshot)). It resolves to that event's id, which is the handle an asynchronous judge needs: a verdict minted later references it as its subject event. What Holonograph does with the event afterwards is the subject of the analysis chapters.
 
-## Verdict reliability — let the lens check your judge
+## Verdict reliability: let the lens check your judge
 
         A verdict does not have to come back in-request. Which timings are available to a judge, and what
           a verdict is allowed to do when it arrives, are set by its mode: see
           [Judge modes](./judge-modes).
 
-        A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that **deterministically** — but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a `claim` to any judged dimension:
+        A score is only as trustworthy as the judge that produced it, and an LLM judge can misread its own input: accuse the model of inventing a value that was sitting in a tool result, or of skipping a tool it actually called. The lens catches that **deterministically**, but only if the judge hands it a structured claim to check, instead of burying the accusation in prose. Attach a `claim` to any judged dimension:
 
 ```
 await handle.reportOutcome({
@@ -1081,7 +1215,7 @@ await handle.reportOutcome({
       passed: false,
       expected: "only facts present in the tool results",
       actual: "claimed a refund was issued and cited a total of $84.20",
-      // What the judge ASSERTED, as fields the lens can verify — not prose.
+      // What the judge ASSERTED, as fields the lens can verify, not prose.
       claim: {
         status: "emitted",
         assertions: [
@@ -1096,7 +1230,7 @@ await handle.reportOutcome({
 });
 ```
 
-        The lens checks each assertion **against the captured call** — is the accused value actually absent from everything the model read? was that tool really never invoked, anywhere across the whole conversation? — and reports, per assertion, whether the record **corroborates** or **contradicts** the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
+        The lens checks each assertion **against the captured call**. Is the accused value actually absent from everything the model read? Was that tool really never invoked, anywhere across the whole conversation? It reports, per assertion, whether the record **corroborates** or **contradicts** the judge. A contradiction is the loud case: the judge's verdict rested on something it misread, so that score cannot be trusted. Two assertion kinds ship today:
 
 Assertion kind	Shape	What the lens verifies
 
@@ -1104,11 +1238,11 @@ Assertion kind	Shape	What the lens verifies
 
 `tool-not-invoked`	`{ tool }`	A tool the judge says was never called. The check reads the whole captured conversation, so a call made in an earlier turn still counts.
 
-        A dimension with no `claim` is simply not claim-instrumented — the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is *meant* to emit a claim but its output is malformed, report `{ status: "malformed", reflectionAttempted:  }` — the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The `JudgeClaimReport`, `JudgeAssertion`, and `JudgeAssertionKind` types are exported so you can build and validate the claim before you send it.
+        A dimension with no `claim` is simply not claim-instrumented: the lens stays honest-null about it rather than guessing, so you opt in one dimension at a time. If the judge is *meant* to emit a claim but its output is malformed, report `{ status: "malformed", reflectionAttempted:  }`, the lens raises that as a judge-malfunction signal rather than silently trusting a broken instrument. The `JudgeClaimReport`, `JudgeAssertion`, and `JudgeAssertionKind` types are exported so you can build and validate the claim before you send it.
 
-### Reading it back — the pre-action check
+### Reading it back: the pre-action check
 
-        This is the read to run *before* you act on a verdict — before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use `client.callDirectly` or a plain `fetch` against your lens `endpoint`.
+        This is the read to run *before* you act on a verdict, before a coding agent decides a fix, escalates, or trusts a green board. Rather than take one score at face value, read the reliability layer over a window and let the record decide whether the verdict is safe to act on. There is no dedicated client method yet; use `client.callDirectly` or a plain `fetch` against your lens `endpoint`.
 
 ```
 GET /holonograph/verdict-reliability?surfaceId=&since=&until=
@@ -1120,7 +1254,7 @@ Field	Shape	Notes
 
 `tierTally`	object	How many verdicts fell into each reliability tier.
 
-`flagged[]`	array	The verdicts the layer flagged as not safe to act on at face value — a judge the record *contradicted* is the loud case.
+`flagged[]`	array	The verdicts the layer flagged as not safe to act on at face value: a judge the record *contradicted* is the loud case.
 
 `trustDrivers`	object	What most moved reliability over the window.
 
@@ -1209,7 +1343,7 @@ await client.availability.mark({
 
         For scenarios where the run mode is determined at request time (Express middleware, async work, custom resolution), see [Run modes](./run-modes).
 
-## Escape hatch: callDirectly
+## Bypassing mediation: callDirectly
 
         For scenarios that need the full request shape (a bespoke bridge, a replay tool, or an integration test that wants to prod an edge of the wire), the client exposes a lower-level `callDirectly` method that skips the `messages.create` ergonomics and forwards the request as-authored.
 
@@ -1217,7 +1351,40 @@ await client.availability.mark({
 const result = await client.callDirectly(rawRequest);
 ```
 
-        Prefer `messages.create` for anything user-facing. `callDirectly` is an escape hatch, not the everyday path.
+        Prefer `messages.create` for anything user-facing. `callDirectly` is for the cases above, not the everyday path.
+
+## Reads the client does not wrap
+
+        The reads an integration reaches for that have no client method. Call them over HTTP; each is also served under the `/holonograph` alias.
+
+Method & path	Purpose
+
+`GET /lens/version`	The ledger-issued `lensVersion` in force. Stamp this into an event you build by hand; a placeholder is refused at ingest.
+
+`GET /aperture/health`	`{ status, lessons }`, where `lessons` is the boot-resolved capability state: available, unavailable or degraded, with a reason. A degrade is retrievable here as a first-class state rather than having gone to a log line at boot. Exempt from the run-mode header gate, still bearer-authed.
+
+`POST /lens/availability/mark`	The HTTP form of `availability.mark`, for operator-side uptime automation that posts markers without the SDK.
+
+`GET /lens/availability`	The read twin of `availability.mark`: the bracketed unreachable windows and the pairing summary over the whole marker history, so the summary covers the store rather than one write.
+
+`GET /lens/judge-claim-coverage`	Declared against observed, per dimension declaring a `judgeClaimContract`: `emitted`, `malformed`, or `absent`. The third is the gap that matters, a judge that declared a claim contract and is not emitting one. Empty when no dimension declares one.
+
+`GET /lens/events/:eventId``GET /lens/events/:eventId/judge-verdicts`	One event, and the verdicts linked to it. The id is what `reportOutcome` returned.
+
+## Lens versioning and snapshots
+
+          Two different snapshots
+          A *four-layer snapshot* is one evaluation event, the subject of [The four-layer snapshot](./snapshot). A *lens snapshot* is a versioned record of the lens configuration itself: which lessons, fixtures and composition were in force. The endpoints below are the second kind.
+
+Method & path	Purpose
+
+`GET /lens/snapshots`	The version history with per-version metadata: `versionId`, `capturedAt`, `curatedBy`, `changeSummary`, `predecessorVersionId`, and lesson and fixture counts. The bodies are excluded so a timeline renders without paging.
+
+`GET /lens/snapshots/:versionId`	The full composition for one version.
+
+`POST /lens/snapshots`	Publish one. Append-only: re-publishing an existing `versionId` is a no-op and the original is preserved. Returns the assigned id.
+
+        All three answer `501` where no lens-snapshot store is wired.
 
 ## Errors
 
@@ -1248,6 +1415,125 @@ try {
 ```
 
         `4xx` covers validation, auth, and not-found. `5xx` is internal. `501` means the feature isn't wired on the given deployment.
+
+### Typed error classes
+
+        Four classes beyond `HolonographHttpError`, so a catch block can discriminate without reading a message string. The first three are ordering and shape errors in the multiplex grading flow; they are raised client-side and never reach the wire.
+
+Class	Raised when
+
+`HolonographGradeAfterReportError`	`gradeObserver` was called after `reportOutcome` already flushed. Grade every observer first, then report once.
+
+`HolonographObserverNotFoundError`	`gradeObserver` was given a `lightSourceId` matching no record in `observerRecords`. Iterate the array rather than naming ids.
+
+`HolonographNoObserversError`	`gradeObserver` was called on a single-vendor routing, where there is nothing to grade.
+
+`HolonographMarkerPairingWarningError`	`availability.mark(req, { strict: true })` and the server's pairing feedback came back with a severity other than `ok`, such as a closer that paired no open window. The default posture warns and returns the response instead, since a marker write is best-effort; the error carries the full pairing summary.
+
+### Error codes
+
+        Every `code` the lens emits, with its default status. A handler may override the status per call, so read the code rather than the number.
+
+Code	Status	Meaning
+
+**Request validation**
+
+`invalid_request`	400	Body or query failed schema validation. `details` carries the flattened field errors.
+
+`not_implemented`	501	The endpoint exists but is not wired on this deployment.
+
+`streaming_not_yet_implemented`	501	The endpoint exists but its feature flag is off.
+
+**Auth**
+
+`unauthenticated`	401	Missing or invalid bearer token.
+
+`forbidden`	403	Token valid, scope insufficient for the action.
+
+**Not found**
+
+`not_found`	404	The named correlationId, surfaceId, draftId, lessonId or eventId does not exist.
+
+**runMode discipline**
+
+`runmode_mismatch`	403	The active run mode does not authorize this action against the targeted resource class. See [Run modes](./run-modes).
+
+`missing_runmode`	400	No run mode, or an invalid one, at the entry boundary.
+
+**Lens-side guards**
+
+`validation_required`	409	The surface is in validation-required state; declaration is blocked.
+
+`baseline_gate`	409	A baseline declaration failed a gate: a missing annotation, unlabeled fixtures.
+
+`lens_incompatible`	409	A lens-snapshot composition reference is incompatible with the current substrate.
+
+**Gateway and mediation**
+
+`no_routing_for_surface`	404	No routing is configured for the surface. The usual cause is a `routings` array declared inside a surface instead of at the contract root; see [Surface contracts](./surface-contracts).
+
+`gate_blocked`	200	A gate executed and blocked delivery; the canned message is returned. A 200 because the call completed: the block is the outcome, not a failure. See [Judge modes](./judge-modes).
+
+`light_source_error`	502	The vendor returned an error.
+
+**Curation and lessons**
+
+`invalid_gate_transition`	409	The draft is not in a state that permits this transition.
+
+`duplicate_enqueue`	409	The draft is already enqueued, or already in the requested state.
+
+`missing_decision_comment`	400	An approver decision arrived without its required annotation.
+
+`missing_existing_lesson`	404	The publisher could not find the lesson the draft claimed to update.
+
+`duplicate_publish`	409	Publish was called with a stable artifact id that already exists in the destination store. `details` carries the existing `artifactId`, so an idempotent re-publish is distinguishable from a fault.
+
+`invalid_seed_event`	400	The pinned seed event's surface does not match the fixture's parent surface.
+
+`seed_event_not_seedable`	409	The pinned seed event exists but carries no usable `rawRequest`, having been size-stripped or written by an older client.
+
+`runmode_seed_bypass_forbidden`	403	A non-production `seedRawRequest` bypass was supplied under `production`.
+
+**Live multiplex run**
+
+`multiplex_raw_request_missing`	409	The resolved source run carries no `light.rawRequest`, so there is nothing to re-issue across vendors. The dashboard's run button is gated on a stored payload for the same reason.
+
+**Resource limits**
+
+`rate_limited`	429	Request rate exceeded for the caller's key. Carries `Retry-After`.
+
+`payload_too_large`	413	Body exceeds the JSON cap, 1 MB per request by default.
+
+`request_timeout`	408	The body did not finish arriving within the read timeout.
+
+`store_insufficient_storage`	507	The event store is out of space. Writes are temp-and-rename, so nothing partial landed and retrying the same `eventId` is safe.
+
+`store_unavailable`	503	The store refused the write: read-only mount, or permission denied. Retry once write access is restored.
+
+**Compaction**
+
+`compaction_plan_stale`	409	The store changed since the plan was reviewed: new or sealed events, pins, a day rollover. Re-plan. See [Compaction & husking](./compaction).
+
+`compaction_conflict`	409	The compaction cannot proceed as asked: already unsealed, a delete-mode unseal, a member gone.
+
+`compaction_verification_failed`	500	A seal's per-day verification found a consumer that differs on husks. Nothing was sealed or moved.
+
+**Retention and authority**
+
+`retention_policy_conflict`	409	The retention policy changed since the operator reviewed it; `basePolicyId` is stale. Reload and re-review.
+
+`authority_tear_already_acknowledged`	409	An acknowledgement at or after this tear already exists on the surface.
+
+`authority_tear_ack_out_of_order`	409	Acknowledgements apply oldest first and an older tear is still open. The error names it. See [Authority](./authority).
+
+`authority_policy_conflict`	409	The authority policy changed since review; `basePolicyId` is stale.
+
+**Catch-all**
+
+`internal`	500	An uncaught exception. Report it.
+
+          The status does not identify the condition
+          Fourteen of the thirty-six share `409` and two share `501`, so the status alone does not identify the condition. `gate_blocked` is the sharpest case: it carries a `200`, because a blocked delivery is a completed call with a canned response, not a transport failure.
 
 ## Advanced: HttpTransport
 
@@ -1316,7 +1602,7 @@ Content-Type: application/json
   "callId": "call_01H...",
   "correlationId": "corr_01H...",
   "surfaceId": "classify-intent",
-  "lightSourceId": "anthropic/claude-sonnet-5",
+  "lightSourceId": "anthropic/claude-sonnet/5",
   "result": { /* the primary model's response */ },
   "observerRecords": [ /* multiplex observers, if any */ ],
   "gateOutcome": null,
@@ -1349,7 +1635,7 @@ const answer = handle.result;
 
 ## Reading the output
 
-        The response carries five load-bearing fields:
+        Five fields on the response matter:
 
 Field	Shape	What it tells you
 
@@ -1403,11 +1689,110 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 07 — Run modes
+### Chapter 07 — Swarms and sources
+
+_Permalink: https://holonograph.ai/guide/swarms-and-sources_
+
+Chapter 07
+
+# Swarms and sources
+
+        One lens reads a whole swarm. Several agents emit into the same record, often running the same code, and the instrument has to keep them distinguishable without splitting every measurement by agent, because pooling is right in some places and fabricates a statistic in others.
+
+## What it is
+
+        The source is which agent’s code emitted. It rides on the event as `sourceId` and is the partition key everything downstream reads.
+
+        Two identities are in play and they are not the same one. The agent id is the subject: whose behavior is under evaluation. The source is the emitter: which agent made this call. In a single-agent deployment they collapse into the same thing, which is why the distinction only shows up once a swarm is running.
+
+          Surfaces span agents
+          A surface may span several agents in a swarm. The lens identifies a surface by what is being evaluated, never by the agent boundary the data crosses. Two agents doing the same job share a surface and stay separable by source, rather than becoming two surfaces that cannot be compared.
+
+### How the source is set
+
+        The source is apparatus-owned. The lens stamps it at ingest from the authenticated operator, overriding any value the client sent. A client cannot attribute its events to another agent by asking.
+
+        Where no operator identity is established, the single-operator default, the event is left as it came and a client-supplied value stands as plain attribution. The absence of a source means one source, never a fabricated id.
+
+        That default is also what keeps a single-agent deployment unchanged. Nothing is stamped, nothing is partitioned, and every identity key is byte-identical to what it was before the swarm model existed.
+
+## Why it matters
+
+        Three things break without it, and they break in different directions.
+
+        **Statistics.** Pooling two agents’ score populations manufactures correlation that neither agent shows, and a pooled mean can hide one agent’s drift behind another’s stability. Splitting is not uniformly safer: where the instrument is shared, a judge or a global contract, splitting shrinks the sample and asserts a difference that is not there.
+
+        **Collisions.** Swarm agents run the same code. The same seam id, the same call site, the same finding, in several agents at once. Without a partition in the identity, one agent’s evidence silently overwrites another’s and the merged picture is of whichever wrote last.
+
+        **Authorization.** Evidence about one agent’s code is a thing another agent should not be able to replace.
+
+## How to use it
+
+### Push a scan per agent
+
+```
+POST /lens/builder-seams
+{ "source": "orders-agent", "seams": [ ... ], "candidateMap": { ... } }
+```
+
+        The declared source is bound to the authenticated identity. A verified operator handing a source that names a different operator is refused with `403`, so a scanner cannot replace another agent’s map. Omit it and the lens uses the verified operator’s own id, or the reserved default source where there is no operator identity at all.
+
+        The registry holds replace-current *per source* rather than globally, so several agents’ scans coexist and a push from one never clears another. In the merged read, node identity is the call site, the seam, its version, the direction and the source together, so two agents’ same-string loci stay distinct.
+
+### Hold the agent constant
+
+```
+POST /lens/decomposeVariance
+{ "surfaceId": "classify-intent", "dimensionId": "correctness", "sourceId": "orders-agent" }
+```
+
+        Scoping a decomposition to one source isolates that agent’s subject events, so a mean shift between agents cannot contaminate the variance when one surface is exercised by many. It is the complement of scoping by fixture, which holds the input constant instead.
+
+        The judge pool stays unscoped on purpose. A judge call carries the judge’s own source, not the subject agent’s, and is tied to the subject by its linkage rather than by a shared source. Like a replay window, a source scope isolates a diagnostic panel, so the read is ephemeral and is not recorded as the production trajectory.
+
+### Read findings scoped to an agent
+
+        A finding’s key carries a tagged `src=` segment, and only where the finding is actually multi-source, so single-source keys are unchanged. Two agents’ identical seam in shared or templated code produce two findings that triage separately instead of colliding into one.
+
+        The same composite identity runs through the analysis layer: two agents’ identical templated seam are tested as separate nodes and never pooled into one association, because each agent’s runtime context differs. See [The seam monitor](./seam-monitor#the-analysis-layer).
+
+## Reading the output
+
+        Every finding source in the attention spine declares how it partitions, so a new producer cannot pool two agents by omission: `per-source` where pooling corrupts the statistic, `pooled-examine` where pooling is correct and a hidden split is worth watching for, `pooled` where the question is global or keyed on another axis entirely. The `source-conflation` alarm reads the pooled ones and reports where one number is hiding two populations. It points rather than repartitions, because whether a grouping is right is the operator’s call. [The attention spine](./attention-spine#one-surface-several-agents) carries the table.
+
+        Merged reads preserve composite identity rather than flattening it, so a call site that several agents share keeps every source’s nodes.
+
+## Reference
+
+### Where a source appears
+
+Where	As	Set by
+
+The event	`sourceId`	The lens, from the authenticated operator at ingest.
+
+`POST /lens/builder-seams`	`source`	The caller, bound to its authenticated identity. `403` on a mismatch.
+
+`POST /lens/decomposeVariance`	`sourceId`	The caller, as a diagnostic scope. Forces an ephemeral read.
+
+A finding key	`src=`	The lens, only where the finding is multi-source.
+
+A seam-to-call node	Part of the composite id	The lens, stamped from the owning scan.
+
+A spine source	Its declared partition	Fixed per finding source in the public contract.
+
+### Where this sits
+
+        [The mediating lens](./mediating-lens) is where a call is captured; this chapter is whose call it was. [Run modes](./run-modes) is the other envelope on the same event, and the two are independent: a source says which agent, a run mode says under what conditions.
+
+        The partition vocabulary, the stamped field and the key format are public contract. Which reads scope by source, and how a merged view is assembled, lives in the lens.
+
+---
+
+### Chapter 08 — Run modes
 
 _Permalink: https://holonograph.ai/guide/run-modes_
 
-Chapter 07
+Chapter 08
 
 # Run modes
 
@@ -1436,13 +1821,13 @@ Mode	Meaning	Side-effect behavior
 
         Two properties fall out of enforcing modes at the wire:
 
-          - **Substrate integrity.** Your production history stays production. A test that forgot its mode doesn't quietly become a production event when you read it back a month later.
+          - **Substrate integrity.** Your production history stays production. A test that forgot its mode doesn't become a production event when you read it back a month later.
 
           - **Side-effect discipline.** An `eval` run that touches a downstream system by accident is a serious incident. Fail-closed makes that failure loud instead of silent. The daemon rejects a call with no mode, and modes other than `production` suppress the side-effect channel.
 
 ## How to use it
 
-### Set once, on the client
+### Setting the mode
 
         The simplest wiring: pass `runMode` once at client construction. Every call the client makes carries it.
 
@@ -1534,15 +1919,15 @@ Baggage key	Carries
 
 ---
 
-### Chapter 08 — Sidecar / OTel integration
+### Chapter 09 — Sidecar / OTel integration
 
 _Permalink: https://holonograph.ai/guide/sidecar_
 
-Chapter 08
+Chapter 09
 
 # Sidecar / OTel integration
 
-        The lens sees every call that goes through it. Real systems have work that *doesn't* go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry — and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
+        The lens sees every call that goes through it. Real systems have work that *doesn't* go through it: a job on a queue, a background worker, a webhook fanning out to three services. This chapter is about carrying the two things the lens needs (run mode, correlation id) across those boundaries via OpenTelemetry, and, when the call path gets hot enough that synchronous delivery starts to matter, how to export evaluation events as OTLP spans with counted-loss delivery-completeness accounting.
 
 ## What it is
 
@@ -1556,7 +1941,7 @@ Chapter 08
 
 ## Why it matters
 
-        The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening quietly.
+        The four-source attribution downstream only works if the events on both sides of an async hop can be tied back to the same call. If the queue drops your run mode, the worker's call defaults to whatever the worker's client was constructed with, often the wrong thing. Baggage keeps that from happening without a trace.
 
           The rule of thumb
           If work happens outside the request that made it, propagate. If work happens inside the same request (same process, same call stack), the SDK's `correlationId` is enough. You don't need Baggage.
@@ -1643,9 +2028,9 @@ await queue.publish({
 
 ## Bounded emit buffer and OTLP export
 
-        Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The `@holonograph/client` 0.3.0 release adds a bounded emit buffer with three drain modes — direct HTTP, OpenTelemetry OTLP spans, or both — so operators can move evaluation events off the request path when synchronous `POST /lens/events` is too expensive to await.
+        Baggage carries the run mode and correlation id across async hops. Delivery of the evaluation event itself is a separate concern. The `@holonograph/client` 0.3.0 release adds a bounded emit buffer with three drain modes (direct HTTP, OpenTelemetry OTLP spans, or both) so operators can move evaluation events off the request path when synchronous `POST /lens/events` is too expensive to await.
 
-        The buffer is **bounded**, drops the oldest events when full, and **counts every drop**. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full [`emit` option shape](./sdk-reference.html#delivery-modes); this section is about the wire.
+        The buffer is **bounded**, drops the oldest events when full, and **counts every drop**. Delivery completeness is a first-class read: coverage is a floor, not an assumption. See the SDK reference for the full [`emit` option shape](./sdk-reference#delivery-modes); this section is about the wire.
 
 ### The four delivery modes
 
@@ -1737,7 +2122,26 @@ Attribute	Notes
 
           - **Push**: `emit.onWindow(window)` fires once per completed window.
 
-        The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so `http` loss and `otlp` loss are distinguishable), a `completenessLowerBound` ratio, and a `biasFlag` that goes `true` whenever drops occurred. Downstream analyses read `biasFlag` and treat the affected interval as potentially non-random. See [SDK reference § Delivery modes](./sdk-reference.html#delivery-modes) for the full `CompletenessWindow` shape.
+        The window carries offered / dropped / delivered / failed counters, a per-channel breakdown (so `http` loss and `otlp` loss are distinguishable), a `completenessLowerBound` ratio, and a `biasFlag` that goes `true` whenever drops occurred. Downstream analyses read `biasFlag` and treat the affected interval as potentially non-random. See [SDK reference § Delivery modes](./sdk-reference#delivery-modes) for the full `CompletenessWindow` shape.
+
+### The server-side read
+
+        The window above is the emitter's own account of what it sent. The lens reads the same quantity from the other end, over what actually arrived, which is the account that does not depend on a healthy emitter to be true.
+
+```
+GET /lens/delivery-completeness
+```
+
+        Per stream: the persisted coverage observations folded together and scored by a gap-and-sentinel oracle, plus the fleet summary over all of them. The session sentinels above are what make a gap visible; a stream that has gone quiet past the stale threshold reports an honest dark-region floor rather than a clean score, since a dead emitter and a silent one look identical from here.
+
+```
+GET /lens/reconciliation?since=2026-11-01T00:00:00Z&emissionStreamId=orders-worker-7
+```
+
+        Per-emitter completeness for stateless emitters, as `persisted / (persisted + dark)` over the window. Raw facts rather than a baked view, so a poller, the dashboard or your own tool assembles what it needs. `emissionStreamId` scopes it to one emitter.
+
+          A payload that lands late
+          A dual-mode span that arrives with no stored payload records a delivery-orphan candidate. The reconciliation read re-reconciles every candidate against the store before counting it, so an HTTP payload that landed after its OTLP span resolves rather than counting as dark. What remains dark is what is still missing after that check.
 
 ### Extreme sustained load
 
@@ -1755,7 +2159,7 @@ process.on("SIGTERM", async () => {
 ```
 
           The guarantee
-          Buffered delivery is **at-most-once**. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as `biasFlag`. What leaves the buffer either lands or is failed — nothing gets duplicated to make up for loss.
+          Buffered delivery is **at-most-once**. No reordering, no retries, no hidden growth. Drop-on-overflow is the only bound; drops are counted, per-channel, and surfaced as `biasFlag`. What leaves the buffer either lands or is failed: nothing gets duplicated to make up for loss.
 
 ## Reference
 
@@ -1771,13 +2175,25 @@ Key	Value
 
         Same keys as above, used verbatim as message attributes when Baggage propagation isn't available on the transport.
 
+### Endpoints
+
+Method & path	Purpose
+
+`POST /v1/traces`	The OTLP ingest. Rejected spans come back in `partialSuccess` with the count and the reason rather than failing the batch.
+
+`GET /lens/delivery-completeness`	Per-stream completeness with the fleet summary. Scored by the gap-and-sentinel oracle, with a dark-region floor for a stream past the stale threshold.
+
+`GET /lens/reconciliation`	Per-emitter completeness over a window, as raw facts. Takes `since`, `until`, `emissionStreamId`. Orphan candidates are re-reconciled before they count as dark.
+
+        These two read whether an event reached the store. Whether the agent's *outcome* reached the user is a different question, measured separately in [Outcome delivery](./outcome-delivery).
+
 ---
 
-### Chapter 09 — Surface topology scanner
+### Chapter 10 — Surface topology scanner
 
 _Permalink: https://holonograph.ai/guide/topology-scanner_
 
-Chapter 09
+Chapter 10
 
 # Surface topology scanner
 
@@ -1799,12 +2215,12 @@ Chapter 09
 
           - A dimension gets added in code and the contract never gets updated. The lens sees it, the contract doesn't; downstream analyses skip it.
 
-          - A dimension gets removed in code and the contract still declares it. Downstream analyses keep looking for it and quietly report it as always-null.
+          - A dimension gets removed in code and the contract still declares it. Downstream analyses keep looking for it and report it as always-null.
 
         The scanner surfaces both directions at read time, so contract maintenance becomes a scheduled operator task with a concrete work-list, not an ad-hoc audit.
 
-          Three inputs, not two
-          The scan is honest when it can compare against three inputs: *declared* (contract), *observed* (events), and *enumerated* (structural inventory). With two you can still find gaps; with three you can also tell a genuinely retired surface from a surface that just went quiet for a week.
+          The third input
+          The scan is complete when it can compare against three inputs: *declared* (contract), *observed* (events), and *enumerated* (structural inventory). With two you can still find gaps; with three you can also tell a retired surface from one that just went quiet for a week.
 
 ## How to use it
 
@@ -1914,6 +2330,8 @@ Method & path	Purpose
 
 `POST /lens/topology/scan`	Compare declared vs observed vs enumerated, return the coverage report.
 
+`POST /lens/topology/refresh`	Recompute the cacheable topology view and repopulate the cache. Body: optional `{ agentId }`. Returns the fresh scan plus its `computedAt`. A recomputed read, not a write; `501` where no cache is wired, since the plain scan already computes live.
+
 `POST /lens/topology/bootstrap`	Propose candidate dimensions for a surface based on recent traffic.
 
 ### POST /lens/topology/structural-inventory: request
@@ -1962,11 +2380,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 10 — The multiplexer
+### Chapter 11 — The multiplexer
 
 _Permalink: https://holonograph.ai/guide/multiplexer_
 
-Chapter 10
+Chapter 11
 
 # The multiplexer
 
@@ -1989,7 +2407,7 @@ Chapter 10
 
 ### Declare a multiplex in the contract
 
-        Register a contract whose routing for the surface uses an array for `lightSourceId`:
+        Register a contract whose routing for the surface uses an array for `lightSourceId`. Routings sit at the contract root and name their surface by `surfaceId`; see [Surface contracts](./surface-contracts).
 
 ```
 await client.contract.register({
@@ -1997,18 +2415,18 @@ await client.contract.register({
   surfaces: [
     {
       id: "classify-intent",
-      dimensions: [ /* ... */ ],
-      routings: [
-        {
-          surfaceId: "classify-intent",
-          lightSourceId: [
-            "anthropic/claude-sonnet-5",
-            "openai/gpt-5",
-            "google/gemini-2-pro"
-          ],
-          activeRunModes: ["eval", "production"]
-        }
-      ]
+      dimensions: [ /* ... */ ]
+    }
+  ],
+  routings: [
+    {
+      surfaceId: "classify-intent",
+      lightSourceId: [
+        "anthropic/claude-sonnet/5",
+        "openai/gpt/5",
+        "google/gemini/2-pro"
+      ],
+      activeRunModes: ["eval", "production"]
     }
   ]
 });
@@ -2166,11 +2584,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 11 — Drift attribution
+### Chapter 12 — Drift attribution
 
 _Permalink: https://holonograph.ai/guide/drift-attribution_
 
-Chapter 11
+Chapter 12
 
 # Drift attribution
 
@@ -2191,7 +2609,7 @@ Chapter 11
           - **noise**: the model's irreducible non-determinism
 
           How to read the four labels
-          Attribute the *change*, not the *component*. The same component can move for different reasons, and each reason is a different source. When your judge model changes, the source is not "the judge" — it is decided by who controlled the change and whether it was visible to you. A vendor silently rerouting the model behind a fixed alias is **light source** drift. You deliberately swapping the judge model, or revising its rubric, is **lens** drift. Same component, same moved number, read apart by control and visibility. Always attribute a change to the source that produced it, never to the part of the system it happened to touch.
+          Attribute the *change*, not the *component*. The same component can move for different reasons, and each reason is a different source. When your judge model changes, the source is not "the judge": it is decided by who controlled the change and whether it was visible to you. A vendor silently rerouting the model behind a fixed alias is **light source** drift. You deliberately swapping the judge model, or revising its rubric, is **lens** drift. Same component, same moved number, read apart by control and visibility. Always attribute a change to the source that produced it, never to the part of the system it happened to touch.
 
 ## Why it matters
 
@@ -2243,7 +2661,7 @@ Label	What it means	What to do
 
                 `substrate`
                 The change tracks something you changed about your deployment.
-                Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your substrate columns (Chapter 04) are where you look first.
+                Check your own deployment: recent prompt edits, tool-schema revisions, feature flags, retrieval-index updates. Your [substrate columns](./substrate-columns) are where you look first.
 
                 `light source`
                 The vendor moved under you: a model was silently re-routed, updated, or its behavior shifted.
@@ -2319,11 +2737,13 @@ Column	What it records
 
 ## Reference
 
-### Endpoint
+### Endpoints
 
 Method & path	Purpose
 
 `POST /lens/attribute`	Run drift attribution over a window.
+
+`GET /lens/served-model-transitions`	The served-model ledger: per alias, "served A over this interval, served B after it", derived from the stamped served-model column. A transition under a fixed requested alias is a vendor-reported reroute, which is the one observational light-source signal and what a stale-floor check consults. Sparse for events whose column is not yet populated.
 
 ### Request
 
@@ -2353,19 +2773,19 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 12 — Variance isolation
+### Chapter 13 — Variance isolation and declared axes
 
 _Permalink: https://holonograph.ai/guide/variance-isolation_
 
-Chapter 12
+Chapter 13
 
-# Variance isolation
+# Variance isolation and declared axes
 
         When your evaluation scores move, some of the movement is real change in your system and some is just the noise of measuring with a language model. Variance isolation returns a **cleaned** reading: how much of the spread reflects your system versus measurement noise, plus a verdict that tells you whether to trust the reading yet.
 
 ## What it is
 
-        A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a **confidence verdict**. The verdict is the load-bearing output. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
+        A per-surface, per-dimension analysis over a window that returns two things: a cleaned variance figure and a **confidence verdict**. The verdict is the output to read first. It tells you whether the cleaned figure is trustworthy right now, or whether the reading needs more data (or different data) before you act on it.
 
 ## What you get
 
@@ -2468,6 +2888,56 @@ Verdict	Next action
                 `instrument-limited`
                 Measurement noise dominates whatever real movement is present. Don't trust the reading yet; if the reading matters, `quarantine` it while you widen the window or reduce input variability.
 
+## Declared axes
+
+        The decomposition says how much of the movement is real. The next question is which of your declared substrate columns explains any of it. An axis is a column you declared because you believed it accounted for outcome variance; an audit says whether the record agrees.
+
+### Audit what you declared
+
+```
+POST /lens/orthogonality/audit
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }
+```
+
+        Grades every declared axis on how much of the dimension it accounts for, returning `confirmed`, `inert`, `insufficient-data` or `excluded`. A pure read: no calibration, no gate, no model call.
+
+        The `confirmed` decision is false-discovery controlled across the entire axis family. Each axis carries both its original and adjusted `pValue`, and the `fdr` summary reports the trade-off.
+
+        The audit is lifecycle-aware, which is the axis-altitude twin of surface retirement. A `forward-declared` or `deprecated` axis is `excluded`, since a deliberate stub is not a failure. An `inert` active axis carries a `recommendedStatus` of `forward-declared`, which defers it and excludes it from evaluation, and is reversible. The lens recommends; the operator decides.
+
+          When the demotion hint is withheld
+          The demotion hint fires only where an axis has no observed consumer. Two count. Every active axis is tested against all dimensions in the window, so one that explains a different dimension is protected. So is one a live conformance fixture references in a guard, an assertion or its required markers: a state-conditional guard that explains no scored dimension is still doing work for a deterministic check.
+
+### Find the undeclared ones
+
+```
+POST /lens/orthogonality/propose
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }
+```
+
+        The mirror of the audit. Where the audit grades what you declared, this looks for what you are already emitting and have not declared, and proposes it as a candidate axis.
+
+        It needs a noise floor for the pair first, so calibrate before calling it. Then it decomposes the window, aggregates substrate emission over those same events, and takes the emitted-but-undeclared columns as the candidate set. Three gates have to pass: enough scored data, agent variance established above zero, and at least one undeclared column. Zero candidates is a `200` with a diagnostics block naming the gate that held, not an error.
+
+        Each candidate is narrated and enqueued on the approver gate. The narration is prose only: the evidence and the target ids are copied verbatim from the deterministic candidate, and the narrator has no channel through which to emit a number. The lens never declares the axis. Declaring the column and re-decomposing is the operator's.
+
+### Tell an axis from a confound
+
+```
+POST /lens/orthogonality/audit/compare
+{
+  "surfaceId": "classify-intent",
+  "dimensionId": "correctness",
+  "correlationIdPrefix": "replay:nov-panel:"
+}
+```
+
+        The audit run twice: once over all production, once over the input-constant panel the prefix selects, then diffed per axis. An axis confirmed on production that collapses under input constancy was never explaining the outcome; its effect size was entanglement between the lens and the input mix. One confirmed in both is robust.
+
+        The response names the confounded columns and the robust ones, with a per-axis diff carrying each read's verdict, its effect size, and the delta between them. The panel has to exist in the substrate already, as a replay whose scores you re-posted under that prefix. An empty panel reads as insufficient per axis rather than failing.
+
+        Orthogonality is symmetric: it can say an axis explains variance, never that breaking A degrades B while B leaves A intact. That asymmetry is a different instrument at a lower altitude, in [Facet separability](./facet-separability).
+
 ## Reference
 
 ### Endpoints
@@ -2476,9 +2946,19 @@ Method & path	Purpose
 
 `POST /lens/decomposeVariance`	Produce a cleaned variance reading for a surface + dimension over a window. Returns an analysis record `eventId`.
 
+`POST /lens/fixtures/calibrate-floor`	Source the noise floor the decomposition reads against. Reads replay-provenance events only, so production traffic is not conflated with the floor. Per-fixture-and-dimension sample variance, with a sample-count-weighted pooled mean per dimension. Idempotent and retry-safe.
+
+`POST /lens/replay`	Re-issue captured requests through a target lens, window-stamped so the paired-window read works. Holds the input constant and varies the lens. Source events by `sourceEventIds` or `sourceCorrelationIdPrefix`; events carrying no stored raw request are reported skipped rather than silently dropped. Every replay is a real model call, so the count is capped.
+
 `POST /lens/decomposition/evaluate`	Return the confidence verdict for the analysis record.
 
 `POST /lens/decomposition/lifecycle`	Govern the reading: `quarantine`, `approve`, `lock`, or `reject`.
+
+`POST /lens/orthogonality/audit`	Grade every declared axis against one dimension. False-discovery controlled across the family, lifecycle-aware and consumer-aware.
+
+`POST /lens/orthogonality/propose`	Find emitted-but-undeclared columns worth declaring and enqueue each as a narrated candidate on the approver gate. Needs a calibrated floor. Zero candidates is an answer, with the gate that held.
+
+`POST /lens/orthogonality/audit/compare`	The audit over production against the audit over an input-constant panel, diffed per axis. Separates a robust axis from a sampling confound.
 
 ### POST /lens/decomposeVariance: request
 
@@ -2506,13 +2986,17 @@ Field	Shape	Notes
 
 `pinnedLabel`	string	Required for `lock`. The label under which this reading is held as a reference.
 
+### Where this sits
+
+        Two of the attention spine's sources file from the axis reads: `orthogonality-hypothesis`, which proposes declaring a column, and `primary-axis-orthogonality`, reported as a confounded axis. Both are partitioned per source, because pooling two agents' score populations manufactures correlation neither of them shows. See [The attention spine](./attention-spine).
+
 ---
 
-### Chapter 13 — The lessons pipeline
+### Chapter 14 — The lessons pipeline
 
 _Permalink: https://holonograph.ai/guide/lessons-pipeline_
 
-Chapter 13
+Chapter 14
 
 # The lessons pipeline
 
@@ -2687,6 +3171,8 @@ Method & path	Purpose
 
 `POST /lessons/cluster`	Cluster overrides in a window.
 
+`POST /lessons/capture-scan`	Sweep judged failures on opt-in surfaces into the curation store so they cluster. Judged failures live in the event store and the clusterer reads the curation store; without this bridge a failure never clusters unless an override seeded it by hand. Opt in per surface with `captureJudgedFailures`. Idempotent per source event and dimension; the approver gate still gates the drafted lesson.
+
 `POST /lessons/draft`	Ask the drafter to propose a corrective artifact for a cluster.
 
 `POST /hil/approve`	Approve a draft at the gate.
@@ -2737,11 +3223,11 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 14 — Conformance & fixtures
+### Chapter 15 — Conformance & fixtures
 
 _Permalink: https://holonograph.ai/guide/conformance_
 
-Chapter 14
+Chapter 15
 
 # Conformance & fixtures
 
@@ -2964,15 +3450,350 @@ Field	Shape	Notes
 
 ---
 
-### Chapter 15 — Judge modes
+### Chapter 16 — Rubric coverage and de-saturation
+
+_Permalink: https://holonograph.ai/guide/rubric-coverage_
+
+Chapter 16
+
+# Rubric coverage and de-saturation
+
+        One rubric over a population with real sub-kinds judges the union weakly, or judges the wrong specifics. This chapter is the loop that fixes that: scope a rubric per facet, see which facets have one, draft the ones that do not, and check that what you drafted can still tell a wrong answer from a right one.
+
+## What it is
+
+        A grading dimension carries one `rubricRef`. Point it at a surface whose population is heterogeneous, with members like `Daily Summary`, `Weather Advisory` and `Weekly Check-in`, and that one rubric either grades the union loosely or grades one member's specifics and mis-grades the rest.
+
+        `rubricDispatch` scopes a rubric per facet without enumerating the members in the contract:
+
+```
+{
+  "id": "signal-quality",
+  "scoring": "llm-judge",
+  "rubricRef": "gs://rubrics/signal-general.md",
+  "rubricDispatch": {
+    "facet": "signal.name",
+    "refsFrom": "gs://rubrics/signal-alert/",
+    "refs": { "Morning Routine": "gs://rubrics/pinned/morning.md" }
+  }
+}
+```
+
+Field	What it declares
+
+`facet`	The cohort-tag key whose per-event value selects the rubric. It has to be a key in the surface's declared `cohortTags` vocabulary: a bounded identifier, not a human-authored display string with its em-dashes and emoji.
+
+`refsFrom`	The bucket a per-facet rubric resolves from by convention. The rubric for value V is `refsFrom` + the normalized V + `.md`. Adding a member's rubric is a bucket write, never a contract change.
+
+`refs`	Optional pins that override the convention for named values. Keys are matched in their normalized form, so pinning `Morning Routine` addresses the same rubric identity the convention would.
+
+        The dimension's own `rubricRef` is re-cast as the required default. An unknown or unmatched facet is scored against it rather than skipped, because skipping would manufacture the judge-liveness hole the instrument exists to close. It is scored, marked, and counted.
+
+### The shared normalization
+
+        A facet value and its filename have to address the same rubric, so both the dispatch and the drafter that writes the bucket file call one function. It folds Unicode and strips combining marks, lowercases, collapses every run of non-alphanumerics to a single hyphen, and trims:
+
+```
+"Morning Routine"                → morning-routine.md
+"Weather — Heat Advisory ⚠️"      → weather-heat-advisory.md
+"café"                           → cafe.md
+```
+
+        A value that is entirely non-alphanumeric, a bare emoji say, normalizes to nothing. That is an unaddressable stem, so the planner reads it as an unmatched value rather than pointing at a `.md` that cannot exist.
+
+## Why it matters
+
+        Two properties make the loop auditable rather than hopeful.
+
+### Why an event rode the default
+
+        Every scored event is stamped with which rubric judged it and, when that was the default, why. Four reasons, and they are different problems:
+
+Reason	What happened	What to do
+
+`no-bespoke-ref`	A declared facet value with no per-facet rubric authored yet.	Nothing is wrong. This is the drafter's work queue.
+
+`unmatched-value`	A `facet=value` tag was present, but the value is not declared and does not normalize to one.	A typo or an undeclared member. Fix the tag or declare the value.
+
+`facet-tag-absent`	The event carried no `facet=` tag at all.	Un-tagged emit. Fix the producer.
+
+`pin-unresolved`	An explicit `refs` pin was set and failed to load.	A bad pin. Louder than a convention miss, because you asked for this one by name.
+
+        Without the split, the default population is one undifferentiated bucket and a coverage gap is indistinguishable from a broken emitter.
+
+### The default vouches for less
+
+        A default-scored event is also reduced-reach. The surface-general rubric vouches for surface-general correctness, not for domain quality, so it is deliberately strict about what it can see and silent about what it cannot. Scores under it are not comparable to scores under a bespoke rubric, and the lens treats the difference as a property of the instrument rather than of the agent.
+
+## How to use it
+
+### Read the worklist
+
+```
+GET /lens/facet-coverage?surfaceId=signal-alert
+```
+
+        One report per dispatching dimension. The counts are the readout: `facetsSeen` against `bespokeCount`, `scoredOnDefault` split by reason, `untaggedCount`, and `defaultOnly` for the facets that have never had anything but the default. `facets` carries the per-facet detail, each entry naming its `source` and, where that is `default`, its `defaultReason`.
+
+        Re-derived per read from the apparatus columns. A surface with no dispatching dimension returns empty rather than zero.
+
+### Draft one
+
+```
+POST /lens/rubric/propose
+{
+  "surfaceId": "signal-alert",
+  "dimensionId": "signal-quality",
+  "facetValue": "Morning Routine"
+}
+```
+
+        The deterministic scaffold is assembled server-side from the contract: the dimensional-context header and the required verdict shape come from `rubricDispatch` and `judgeClaimContract`. The narrator contributes the domain grading criteria and nothing else. It has no channel through which to emit a number, so a fabricated threshold is structurally impossible rather than merely unlikely.
+
+        The response carries the `refPath` the approved body belongs at, the `draft`, and two honesty flags. `narratorStatus` is `llm` when a real narrator produced the criteria, `stub` when none is configured, and `stub-fallback` when one was configured and threw: a draft returned under `stub-fallback` is a deterministic skeleton and must not read as an authored proposal. `evidenceAvailable` flags whether the count behind the draft was measured or is a placeholder.
+
+        Propose-only. The draft goes to the approver gate, and the approved body is what the operator writes to the bucket. The lens never writes the rubric.
+
+### Check that it discriminates
+
+        A rubric can be authored, resolved, and scoring, and still be blind. If a value sits in the judge's sight and the rubric never asks about it, an output that is wrong along that value scores as if it were right. The score saturates.
+
+```
+POST /lens/saturation/audit
+{
+  "surfaceId": "signal-alert",
+  "dimensionId": "signal-quality"
+}
+```
+
+        The audit reads the dimension's declared `expectsGrounding` axes and, for each, computes the pass-rate of the declared misuse values against the dimension's `passThreshold`.
+
+Per axis	Means
+
+`blind`	The misuse passes at or above the blind threshold, 0.5 by default. The judge is letting it through.
+
+`discriminating`	The misuse reliably fails.
+
+`unverified`	Too few misuse samples, five by default, or no declared `passThreshold`. Honest-null, not a pass.
+
+        The dimension's verdict is `saturated`, `discriminating`, `unverified`, or `no-expectation` where nothing was declared to check. Each axis also reports its misuse and correct-use counts, both pass-rates and the mean misuse score, because a working judge passes correct use and fails misuse, and seeing only one half of that is not evidence.
+
+          The verdict is a pass-rate
+          An earlier version of this check asked whether the score varies with the axis at all. That is the wrong question. A judge scoring the misuse 8.4 against a correct 9 varies significantly and still passes the misuse. Separability is not adequate penalization. The verdict is the pass-rate, which is also robust to a judge catching some of the misuse for an unrelated reason: it still reads blind on the fraction it lets through.
+
+        No judge is in the loop. The audit reads the substrate alone, because a saturated judge cannot be its own alarm. There is no approver gate and no model call. `provenance` defaults to `all`, so a replay panel built by varying the grounding is in scope, and `correlationIdPrefix` scopes the read to it.
+
+### Fan out a focused reviewer
+
+        Given measured saturation, the remedy is not to rewrite the holistic rubric. It is to add a reviewer that looks at one thing:
+
+```
+POST /lens/rubric/desaturate
+{
+  "surfaceId": "signal-alert",
+  "dimensionId": "signal-quality",
+  "facetValue": "Morning Routine",
+  "blindDimension": {
+    "name": "hrv-provenance",
+    "description": "whether the HRV figure came from the overnight window it claims",
+    "groundingKey": "hrv_metric_type",
+    "misuseValues": ["intraday_spot"]
+  },
+  "saturationEvidence": {
+    "scenarios": [
+      { "label": "overnight (correct)", "judgeMean": 8.9 },
+      { "label": "intraday spot (wrong)", "judgeMean": 8.4 }
+    ],
+    "replayRunRef": "replay:hrv-probe:"
+  }
+}
+```
+
+        You supply the measured evidence; the server drafts against it. The deterministic facts, the blind dimension and the saturation matrix and the fan-out structure, are pinned server-side, and the narrator writes the focused criteria only. The same discipline as `/propose`, and the same approver gate.
+
+        What comes back is a focused sub-reviewer plus a registrable fan-out fragment: a separate `role: 'judge'` surface, its routing, and the `judgeSurfaceId` link that attaches it to the subject dimension. It appends. The holistic rubric is never replaced, because a focused judge that replaced it would trade one blind spot for another.
+
+        Declaring `misuseValues` on the fan-out is what makes it auditable in turn. Omit them and the new judge is not saturation-auditable until you declare them.
+
+          What a misuse value has to be
+          The audit keys on the grounding value, so a declared misuse value only discriminates when it is a value the producer consumed that correlates with the wrong output. A value that labels the grounding *situation* instead admits both a faithful and a faulty output under the same value: the pass-rate mixes the two, lands near half, and mislabels the judge blind. Such an axis is auditable only when the events are scoped to the faulty arm first.
+
+## Reading the output
+
+        Three apparatus columns are stamped on every dispatched judgment. They are reserved, so a contract may not declare them.
+
+Column	Carries
+
+`judge.rubric_source`	`facet` or `default`.
+
+`judge.rubric_facet`	The facet value the event dispatched on.
+
+`judge.rubric_default_reason`	One of the four reasons, when the source was `default`.
+
+          Which rubric an event got is instrument variance
+          A default-scored population scores systematically lower for instrument reasons. Attributing that gap to the agent is the same mistake as attributing a regional confound to it. `judge.rubric_source` is a conditioning-permitted axis for exactly this reason, alongside the rubric hash, and the variance decomposition treats both as instrument variance rather than agent variance.
+
+        Two of the attention spine's twenty-six sources file from here. `rubric-gap` is a declared facet riding the default with no bespoke rubric authored, and it mints an `author-rubric` proposal. `rubric-ref-broken` is a reference that no longer resolves, and it mints `fix-rubric-ref`. See [The attention spine](./attention-spine).
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/facet-coverage`	The coverage readout per dispatching dimension, with the per-facet detail and the default split by reason.
+
+`POST /lens/rubric/propose`	Draft a bespoke rubric for one named facet value. Propose-only, approver-gated.
+
+`POST /lens/saturation/audit`	The judge-independent discrimination check against the declared grounding. Pure read.
+
+`POST /lens/rubric/desaturate`	Draft a focused sub-reviewer plus its fan-out fragment, from measured saturation evidence. Propose-only, approver-gated.
+
+### Contract surface
+
+        `rubricDispatch`, `expectsGrounding`, `judgeSurfaceId` and `judgeClaimContract` are all declared on the grading dimension; see [What a dimension declares](./surface-contracts#what-a-dimension-declares). The dispatch decision is a published contract, shared by the lens's own gated judge and by an operator's inline one, so both resolve a facet to the same rubric. Resolving the rubric bytes is the caller's: the plan says what to fetch, the caller fetches, and the apparatus columns are stamped from the outcome.
+
+        The drafter prompts and the composition order behind `/propose` and `/desaturate` ship inside the binary.
+
+---
+
+### Chapter 17 — Facet separability
+
+_Permalink: https://holonograph.ai/guide/facet-separability_
+
+Chapter 17
+
+# Facet separability
+
+        Fanning out to a focused judge per construct asserts, on faith, that those constructs are separable. This chapter is the certification under that assertion: whether a decomposition is a real topology, one axis wearing two names, or a prerequisite dressed as a peer.
+
+## What it is
+
+        Correlation is symmetric. It can say two facets move together; it cannot say that breaking A degrades B while breaking B leaves A intact. That asymmetry is the whole question, and it is invisible to any correlation-shaped measure, the [orthogonality audit](./variance-isolation) included.
+
+        So the audit intervenes. Over a joint-state panel, events labelled by which facets' defects were injected, it reads each direction separately: how much facet F's score moves when F's own defect is injected, against how much it moves when G's is.
+
+Verdict	Signature	What it means	What to do
+
+`separable`	Both ratios low	Independent axes.	Keep both.
+
+`collinear-collapse`	Both high, symmetric	One axis wearing two names.	Rejoin. This is the only verdict where rejoining is right.
+
+`asymmetric-subsumption`	One high, one low	The high-ratio facet subsumes the low one: a prerequisite or constituent relationship, not a duplicate.	Keep both. The subsumed one is the sharp sub-dimension; the other is the catch-all.
+
+`unverified`	Undersampled, a dead own-axis, or a compensatory coupling	Not established.	Nothing yet. Reported rather than rounded to separable.
+
+          The trap this closes
+          A saturation or collinearity signal on its own says "these look redundant, rejoin them." That is right for `collinear-collapse` and wrong for `asymmetric-subsumption`, where rejoining destroys a real, independently manipulable axis. Collinear behavior is a hypothesis. Run the factorial before you rejoin.
+
+## Why it matters
+
+        Two things depend on the answer being right.
+
+        A fan-out is a claim about topology. Minting three focused judges per subject asserts those three constructs can be judged apart. If two of them are one axis, you have bought two judges' latency and cost for one axis of signal, and their agreement will read as corroboration when it is tautology.
+
+        Reflection depends on it further downstream. Full orthogonality is one of the grant's hard preconditions, and a decomposition that has not certified cannot satisfy it. See [What has to hold before a cell reflects](./judge-modes#what-has-to-hold).
+
+## How to use it
+
+        Three reads, in order of cost. The screen proposes a hypothesis, the audit certifies it, the monitor re-checks it cheaply.
+
+### Screen for candidates
+
+```
+POST /lens/redundancy/screen
+{ "surfaceId": "classify-intent" }
+```
+
+        Over per-event score vectors it returns the pairwise collinearity matrix and, for each collinear pair, two things the matrix alone does not give: a scrap-pick naming which twin is the dependent copy, and a residual localization naming the substrate column that holds the copy's only independent variance. Omit `dimensionIds` and every scored dimension on the surface is screened.
+
+        Data-gated. A pair below the minimum sample floor reads `undersampled` and a dimension with no variance reads `no-variance`, with a pointer at the saturation audit, since a dimension that never moves is usually a blind judge rather than a redundant one. The screen withholds rather than fires on a thin panel.
+
+### Certify the pair
+
+```
+POST /lens/facet-topology/audit
+{
+  "surfaceId": "classify-intent",
+  "facets": [
+    { "dimensionId": "hrv-provenance",  "defectColumn": "defect.hrv",   "defectValue": "injected" },
+    { "dimensionId": "place-identity",  "defectColumn": "defect.place", "defectValue": "injected" }
+  ]
+}
+```
+
+        Each `facets` entry is a panel-based expectation: the facet's score dimension, the diagnostic substrate column marking its injected defect, and the value that marks the defect as present. At least two are required, because the question is about a pair.
+
+        `provenance` defaults to `all`, so a replay or emitted panel is in scope, and `correlationIdPrefix` scopes to one. `options` takes the cell-size floor and the ratio cutoffs where a surface needs them; the defaults are conservative.
+
+        Read-only, so propose-only. The audit returns a verdict per unordered pair and the operator promotes the split, keeps it, or rejoins.
+
+          The audit inherits its panel's validity
+          A facet whose own injected defect does not move its own score reads as a fake subsumption. Those pairs are reported as such rather than scored. The audit is only as good as the ablation underneath it: if the defect you injected was not a defect, nothing downstream of it is a measurement.
+
+### Watch the band
+
+```
+POST /lens/pairwise-monitor/run
+{ "surfaceId": "classify-intent" }
+```
+
+        The audit is expensive and offline. The monitor is the cheap online guard on it. Over per-event defect co-firing it returns, per dimension pair, the co-trigger counts and a `phi` coupling adjusted for how often each dimension fires on its own, which is what separates real coupling from a shared score floor, plus the signal for a pair collapsing toward collinear while live.
+
+        Give it the characterized band as `expectedBands` and it returns a drift verdict proposing a re-run of the audit. Run the audit with `persist: true` and it closes the loop itself: the audit also runs the monitor over the same window and appends a durable characterization record merging the verdict with the co-trigger band per pair, which is what the monitor reads back. `bandTolerance` sets the band's half-width, 0.1 by default.
+
+        The monitor proposes drift. It never adjusts a band, because a band that moves itself measures nothing.
+
+### When the judge and the producer disagree
+
+```
+POST /lens/contested-cohort/screen
+{ "surfaceId": "classify-intent", "dimensionId": "correctness" }
+```
+
+        The adjacent question, converging on the same fields. For one judged dimension it partitions events by each candidate substrate-column cohort and tests whether the judge's fail-rate on a cohort value is elevated against the rest of the population, with the family under false-discovery control.
+
+        A contested cohort is one where the producer's outputs are systematically rejected. It is reported with the producer's own within-cohort consistency alongside, because a producer that is consistently doing one thing and consistently marked down for it has a different shape from one that is erratic.
+
+        The lens cannot adjudicate which party is right, and does not try. It points at the interaction, notes that a focused judge on that field would isolate it, and routes to review. Cohorts below the sample floor are withheld.
+
+## Reading the output
+
+        Every read here is read-only and propose-only, and three of the attention spine's sources file from them: `redundancy-candidate`, which mints a `rejoin-dimension` proposal, plus `pairwise-drift` and `contested-cohort`, which mint nothing. A source with no default proposal is one where the remedy is a judgment the lens leaves to the operator.
+
+        All four are data-gated and report honest nulls. A withheld pair, an undersampled cohort and an unverified verdict are all distinguishable from a clean result, which is the property that makes a quiet report worth anything.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/redundancy/screen`	The collinearity matrix, with a scrap-pick and residual localization per collinear pair.
+
+`POST /lens/facet-topology/audit`	The interventional audit. Returns a verdict per unordered pair; `persist: true` also records the characterization and its band.
+
+`POST /lens/pairwise-monitor/run`	The online guard: co-trigger counts, the adjusted `phi` coupling, and a drift verdict against the characterized band.
+
+`POST /lens/contested-cohort/screen`	Cohorts where the judge systematically rejects the producer, with the producer's within-cohort consistency.
+
+### Where this sits
+
+        Upstream is [Rubric coverage and de-saturation](./rubric-coverage): a de-saturation fan-out creates the facets this chapter certifies, so the two run as one loop rather than two tools. Alongside it at axis altitude is the orthogonality audit in [Variance isolation](./variance-isolation), which asks whether a declared substrate column explains anything, a different object measured a different way.
+
+        The audit procedure, the coupling measure and the tuning constants ship inside the binary. The verdict vocabulary and the record shapes are public contract.
+
+---
+
+### Chapter 18 — Judge modes and reflection
 
 _Permalink: https://holonograph.ai/guide/judge-modes_
 
-Chapter 15
+Chapter 18
 
-# Judge modes
+# Judge modes and reflection
 
-        Every judge/gate relationship on a surface is one of four modes. The four are the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery.
+        Every judge/gate relationship on a surface is one of four modes, the valid cells of two independent questions: does the producer wait for the verdict, and may the verdict touch delivery. Reflection is the third cell, and the only one Holonograph grants rather than leaving to configuration.
 
 ## What it is
 
@@ -3024,7 +3845,88 @@ Chapter 15
           blocks on a verdict that has not arrived. Per-judgment verdict provenance distinguishes the raw
           judge result from the producer-filtered one.
 
+## Why reflection is gated
+
+        Reflection turns a judge from an evaluator you read into an optimization target the producer
+          chases. That inverts the trust requirement. A judge you only read can be a little wrong, because
+          you flag and a human reviews. A judge you optimize against has to be right, because the producer
+          will find and exploit every gap in it.
+
+        The gate is on validity, not on discrimination. Those come apart: a judge can score stably and
+          still be blind, saturated, or wrong about how a construct should treat absence. Scoring the same
+          way every time is reliability, and reliability does not imply validity.
+
+### The specific hazard
+
+        Real dimensions are often requires-confirmation: an honest "I do not have the data" correctly
+          scores low. Put that judge in a retry loop and the cheapest way for the producer to raise its
+          score is to stop being honest about the absence and fabricate. That is the exact failure the
+          apparatus exists to catch, now with a loop optimizing toward it.
+
+        So reflection without established authority is not merely a waste of tokens and time. It is a
+          pressure applied to the one behavior you most need preserved.
+
+## What has to hold before a cell reflects
+
+        Reflection unlocks for a `judge × rubric × facet × surface` cell when
+          all of the following hold. The gate is dual: Holonograph computes the statistical pass, then a
+          human confirms.
+
+          - **Soak.** Enough live production data to reach a statistical N. Holonograph determines the statistical pass; a human approves the N, judging whether the sample spans the breadth of real inputs and outputs.
+
+          - **Discrimination.** The facet's dimensions pass discrimination evaluation, with a human confirming key outlier calls and a statistical sampling of calls on that facet.
+
+          - **Saturation cleared.** Every dimension passes the saturation audit, which is [a read you can run yourself](./rubric-coverage#the-saturation-audit).
+
+        Validity is cell-specific, so the grant is too. A judge certified on one facet of one surface has
+          said nothing about another.
+
+## What reflection does
+
+        A failing response returns to the producer with the judge's grounded critique attached, and the
+          producer retries, capped. Reflection is the soft tier of the judge's authority over delivery: it
+          can send the producer back, it cannot block. Blocking remains deterministic code in the gate, or
+          operator policy.
+
+## Revocation
+
+        The grant is revoked on any change to the identity it was computed on. A new judge model, a
+          revised rubric, a changed context scope: the cell certifies again or it does not reflect. This is
+          the authority machinery applied to the judge rather than to the producer, and it suspends the same
+          way for the same reasons.
+
+## The shared-frame check
+
+        One of those preconditions has an instrument of its own. Groundedness has to hold on both sides: a judge that read a different frame from the producer is not measuring the producer, and a groundedness alarm on such a pair points at the wrong party.
+
+```
+POST /lens/co-groundedness/screen
+{ "surfaceId": "classify-intent" }
+```
+
+        Over the surface's claim-instrumented judged dimensions it classifies each judge-to-subject frame relation:
+
+Relation	What it says
+
+`shared-frame-intact`	Judge and producer were grounded in the same values. A groundedness finding here is about the producer.
+
+`judge-misread-frame`	The judge read the frame wrong. The finding is about the judge.
+
+`judge-frame-truncated`	The judge saw part of the frame. Its verdict is scoped to what it saw, whatever it asserts.
+
+`judge-grounded-outside-frame`	The judge grounded on something the producer never had. It is marking the producer down for an absence that was never the producer's.
+
+`not-assessable`	The relation could not be established. Reported rather than assumed intact.
+
+        The last two are the observer-groundedness asymmetry, and they are the disambiguation to run before treating a groundedness alarm as a producer fault. Deterministic per verdict, certain or abstain: no false-discovery gate and no data floor, because each relation is established or it is not. Read-only, so it proposes and the operator disposes.
+
 ## Reference
+
+Method & path	Purpose
+
+`POST /lens/co-groundedness/screen`	Classify the judge-to-subject frame relation per claim-instrumented dimension.
+
+        Your own reflection loop remains yours to run; nothing here prevents it. The claim is narrower: a retry loop against an uncertified judge spends tokens to apply pressure in an unknown direction. Holonograph turns reflection on when the cell has qualified, if you have asked for it.
 
         The taxonomy is the design of record for the judge/gate relationship and is documented ahead of
           the implementation. The reflection path and the judge-gate enforcement cluster each have their
@@ -3032,11 +3934,11 @@ Chapter 15
 
 ---
 
-### Chapter 16 — Seams
+### Chapter 19 — Seams
 
 _Permalink: https://holonograph.ai/guide/seams_
 
-Chapter 16
+Chapter 19
 
 # Seams
 
@@ -3045,7 +3947,7 @@ Chapter 16
 ## What it is
 
         A seam is an edge: the path a value travels from where it is produced to the decision that
-          consumes it. Write it `I &rarr; DP`, interpretive source to decision point.
+          consumes it. Write it `I → DP`, interpretive source to decision point.
 
         Whether an input is interpreted is a property of that edge, not of the field and not of whether
           the code is deterministic. The same field can lie on a deterministic edge to one consumer and an
@@ -3074,7 +3976,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority
 
           The enum is not a sanitizer. It is the decision's codomain. `action` is a first-class
           interpretive value, deterministic in what it holds and interpreted in where it came from. The
-          chain runs `I0 &rarr; DP &rarr; I1 &rarr; DP1` and onward, and the provenance rides
+          chain runs `I0 → DP → I1 → DP1` and onward, and the provenance rides
           through every hop. Relocating the decision upstream moves the decision point; it does not escape
           anything. The next scan finds it in its new place.
 
@@ -3082,7 +3984,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority
 
         A schema boundary filters the catastrophic: wrong type, missing field, malformed JSON. It passes
           the shape-valid-but-wrong. So it raises the floor and, in the same motion, makes the residual
-          error insidious, because the value now looks right, types right, and fails quietly downstream.
+          error insidious, because the value now looks right, types right, and fails without a signal downstream.
 
         A pattern that pulls `'success'` out of *"I hope you are a great success in life"*
           and resolves it to `route.SUCCESS` is the whole problem in one line. The enum fixed the
@@ -3132,22 +4034,22 @@ Shape	Form
           findings on the spine, and both reach authority. They sit on adjacent surfaces, not in separate
           systems. A seam is itself a light source, recorded as
           `seam//`, which is how a non-model interpreter takes the
-          same slot a vendor would without pretending to be one.
+          same slot a vendor would without being recorded as one.
 
 ## Reference
 
-        The shape is the lens's own `judge &rarr; verdict &rarr; gate &rarr; action` model
-          applied inside ordinary code: `decide &rarr; enum &rarr; dispatch &rarr; sink` is the
+        The shape is the lens's own `judge → verdict → gate → action` model
+          applied inside ordinary code: `decide → enum → dispatch → sink` is the
           same structure. The enum is a verdict, carrying light from an interpreted source, and a dispatch
           acting on it is governed by that light.
 
 ---
 
-### Chapter 17 — The seam monitor
+### Chapter 20 — The seam monitor
 
 _Permalink: https://holonograph.ai/guide/seam-monitor_
 
-Chapter 17
+Chapter 20
 
 # The seam monitor
 
@@ -3247,11 +4149,50 @@ Axis	Value
 
 `runMode`	The shared enum. Isolation is provenance-keyed and independent of run mode, so `eval` and `replay` mean here what they mean everywhere.
 
-`lightSourceIdentifier`	`seam//`. A seam is a light source that is not a model, and it takes the slot honestly rather than faking a vendor.
+`lightSourceIdentifier`	`seam//`. A seam is a light source that is not a model, and it takes the slot under its own name rather than a vendor's.
 
         The husk-surviving facts, whether it abstained and which path it took and the value fingerprint,
           ride in the surface dimension, the substrate columns and the cohort tags. A raw decided value
           rides in the payload and husks away like a judge rationale.
+
+## The three layers
+
+        The scan and the soak are the first two layers of one instrument. Both sit above a question neither answers: when a call went wrong, which seam on its path was involved?
+
+Layer	Where it runs	The claim it can make
+
+Definition	The scanner, over source	This seam *could* influence that call.
+
+Observation	The lens, at its own boundary	This call happened, and this is what crossed the boundary.
+
+Analysis	The lens, over the observations	This seam's appearance is associated with failure, confound-controlled.
+
+          The lens trusts only what it observes at its own boundary
+          One invariant discharges two constraints at once. Nothing is added to your code, because the evidence is the mediated traffic the lens already sees. And the subject’s own account is never evidence: a seam's resolved arm counts only when it was recovered from the request and response bytes. An arm the builder asserts has its own grade, `self-reported`, which exists so the lens can refuse it rather than fold it silently into observed evidence.
+
+### Why a linkage stays a candidate
+
+        Joining a call to a candidate seam through the call site proves the call site executed. It does not prove the seam took part. Every linkage from that join is graded `static-only`, including when the call itself was observed, and a deterministic join never promotes a candidate to `observed`. Only independent boundary evidence does, such as an arm value recovered injectively from the call's own bytes. A call-site frame that resolves to no node in the scan is `unknown`.
+
+        Because every linkage is a candidate, this read is monitor-only evidence and deliberately does not feed the attention queue. A separability signal that filed as a finding would be an attribution claim the evidence does not support.
+
+```
+GET /lens/seam-call-observations?surfaceId=classify-intent
+```
+
+        Re-derived per read from the stored call events joined against the candidate map, with nothing stored as an observation and no new event kind. Honest-empty until call sites are captured and a map is pushed, never a `501`: a read with no candidates is an answer.
+
+### The analysis layer
+
+```
+GET /lens/seam-call-analysis?since=2026-10-01T00:00:00Z
+```
+
+        Over those observations: the judge fail-rate on calls where a seam node appears against the rest of the panel, per node, with the family under false-discovery control. A row reads the seam as a whole or conditions on one resolved arm.
+
+        Each association is then conditioned on a confound, the model, the version or the input cohort, and carries the verdict: `robust` where it survives within the strata, `sampling-confound` where it collapses once the confound is held constant, `insufficient` where the stratified cells are too thin to say. The last is reported rather than rounded to robust.
+
+        Alongside the associations: each seam's structural reach, its arm distribution, and the pre-registered pools of related nodes. Every number is a separability signal, never a causal claim.
 
 ## Reading the output
 
@@ -3260,7 +4201,23 @@ Axis	Value
           `builder-seam` and `seam-soak` sources, alongside every other finding the
           instrument produces.
 
+        An abstention observed at the boundary is a first-class value rather than an absence, so a surfaced no-match path is distinguishable from an arm the lens could not see. An arm that never manifests in mediated traffic is `unknown`, paired with a null resolved arm, and stays that way.
+
 ## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`POST /lens/builder-seams`	The scanner pushes its current registered-seam set. Replace-current: a scan run is a complete re-derivation of the code's interpreted seams, so the newest push is the truth and a seam that no longer appears is gone. Writes the evidence registry only, never the contract registry. Returns `202 { accepted }` once the write is durable and visible to other instances. `501` where the registry is not wired, which is the only opt-in.
+
+`GET /lens/builder-seams`	Confirm an ingest landed and is visible cross-instance before its call events start carrying a call-site id. A per-source summary by default; `?full=1` returns the held scans.
+
+`GET /lens/seam-call-observations`	The re-derived seam-to-call linkages, each graded `observed`, `static-only` or `unknown`. Monitor-only evidence; never a finding. Takes `surfaceId`, `since`, `until`.
+
+`GET /lens/seam-call-analysis`	Confound-controlled failure associations per seam node, with structural reach, arm distribution, related-node pools and the false-discovery summary. Caveats carry the honest nulls.
+
+`POST /lens/seam-soak/judge`	Run the offline value-efficacy judge over a seam's stored raw-output corpus. Operator-invoked, approver and cost gated. The judge runs over the stored corpus, never the live stream, and verdicts are minted server-side on the judge surface. `501` where no judge scorer is wired.
 
         The shared vocabulary, the four sink shapes, the default-path forms and the sink kinds, lives in
           the public contract package so the build-time scanner and the run-time producer name the same
@@ -3268,15 +4225,15 @@ Axis	Value
 
 ---
 
-### Chapter 18 — The attention spine
+### Chapter 21 — The attention spine
 
 _Permalink: https://holonograph.ai/guide/attention-spine_
 
-Chapter 18
+Chapter 21
 
 # The attention spine
 
-        Every observe-only surface produces findings, and there are twenty-five sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
+        Every observe-only surface produces findings, and there are twenty-six sources of them. The spine gives all of them one operator lifecycle instead of one list per surface, and it is the substrate the authority state reads.
 
 ## What it is
 
@@ -3292,8 +4249,8 @@ Object	What it holds
 
 ### The sources
 
-        Twenty-five, spanning judge behavior, evaluation structure, coverage, the store, and the seam
-          work. They are listed here because the spine is only as good as what files into it.
+        Twenty-six, spanning judge behavior, evaluation structure, coverage, attribution, the store, and
+          the seam work. They are listed here because the spine is only as good as what files into it.
 
 Group	Sources
 
@@ -3303,7 +4260,7 @@ Evaluation structure	`orthogonality-hypothesis`, `primary-axis-orthogonality`, `
 
 Coverage and reach	`coverage-gap`, `reach-gap`, `emission-gap`, `dark-mass-blindspot`, `read-window-underpowered`
 
-Surface lifecycle	`trajectory`, `quarantine-candidate`, `retirement-candidate`, `hash-provenance`
+Surface lifecycle and attribution	`trajectory`, `quarantine-candidate`, `retirement-candidate`, `hash-provenance`, `source-conflation`
 
 Seams and authority	`builder-seam`, `seam-soak`, `authority-suspended`
 
@@ -3311,6 +4268,20 @@ Store	`store-capacity`, `retention-integrity`
 
         A code seam and a model call file into the same spine. They arrive from different sources and sit
           on adjacent surfaces, and from the lifecycle's side they are the same object.
+
+### Several agents on one surface
+
+        When several of a swarm's agents emit onto one surface, pooling them is sometimes right and sometimes fabricates a statistic. Every source declares which, so a new producer cannot pool two agents by omission.
+
+Partition	Behavior
+
+`per-source`	Pooling corrupts the statistic or destroys attribution, so the source runs once per agent and each finding is stamped with its `sourceId`. A no-op where one surface has one agent. The analytic reads over scores and variance sit here: pooling two score populations manufactures correlation that neither agent shows.
+
+`pooled-examine`	Pooling is correct, because the instrument is shared, the contract is global, or the grouping is the operator's and not the lens's to override. The `source-conflation` alarm checks these for a hidden per-agent split and surfaces it without imposing a partition.
+
+`pooled`	Global, or keyed on a different axis entirely: the consumer's agent id, the rubric, the lens's own store. A per-agent split is not meaningful and the alarm ignores it.
+
+        `source-conflation` is the twenty-sixth source and the one that reads the others: it compares agents inside a pooled read and reports where a single number is hiding two populations. It points, it does not repartition. Whether an operator's grouping is wrong is the operator's call.
 
 ### Three grains
 
@@ -3344,6 +4315,94 @@ Store	`store-capacity`, `retention-integrity`
 
           - Mint a proposal from a confirmed finding. The proposal enters the approver path as a proposal, not as a change.
 
+### Read the queue
+
+```
+GET /lens/attention?surfaceId=classify-intent&state=untriaged&severity=alarm&limit=50
+Authorization: Bearer
+x-holonograph-run-mode: production
+```
+
+        Filters: `surfaceId`, `source`, `state`, `severity`, `sort`, `since`, `until`, `limit`, `cursor`. Severity is one of `alarm`, `needs-review` or `coverage`, which is the ranking the default sort uses.
+
+        Each item carries `findingRef` and its derived `findingKey`, the `source`, the `severity`, a `count` of the events that collapsed into it, `firstSeen` and `lastSeen`, the inline `evidence`, the derived `triageState`, the `latestTriage` record, `how`, and `gate`.
+
+          The queue reads without a triage store
+          Without a triage store wired, the queue still returns: every finding reads as untriaged. Writes are what need the store, and `POST /lens/attention/triage` answers `501` without one. An unconfigured deployment loses the lifecycle, not the observability.
+
+### Open one finding
+
+```
+GET /lens/attention/evidence?findingKey=
+```
+
+        The decision-grade detail behind one row, fetched when an operator opens it rather than for every row in the queue. It returns a representative `exemplar`, the most recent flagged call in the class, with the prompt, the model's answer, the judge's verdict and rationale, and the mechanical claims: the tool the judge said was not invoked, the datum it said was fabricated. Alongside it, `sampleCount` and a `samples` list to spot-check, plus `reAdjudicable` and `unavailable`. Re-derived per read; nothing is persisted. A class that no longer recurs in the window returns an honest-null exemplar rather than a stale one.
+
+### Annotate
+
+```
+POST /lens/attention/triage
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "findingRef": { "primary": { "grain": "structural", "id": "..." }, "attributes": { ... } },
+  "disposition": "confirmed-defect",
+  "rationale": "the judge passed three misuse samples in a row",
+  "approverId": "brian"
+}
+```
+
+        `rationale` and `approverId` are required: an annotation without a reason or an author is not a compliance record. Two optional fields pin what the operator saw, `evidenceSnapshotRef` for the denormalized slice and `asOf` for the substrate instant, so a decision stays reconstructible after the evidence moves on. The server stamps `occurredAt` itself.
+
+### Dispositions and states
+
+        A disposition is what the operator wrote. A state is what the queue derives.
+
+Value	Kind	Meaning
+
+`confirmed-defect`	disposition	Adjudicated real. This is the one that mints a proposal.
+
+`false-alarm`	disposition	Adjudicated not real.
+
+`acknowledged`	disposition	Real and accepted: a known blind spot the operator chooses to leave. Parked, not dismissed.
+
+`untriaged`	state only	No record yet.
+
+`resolved`	state only	The proposal was applied through Curate, or the finding stopped recurring. A lifecycle signal sets it, never a triage click.
+
+### What a confirmed finding mints
+
+        Twelve authoring targets. Each lands in Curate approver-gated, carrying intent rather than an apply-payload: the operator authors the change.
+
+Proposal kind	Default source	The remedy
+
+`grounding-cap-bump`	`verdict-reliability`	Raise the grounding cap the flagged verdicts are hitting.
+
+`gate-dimension`	`judge-liveness`	Put a dimension under a gate.
+
+`adjust-threshold`	operator-raised	Move a `passThreshold`.
+
+`predicate-downweight`	`trajectory`	Downweight a trajectory predicate that over-fires.
+
+`declare-axis`	`orthogonality-hypothesis`	Declare an emitted-but-undeclared column as its own axis. Splits a confound out.
+
+`rejoin-dimension`	`redundancy-candidate`	Collapse a dependent dimension into the twin it duplicates. The inverse of `declare-axis`: this merges a copy back into the axis it never left.
+
+`retire-surface`	`coverage-gap`, `retirement-candidate`	Retire a surface, or mark it forward-declared.
+
+`release-from-quarantine`	`quarantine-candidate`	Release a quarantined stream.
+
+`author-rubric`	`rubric-gap`	Author a bespoke per-facet rubric for a facet that has only ridden the default.
+
+`fix-rubric-ref`	`rubric-ref-broken`	Repair a rubric reference that no longer resolves.
+
+`author-fixture`	operator-raised	Author a fixture the surface is missing.
+
+`retention-policy`	`store-capacity`, `read-window-underpowered`	Adopt or tighten a retention preset. The operator sets the policy; the lens never compacts on its own.
+
+        Fourteen of the twenty-six sources mint nothing by default, `source-conflation` among them. A source with no default proposal is not a lesser finding: it is one where the remedy is a judgment the lens leaves to the operator.
+
 ## Reading the output
 
         A finding carries its `findingRef`, the surface and dimension it came from, the run
@@ -3362,16 +4421,30 @@ Store	`store-capacity`, `retention-integrity`
 
 ## Reference
 
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/attention`	The cross-source queue: findings merged with triage state, severity-ranked, cursor-paginated.
+
+`GET /lens/attention/evidence`	The exemplar and sample list behind one finding.
+
+`POST /lens/attention/triage`	Append one annotation. `501` without a triage store.
+
+`GET /lens/trajectory-findings`	The `trajectory` source read on its own: the turn-to-conversation axis a per-turn judge structurally cannot see. Groups events by the consumer's boundary column, runs the detectors, and returns the findings alongside the honest-null accounting (events with no boundary key, turns with no output text, which predicates actually ran) so an unmeasured slice never reads as clean.
+
+        All three are also served under the `/holonograph` alias. The reads derive per request and persist nothing; the write touches the triage store only, which is not an input to the lens hash.
+
         The public module declares the wire and store contract only. Which surface maps to which
           `FindingRef`, and the store implementation, live in the lens package.
 
 ---
 
-### Chapter 19 — Authority
+### Chapter 22 — Authority
 
 _Permalink: https://holonograph.ai/guide/authority_
 
-Chapter 19
+Chapter 22
 
 # Authority
 
@@ -3419,7 +4492,7 @@ State	Meaning
           live decision is the loudest thing on the page. `granted` and `unmapped` are
           the quietest: one is working as intended, the other is a coverage note rather than an alarm.
 
-### Re-derived, never stored
+### Re-derived per read
 
         A reading is computed from the recorded events at every read. No state is stored, so a reading
           cannot drift from the substrate it describes. A reading also never mutates anything: the apparatus
@@ -3455,9 +4528,9 @@ Condition	Envelope
           window then starts no earlier than the acknowledged tear, and the acknowledgement leaves an
           append-only, server-minted audit record that is never compacted.
 
-        Acknowledgements apply oldest first. Acknowledging a tear while an older one on the same surface
-          is still open is refused. The operator's authority policy sets whether one acknowledgement covers
-          a per-surface watermark, the default, or only the single tear.
+        Releasing a tear, and setting what one release covers, are the operator's two standing dispositions
+          over authority. Both are gated and both leave a record. See
+          [Authority governance](./authority-governance).
 
 ## How to use it
 
@@ -3469,96 +4542,192 @@ Condition	Envelope
 
 ## Reference
 
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/authority`	One reading per gated dimension, plus an honest `unmapped` reading for every gate-less surface. Re-derived per read.
+
+        The five governance routes, the tears read and the policy desk among them, are in
+          [the next chapter](./authority-governance#endpoints).
+
+### A reading
+
+        Each entry carries `surfaceId` and `dimensionId`, the `state`, the `interpretation` that identifies the sink, the `contract` and its `preconditions`, the statistical `power`, any `accuracyHold` or `reSoak`, the `suspension` when there is one, and the `basis` the state was derived from. A reading is always present, so an absent surface cannot pass for a healthy one.
+
         The state ontology, the dependency-condition kinds, the stack and contract shapes and the pure
           state machine are public contract. Signal extraction, turning gate composition, floors, versions
           and drift into the preconditions the machine maps to a state, lives in the lens.
 
 ---
 
-### Chapter 20 — Reflection
+### Chapter 23 — Authority governance
 
-_Permalink: https://holonograph.ai/guide/reflection_
+_Permalink: https://holonograph.ai/guide/authority-governance_
 
-Chapter 20
+Chapter 23
 
-# Reflection
+# Authority governance
 
-        When a response fails a judge, the judge’s grounded critique can go back to the producer for a capped retry. Holonograph grants that per judge, rubric, facet and surface, and only after that exact cell has certified. It is never a default and never an operator toggle.
+        Authority is a reading the lens derives and never writes. Two dispositions over it belong to the operator: releasing the hold a tear puts on a surface’s soak window, and setting what one release covers. Both are gated, both are attributed to a named operator, and both leave a record the compactor will not touch.
 
-## Why it is gated
+## What it is
 
-        Reflection turns a judge from an evaluator you read into an optimization target the producer
-          chases. That inverts the trust requirement. A judge you only read can be a little wrong, because
-          you flag and a human reviews. A judge you optimize against has to be right, because the producer
-          will find and exploit every gap in it.
+        Three parts: the gate every privileged write passes through, the acknowledgement that releases a tear, and the standing policy that says what an acknowledgement covers.
 
-        The gate is on validity, not on discrimination. Those come apart: a judge can score stably and
-          still be blind, saturated, or wrong about how a construct should treat absence. Scoring the same
-          way every time is reliability, and reliability does not imply validity.
+### The approver gate
 
-### The specific hazard
+        Every privileged write on the lens carries an `approverId` and is refused without one. A self-asserted id that disagrees with the verified operator on the request is refused too, so the stamped identity is not the caller’s claim about itself.
 
-        Real dimensions are often requires-confirmation: an honest "I do not have the data" correctly
-          scores low. Put that judge in a retry loop and the cheapest way for the producer to raise its
-          score is to stop being honest about the absence and fabricate. That is the exact failure the
-          apparatus exists to catch, now with a loop optimizing toward it.
+        Who *may* act is a separate question, and the lens does not answer it. Tier policy lives in the operator’s identity system, so authorization is a pluggable resolver, absent by default. With none wired, any identified operator may proceed and the action is stamped with their id. Wire one and the same endpoints enforce its decision, denying with `403`. The lens records who acts before it constrains who may act.
 
-        So reflection without established authority is not merely a waste of tokens and time. It is a
-          pressure applied to the one behavior you most need preserved.
+        The resolver is asked about one action at a time, and the action vocabulary is deliberately fine-grained, so an identity system can grant the cheap dispositions widely and the expensive ones narrowly.
 
-## What has to hold
+Action	Gates
 
-        Reflection unlocks for a `judge &times; rubric &times; facet &times; surface` cell when
-          all of the following hold. The gate is dual: Holonograph computes the statistical pass, then a
-          human confirms.
+`multiplex.run`	A live, billable cross-vendor fan-out.
 
-          - **Soak.** Enough live production data to reach a statistical N. Holonograph determines the statistical pass; a human approves the N, judging whether the sample spans the breadth of real inputs and outputs.
+`subscriptions.write`	Standing config that fires outbound webhooks.
 
-          - **Discrimination.** The facet's dimensions pass discrimination evaluation, with a human confirming key outlier calls and a statistical sampling of calls on that facet.
+`retention.compact`	Executing one reviewed compaction plan, or undoing an archive seal.
 
-          - **Saturation cleared.** Every dimension passes the saturation audit.
+`retention.policy`	The standing retention disposition, which can compact unattended.
 
-        Validity is cell-specific, so the grant is too. A judge certified on one facet of one surface has
-          said nothing about another.
+`authority.acknowledge-tear`	Releasing the soak-window anchor one tear holds.
 
-## What it does
+`authority.policy`	Changing what an acknowledgement covers.
 
-        A failing response returns to the producer with the judge's grounded critique attached, and the
-          producer retries, capped. Reflection is the soft tier of the judge's authority over delivery: it
-          can send the producer back, it cannot block. Blocking remains deterministic code in the gate, or
-          operator policy.
+`archive.rehydrate`	Mounting a read-only overlay of archived payload.
 
-        Because a verdict has to be in hand before the producer finishes, reflection is inline by
-          construction. An asynchronous judge observes and nothing more.
+`data.erase`	An irreversible erasure about a data subject.
 
-## Revocation
+`seam.judge`	Running the offline value-efficacy judge, which spends money.
 
-        The grant is revoked on any change to the identity it was computed on. A new judge model, a
-          revised rubric, a changed context scope: the cell certifies again or it does not reflect. This is
-          the authority machinery applied to the judge rather than to the producer, and it suspends the same
-          way for the same reasons.
+        Two of the nine are authority’s, and they are separate on purpose. More people can reasonably be trusted to release one tear than to change how every future release is recorded.
+
+### What a tear holds
+
+        A tear is a served or judge model value appearing on a gated surface for the first time. The surface’s authority soak window anchors at the previous stack change, held back to the segment before the latest unacknowledged tear, and a tear never self-clears.
+
+        So a tear is not a notification. Releasing it moves the window forward, which can let a torn surface re-qualify and let its pre-tear span be summarised. That is a disposition over authority, which is why it has a gate of its own and an audit record rather than a dismiss button.
+
+## Why it matters
+
+        The authority reading is only worth what its evidence window is worth. A window that slid forward over a model change on its own would be reporting one instrument’s record as another’s, and nothing downstream could tell. Holding the window and making an operator say, on the record, that the span is still one subject is the property that keeps the reading meaningful.
+
+        The mode that governs those releases is a standing disposition, not a per-call choice. Under the default, one acknowledgement covers every earlier open tear on the surface. Under `per-tear`, each tear takes its own, oldest first. An identity system can only express the distinction between releasing a tear and changing that mode if the two are separate actions.
+
+## How to use it
+
+### Read the open tears
+
+```
+GET /lens/authority/tears?surfaceId=classify-intent
+```
+
+        Every tear on the authority-read surfaces, newest first, each with the instant and event id of the tear, the stack members whose value changed, the stack tuple before and at the tear, and whether an acknowledgement covers it. Beside them the acknowledgement log, also newest first, and the granularity a new acknowledgement would take now. `surfaceId` narrows the read.
+
+### Release one
+
+```
+POST /lens/authority/tear/acknowledge
+{
+  "surfaceId": "classify-intent",
+  "approverId": "ops.rivera",
+  "tearEventId": "evt_01H...",
+  "note": "same family, re-validated against the fixture set"
+}
+```
+
+        `201` with the minted event id and the record. Omit `tearEventId` and the lens picks for you: the surface’s latest unacknowledged tear under `watermark`, its oldest under `per-tear`.
+
+        A surface with no gated decision in the current contract is not an authority-read surface, and acknowledging on it is a `404` rather than a silent no-op. So is naming an event that is not a tear.
+
+          Retries and duplicates
+          The acknowledgement’s event id is derived from the surface and the tear, so resubmitting the same acknowledgement is a keep-first no-op in the store. Acknowledging a tear that is already covered is a `409`, and under `per-tear`, acknowledging out of order is a `409` that names the older open tear.
+
+### Set what a release covers
+
+Granularity	One acknowledgement covers
+
+`watermark`	The acknowledged tear and every earlier tear on the surface, in one log record. The default.
+
+`per-tear`	Only the acknowledged tear, one log record each, applied oldest first.
+
+```
+PUT /lens/authority/policy
+{
+  "policy": { "tearAckGranularity": "per-tear" },
+  "approverId": "ops.rivera",
+  "basePolicyId": "ap-9c21f0b47de3a815",
+  "note": "audit asked for one record per tear"
+}
+```
+
+        `basePolicyId` is the record the operator reviewed, and `null` when the policy in force came from the file seed or the defaults. The schema is strict: an unknown key is refused rather than ignored, so a typo cannot read as a policy that does not apply.
+
+          Compare-and-swap on the write
+          If the policy moved since the operator reviewed it, the write is refused with `authority_policy_conflict` rather than overwriting someone else’s change. Reload, re-review, re-submit. The retention policy works the same way.
+
+        `GET /lens/authority/policy` returns the policy in force, its source, the operator record behind it or `null`, whether this backend can write one at all, and whether a configured file seed is being ignored because an operator policy exists. Resolution order is the operator’s persisted policy, then the file seed, then the defaults.
+
+        A backend that keeps no durable authority-policy store answers the `PUT` with `501` and reports that in `writable`. The filesystem backend keeps one. There the policy in force is the file seed at `APERTURE_AUTHORITY_POLICY_PATH`, or the defaults.
+
+### Where the operator does this
+
+        The authority-policy desk in Curate holds the editor, the diff against the policy in force, and the history. The tears card in the Lens Health panel holds the open tears and the acknowledgement. Both go through the same gate as the API, and the desk is read-only on a backend that cannot persist a policy. See [The dashboard](./dashboard).
+
+## Reading the output
+
+        `acknowledged` on a tear is derived rather than stored: true when a `watermark` acknowledgement at or after it exists on the surface, or a `per-tear` acknowledgement of exactly it. The log sits beside the tears rather than inside them, so who released what, when, under which mode, and with what note is readable on its own.
+
+        Each record keeps the granularity in force when it was made. Changing the mode changes what the next acknowledgement covers and never reinterprets a past one.
+
+        Acknowledgements are appended as `analysis.authority-tear-acknowledged` events: server-stamped, append-only, and exempt from compaction. The history behind the policy is append-only too, each record naming the policy it replaced, the operator who approved it, and when.
 
 ## Reference
 
-        Your own reflection loop remains yours to run; nothing here prevents it. The claim is narrower
-          and worth stating plainly: a retry loop against an uncertified judge spends tokens to apply
-          pressure in an unknown direction. Holonograph turns reflection on when the cell has earned it, if
-          you have asked for it.
+### Endpoints
 
-        The taxonomy that places reflection among the judge modes is documented ahead of the
-          implementation, as is this chapter.
+Method & path	Purpose
+
+`GET /lens/authority/tears`	The open and covered tears on each surface, the acknowledgement log, and the granularity in force.
+
+`POST /lens/authority/tear/acknowledge`	Release one tear. Gated by `authority.acknowledge-tear`. Body: `surfaceId`, `approverId`, optional `tearEventId` and `note`.
+
+`GET /lens/authority/policy`	The policy in force, its source, the operator record, `writable`, and `seedIgnored`.
+
+`PUT /lens/authority/policy`	Replace it. Gated by `authority.policy`, compare-and-swap on `basePolicyId`. `501` without a durable policy store.
+
+`GET /lens/authority/policy/history`	Every operator policy that has been in force, oldest first.
+
+### Refusals
+
+Code	Status	Meaning
+
+`authority_tear_already_acknowledged`	`409`	An acknowledgement at or after this tear exists on the surface.
+
+`authority_tear_ack_out_of_order`	`409`	Under `per-tear`, an older tear on the surface is still open. The error names it.
+
+`authority_policy_conflict`	`409`	The policy changed since the operator reviewed it.
+
+### Where this sits
+
+        [Authority](./authority) is the reading: the six states, the stack, and what withdraws a grant. This chapter is the disposition over it. The gate and its action vocabulary are shared with the retention desk in [Compaction & husking](./compaction) and the multiplex run in [The multiplexer](./multiplexer), which is why the table above reaches past authority.
+
+        The state ontology, the record shapes, the policy schema and the action identifiers are public contract. Which spans a released window then covers, and how the states are derived from it, lives in the lens.
 
 ---
 
-### Chapter 21 — Route a verdict to a human
+### Chapter 24 — Route a verdict to a human
 
 _Permalink: https://holonograph.ai/guide/subscriptions_
 
-Chapter 21
+Chapter 24
 
 # Route a verdict to a human
 
-        The analysis chapters are **detection**: the lens reads what happened and forms a verdict. This chapter is the layer after it — **defense**. When a deterministic predicate over the lens's own verdicts fires, the lens POSTs an **HMAC-signed webhook** to a consumer you control: a pager, a chat channel, or an agent that picks up the work. It speaks only when something crosses a line — no "all quiet" pings.
+        The analysis chapters are **detection**: the lens reads what happened and forms a verdict. This chapter is the layer after it: **defense**. When a deterministic predicate over the lens's own verdicts fires, the lens POSTs an **HMAC-signed webhook** to a consumer you control: a pager, a chat channel, or an agent that picks up the work. It speaks only when something crosses a line. There are no "all quiet" pings.
 
           Where this sits
           The webhook is a *trigger*, not a conclusion. The usual path is: a predicate fires → a human is alerted → the human asks a coding agent to act → and the agent, before it changes anything, **consults the reliability and drift reads** (see [Verdict reliability](./sdk-reference) and [Drift attribution](./drift-attribution)) to decide whether the alert reflects real, trustworthy movement. The alert says *what* crossed a line; the reads say whether it is safe to act on.
@@ -3569,7 +4738,7 @@ Chapter 21
 
 ## Create a subscription
 
-        Writes are approver-gated. The webhook `url` must be `https`, and the `secret` is 16–512 characters. The body is strict — an unknown field is rejected.
+        Writes are approver-gated. The webhook `url` must be `https`, and the `secret` is 16–512 characters. The body is strict: an unknown field is rejected.
 
 ```
 POST /lens/subscriptions
@@ -3587,9 +4756,9 @@ Content-Type: application/json
 }
 ```
 
-        Success returns `201` with a **redacted** view of the subscription: `id`, `agentId`, the predicate and window, `createdAt`/`createdBy`, and `webhook: { url }` — **the secret is write-only and is never read back**. Set it once at create; if you lose it, delete and recreate.
+        Success returns `201` with a **redacted** view of the subscription: `id`, `agentId`, the predicate and window, `createdAt`/`createdBy`, and `webhook: { url }`. **The secret is write-only and is never read back**. Set it once at create; if you lose it, delete and recreate.
 
-## Predicates — what fires an alert
+## Predicates: what fires an alert
 
         A predicate is a discriminated union on `kind`. Each names a *meaning*, never an opaque number. Three ship today:
 
@@ -3597,7 +4766,7 @@ kind	Shape	Fires when
 
 `conformance-fail`	`{ surfaceId, fixtureId? }`	A conformance fixture FAILs on the surface (e.g. a required tool was never called). Omit `fixtureId` to fire on any fixture failure.
 
-`emission-breach`	`{ surfaceId, columnId? }`	A substrate column declared *always-emitted* went silent in the window — a deployment is broken, not just underperforming.
+`emission-breach`	`{ surfaceId, columnId? }`	A substrate column declared *always-emitted* went silent in the window: a deployment is broken, not just underperforming.
 
 `dimension-below`	`{ surfaceId, dimensionId, threshold }`	A judge dimension scored strictly below `threshold` in the window. The one predicate that reads a graded score.
 
@@ -3612,6 +4781,30 @@ Method & path	Returns
 `GET /lens/subscriptions/:id`	One subscription, or `404`.
 
 `DELETE /lens/subscriptions/:id?approverId=`	Deletes it. `approverId` is a required query param. Returns `{ deleted: true, id }`.
+
+        Every read returns the same projection:
+
+Field	Shape	What it tells you
+
+`id`	string	Server-minted. The handle for read and delete.
+
+`agentId`	string	Derived from the contract at create time.
+
+`predicate`	object	The predicate as registered.
+
+`windowMs`	number	The dedupe window.
+
+`webhook`	`{ url }`	URL only. The signing secret is write-only.
+
+`createdAt`	ISO 8601	When it was registered.
+
+`createdBy`	string	The approver identity that created it.
+
+`disabled`	boolean (opt)	Paused: retained but never fires. Absent means enabled. No endpoint sets it on this release, so in practice a read returns it absent.
+
+`lastFiredAt`	ISO 8601 (opt)	When it last fired. Absent until the first fire.
+
+`lastFiredFingerprint`	string (opt)	The fingerprint of the last-fired match: the dedupe key the window is measured against. Compare it with the `fingerprint` on a webhook body to see whether an alert you received was the one that reset the window.
 
           There is no update
           Subscriptions are create / read / delete. To change a predicate, window, or webhook, **delete and recreate**. There is no edit or pause endpoint on this release.
@@ -3629,18 +4822,18 @@ Content-Type: application/json
   "subscriptionId": "sub_01H...",
   "agentId": "rupert-swarm",
   "predicate": { "kind": "conformance-fail", "surfaceId": "support.triage" },
-  "verdict": { /* structured, per predicate kind — the deterministic detail */ },
+  "verdict": { /* structured, per predicate kind: the deterministic detail */ },
   "summary": "save_report was never called on support.triage",
   "fingerprint": "conformance:support.triage:...",
   "firedAt": "2026-08-22T14:03:11Z"
 }
 ```
 
-        `verdict` is a structured object, not a string — it carries the per-kind detail (the failing fixture and violating event ids, the silent column ids, or the dimension, threshold, and below-threshold event ids). `summary` is the one-line human sentence. `fingerprint` is the dedupe key.
+        `verdict` is a structured object, not a string: it carries the per-kind detail (the failing fixture and violating event ids, the silent column ids, or the dimension, threshold, and below-threshold event ids). `summary` is the one-line human sentence. `fingerprint` is the dedupe key.
 
-### Verify the signature — first, always
+### Verify the signature first
 
-        The `x-holonograph-signature` header is `sha256=` followed by the **HMAC-SHA256 of the raw request body**, keyed by the subscription's secret. Verify it over the *raw bytes you received* — before parsing JSON — and reject anything that does not match. This is the whole reason the secret exists.
+        The `x-holonograph-signature` header is `sha256=` followed by the **HMAC-SHA256 of the raw request body**, keyed by the subscription's secret. Verify it over the *raw bytes you received*, before parsing JSON, and reject anything that does not match. This is the whole reason the secret exists.
 
 ```
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -3656,7 +4849,7 @@ function verifyHolonographWebhook(rawBody, signatureHeader, secret) {
 
 ## Required setup: the allow-list
 
-        Delivery is **deny-by-default**. A webhook fires only to a host on the operator's allow-list; with no allow-list, **nothing fires**. Point the lens at the file with `APERTURE_WEBHOOK_ALLOWLIST_PATH` — keep it alongside your judge rubrics. It is a JSON array of hostnames:
+        Delivery is **deny-by-default**. A webhook fires only to a host on the operator's allow-list; with no allow-list, **nothing fires**. Point the lens at the file with `APERTURE_WEBHOOK_ALLOWLIST_PATH`. Keep it alongside your judge rubrics. It is a JSON array of hostnames:
 
 ```
 // $APERTURE_WEBHOOK_ALLOWLIST_PATH
@@ -3670,7 +4863,7 @@ Rule	Behavior
 
 Deny-by-default	No allow-list (absent, empty, or malformed) ⇒ every host is denied and nothing fires.
 
-Exact hostname	Case-insensitive exact match. **No wildcards or suffixes** — `*.example.com` is not a thing; list each host.
+Exact hostname	Case-insensitive exact match. **No wildcards or suffixes**: `*.example.com` is not a thing; list each host.
 
 https required	`https` for every remote host. `http` is tolerated only for loopback (`localhost`, `127.0.0.1`, `::1`) for local development.
 
@@ -3687,7 +4880,7 @@ POST /lens/subscriptions/evaluate
 Authorization: Bearer
 ```
 
-        The response is **counts only** — the silence discipline again; there is no per-subscription "all quiet":
+        The response is **counts only**: the silence discipline again; there is no per-subscription "all quiet":
 
 ```
 {
@@ -3723,18 +4916,178 @@ Method & path	Purpose
 
 ### Types
 
-        The wire types live in `@holonograph/types-public` — `CreateSubscriptionRequest`, `SubscriptionView`, `SubscriptionPredicate`, `SubscriptionWebhookPayload`, and `EvaluateSubscriptionsResponse`. There is no subscriptions helper in `@holonograph/client`; build the requests against the types and call the endpoints over HTTP.
+        The wire types live in `@holonograph/types-public`: `CreateSubscriptionRequest`, `SubscriptionView`, `SubscriptionPredicate`, `SubscriptionWebhookPayload`, and `EvaluateSubscriptionsResponse`. There is no subscriptions helper in `@holonograph/client`; build the requests against the types and call the endpoints over HTTP.
 
           Honest-null when unwired
-          On a pure-collector lens with no subscription store configured, every route above answers `501` rather than pretending. The Defense layer is present only where an operator has wired it.
+          On a pure-collector lens with no subscription store configured, every route above answers `501` rather than appearing configured. The Defense layer is present only where an operator has wired it.
 
 ---
 
-### Chapter 22 — Compaction & husking
+### Chapter 25 — Outcome delivery
+
+_Permalink: https://holonograph.ai/guide/outcome-delivery_
+
+Chapter 25
+
+# Outcome delivery
+
+        The trip this chapter is about is the outcome’s trip to the user, after scoring, not the event’s trip into the lens. A surface can be green on quality and still never reach anyone, and the two facts are measured separately. The feature is called declare-your-reach, and its discipline is that the lens reports delivery only as far as it can observe it.
+
+## What it is
+
+        The contract declares the post-outcome stages an outcome traverses between the lens’s scoring point and the user. Stages fan in across surfaces, so each is declared once at the contract root and referenced by the surfaces that route through it.
+
+```
+{
+  "postOutcomeStages": {
+    "digest-batch":  { "kind": "deferred-delivery", "observability": "declared" },
+    "policy-filter": { "kind": "filter", "observability": "declared" },
+    "inbox": {
+      "kind": "other",
+      "observability": "reconciled",
+      "settleMs": 3600000
+    }
+  },
+  "surfaces": [
+    {
+      "surfaceId": "draft-reply",
+      "postOutcomeStages": ["digest-batch", "policy-filter", "inbox"]
+    }
+  ]
+}
+```
+
+        A surface with no `postOutcomeStages` makes no delivery claim, and the lens says nothing about its reach. A reference that does not resolve in the map is ignored by the reach reader rather than failing registration, which keeps a stale ref from taking down a contract.
+
+Kind	What it does to an outcome
+
+`deferred-delivery`	Held for a schedule or batch window, delivered later.
+
+`filter`	May suppress it. A rule can drop it before the user.
+
+`cache`	Served from or written to a cache layer.
+
+`rate-limit`	Throttled. May coalesce or shed under load.
+
+`fan-in`	Merges outcomes from several surfaces into one delivery.
+
+`other`	Declared and uncategorized.
+
+        `filter` is the only kind that can suppress an outcome. The rest delay it. The distinction changes what a verdict on the surface is worth, which is why the kind is declared rather than inferred.
+
+        Each stage also declares whether the lens can see traversal. `declared` means the operator is telling the lens the stage exists while it emits nothing: the lens cannot verify delivery through it, so every verdict on that surface covers scoring only, and the read reports that. `reconciled` means the stage emits a footprint per outcome, so the lens observes traversal and derives each outcome’s fate.
+
+          The lens never accepts a reported disposition
+          An operator may not tell the lens that an outcome was delivered. A delivery pipeline broken enough to drop outcomes is exactly the pipeline whose self-report cannot be trusted. The operator declares the topology, which is static, and emits observations of traversal. The verdict on each outcome is derived, and a scored outcome with no terminal footprint past its settle window is read off the absence: the pipeline that drops the outcome drops its footprint too.
+
+## Why it matters
+
+        A verdict is a claim about what the agent produced. Treating it as a claim about what the user received is the substitution this chapter exists to block. On a surface with a declared `filter` downstream, a clean verdict and a user who never saw the output are fully compatible, and nothing in the scoring record would show it.
+
+        So the attention spine carries both halves of the finding under one source, `reach-gap`, with different weight. The `horizon` variant is a declared scope limit rather than a detected failure, so it rides the quiet coverage band. The `shortfall` variant is a detected failure, with severity scaled to the observed dark rate.
+
+## How to use it
+
+### Emit footprints
+
+```
+POST /lens/reach/footprint
+{
+  "correlationId": "corr_01H...",
+  "surfaceId": "draft-reply",
+  "stageId": "inbox",
+  "occurredAt": "2026-11-06T18:22:14.812Z"
+}
+```
+
+        One observation: the outcome for this correlation id was seen reaching this stage at this time. Nothing about whether that was good. `202` with the count accepted, and the body also takes `{ "footprints": [ ... ] }` for the high-volume path.
+
+        The store dedups by correlation id and stage, keep-first, so retries are safe. The strongest footprint is the user’s own return, a reply or a read receipt, emitted on the terminal stage. Without a footprint store wired, or without a contract registry to scope the write, the endpoint answers `501`.
+
+### Read the rate
+
+```
+GET /lens/reach?surfaceId=draft-reply&since=2026-10-01T00:00:00Z
+```
+
+        One entry per surface that declares stages. Surfaces that make no claim are omitted rather than reported empty. Each entry names the terminal stage and its kind, and classifies the read:
+
+State	Meaning	Report
+
+`measured`	The terminal stage is `reconciled` and outcomes have settled.	Present.
+
+`horizon`	The terminal stage is `declared`. The lens is told it exists and cannot observe it.	`null`. No rate is derived.
+
+`no-outcomes`	Reconciled, but nothing was scored on the surface in the window.	`null`.
+
+        Omitting `since` applies the operator’s default read window, echoed back as `readWindow` so the denominator is never implicit.
+
+### The five dispositions
+
+Disposition	Derived from
+
+`in-flight`	Scored, no terminal footprint, still within the settle window. An honest unknown.
+
+`delivered`	A footprint at the terminal reconciled stage.
+
+`dark`	Past the settle window with no terminal footprint. Observed absence.
+
+`superseded`	A newer outcome for the same target replaced it.
+
+`expired`	A declared freshness deadline passed before delivery.
+
+        The first three are derived today. The last two are declared in the enum so the vocabulary is whole and the fuller model arrives without a wire change. `settleMs` on the terminal stage sets the boundary between `in-flight` and `dark`; absent, the reader’s default applies.
+
+## Reading the output
+
+        `darkRate` is `dark / settled`, where `settled` is `delivered + dark`. In-flight outcomes are excluded from both sides, so an outcome whose fate is still unknown is never counted as either. With nothing settled the rate is `null` rather than zero.
+
+        `byLastStage` groups the dark outcomes by the furthest stage a footprint was seen at, which is the useful read: where they stopped. A `stageId` of `null` means the outcome was never seen past scoring. `medianDarkAgeMs` says how old the dark ones are, which separates a broken stage from a slow one.
+
+        The `reach-gap` exemplar in the spine carries the declared topology in order, each stage with its kind and observability, the scored-outcome count as the denominator, and a flag when a suppressing stage sits among the unobserved ones. For the `horizon` variant the sample list is empty by construction: the proof is the declaration, not a representative call.
+
+          Where footprints live
+          The footprint store is append-only and separate from the canonical event store, and it is never an input to the lens hash. Footprints are transient observations, so a backend may fold settled outcomes into per-surface, per-day tallies and prune past the rate window. The derived rate is what persists. Growth is bounded by the in-flight outcomes plus surfaces times days in window, never by every footprint ever emitted.
+
+## Reference
+
+### Endpoints
+
+Method & path	Purpose
+
+`GET /lens/reach`	The per-surface delivery read: `measured` rate, or an honest `horizon`. Takes `surfaceId`, `since`, `until`. Re-derived per read.
+
+`POST /lens/reach/footprint`	Emit one observed footprint or a batch. Idempotent. `202` with the count accepted.
+
+### Contract fields
+
+Field	Where	Meaning
+
+`postOutcomeStages`	Contract root	The stage topology, keyed by stage id.
+
+`postOutcomeStages`	Surface	The stage ids this surface routes through, in order.
+
+`kind`	Stage	One of the six kinds. Drives how the reach caveat is phrased.
+
+`observability`	Stage	`declared` or `reconciled`. Defaults to `declared`.
+
+`settleMs`	Stage	How long after scoring a footprint is still awaited. Meaningful on a reconciled terminal stage.
+
+`description`	Stage	Optional operator note, carried into the drill.
+
+### Where this sits
+
+        [Sidecar / OTel integration](./sidecar) covers the other direction: the event’s trip into the lens, and what happens when a drain channel is unreachable. [The attention spine](./attention-spine) carries the `reach-gap` source and its two bands. The Trust tab in [The dashboard](./dashboard) renders this read beside rubric coverage, since both answer whether a green verdict can be believed.
+
+        The stage vocabulary, the disposition enum, the footprint shape and the report shape are public contract. The pairing, the disposition derivation and the rate aggregation live in the lens.
+
+---
+
+### Chapter 26 — Compaction & husking
 
 _Permalink: https://holonograph.ai/guide/compaction_
 
-Chapter 22
+Chapter 26
 
 # Compaction & husking
 
@@ -3768,7 +5121,7 @@ Class	Meaning
 
 ## Why it matters
 
-### A husk is a projection, not a new fact
+### What a husk is
 
         Husking keeps every structured field an estimator reads: ids, `occurredAt`, the whole
           substrate, the surface grading including dimension scores, judge identity and structured claims,
@@ -3811,6 +5164,45 @@ Class	Meaning
           grading, gate outcomes and identity are unchanged, because none of them lived in the payload. A
           reading that cannot be reproduced on a husk says so as a method boundary.
 
+## The retention policy
+
+        A policy is a standing disposition the operator approved. The lens never adopts one: the `store-capacity` finding recommends a preset and stops there. Under `schedule: manual` nothing runs on its own; under `schedule: auto` each nightly run remains that same approved disposition, and each one mints a seal and a spine entry.
+
+Method & path	Purpose
+
+`GET /lens/retention/policy`	The policy in force, its `source` (`operator`, `file` or `default`), the operator record, whether `PUT` is available here, and whether a file seed is being ignored.
+
+`PUT /lens/retention/policy`	Replace it. Approver-gated, compare-and-swap on `basePolicyId`, and a delete-mode policy needs an explicit acknowledgement. Appends to the durable history, then mints the audit record. `501` without a policy store.
+
+`GET /lens/retention/policy/history`	Every operator policy, oldest first.
+
+`GET /lens/retention/schedule`	The schedule and the auto-run log. Reports `supported: false` where it cannot run.
+
+`GET /lens/retention/compaction`	Status: tiers, seals, chain head, any interrupted operation. `?verify=true` re-reads every segment and checks the chain.
+
+`POST /lens/retention/compaction/prepare`	The one-time index preparation a backend needs before its first compaction. Approver-gated and explicit; the filesystem backend needs none.
+
+          A read-window override naming an undeclared surface is a warning
+          The policy schema refuses duplicate or ambiguous read-window overrides and unknown run modes outright. An override naming a surface the contract does not declare is accepted instead, with a `warnings` entry: the contract may be about to declare it, and refusing would make policy and contract impossible to deploy in either order.
+
+## Archive, rehydrate and erasure
+
+        Sealed segments can be mounted back for reading, and data can be removed on request. Every write here is approver-gated, because the lens rehydrates and erases on no one's initiative but the operator's.
+
+Method & path	Purpose
+
+`GET /lens/archive/overlays`	The mounted rehydrate overlays. Also reported on health.
+
+`POST /lens/archive/rehydrate`	Mount archive segments as a read-only overlay with a TTL, selected by `segmentIds`, `window` or `decompositionEventId`. Verifies the chain and footer digests and decrypts where needed. Nothing is appended.
+
+`POST /lens/archive/unmount`	End an overlay before its TTL.
+
+`POST /lens/archive/erase/plan`	A dry run of a right-to-delete erasure: the members by tier, the seals it re-segments, the segments it shreds, the frozen windows it touches, what is removed and what survives. Writes nothing.
+
+`POST /lens/archive/erase`	Execute a reviewed plan. Approver-gated and requires `acknowledgeIrreversible: true`; the server re-plans and refuses a plan that has moved.
+
+        An overlay is read-only and expires. Rehydrating does not reverse a compaction: it makes a sealed span readable for as long as the TTL lasts, and appends nothing. A backend without the archive surface answers the read with `{ supported: false, reason }` and every write with `501`, rather than an empty success.
+
 ## Reference
 
           - On Firestore, compaction is opt-in and never edits a record in order to build its index.
@@ -3818,6 +5210,145 @@ Class	Meaning
           - The judge-verdict linking model is husk-invariant: a husked event resolves the same verdict a whole one does.
 
           - Retention policy and schedule are stored durably and are operator-owned.
+
+---
+
+### Chapter 27 — The dashboard
+
+_Permalink: https://holonograph.ai/guide/dashboard_
+
+Chapter 27
+
+# The dashboard
+
+        An operator interface ships in the binary. It is a thin client over the reads in the rest of this Guide: every number on it comes from a documented endpoint, so this chapter is an index from the panel you are looking at to the chapter that explains it, not a second account of the instrument.
+
+## What it is
+
+        The server mounts it when asked, at `/dashboard` or a configured base path. With it mounted, a request to `/` redirects there, so an operator who browses the server’s URL with no path lands on the interface instead of an error about the run mode.
+
+        The bundle is served ahead of the authenticated router, so its HTML, JS and CSS load without a bearer token. Every `/lens/*` fetch the page then makes goes through the same auth as any other client. Optional HTTP Basic credentials gate the bundle path itself, which a production deploy should set; local development usually leaves it unset.
+
+          What each credential gates
+          Basic auth on the dashboard path gates the UI bundle and nothing else. The bearer token in the settings dialog is what reads the lens. Setting the first does not protect the API, and setting the second does not hide the page.
+
+        Settings holds three things: the lens endpoint, the bearer token, and whether to poll. They persist in the browser. Three URL parameters change the mode without being saved: `?mock=true` renders canned data for a demo, `?embed=1` hides the operator chrome for an iframed lens and defaults the palette to dark, and `?theme=light` or `dark` pins the palette for that load only.
+
+        The header carries a version chip. It shows the active contract version when one is registered, and falls back to the binary’s own stamp, labelled as such, when none is.
+
+## Why it matters
+
+        The interface is organized by the four questions an operator actually arrives with, not by the shape of the API. Each tab owns one, and the deeper instruments open over the tab that owns them, so a ceremony has one home.
+
+        Nothing on it writes the lens. The exceptions are the gated ceremonies, and each goes through the one shared approver gate described in [Authority governance](./authority-governance): a triage annotation, a conformance approval, a retention or authority policy, a multiplex run. The apparatus proposes and the operator disposes, on the interface exactly as on the API.
+
+## How to use it
+
+### The four tabs
+
+Tab	The question	Reads
+
+**Act**	What needs attention now.	`GET /lens/attention`, `GET /lens/attention/evidence`, `POST /lens/attention/triage`
+
+**Trust**	Can I believe the numbers, and where am I blind.	`GET /lens/reach`, `GET /lens/facet-coverage`, `GET /lens/judge-claim-coverage`, `POST /lens/co-groundedness/screen`
+
+**Curate**	What change should I propose and approve.	`GET /aperture/contract`, `GET /lens/facet-coverage`, plus the desk cards below
+
+**Explore**	What do the raw events say.	`GET /lens/events`, `GET /lens/events/{id}`, `GET /aperture/contract`, `GET /lens/availability`
+
+        Act is the landing. It is one severity-ranked queue over every finding source, with the jargon moved into the drawer: a row reads “Judge check,” opens into the driver and the sample calls, and takes a disposition with a required rationale. A confirmed defect mints a proposal into Curate. Trust is the standing-health counterpart: the readouts you check before believing a clean verdict. Explore is the bench the other three route down into, scoped by whatever row sent you there.
+
+### The slide-overs
+
+        Fourteen instruments open over a tab rather than competing with it for a tab of their own.
+
+Panel	Reads	Chapter
+
+Lens Health `#lens-health`	`/aperture/contract`, `/lens/topology/scan`, `/lens/events`, `/lens/snapshots`	[Topology scanner](./topology-scanner)
+
+Lens Health operations	`/aperture/health`, `/lens/availability`, `/lens/authority/tears`, `/lens/attribute`	[Authority governance](./authority-governance)
+
+Multiplexer	`/lens/events`, `POST /lens/multiplex/run` (gated)	[Multiplexer](./multiplexer)
+
+Eval workbench	`/lens/events`, `POST /lens/decomposition/evaluate`, `POST /lens/decomposition/lifecycle`	[Variance isolation](./variance-isolation)
+
+Lessons pipeline	`/aperture/contract`, `/lens/events`	[Lessons pipeline](./lessons-pipeline)
+
+Conformance authoring	`POST /lens/conformance/derive`, `/lens/conformance/check`, `/lens/conformance/fixtures`	[Conformance](./conformance)
+
+Judge transfer curve	`/lens/events`	below
+
+Verdict reliability	`/lens/verdict-reliability`	[SDK reference](./sdk-reference#verdict-reliability)
+
+Trajectory	`/lens/trajectory-findings`	[Attention spine](./attention-spine)
+
+Seam-soak monitor `#seam-soak`	`/lens/attention?surfaceId=system.seam-soak`	[Seam monitor](./seam-monitor)
+
+Builder-seam monitor `#builder-seam`	`/lens/attention?surfaceId=system.builder-seam`	[Seam monitor](./seam-monitor)
+
+Seam to call analysis `#seam-call-analysis`	`/lens/seam-call-analysis`	[Seam monitor](./seam-monitor)
+
+Retention desk `#curate?desk=retention`	`/lens/retention/policy`, `/plan`, `/compact`, `/unseal`, `/schedule`, the archive routes	[Compaction](./compaction)
+
+Authority policy desk	`/lens/authority/policy`, `/policy/history`, `PUT /lens/authority/policy`	[Authority governance](./authority-governance)
+
+        The three monitors are deliberately outside the Act queue. A seam backlog is a coverage list to work through, not a firefighting queue, and the evidence rides inline on each item, so opening one costs a single read.
+
+### The judge transfer curve
+
+        One panel has no endpoint of its own. It asks whether a surface’s judge is a graded transfer function or a step function, and it answers from the score distribution the lens already captured, with no new calls to the judge.
+
+Characterization	What a bad reading looks like
+
+Quantization	A handful of distinct scores over a decent sample. The judge is stepping, not grading.
+
+Dead zones	Large gaps between consecutive achieved scores. Ranges the judge never lands in.
+
+Concentration	The most common score holds most of the mass. Barely discriminating.
+
+Saturation	Events piled at the low or high end of the observed range.
+
+        What it cannot see is stated on the panel: the perturbation-response cliffs. Finding those means feeding the judge altered inputs, which is a live call rather than an observation, and outside what the lens does. The distribution behind the characterization is in `GET /lens/events`, and the adjacent question of whether a rubric still discriminates at all is the saturation audit in [Rubric coverage and de-saturation](./rubric-coverage#the-saturation-audit).
+
+### Deep links
+
+        The hash is a route and carries a query string, so a finding, a facet or a desk can be linked directly. An unrecognized tab name falls back to Act.
+
+Link	Opens
+
+`#act?severity=&state=&surface=&source=`	The queue, filtered.
+
+`#explore?surface=&facet=&dimension=`	The rubric drill for one facet.
+
+`#explore?event=`	One event.
+
+`#curate?desk=retention&preset=`	The retention desk, preset applied.
+
+`#lens-health` · `#seam-soak` · `#builder-seam` · `#seam-call-analysis`	The named monitor, over the tab beneath it.
+
+## Reading the output
+
+        Where a read is an honest null, the panel says which null it is rather than rendering a zero. Trust shows `horizon` on a surface whose delivery the lens cannot observe, instead of a reach rate. Trajectory puts its unmeasured accounting first, so events with no boundary key are never read as clean. Verdict reliability shows its review tier separately, labelled as no deterministic check applied, which is not the same as a pass.
+
+        The same discipline governs the version chip: with no contract registered it reports `binary` rather than a contract version it does not have.
+
+## Reference
+
+### Serving it
+
+Route	Behavior
+
+`GET /dashboard`	The bundle. Served ahead of auth; optional HTTP Basic gates this path only.
+
+`GET /`	A `302` to the dashboard when it is mounted. Unprotected, so the browser follows it into the credential prompt.
+
+`GET /lens/version`	The header chip’s read: the active contract version, or the binary stamp.
+
+### Where this sits
+
+        Every panel above is a rendering, and the chapter column is where the measurement itself is explained. Two ceremonies on the interface are the only writes an operator makes often: the triage disposition in Act, covered in [The attention spine](./attention-spine), and the policy desks, covered in [Authority governance](./authority-governance) and [Compaction & husking](./compaction).
+
+        The interface ships with the binary and tracks it. Where this chapter and a panel disagree, the panel is newer.
 <!-- END-GENERATED-GUIDE-COMPLETE -->
 
 ## Links

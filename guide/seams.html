@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>Seams — The Guide — Holonograph</title>
+<title>Seams · The Guide · Holonograph</title>
 <meta name="description" content="An interpreted value driving a decision is a seam. It is permanent: you can close it and monitor it, you cannot remove it." />
 <meta name="discloses" content="capability-only" />
 <meta name="status" content="live" />
@@ -31,8 +31,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+  <link rel="stylesheet" href="./_assets/guide.css?v=7" />
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -44,9 +44,9 @@
 <body>
   <header class="site-header">
     <div class="wrap"><nav>
-      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
-      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
-      <a class="pill" href="../pricing.html">Get started</a>
+      <a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a>
+      <span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/" class="on">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
     </nav></div>
   </header>
 
@@ -54,6 +54,11 @@
 
     <aside class="guide-sidebar" aria-label="Chapter list">
       <p class="guide-sidebar-title">The Guide</p>
+      <a class="guide-search" href="./all" data-guide-search>
+        <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="gs-label">Search the Guide</span>
+        <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
       <ol>
         <li class="s-part">Overview</li>
         <li><span class="s-num">01</span><a href="./overview" class="s-ttl">Overview &amp; first principles</a></li>
@@ -63,32 +68,38 @@
         <li><span class="s-num">04</span><a href="./substrate-columns" class="s-ttl">Substrate columns</a></li>
         <li><span class="s-num">05</span><a href="./sdk-reference" class="s-ttl">SDK reference</a></li>
         <li><span class="s-num">06</span><a href="./mediating-lens" class="s-ttl">The mediating lens</a></li>
-        <li><span class="s-num">07</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
-        <li><span class="s-num">08</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
-        <li><span class="s-num">09</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
-        <li><span class="s-num">10</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
-        <li><span class="s-num">11</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
-        <li><span class="s-num">12</span><a href="./variance-isolation" class="s-ttl">Variance isolation</a></li>
-        <li><span class="s-num">13</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
-        <li class="s-part">Variance controls for model seams</li>
-        <li><span class="s-num">14</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
-        <li><span class="s-num">15</span><a href="./judge-modes" class="s-ttl">Judge modes</a></li>
-        <li class="s-part">Seams, soak, and authority</li>
-        <li class="current"><span class="s-num">16</span><a href="./seams" class="s-ttl">Seams</a></li>
-        <li><span class="s-num">17</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
-        <li><span class="s-num">18</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
-        <li><span class="s-num">19</span><a href="./authority" class="s-ttl">Authority</a></li>
-        <li><span class="s-num">20</span><a href="./reflection" class="s-ttl">Reflection</a></li>
+        <li><span class="s-num">07</span><a href="./swarms-and-sources" class="s-ttl">Swarms and sources</a></li>
+        <li><span class="s-num">08</span><a href="./run-modes" class="s-ttl">Run modes</a></li>
+        <li><span class="s-num">09</span><a href="./sidecar" class="s-ttl">Sidecar / OTel integration</a></li>
+        <li><span class="s-num">10</span><a href="./topology-scanner" class="s-ttl">Surface topology scanner</a></li>
+        <li><span class="s-num">11</span><a href="./multiplexer" class="s-ttl">The multiplexer</a></li>
+        <li><span class="s-num">12</span><a href="./drift-attribution" class="s-ttl">Drift attribution</a></li>
+        <li><span class="s-num">13</span><a href="./variance-isolation" class="s-ttl">Variance isolation and declared axes</a></li>
+        <li><span class="s-num">14</span><a href="./lessons-pipeline" class="s-ttl">The lessons pipeline</a></li>
+        <li class="s-part">Judge validity</li>
+        <li><span class="s-num">15</span><a href="./conformance" class="s-ttl">Conformance &amp; fixtures</a></li>
+        <li><span class="s-num">16</span><a href="./rubric-coverage" class="s-ttl">Rubric coverage and de-saturation</a></li>
+        <li><span class="s-num">17</span><a href="./facet-separability" class="s-ttl">Facet separability</a></li>
+        <li><span class="s-num">18</span><a href="./judge-modes" class="s-ttl">Judge modes and reflection</a></li>
+        <li class="s-part">Seams and soak</li>
+        <li class="current"><span class="s-num">19</span><a href="./seams" class="s-ttl">Seams</a></li>
+        <li><span class="s-num">20</span><a href="./seam-monitor" class="s-ttl">The seam monitor</a></li>
+        <li><span class="s-num">21</span><a href="./attention-spine" class="s-ttl">The attention spine</a></li>
+        <li class="s-part">Authority and governance</li>
+        <li><span class="s-num">22</span><a href="./authority" class="s-ttl">Authority</a></li>
+        <li><span class="s-num">23</span><a href="./authority-governance" class="s-ttl">Authority governance</a></li>
         <li class="s-part">Operational utilities</li>
-        <li><span class="s-num">21</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
-        <li><span class="s-num">22</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">24</span><a href="./subscriptions" class="s-ttl">Route a verdict to a human</a></li>
+        <li><span class="s-num">25</span><a href="./outcome-delivery" class="s-ttl">Outcome delivery</a></li>
+        <li><span class="s-num">26</span><a href="./compaction" class="s-ttl">Compaction &amp; husking</a></li>
+        <li><span class="s-num">27</span><a href="./dashboard" class="s-ttl">The dashboard</a></li>
       </ol>
     </aside>
 
     <main class="guide-main">
       <article>
 
-        <p class="guide-eyebrow">Chapter 16</p>
+        <p class="guide-eyebrow">Chapter 19</p>
         <h1 class="guide-h1">Seams</h1>
         <p class="guide-meta"></p>
 
@@ -96,7 +107,7 @@
           A value whose meaning is not fixed by its representation, driving a decision that governs a consequential transition, is a seam. It is permanent. You can close it and you can monitor it. You cannot validate it away.
         </p>
 
-        <h2>What it is</h2>
+        <h2 id="what-it-is">What it is</h2>
 
         <p>
           A seam is an edge: the path a value travels from where it is produced to the decision that
@@ -117,9 +128,9 @@
           that, the seam stays.
         </p>
 
-        <h2>Why it matters</h2>
+        <h2 id="why-it-matters">Why it matters</h2>
 
-        <h3>Provenance is monotone</h3>
+        <h3 id="provenance-is-monotone">Provenance is monotone</h3>
 
         <p>
           Consider a decision that reads free text and returns one of three values:
@@ -142,12 +153,12 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           anything. The next scan finds it in its new place.
         </p>
 
-        <h3>Validation changes the character of the error, not its existence</h3>
+        <h3 id="validation-changes-the-character-of-the-error-not-its-existe">Validation changes the character of the error, not its existence</h3>
 
         <p>
           A schema boundary filters the catastrophic: wrong type, missing field, malformed JSON. It passes
           the shape-valid-but-wrong. So it raises the floor and, in the same motion, makes the residual
-          error insidious, because the value now looks right, types right, and fails quietly downstream.
+          error insidious, because the value now looks right, types right, and fails without a signal downstream.
         </p>
 
         <p>
@@ -163,7 +174,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           it cannot catch to the instrument that can.
         </p>
 
-        <h2>Open and closed</h2>
+        <h2 id="open-and-closed">Open and closed</h2>
 
         <p>
           With provenance carried, the two states have a precise inductive definition over the chain.
@@ -184,7 +195,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           why closed and ready for soak belong in the same breath.
         </p>
 
-        <h2>The four closure shapes</h2>
+        <h2 id="the-four-closure-shapes">The four closure shapes</h2>
 
         <p>
           These are the structural forms a closure takes. They are shapes, not an exhaustive list of the
@@ -203,7 +214,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           </table>
         </div>
 
-        <h2>Model calls are seams</h2>
+        <h2 id="model-calls-are-seams">Model calls are seams</h2>
 
         <p>
           A model call is a seam whose interpreter is not stationary. A pattern does not rewrite itself
@@ -217,10 +228,10 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
           findings on the spine, and both reach authority. They sit on adjacent surfaces, not in separate
           systems. A seam is itself a light source, recorded as
           <code>seam/&lt;component&gt;/&lt;scan&gt;</code>, which is how a non-model interpreter takes the
-          same slot a vendor would without pretending to be one.
+          same slot a vendor would without being recorded as one.
         </p>
 
-        <h2>Reference</h2>
+        <h2 id="reference">Reference</h2>
 
         <p>
           The shape is the lens's own <code>judge &rarr; verdict &rarr; gate &rarr; action</code> model
@@ -232,7 +243,7 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
         <nav class="guide-nav" aria-label="Chapter navigation">
           <a href="./judge-modes" class="nav-prev">
             <span class="nav-label">Previous</span>
-            <span class="nav-title">Judge modes</span>
+            <span class="nav-title">Judge modes and reflection</span>
           </a>
           <a href="./seam-monitor" class="nav-next">
             <span class="nav-label">Next</span>
@@ -246,9 +257,10 @@ if (action === 'page') pageOnCall();  // dispatch on I1 reaches authority</pre>
 
   <footer class="guide-footer">
     <span>© 2026 Precision Innovations LLC</span>
-    <span>Chapter 16 · Seams</span>
+    <span>Chapter 19 · Seams</span>
     <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
   </footer>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

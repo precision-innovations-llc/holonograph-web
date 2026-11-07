@@ -55,6 +55,30 @@ python3 -m http.server 8765
 
 The contact form endpoint requires Cloudflare Pages Functions and several environment variables (Turnstile secret, Resend API key, etc.). For local UI work, the form will degrade gracefully when those aren't present.
 
+## The Guide: build steps
+
+`guide/_assets/chapters.json` is the chapter manifest: order, numbering, titles,
+groups, status. Two scripts read it, and both must run after any chapter edit,
+in this order:
+
+```bash
+node scripts/build-guide-search.mjs   # heading ids + guide/_assets/search-index.json
+node scripts/build-guide-all.mjs      # guide/all.html + the llms-full.txt chapter block
+```
+
+Search first: it injects the `id` attributes on `<h2>`/`<h3>` that search results
+land on, and `all.html` is built from the chapter files after that.
+
+`build-guide-search.mjs --check` writes nothing and exits non-zero on drift. It
+catches a chapter in the manifest with no file, a sidebar TOC that disagrees
+with the manifest, missing heading ids, and a chapter with no Reference section
+(set `"noReferenceSection": true` in the manifest where that is deliberate). It
+also prints per-chapter section, endpoint and term counts, which is the cheapest
+read on what the Guide actually covers.
+
+Adding a chapter: write `guide/<slug>.html`, add the manifest entry, add it to
+every chapter's sidebar `<ol>`, then run both scripts.
+
 ## Deploy
 
 The Cloudflare Pages source is `None` (not git-wired). Every deploy is manual:
@@ -62,6 +86,8 @@ The Cloudflare Pages source is `None` (not git-wired). Every deploy is manual:
 ```bash
 wrangler pages deploy . --project-name=holonograph --branch=main
 ```
+
+Run both Guide build steps above before deploying if any chapter changed.
 
 Branch protection on `main` requires PR-via-feature-branch. Pull requests run through review then merge to main; production deploys ride on top of merged main.
 

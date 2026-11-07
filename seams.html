@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seams · Holonograph</title>
+<meta name="description" content="A seam is the edge from an interpreted value to the decision that consumes it. How Holonograph maps seams, attends them at authorship, and measures them on live traffic.">
+<link rel="canonical" href="https://holonograph.ai/seams">
+<meta name="theme-color" content="#f6f5f9">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Holonograph">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Seams · Holonograph">
+<meta property="og:description" content="A seam is the edge from an interpreted value to the decision that consumes it. How Holonograph maps seams, attends them at authorship, and measures them on live traffic.">
+<meta property="og:url" content="https://holonograph.ai/seams">
+<meta property="og:image" content="https://holonograph.ai/holonograph.webp">
+<meta property="og:image:width" content="2752">
+<meta property="og:image:height" content="626">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@holonograph">
+<meta name="twitter:creator" content="@holonograph">
+<meta name="twitter:title" content="Seams · Holonograph">
+<meta name="twitter:description" content="A seam is the edge from an interpreted value to the decision that consumes it. How Holonograph maps seams, attends them at authorship, and measures them on live traffic.">
+<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235f3ddc'/%3E%3Cpath d='M11 9v14M21 9v14M11 16h10' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MX42B47LTP', { client_storage: 'none' });</script>
+<link rel="stylesheet" href="/site-v6.css?v=1">
+<link rel="stylesheet" href="/mobilenav.css">
+<link rel="stylesheet" href="/nigel.css?v=10">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header" id="siteHeader">
+  <div class="wrap nav-wrap">
+    <nav aria-label="Primary">
+      <a class="brand" href="/">
+        <span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span>
+        <span class="pp">patent&nbsp;pending</span>
+      </a>
+      <span class="nav-links"><a href="/ai-attribution" data-nav="ai-attribution">AI Attribution</a><a href="/attention-spine" data-nav="attention-spine">Attention Spine</a><a href="/authority-governance/" data-nav="authority-governance">Authority</a><a href="/seams" data-nav="seams" class="on" aria-current="page">Seams</a><a href="/builders" data-nav="builders">Builders</a><a href="/guide/">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="view" data-route="seams" data-url="/seams">
+  <section class="page-head sec-pad bg-a">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Seams</p>
+      <h1 class="page-h1">Where inference becomes a decision</h1>
+      <p class="lead">An interpreted value driving a decision that governs a consequential transition is a seam. It is permanent. You can close it and you can <a class="term" href="/guide/seam-monitor" target="_blank" rel="noopener">monitor it</a>. You cannot validate it away.</p>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-b seam-sec" id="what-is-a-seam">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>What is a seam?</p>
+      <h2>An edge from interpretation to decision</h2>
+      <div class="seam-combo">
+        <div class="seam-viz-wrap">
+          <svg class="seam-viz" viewBox="0 0 440 345" aria-hidden="true"></svg>
+          <p class="viz-cap"><span class="dot"></span>A closed seam</p>
+        </div>
+        <div class="seam-combo-text">
+          <p class="lead">An inference has authority the moment downstream code acts on it as fact. In most systems nobody granted that authority, and nothing records that it happened. Holonograph maps these as seams.</p>
+          <p class="body-p">The map has two kinds of node. An <b>interpretive</b> is a value whose meaning is not fixed by its representation: a model output, a classifier, an approximate match, a pattern over free text, an external feed, a recorded human judgment. A <b>decision point</b> is where code acts on that value: a branch, a threshold, a pattern, a lookup key. A seam is the edge between them, written I &rarr; DP.</p>
+          <p class="body-p">Value interpretation is seam-specific. An interpretive&rsquo;s <b>consequence</b> changes per seam and is therefore re-derived per seam and node chain, stopping only with the final decision point sink. An exact match over a closed domain is mechanical and carries no seam.</p>
+        </div>
+      </div>
+      <h3 class="seam-abs-h" id="abstention">Abstention</h3>
+      <div class="seam-abs">
+        <div>
+          <p class="body-p">Every decision meets input it does not recognize. Abstention is the defined path for that input: the code throws or returns a distinguished no-value, and the gap stays visible. A decision point with that path is attended. A seam is <b>closed</b> when every decision point on its chain is attended and the chain ends in sinks that do not decide.</p>
+        </div>
+        <div>
+          <p class="body-p">A seam is <b>open</b> when the remainder falls through to an ordinary value, or when there is no remainder at all. In the walk below, a ticket neither pattern recognized returns <code>'queue'</code>, and nothing downstream can separate it from a ticket the code read and queued. Open is the defective state.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-a seam-sec" id="taint-walk">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Following the value</p>
+      <h2>A modified taint walk</h2>
+      <div class="walk-grid">
+        <div>
+          <p class="lead">Taint analysis marks a value at its source, follows it through a program, and reports where it reaches a sensitive sink. Security tools use it to trace untrusted input into a query, and they stop following a value once it passes a sanitizer.</p>
+          <p class="body-p">Holonograph changes what the walk looks for. The sink is a decision, and the seed is an interpreted value that cannot be sanitized. Where a request came from is as important as the request itself, so <b>provenance</b> of a decision on interpreted data is itself interpreted, and the walk continues through it to the next decision.</p>
+          <p class="body-p">Validation is not a sanitizer. A schema stops a wrong type or a malformed value, and it passes the value that is well formed and wrong. A pattern that pulls &ldquo;success&rdquo; out of &ldquo;I hope you are a great success in life&rdquo; resolves to <code>route.SUCCESS</code>, and every check downstream reads it as valid.</p>
+        </div>
+        <div>
+          <figure class="walk" aria-label="A taint walk through a support ticket decision">
+            <i class="wk-thread" aria-hidden="true"></i>
+            <div class="wk-l"><code>function decide(ticket): 'page' | 'auto-reply' | 'queue' {</code></div>
+            <div class="wk-l wk-i" data-s="1"><code>  const msg = ticket.body.toLowerCase();</code><span class="wk-n"><b>I<sub>0</sub></b>Free text enters</span></div>
+            <div class="wk-l wk-d" data-s="2"><code>  if (INCIDENT.test(msg)) return 'page';</code><span class="wk-n"><b>DP</b>A pattern decides</span></div>
+            <div class="wk-l wk-d" data-s="2"><code>  if (FAQ.test(msg)) return 'auto-reply';</code></div>
+            <div class="wk-l wk-o" data-s="3"><code>  return 'queue';</code><span class="wk-n"><b>Default path</b>No abstention</span></div>
+            <div class="wk-l"><code>}</code></div>
+            <div class="wk-l wk-i" data-s="4"><code>const action = decide(ticket);</code><span class="wk-n"><b>I<sub>1</sub></b>Interpreted provenance</span></div>
+            <div class="wk-l wk-s" data-s="5"><code>if (action === 'page') pageOnCall();</code><span class="wk-n"><b>DP<sub>1</sub></b>Authority sink</span></div>
+          </figure>
+          <p class="body-p">The return type is the decision&rsquo;s codomain. <code>action</code> holds one of three exact strings and still carries the inference behind it, so the walk runs I<sub>0</sub> &rarr; DP &rarr; I<sub>1</sub> &rarr; DP<sub>1</sub> and reaches the page. Moving the decision upstream moves the decision point. The next scan finds it there.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-b seam-sec" id="finding-seams">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Mapping and soak</p>
+      <h2>How seams are mapped and measured</h2>
+      <div class="seam-3">
+        <div>
+          <p class="seam-at">In the repository</p>
+          <h3>Repo scan</h3>
+          <p class="body-p">A scan walks the repository and produces candidate edges as structural facts: a value starts at a known source, flows through named identifiers, reaches a branch, threshold, pattern, or key, and has a default path of a given form.</p>
+          <p class="body-p">An interpretation gate then adjudicates each edge as certain-interpreted, certain-mechanical, or unresolved. Only certain-interpreted edges are registered as seams. Unresolved edges stay under measurement.</p>
+          <p class="body-p">The scan reports its own coverage. What the walk could not follow is listed, and partial coverage never reads as no seams.</p>
+        </div>
+        <div>
+          <p class="seam-at">At authorship</p>
+          <h3>Builder hooks</h3>
+          <p class="body-p">The scan also runs as a hook inside the coding session, on every edit, at the moment of writing.</p>
+          <p class="body-p">When a seam reaches an authority sink, a note lands in the session that wrote it, naming the interpretation, the decision, the sink, and anything the scan could not follow. The builder declares the seam or restructures around it.</p>
+          <p class="body-p">The monitor flags seams and proposes candidate sinks and skip paths. It does not edit code. <a href="/builders">Builders &rarr;</a></p>
+        </div>
+        <div id="seam-soak">
+          <p class="seam-at">On live traffic</p>
+          <h3>Seam soak</h3>
+          <p class="body-p">The walk shows that a value can reach a decision. It cannot show that the decision reads the value correctly. Closing a seam makes a decision attended and monitorable, and soak measures the rest.</p>
+          <p class="body-p">The lens records how often a seam&rsquo;s abstention path fires, the rate of each branch, and how the decided value&rsquo;s identity churns over time. An else that fires constantly shows in those rates. So does one input landing on two different branches.</p>
+          <p class="body-p">Rates show behavior, and a pattern with proper abstention can still send the wrong information. Occasional judge assessments, run offline over a seam&rsquo;s stored observations, score whether the value was efficacious.</p>
+          <p class="body-p">Soak observations carry their own provenance, so they stay out of an agent&rsquo;s default readings, and findings reach the <a href="/attention-spine">Attention Spine</a>.</p>
+        </div>
+      </div>
+      <p class="body-p seam-close">This is how an inference moves from authority nobody granted to <a href="/authority-governance/">authority on evidence</a>. A seam is mapped, declared with a contract, and qualifies on live evidence. It reads granted once its certainty condition is established and every dependency holds.</p>
+    </div>
+  </section>
+
+  <section class="seams sec-pad bg-a" data-reveal>
+    <div class="wrap">
+      <h2>A model is a seam whose interpreter moves</h2>
+      <p class="lead">A pattern does not rewrite itself between runs. A model can be re-routed behind an unchanged name, and the instrument scoring it is usually <a class="term" href="/ai-attribution">another model</a>. The lifecycle is the same, with monitoring properties unique to LLM seams.</p>
+      <div class="compare" role="table" aria-label="Code seams and model seams compared">
+        <div class="cmp-head" role="row"><span role="columnheader"></span><span role="columnheader">Code seam</span><span role="columnheader">Model seam</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">The interpreter</span><span role="cell">A rule or pattern over open text.</span><span role="cell">A model's reading, or the model as the decider itself.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">What it decides</span><span role="cell">A branch, a threshold, a lookup.</span><span role="cell">Downstream code, or the action the model selects.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">What is declared</span><span role="cell">The source and the path it takes.</span><span role="cell">The model that served, the judge, its rubric and scope.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">What is checked</span><span role="cell">Whether there is an answer for the unrecognized.</span><span role="cell">Judge reliability, discrimination, saturation, independence.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">What is observed</span><span role="cell">Branch taken, value churn, optional efficacy.</span><span role="cell">The same, plus which model actually answered.</span></div>
+        <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">Limits</span><span role="cell">What the scan could not follow is reported as coverage.</span><span role="cell">A provider's internal routing is not visible.</span></div>
+        <div class="cmp-band"><span>Declared conditions</span><i>&rarr;</i><span>Evidence over time</span><i>&rarr;</i><span>Derived authority</span><i>&rarr;</i><span>Continuing observation</span></div>
+      </div>
+      <p class="body-p">A model can sit on either side of a seam: as the interpreter whose output a rule consumes, or as the decider that takes an interpreted input and chooses an action. Holonograph labels the interpretation, the decision, and the action separately, so a model in both roles is read as two dependencies.</p>
+      <div class="cta-card next-cta">
+        <svg class="cta-cube" viewBox="0 0 96 96" aria-hidden="true">
+          <polygon points="48,48 48,6 84.4,27 84.4,69" fill="#a998f0" opacity="0.12"/>
+          <polygon points="48,48 11.6,69 11.6,27 48,6" fill="#a998f0" opacity="0.2"/>
+          <polygon points="48,48 84.4,69 48,90 11.6,69" fill="#a998f0" opacity="0.3"/>
+          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="none" stroke="#c9bdfb" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M48,48 L48,6 M48,48 L84.4,69 M48,48 L11.6,69" fill="none" stroke="#c9bdfb" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+          <circle cx="48" cy="48" r="6.5" fill="#e9552b"/>
+        </svg>
+        <div class="cta-text">
+          <p class="cta-k">Attend seams as they are written</p>
+          <p class="close-line">Seams in the build</p>
+        </div>
+        <div class="cta">
+          <a class="btn solid" href="/builders">Next: Builders <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn ghost" href="/guide/seams" target="_blank" rel="noopener">Seams in the Guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="f-brand">
+        <a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>
+        <p class="f-tag">The self-hosted instrument for authority governance.</p>
+        <p class="f-pp"><a href="/">Patent pending</a></p>
+      </div>
+      <div class="f-col"><h4><a href="/">Platform</a></h4><a href="/ai-attribution">AI Attribution</a><a href="/lens-facets">Lens facets</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority governance</a><a href="/seams">Seams</a><a href="/builders">Builders</a></div>
+      <div class="f-col"><h4>Resources</h4><a href="/guide/">Guide</a><a href="/glossary">Glossary</a><a href="/papers">Research</a><a href="/changelog">Changelog</a></div>
+      <div class="f-col"><h4>Company</h4><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></div>
+    </div>
+    <div class="footer-bar">
+      <span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span>
+      <span class="right"><a href="#" data-nigel-open>Chat with Nigel</a><a href="#">GitHub</a></span>
+    </div>
+  </div>
+</footer>
+<script src="/site-v6.js?v=1"></script>
+<script src="/nigel.js?v=16"></script>
+<script src="/mobilenav.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 
 Holonograph runs as a localhost daemon inside the operator's own infrastructure, sitting as a bidirectional mediating gateway between an agentic system and the language models that drive its behavior. It captures every interaction at the wire-format boundary. The Lens Architecture is the underlying methodology; Holonograph is the implementation. A patent-pending product of Precision Innovations LLC.
 
-The site (https://holonograph.ai) is a single-page presentation. The sections below describe its concept areas.
+The site (https://holonograph.ai) has pages for AI Attribution, the Attention Spine, Authority Governance, Seams, Builders, Pricing, and Research, with full documentation in the Guide. The sections below describe its concept areas.
 
 ## About
 
@@ -86,22 +86,52 @@ These terms have specific Holonograph meanings that may differ from generic LLM/
 
 ## The Guide
 
-The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, and read attribution. Fourteen chapters across three arcs — integration, workflow, and attribution.
+The operator's manual lives at https://holonograph.ai/guide/. It documents the customer-facing capability surface: how to call the lens, declare surfaces, populate substrate columns, read attribution, and govern authority. 27 chapters in 6 parts. The whole Guide as one document: https://holonograph.ai/guide/all. Machine-readable full text: https://holonograph.ai/llms-full.txt
 
-- Overview & first principles: https://holonograph.ai/guide/overview
-- Surface contracts: https://holonograph.ai/guide/surface-contracts
-- The four-layer snapshot: https://holonograph.ai/guide/snapshot
-- Substrate columns: https://holonograph.ai/guide/substrate-columns
-- SDK reference: https://holonograph.ai/guide/sdk-reference
-- The mediating lens — placement & call flow: https://holonograph.ai/guide/mediating-lens
-- Run modes: https://holonograph.ai/guide/run-modes
-- Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
-- Surface topology scanner: https://holonograph.ai/guide/topology-scanner
-- Conformance & fixtures: https://holonograph.ai/guide/conformance
-- The multiplexer: https://holonograph.ai/guide/multiplexer
-- The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
-- Drift attribution: https://holonograph.ai/guide/drift-attribution
-- Variance isolation: https://holonograph.ai/guide/variance-isolation
+**Overview**
+
+- 01 Overview & first principles: https://holonograph.ai/guide/overview
+
+**Operating the lens**
+
+- 02 Surface contracts: https://holonograph.ai/guide/surface-contracts
+- 03 The four-layer snapshot: https://holonograph.ai/guide/snapshot
+- 04 Substrate columns: https://holonograph.ai/guide/substrate-columns
+- 05 SDK reference: https://holonograph.ai/guide/sdk-reference
+- 06 The mediating lens: https://holonograph.ai/guide/mediating-lens
+- 07 Swarms and sources: https://holonograph.ai/guide/swarms-and-sources
+- 08 Run modes: https://holonograph.ai/guide/run-modes
+- 09 Sidecar / OTel integration: https://holonograph.ai/guide/sidecar
+- 10 Surface topology scanner: https://holonograph.ai/guide/topology-scanner
+- 11 The multiplexer: https://holonograph.ai/guide/multiplexer
+- 12 Drift attribution: https://holonograph.ai/guide/drift-attribution
+- 13 Variance isolation and declared axes: https://holonograph.ai/guide/variance-isolation
+- 14 The lessons pipeline: https://holonograph.ai/guide/lessons-pipeline
+
+**Judge validity**
+
+- 15 Conformance & fixtures: https://holonograph.ai/guide/conformance
+- 16 Rubric coverage and de-saturation: https://holonograph.ai/guide/rubric-coverage
+- 17 Facet separability: https://holonograph.ai/guide/facet-separability
+- 18 Judge modes and reflection: https://holonograph.ai/guide/judge-modes
+
+**Seams and soak**
+
+- 19 Seams: https://holonograph.ai/guide/seams
+- 20 The seam monitor: https://holonograph.ai/guide/seam-monitor
+- 21 The attention spine: https://holonograph.ai/guide/attention-spine
+
+**Authority and governance**
+
+- 22 Authority: https://holonograph.ai/guide/authority
+- 23 Authority governance: https://holonograph.ai/guide/authority-governance
+
+**Operational utilities**
+
+- 24 Route a verdict to a human: https://holonograph.ai/guide/subscriptions
+- 25 Outcome delivery: https://holonograph.ai/guide/outcome-delivery
+- 26 Compaction & husking: https://holonograph.ai/guide/compaction
+- 27 The dashboard: https://holonograph.ai/guide/dashboard
 
 The Guide is capability-only by design. Deeper technical validation of the underlying methodology is available under NDA.
 

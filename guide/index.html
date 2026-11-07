@@ -4,15 +4,15 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#f6f5f9" />
-<title>The Guide — Holonograph</title>
-<meta name="description" content="Operator's manual for Holonograph — how to call the lens, declare surfaces, and read attribution. Capability-only; deeper technical validation is available under NDA." />
+<title>The Guide · Holonograph</title>
+<meta name="description" content="The Guide covers how to operate the lens, how to shape your agent to maximize observability, and what to do with the results." />
 <meta name="discloses" content="capability-only" />
 <link rel="canonical" href="https://holonograph.ai/guide/" />
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Holonograph" />
 <meta property="og:locale" content="en_US" />
-<meta property="og:title" content="The Guide · Holonograph Guide" />
-<meta property="og:description" content="Operator's manual for Holonograph — how to call the lens, declare surfaces, and read attribution. Capability-only; deeper technical validation is available under NDA." />
+<meta property="og:title" content="The Guide · Holonograph" />
+<meta property="og:description" content="The Guide covers how to operate the lens, how to shape your agent to maximize observability, and what to do with the results." />
 <meta property="og:url" content="https://holonograph.ai/guide/" />
 <meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
 <meta property="og:image:width" content="2752" />
@@ -21,7 +21,7 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@holonograph" />
 <meta name="twitter:title" content="The Guide · Holonograph Guide" />
-<meta name="twitter:description" content="Operator's manual for Holonograph — how to call the lens, declare surfaces, and read attribution. Capability-only; deeper technical validation is available under NDA." />
+<meta name="twitter:description" content="The Guide covers how to operate the lens, how to shape your agent to maximize observability, and what to do with the results." />
 <meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f7f5f0'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%236d28d9' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236d28d9' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,8 +29,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../site.css" />
   <link rel="stylesheet" href="../mobilenav.css" />
-  <link rel="stylesheet" href="./_assets/guide.css?v=5" />
-<!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
+  <link rel="stylesheet" href="/nigel.css?v=10" />
+  <link rel="stylesheet" href="./_assets/guide.css?v=7" />
+<!-- Google tag (gtag.js): deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -42,9 +43,9 @@
 <body>
   <header class="site-header">
     <div class="wrap"><nav>
-      <span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH</a><span class="pp">patent&nbsp;pending</span></span>
-      <span class="nav-links"><a href="/">Product</a><a href="../value.html">Value</a><a href="../pricing.html">Pricing</a><a href="../docs.html" class="on">Docs</a></span>
-      <a class="pill" href="../pricing.html">Get started</a>
+      <a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a>
+      <span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/" class="on">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
     </nav></div>
   </header>
 
@@ -55,46 +56,21 @@
         <p class="guide-eyebrow">The Guide · patent pending</p>
         <h1 class="guide-h1">Operating the Instrument</h1>
         <p class="guide-lede">
-          Holonograph is an instrument. This is how to operate it: how to call the lens, what to feed it, what it gives back, and what to do with the answer.
+          Holonograph is an observational and attributional instrument. It is designed to be used by both human operator and coding agent. The Guide covers in depth how to operate the lens, how to shape your agent to maximize observability, and what to do with the results.
         </p>
         <blockquote class="guide-epigraph">
           The Guide is definitive. Reality is frequently inaccurate. — Douglas Adams
         </blockquote>
-        <p class="guide-index-onepage">
-          <a href="./all">Read the whole Guide as one page →</a>
-        </p>
+        <div class="guide-index-search">
+          <a class="guide-search" href="./all" data-guide-search>
+            <svg class="gs-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6" stroke="currentColor" stroke-width="1.6"/><path d="M10.3 10.3L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <span class="gs-label">Search the Guide</span>
+            <span class="gs-key" data-guide-search-key>⌘K</span>
+      </a>
+          <a class="guide-index-onepage" href="./all" target="_blank" rel="noopener">Single page for agents</a>
+        </div>
       </section>
 
-      <section class="guide-router" aria-label="Start here">
-        <h2>Start here</h2>
-        <table>
-          <thead>
-            <tr><th>If you are a…</th><th>Enter at</th><th>Then</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Developer</td>
-              <td>SDK reference · Surface contracts</td>
-              <td>Snapshot, columns, conformance, multiplexer, sidecar</td>
-            </tr>
-            <tr>
-              <td>Operator</td>
-              <td>Run modes · Lessons pipeline</td>
-              <td>Topology, conformance, drift and variance (read-level)</td>
-            </tr>
-            <tr>
-              <td>CTO</td>
-              <td>Overview &amp; first principles</td>
-              <td>Mediating lens · Run modes (skim)</td>
-            </tr>
-            <tr>
-              <td>AI researcher</td>
-              <td>Overview · Mediating lens</td>
-              <td>Drift attribution · Variance isolation, at capability depth</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
 
       <ol class="guide-toc-full" aria-label="All chapters">
 
@@ -103,7 +79,7 @@
         <li data-status="live">
           <span class="t-num">01</span>
           <span class="t-body">
-            <a href="./overview" class="t-ttl">Overview &amp; first principles</a>
+            <a href="./overview" class="t-ttl" target="_blank" rel="noopener">Overview &amp; first principles</a>
             <span class="t-gloss">What Holonograph is, what it observes, and why position beats instrumentation.</span>
           </span>
           <span class="t-status">live</span>
@@ -114,7 +90,7 @@
         <li data-status="live">
           <span class="t-num">02</span>
           <span class="t-body">
-            <a href="./surface-contracts" class="t-ttl">Surface contracts</a>
+            <a href="./surface-contracts" class="t-ttl" target="_blank" rel="noopener">Surface contracts</a>
             <span class="t-gloss">What a surface declares it will do, checked against what it did.</span>
           </span>
           <span class="t-status">live</span>
@@ -123,7 +99,7 @@
         <li data-status="live">
           <span class="t-num">03</span>
           <span class="t-body">
-            <a href="./snapshot" class="t-ttl">The four-layer snapshot</a>
+            <a href="./snapshot" class="t-ttl" target="_blank" rel="noopener">The four-layer snapshot</a>
             <span class="t-gloss">The record that binds four layers of one call into a row you can query as history.</span>
           </span>
           <span class="t-status">live</span>
@@ -132,7 +108,7 @@
         <li data-status="live">
           <span class="t-num">04</span>
           <span class="t-body">
-            <a href="./substrate-columns" class="t-ttl">Substrate columns</a>
+            <a href="./substrate-columns" class="t-ttl" target="_blank" rel="noopener">Substrate columns</a>
             <span class="t-gloss">The structured record every reading is computed from.</span>
           </span>
           <span class="t-status">live</span>
@@ -141,7 +117,7 @@
         <li data-status="live">
           <span class="t-num">05</span>
           <span class="t-body">
-            <a href="./sdk-reference" class="t-ttl">SDK reference</a>
+            <a href="./sdk-reference" class="t-ttl" target="_blank" rel="noopener">SDK reference</a>
             <span class="t-gloss">The client contract, and the reliability loop over your own judge.</span>
           </span>
           <span class="t-status">live</span>
@@ -150,7 +126,7 @@
         <li data-status="live">
           <span class="t-num">06</span>
           <span class="t-body">
-            <a href="./mediating-lens" class="t-ttl">The mediating lens</a>
+            <a href="./mediating-lens" class="t-ttl" target="_blank" rel="noopener">The mediating lens</a>
             <span class="t-gloss">Where the lens sits, and why it captures every model call in both directions.</span>
           </span>
           <span class="t-status">live</span>
@@ -159,8 +135,8 @@
         <li data-status="live">
           <span class="t-num">07</span>
           <span class="t-body">
-            <a href="./run-modes" class="t-ttl">Run modes</a>
-            <span class="t-gloss">Separating evaluation from production with an enforced, fail-closed envelope.</span>
+            <a href="./swarms-and-sources" class="t-ttl" target="_blank" rel="noopener">Swarms and sources</a>
+            <span class="t-gloss">Reading several agents through one lens: the source that keeps them apart, and where pooling them is still right.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -168,8 +144,8 @@
         <li data-status="live">
           <span class="t-num">08</span>
           <span class="t-body">
-            <a href="./sidecar" class="t-ttl">Sidecar / OTel integration</a>
-            <span class="t-gloss">Emitting to the lens without changing your request path.</span>
+            <a href="./run-modes" class="t-ttl" target="_blank" rel="noopener">Run modes</a>
+            <span class="t-gloss">Separating evaluation from production with an enforced, fail-closed envelope.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -177,8 +153,8 @@
         <li data-status="live">
           <span class="t-num">09</span>
           <span class="t-body">
-            <a href="./topology-scanner" class="t-ttl">Surface topology scanner</a>
-            <span class="t-gloss">Declared surfaces, observed coverage, and the size of the blind spot.</span>
+            <a href="./sidecar" class="t-ttl" target="_blank" rel="noopener">Sidecar / OTel integration</a>
+            <span class="t-gloss">Emitting to the lens without changing your request path.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -186,8 +162,8 @@
         <li data-status="live">
           <span class="t-num">10</span>
           <span class="t-body">
-            <a href="./multiplexer" class="t-ttl">The multiplexer</a>
-            <span class="t-gloss">Comparing vendors on identical terms, routed or run on demand.</span>
+            <a href="./topology-scanner" class="t-ttl" target="_blank" rel="noopener">Surface topology scanner</a>
+            <span class="t-gloss">Declared surfaces, observed coverage, and the size of the blind spot.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -195,8 +171,8 @@
         <li data-status="live">
           <span class="t-num">11</span>
           <span class="t-body">
-            <a href="./drift-attribution" class="t-ttl">Drift attribution</a>
-            <span class="t-gloss">Assigning a change to one source, and recording both sides of the model identity.</span>
+            <a href="./multiplexer" class="t-ttl" target="_blank" rel="noopener">The multiplexer</a>
+            <span class="t-gloss">Comparing vendors on identical terms, routed or run on demand.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -204,8 +180,8 @@
         <li data-status="live">
           <span class="t-num">12</span>
           <span class="t-body">
-            <a href="./variance-isolation" class="t-ttl">Variance isolation</a>
-            <span class="t-gloss">Telling real change apart from sampling and chance.</span>
+            <a href="./drift-attribution" class="t-ttl" target="_blank" rel="noopener">Drift attribution</a>
+            <span class="t-gloss">Assigning a change to one source, and recording both sides of the model identity.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -213,39 +189,37 @@
         <li data-status="live">
           <span class="t-num">13</span>
           <span class="t-body">
-            <a href="./lessons-pipeline" class="t-ttl">The lessons pipeline</a>
+            <a href="./variance-isolation" class="t-ttl" target="_blank" rel="noopener">Variance isolation and declared axes</a>
+            <span class="t-gloss">Telling real change apart from sampling and chance, then grading the axes you declared to explain it.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
+        <li data-status="live">
+          <span class="t-num">14</span>
+          <span class="t-body">
+            <a href="./lessons-pipeline" class="t-ttl" target="_blank" rel="noopener">The lessons pipeline</a>
             <span class="t-gloss">Captured overrides and approvals becoming drafted, human-gated artifacts.</span>
           </span>
           <span class="t-status">live</span>
         </li>
 
-        <li class="t-part">Variance controls for model seams</li>
+        <li class="t-part">Judge validity</li>
 
         <li data-status="live">
-          <span class="t-num">14</span>
+          <span class="t-num">15</span>
           <span class="t-body">
-            <a href="./conformance" class="t-ttl">Conformance &amp; fixtures</a>
+            <a href="./conformance" class="t-ttl" target="_blank" rel="noopener">Conformance &amp; fixtures</a>
             <span class="t-gloss">Whether a judge actually ran against its fixtures, or silently defaulted.</span>
           </span>
           <span class="t-status">live</span>
         </li>
 
-        <li data-status="design">
-          <span class="t-num">15</span>
-          <span class="t-body">
-            <a href="./judge-modes" class="t-ttl">Judge modes</a>
-            <span class="t-gloss">Four modes on two axes: does the producer wait, and may the verdict touch delivery.</span>
-          </span>
-          <span class="t-status">design</span>
-        </li>
-
-        <li class="t-part">Seams, soak, and authority</li>
-
         <li data-status="live">
           <span class="t-num">16</span>
           <span class="t-body">
-            <a href="./seams" class="t-ttl">Seams</a>
-            <span class="t-gloss">An interpreted value driving a decision. Permanent, closeable, not removable.</span>
+            <a href="./rubric-coverage" class="t-ttl" target="_blank" rel="noopener">Rubric coverage and de-saturation</a>
+            <span class="t-gloss">A rubric per facet, a worklist of the facets without one, and a check that what you wrote still discriminates.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -253,55 +227,104 @@
         <li data-status="live">
           <span class="t-num">17</span>
           <span class="t-body">
-            <a href="./seam-monitor" class="t-ttl">The seam monitor</a>
+            <a href="./facet-separability" class="t-ttl" target="_blank" rel="noopener">Facet separability</a>
+            <span class="t-gloss">Whether a decomposition is a real topology, one axis wearing two names, or a prerequisite dressed as a peer.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
+        <li data-status="design">
+          <span class="t-num">18</span>
+          <span class="t-body">
+            <a href="./judge-modes" class="t-ttl" target="_blank" rel="noopener">Judge modes and reflection</a>
+            <span class="t-gloss">Four modes on two axes, and the third cell: a capped retry granted per cell, never defaulted.</span>
+          </span>
+          <span class="t-status">design</span>
+        </li>
+
+        <li class="t-part">Seams and soak</li>
+
+        <li data-status="live">
+          <span class="t-num">19</span>
+          <span class="t-body">
+            <a href="./seams" class="t-ttl" target="_blank" rel="noopener">Seams</a>
+            <span class="t-gloss">An interpreted value driving a decision. Permanent, closeable, not removable.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
+        <li data-status="live">
+          <span class="t-num">20</span>
+          <span class="t-body">
+            <a href="./seam-monitor" class="t-ttl" target="_blank" rel="noopener">The seam monitor</a>
             <span class="t-gloss">Finding seams in source, adjudicating them, registering them, and soaking them.</span>
           </span>
           <span class="t-status">live</span>
         </li>
 
         <li data-status="live">
-          <span class="t-num">18</span>
+          <span class="t-num">21</span>
           <span class="t-body">
-            <a href="./attention-spine" class="t-ttl">The attention spine</a>
-            <span class="t-gloss">One operator lifecycle over twenty-five sources of findings.</span>
+            <a href="./attention-spine" class="t-ttl" target="_blank" rel="noopener">The attention spine</a>
+            <span class="t-gloss">One operator lifecycle over twenty-six sources of findings.</span>
           </span>
           <span class="t-status">live</span>
         </li>
 
+        <li class="t-part">Authority and governance</li>
+
         <li data-status="live">
-          <span class="t-num">19</span>
+          <span class="t-num">22</span>
           <span class="t-body">
-            <a href="./authority" class="t-ttl">Authority</a>
+            <a href="./authority" class="t-ttl" target="_blank" rel="noopener">Authority</a>
             <span class="t-gloss">The per-surface state that the declared prerequisites are satisfied on the record.</span>
           </span>
           <span class="t-status">live</span>
         </li>
 
-        <li data-status="design">
-          <span class="t-num">20</span>
+        <li data-status="live">
+          <span class="t-num">23</span>
           <span class="t-body">
-            <a href="./reflection" class="t-ttl">Reflection</a>
-            <span class="t-gloss">A capped retry against a certified judge, granted per cell.</span>
+            <a href="./authority-governance" class="t-ttl" target="_blank" rel="noopener">Authority governance</a>
+            <span class="t-gloss">The approver gate, the acknowledgement that releases a tear, and the policy that sets what one release covers.</span>
           </span>
-          <span class="t-status">design</span>
+          <span class="t-status">live</span>
         </li>
 
         <li class="t-part">Operational utilities</li>
 
         <li data-status="live">
-          <span class="t-num">21</span>
+          <span class="t-num">24</span>
           <span class="t-body">
-            <a href="./subscriptions" class="t-ttl">Route a verdict to a human</a>
+            <a href="./subscriptions" class="t-ttl" target="_blank" rel="noopener">Route a verdict to a human</a>
             <span class="t-gloss">Fire a signed webhook when a predicate over the lens&rsquo;s own verdicts crosses a line.</span>
           </span>
           <span class="t-status">live</span>
         </li>
 
         <li data-status="live">
-          <span class="t-num">22</span>
+          <span class="t-num">25</span>
           <span class="t-body">
-            <a href="./compaction" class="t-ttl">Compaction &amp; husking</a>
+            <a href="./outcome-delivery" class="t-ttl" target="_blank" rel="noopener">Outcome delivery</a>
+            <span class="t-gloss">Whether a scored outcome ever reached the user, and where the lens stops being able to observe it.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
+        <li data-status="live">
+          <span class="t-num">26</span>
+          <span class="t-body">
+            <a href="./compaction" class="t-ttl" target="_blank" rel="noopener">Compaction &amp; husking</a>
             <span class="t-gloss">Removing bulky payload from an aging event while structured fields stay.</span>
+          </span>
+          <span class="t-status">live</span>
+        </li>
+
+        <li data-status="live">
+          <span class="t-num">27</span>
+          <span class="t-body">
+            <a href="./dashboard" class="t-ttl" target="_blank" rel="noopener">The dashboard</a>
+            <span class="t-gloss">Four tabs, fourteen slide-overs, and the documented read behind every panel.</span>
           </span>
           <span class="t-status">live</span>
         </li>
@@ -315,10 +338,10 @@
     </article>
   </main>
 
-  <footer class="guide-footer">
-    <span>© 2026 Precision Innovations LLC</span>
-    <span>Patent pending <span class="dot">·</span> <span data-guide-version></span></span>
-  </footer>
+  <footer id="siteFooter" class="site-footer"><div class="wrap"><div class="footer-grid"><div class="f-brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a><p class="f-tag">The self-hosted instrument for authority governance.</p><p class="f-pp"><a href="/">Patent pending</a></p></div><div class="f-col"><h4><a href="/">Platform</a></h4><a href="/ai-attribution">AI Attribution</a><a href="/lens-facets">Lens facets</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority governance</a><a href="/seams">Seams</a><a href="/builders">Builders</a></div><div class="f-col"><h4>Resources</h4><a href="/guide/">Guide</a><a href="/glossary">Glossary</a><a href="/papers">Research</a><a href="/changelog">Changelog</a></div><div class="f-col"><h4>Company</h4><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></div></div><div class="footer-bar"><span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span><span class="right"><a href="#" data-nigel-open>Chat with Nigel</a><a href="#">GitHub</a></span></div></div></footer>
+<script src="/site.js"></script>
+<script src="/nigel.js?v=16"></script>
+<script src="./_assets/guide-search.js"></script>
 <script src="../guidenav.js"></script>
 <script src="../mobilenav.js"></script>
 </body>

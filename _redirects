@@ -1,3 +1,19 @@
+# The home page has always been /, but old links and Nigel's site map use home.html.
+/home         /                 301
+/home.html    /                 301
+
+# The Value page was folded into AI Attribution for the v6 site.
+/value        /ai-attribution   301
+/value.html   /ai-attribution   301
+
+# The Docs page duplicated the Guide index.
+/docs         /guide/           301
+/docs.html    /guide/           301
+
+# The reflection chapter merged into judge-modes (it is cell 3 of the same matrix).
+/guide/reflection        /guide/judge-modes   301
+/guide/reflection.html   /guide/judge-modes   301
+
 # Preventive 404s for internal/private content patterns that must never be served.
 # Cloudflare Pages honors this file at the site root. Missing files return 404 by
 # default; these rules extend that guarantee to specific filenames even if a file
