@@ -18,3 +18,7 @@ README.md
 
 # v5.1 homepage mockup, local review only
 index-v5.html
+
+# Repo and editor config, never served
+.claude/
+.gitignore

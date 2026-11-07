@@ -152,7 +152,7 @@
   .diagram{margin-top:clamp(36px,5.5vh,60px)}
   .diagram svg{width:100%;height:auto;display:block;overflow:visible}
   .dg-cap{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--ink-3);
-    margin-top:16px;display:flex;align-items:flex-start;gap:9px;max-width:70ch;line-height:1.5}
+    margin-top:16px;display:flex;align-items:flex-start;gap:9px;line-height:1.5}
   .dg-cap .dot{width:5px;height:5px;border-radius:50%;background:var(--sun);display:inline-block;flex:none;margin-top:7px}
   .lc-divider{margin:clamp(56px,9vh,104px) 0;border:0;border-top:1px solid var(--line)}
 
@@ -1129,6 +1129,24 @@
     .si-bar i,.si-fix b,.si-then,.si-spark.draw .ln,.si-v,.si-t,.si-card,.si-row,.si-l small{transition:none}
   }
 
+  /* ── v19: multiplexer comparison ── */
+  .mux{margin:clamp(24px,4vh,36px) 0 0;border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden}
+  .mux-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
+  .mux-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1.2fr;gap:12px;align-items:center;padding:13px 20px;border-bottom:1px solid var(--line);font-size:var(--fs-body);color:var(--ink);font-variant-numeric:tabular-nums}
+  .mux-row:last-child{border-bottom:0}
+  .mux-row b{display:block;font-weight:600}
+  .mux-row small{display:block;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+  .mux-row em{font-style:normal;margin-left:8px;font-family:var(--mono);font-size:12px;color:var(--good)}
+  .mux-h{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600;background:var(--paper)}
+  .mux-pt{background:rgba(31,125,89,.06)}
+  @media (max-width:760px){
+    .mux-h{display:none}
+    .mux-row{grid-template-columns:1fr 1fr 1fr;gap:8px 12px}
+    .mux-row > span:first-child{grid-column:1/-1}
+    .mux-row > span[data-l]::before{content:attr(data-l);display:block;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+    .mux-row em{display:block;margin-left:0}
+  }
+
   /* ── v18: seams, combined sections and motion ── */
   .seam-sec .body-p b{color:var(--ink);font-weight:600}
   .seam-sec .body-p sub{font-size:12px;line-height:0}
@@ -1756,11 +1774,18 @@
      AI ATTRIBUTION  ·  production route: /ai-attribution
      ════════════════════════════════════════════════════════════════════ -->
 <div class="view" data-route="ai-attribution" data-url="/ai-attribution" hidden>
-  <section class="method sec-pad bg-a" data-anim>
+  <section class="page-head sec-pad bg-a">
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>Observability is not Attribution</p>
+      <h2 class="page-h1">Complex agents introduce variance, challenging the role of observability alone</h2>
+      <p class="lead">A well-structured substrate and compulsive versioning allow statistical analysis of every agentic and LLM-as-a-judge call, generating honest adjudication and evidence-backed triage.</p>
+    </div>
+  </section>
+
+  <section class="method sec-pad bg-b" data-anim>
     <div class="wrap">
     <div class="method-intro">
-      <p class="sec-eyebrow"><span class="dot"></span>Observability is not Attribution</p>
-      <h2 class="page-h1">What moved with a changed score?</h2>
+      <h2>What moved with a changed score?</h2>
       <p class="method-lead"><b class="lead-in">A value changing is not yet an answer.</b> Holonograph decomposes a score by attributing each part to your agent, the model, or custom evaluation system, and separates real change from noise, quantifying how much each source moved with that number. This decomposition is the method under patent application. It turns the changed score into an actionable report. Substrate labeling further identifies which component of your agent&rsquo;s substrate contributed to the agent&rsquo;s part: lessons, skills, code, and prompt are each separated and attributed.</p>
     </div>
 
@@ -2017,8 +2042,28 @@
       <p class="sec-eyebrow"><span class="dot"></span>Lens facets</p>
       <h2>When a rubric stops discriminating</h2>
       <p>When one judge scores many concerns at once, its scale can come to rest at an anchor. A perfect ten and a nine stop being different readings, and a failure no longer tells you how many things went wrong, only that something did. Holonograph reports that condition rather than passing the number through as an ordinary score. Where a rubric resolves into separate facets of rubric, judge, and context scope, each is grouped and attributed on its own, and where two move together the apparatus says so instead of guessing between them.</p>
-      <a class="arrow-link" href="lens-facets.html">The science of lens facets <span aria-hidden="true">&rarr;</span></a>
+      <div class="link-row">
+        <a class="arrow-link" href="lens-facets.html">The science of lens facets <span aria-hidden="true">&rarr;</span></a>
+        <a class="arrow-link" href="#papers">What does an LLM judge actually measure? <span aria-hidden="true">&rarr;</span></a>
+      </div>
     </div>
+    </div>
+  </section>
+
+  <section class="sec-pad bg-b" id="multiplexer" data-reveal>
+    <div class="wrap">
+      <p class="sec-eyebrow"><span class="dot"></span>The multiplexer</p>
+      <h2>One lens reads every vendor</h2>
+      <p class="lead">One call can land on several vendors at once: a primary whose reply the agent uses, and observers running the same input in parallel. The agent never knows. A change of vendor becomes a comparison on the same terms instead of a migration that resets your baseline.</p>
+      <figure class="mux">
+        <div class="mux-top"><span class="lc-k">Same inputs, one surface</span><span class="il-tag">Illustrative</span></div>
+        <div class="mux-row mux-h"><span>Vendor</span><span>Cost per 1k calls</span><span>Latency</span><span>Judged quality</span></div>
+        <div class="mux-row"><span><b>Model A</b><small>Primary</small></span><span data-l="Cost per 1k calls">$4.10</span><span data-l="Latency">1.9s</span><span data-l="Judged quality">8.4</span></div>
+        <div class="mux-row mux-pt"><span><b>Model B</b><small>Observer</small></span><span data-l="Cost per 1k calls">$1.20</span><span data-l="Latency">1.1s</span><span data-l="Judged quality">8.3 <em>within noise</em></span></div>
+        <div class="mux-row"><span><b>Model C</b><small>Observer</small></span><span data-l="Cost per 1k calls">$2.60</span><span data-l="Latency">2.4s</span><span data-l="Judged quality">7.2</span></div>
+      </figure>
+      <p class="body-p">Each vendor&rsquo;s cost and latency arrive on the event with no operator work, and every result is graded on the same terms. Price sits next to judged quality for the same inputs, so a cheaper model can be evaluated on what it costs in judgment before any traffic moves.</p>
+      <a class="arrow-link" href="guide/multiplexer.html">The multiplexer in the Guide <span aria-hidden="true">&rarr;</span></a>
     </div>
   </section>
 </div>
@@ -2130,7 +2175,10 @@
       <p class="body-p">Under ordinary holistic scoring, no configuration established the preregistered target-discrimination criterion. Under target-bound scoring, all three did. Before relying on a judge for consequential inference, its ability to discriminate the relevant construct should be shown under the intended evaluation frame.</p>
       <p class="body-p">Calls passed through dedicated local Holonograph Lens instances, which supplied call-time correlation, route and served-model identity, substrate stamps, cohort tags, and immutable digest-only events. Raw requests and responses stayed outside the Lens.</p>
       <p class="fine"><span class="emph">Disclosure.</span> Holonograph is developed by the study's author. The manuscript states this in its own methods, and so does this page.</p>
-      <div class="placeholder"><span class="concept-k">On publication</span><p>Manuscript link, DOI or arXiv identifier, and a BibTeX block.</p></div>
+      <div class="link-row">
+        <a class="arrow-link" href="pdf/evaluation-frames-construct-discrimination.pdf">Read the paper (PDF) <span aria-hidden="true">&rarr;</span></a>
+        <a class="arrow-link" href="pdf/evaluation-frames-poster.pdf">View the research poster (PDF) <span aria-hidden="true">&rarr;</span></a>
+      </div>
     </div>
   </section>
 </div>
@@ -2147,11 +2195,11 @@
       </div>
       <div class="f-col"><h4>Platform</h4><a href="#ai-attribution">AI Attribution</a><a href="lens-facets.html">Lens facets</a><a href="#attention-spine">Attention Spine</a><a href="#authority-governance">Authority governance</a><a href="#seams">Seams</a><a href="#builders">Builders</a></div>
       <div class="f-col"><h4>Resources</h4><a href="docs.html">Docs</a><a href="guide/">Guide</a><a href="glossary.html">Glossary</a><a href="#papers">Research</a><a href="changelog.html">Changelog</a></div>
-      <div class="f-col"><h4>Company</h4><a href="value.html">Value</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div>
+      <div class="f-col"><h4>Company</h4><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a></div>
     </div>
     <div class="footer-bar">
       <span>&copy; 2026 Precision Innovations LLC</span><span class="sep">&middot;</span><span>Runs in your infrastructure</span>
-      <span class="right"><a href="#">GitHub</a></span>
+      <span class="right"><a href="#" data-nigel-open>Chat with Nigel</a><a href="#">GitHub</a></span>
     </div>
   </div>
 </footer>

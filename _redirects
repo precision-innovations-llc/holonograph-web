@@ -1,3 +1,7 @@
+# The Value page was folded into AI Attribution for the v6 site.
+/value        /ai-attribution   301
+/value.html   /ai-attribution   301
+
 # The reflection chapter merged into judge-modes (it is cell 3 of the same matrix).
 /guide/reflection        /guide/judge-modes   301
 /guide/reflection.html   /guide/judge-modes   301

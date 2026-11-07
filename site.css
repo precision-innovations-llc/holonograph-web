@@ -40,7 +40,7 @@ a{color:inherit}
 .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--iris);display:flex;align-items:center;gap:10px;margin-bottom:20px}
 .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--sun)}
 .page-hero h1{font-size:clamp(30px,4.2vw,48px);line-height:1.1;letter-spacing:-.02em;font-weight:500;text-wrap:balance}
-.page-hero .sub{margin-top:22px;font-size:clamp(17px,1.7vw,20px);color:var(--ink-2);line-height:1.62}
+.page-hero .sub{margin-top:22px;font-size:clamp(16px,1.5vw,18px);color:var(--ink-2);line-height:1.55}
 
 /* buttons */
 .btn{font-family:var(--sans);font-size:14px;font-weight:500;padding:11px 18px;border-radius:9px;background:var(--iris);color:#fff;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
