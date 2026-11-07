@@ -1100,6 +1100,7 @@
     .si-bar i,.si-fix b,.si-then,.si-spark.draw .ln,.si-v,.si-t,.si-card,.si-row,.si-l small{transition:none}
   }
 
+  html{scroll-padding-top:90px}
   /* ── v20: home risks flow ── */
   .risks-top{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:clamp(32px,5vw,64px);align-items:start}
   .risks-top .ic{margin-top:20px}
@@ -1281,7 +1282,7 @@
         <p class="sub">Holonograph is an independent observation and governance instrument for measuring <a class="term" href="#risks">interpreted decisions</a> across complex software systems. <a class="term" href="#lens">The Lens</a> reports what it can establish, exposes what it cannot, and guides operators and <a class="term" href="#builders">builder agents</a> toward potential causes and structural blind spots.</p>
         <ul class="pills"><li>Self-hosted</li><li>Agentic Attribution</li><li>Authority Governance</li></ul>
         <div class="cta">
-          <a class="btn solid" href="#lens">See the Lens <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn solid" href="#lens" data-nigel-jump>See the Lens <span aria-hidden="true">&rarr;</span></a>
           <a class="btn ghost" href="#ai-attribution">AI Attribution</a>
         </div>
       </div>
@@ -1354,9 +1355,9 @@
     <div class="wrap">
       <div class="demo-intro">
         <p class="sec-eyebrow"><span class="dot"></span>See under Nigel&rsquo;s hood</p>
-        <h2>The Holonograph Lens dashboard</h2>
+        <h2>Talk to Nigel and watch his lens</h2>
       </div>
-      <div class="dw-frame" id="lens-view">
+      <div class="dw-frame" id="lens-view" data-nigel-autoopen>
         <div class="dw-chrome"><span class="dots"><i></i><i></i><i></i></span><span class="live"><span class="pulse"></span>LIVE</span></div>
         <iframe class="dw-iframe" src="https://nigel-lens-public-98022099798.us-central1.run.app/dashboard/?embed=1#act" title="Holonograph Lens Dashboard · Act" loading="lazy"></iframe>
       </div>

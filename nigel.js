@@ -96,6 +96,10 @@
   [].forEach.call(document.querySelectorAll('[data-nigel-open]'), function (el) {
     el.addEventListener('click', function (e) { e.preventDefault(); openPanel(); });
   });
+  /* A jump to the lens opens Nigel even after a manual close: the visitor just asked to see him work. */
+  [].forEach.call(document.querySelectorAll('[data-nigel-jump]'), function (el) {
+    el.addEventListener('click', function () { openPanel(); });
+  });
   fab.addEventListener('click', function () { open ? closePanel() : openPanel(); });
   if (closeBtn) closeBtn.addEventListener('click', closePanel);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) closePanel(); });
@@ -197,7 +201,9 @@
     setTimeout(function () {
       t.remove();
       if (restored || body.querySelector('.turn')) return;   // a real turn arrived first
-      bubble('Hello. I look after this site. What would you like to know about Holonograph?');
+      bubble(document.getElementById('lens-view')
+        ? 'Hello. I look after this site. Ask me about Holonograph, then watch my output appear in the Lens on this page.'
+        : 'Hello. I look after this site. Ask me about Holonograph, then watch my output appear in the Lens on the home page.');
     }, 700);
   }
 

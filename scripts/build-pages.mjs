@@ -74,20 +74,8 @@ const importmapRe = /<script type="importmap">[\s\S]*?<\/script>/;
 const inline = [...src.matchAll(/<script>([\s\S]*?)<\/script>/g)]
   .map((m) => m[1])
   .filter((body) => !body.includes("mockup router"));
-const NIGEL_AUTOOPEN = `
-/* Home: open Nigel when the live demo arrives, so the chat and the lens are on screen together. */
-(function(){
-  var demo=document.querySelector('.demo'), played=false;
-  if(!demo) return;
-  demo.addEventListener('reveal:in', function(){
-    if(played) return; played=true;
-    var fab=document.getElementById('nigelFab');
-    if(fab) fab.click();
-  });
-})();
-`;
 writeFileSync(join(ROOT, "site-v6.css"), css.trim() + "\n");
-writeFileSync(join(ROOT, "site-v6.js"), inline.join("\n").trim() + "\n" + NIGEL_AUTOOPEN);
+writeFileSync(join(ROOT, "site-v6.js"), inline.join("\n").trim() + "\n");
 
 // ---- pieces --------------------------------------------------------------
 const favicon = /<link rel="icon"[^>]*>/.exec(src)[0];
@@ -200,7 +188,7 @@ ${links(view[route], route)}
 
 ${links(footer, route)}
 <script src="/site-v6.js?v=${ASSET_V}"></script>
-<script src="/nigel.js?v=15"></script>
+<script src="/nigel.js?v=16"></script>
 <script src="/mobilenav.js"></script>
 ${isHome ? '<script type="module" src="/holon-light.js?v=15"></script>\n' : ""}</body>
 </html>

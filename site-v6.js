@@ -585,14 +585,3 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
     });
   },250);
 })();
-
-/* Home: open Nigel when the live demo arrives, so the chat and the lens are on screen together. */
-(function(){
-  var demo=document.querySelector('.demo'), played=false;
-  if(!demo) return;
-  demo.addEventListener('reveal:in', function(){
-    if(played) return; played=true;
-    var fab=document.getElementById('nigelFab');
-    if(fab) fab.click();
-  });
-})();
