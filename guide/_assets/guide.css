@@ -173,7 +173,7 @@ html, body {
     align-items: center;
     gap: 12px;
     position: sticky;
-    top: 70px;
+    top: 78px;
     z-index: 19;
     margin: 0;
     padding: 8px clamp(14px, 4vw, 22px);
@@ -201,7 +201,7 @@ html, body {
 /* ---------- sidebar TOC ---------- */
 .guide-sidebar {
   position: sticky;
-  top: 68px;
+  top: 76px;
   align-self: start;
   max-height: calc(100vh - 88px);
   overflow-y: auto;
