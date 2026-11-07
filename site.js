@@ -29,13 +29,12 @@
   }
 
   var NAV = [
-    { key:'product', label:'Platform', href:'/' },
     { key:'ai-attribution', label:'AI Attribution', href:'/ai-attribution' },
     { key:'attention-spine', label:'Attention Spine', href:'/attention-spine' },
     { key:'authority-governance', label:'Authority', href:'/authority-governance/' },
     { key:'seams', label:'Seams', href:'/seams' },
     { key:'builders', label:'Builders', href:'/builders' },
-    { key:'docs', label:'Docs', href:'/guide/' }
+    { key:'guide', label:'Guide', href:'/guide/' }
   ];
   var active = document.body.getAttribute('data-nav') || '';
 
