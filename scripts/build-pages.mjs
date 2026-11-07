@@ -191,7 +191,7 @@ ${links(view[route], route)}
 
 ${links(footer, route)}
 <script src="/site-v6.js?v=${ASSET_V}"></script>
-<script src="/nigel.js?v=16"></script>
+<script src="/nigel.js?v=17"></script>
 <script src="/mobilenav.js?v=2"></script>
 ${isHome ? '<script type="module" src="/holon-light.js?v=15"></script>\n' : ""}</body>
 </html>
