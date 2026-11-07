@@ -206,7 +206,7 @@ const allHtml = `<!DOCTYPE html>
 </head>
 <body>
   <header class="guide-topbar">
-    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH</a>
+    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH<sup style="font-size:.52em;letter-spacing:0;font-weight:500">&trade;</sup></a>
     <span class="guide-topbar-sep">/</span>
     <span class="guide-crumb"><a href="./">The Guide</a> · Mark II</span>
     <span class="guide-topbar-right">

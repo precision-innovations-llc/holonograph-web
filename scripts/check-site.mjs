@@ -7,6 +7,7 @@
 //   - every internal link resolves, and none points at a redirected URL
 //   - the sitemap lists exactly the live pages
 //   - no redirect source still exists as a file
+//   - every wordmark carries the TM
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -65,6 +66,10 @@ for (const f of html) {
     else if (!files.has(u.slice(1))) problems.push(`${f}: dead link ${link}`);
   }
   edges.set(f, out);
+  const raw = readFileSync(join(DIST, f), "utf8");
+  for (const m of raw.matchAll(/<(?:a|span) class="mark"[^>]*>[\s\S]*?<\/(?:a|span)>/g)) {
+    if (!m[0].includes('class="tm"')) problems.push(`${f}: wordmark without the TM`);
+  }
 }
 
 const seen = new Set();
