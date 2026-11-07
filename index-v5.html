@@ -1056,7 +1056,7 @@
   .si-tab[aria-selected="true"] b{color:#fff}
   .si-tab i{position:absolute;left:0;right:0;bottom:0;height:3px;background:#c9bdfb;transform:scaleX(var(--t,0));transform-origin:left}
 
-  .si-flow{display:grid;grid-template-columns:minmax(210px,240px) minmax(0,1fr) minmax(240px,290px);gap:26px;margin-top:20px}
+  .si-flow{display:grid;grid-template-columns:minmax(210px,240px) minmax(0,1fr) minmax(240px,290px);gap:26px;margin-top:20px;min-height:312px}
   .si-card{position:relative;border:1px solid #2a2836;border-radius:14px;background:#17161d;padding:16px 18px;transition:opacity .7s ease,border-color .7s ease}
   .si-card > .lc-k{display:block}
   .si-card + .si-card::before{content:"";position:absolute;left:-20px;top:50%;width:10px;height:10px;border-top:2px solid #3a3848;border-right:2px solid #3a3848;transform:translateY(-50%) rotate(45deg);transition:border-color .7s ease}
@@ -1106,9 +1106,9 @@
   .si-fix-k{margin-top:16px}
   .si-fix{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .si-fix b{font-weight:500;font-size:13px;color:#fff;border:1px solid rgba(70,192,138,.5);background:rgba(31,125,89,.2);border-radius:999px;padding:4px 11px;opacity:0;transform:translateY(6px);transition:opacity .6s ease,transform .6s ease}
-  .si-fix b:nth-child(2){transition-delay:.18s}
-  .si-fix b:nth-child(3){transition-delay:.36s}
   .si.s-fix .si-fix b{opacity:1;transform:none}
+  .si-then{margin:10px 0 0;font-size:14px;color:#cfccdb;line-height:1.45;opacity:0;transition:opacity .6s ease .25s}
+  .si.s-fix .si-then{opacity:1}
   .si .lc-cap{margin-top:14px}
   .sp-cta{margin-top:clamp(48px,8vh,84px)}
   @media (max-width:720px){.hero .eyebrow{align-items:flex-start}.hero .eyebrow .dot{margin-top:6px;flex:none}}
@@ -1126,7 +1126,7 @@
     .si-l small{min-height:0}
   }
   @media (prefers-reduced-motion:reduce){
-    .si-bar i,.si-fix b,.si-spark.draw .ln,.si-v,.si-t,.si-card,.si-row,.si-l small{transition:none}
+    .si-bar i,.si-fix b,.si-then,.si-spark.draw .ln,.si-v,.si-t,.si-card,.si-row,.si-l small{transition:none}
   }
 
   /* ── v15: what is a seam ── */
@@ -1396,7 +1396,7 @@
       <p class="lead">Attribution depends on setup. Surfaces are declared, set up orthogonally, variance controlled, and cohort tagged with relevant substrate columns. Each alarm then arrives with its attributed source: what moved with it, and by how much.</p>
       <figure class="lc si" id="si">
         <div class="lc-top">
-          <span class="lc-surf"><b>support-agent</b><span>Four example alarms. Select one.</span></span>
+          <span class="lc-surf"><b>support-agent</b></span>
           <span class="il-tag">Illustrative</span>
         </div>
         <div class="si-tabs" role="tablist" aria-label="Example alarms">
@@ -1427,9 +1427,9 @@
             <p class="si-what"></p>
             <span class="lc-k si-fix-k">Correction</span>
             <div class="si-fix"></div>
+            <p class="si-then"></p>
           </div>
         </div>
-        <figcaption class="lc-cap">Every correction is a proposal a person approves.</figcaption>
       </figure>
       <p class="sf-seams">Seams are mapped from the other direction, during the build. Once mapped, a seam reports into the same spine. <a class="term" href="#seams">Seams &rarr;</a></p>
       <div class="cta-card sp-cta">
@@ -2522,20 +2522,20 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
   var SC = [
     {src:'agent', to:'Your agent', metric:'tool_discipline', d:-3.8, pt:['agent'], note:{agent:'prompt v14 → v15'},
       ax:{agent:[3.1,'chance'], model:[0.2,'noise'], eval:[0.1,'noise'], noise:[0.4,'floor']},
-      what:'The drop moved with a prompt change.',
-      fix:['Prompt change','Code change']},
+      what:'The drop starts at prompt v15, which cut the tool-use rule.',
+      fix:'prompt v15 → v16', then:'Restores the tool-use rule.'},
     {src:'model', to:'The model', metric:'analysis_quality_judged', d:-5.2, pt:['model'], note:{model:'2026-06 → 2026-09'},
       ax:{agent:[0.3,'noise'], model:[4.4,'chance'], eval:[0.2,'noise'], noise:[0.3,'floor']},
-      what:'The served model changed: a vendor switch or your own update.',
-      fix:['Prompt change','Code change','Model revert']},
+      what:'The vendor moved your alias to a new snapshot. Your repo did not change.',
+      fix:'Pin served_model to 2026-06', then:'Tune the prompt against 2026-09 on a cohort, then move up.'},
     {src:'eval', to:'Your eval', metric:'hypothesis_grounding', d:2.9, pt:['eval'], note:{eval:'rubric v4 → v5'},
       ax:{agent:[0.1,'noise'], model:[0.2,'noise'], eval:[2.6,'chance'], noise:[0.3,'floor']},
-      what:'The score rose with a rubric revision. The agent did not change.',
-      fix:['Rubric review']},
-    {src:'vis', to:'Visibility', metric:'title_quality', d:-2.2, pt:['agent','model'], note:{},
+      what:'The score rose at rubric v5. The agent did not change.',
+      fix:'Rebaseline on rubric v5', then:'The rise is a scoring change. The trend restarts at v5.'},
+    {src:'vis', to:'Visibility', metric:'title_quality', d:-2.2, pt:['agent','model'], note:{agent:'prompt v8 → v9', model:'2026-06 → 2026-09'},
       ax:{agent:[1.6,'conf'], model:[1.6,'conf'], eval:[0.1,'noise'], noise:[0.5,'floor']},
-      what:'Your agent and the model changed together. No substrate column separates them.',
-      fix:['Add a substrate column','Cohort tag the change']}
+      what:'Prompt v9 and the new model shipped together. No substrate column separates them.',
+      fix:'Hold a cohort on 2026-06', then:'Cohort tag it. The next runs separate the two axes.'}
   ];
   var W = [0,1.2,-.8,.6,-1.4,.9,-.3,1.1,-1,.4,-.6,1.3,-.9,.2,.8,-1.2,.5,-.7,1,-.4,.9,-1.1,.3,.7,-.5,1.2,-.8,.4];
   function sparkPath(d){
@@ -2583,7 +2583,8 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
     q('.si-src').textContent = s.to;
     q('.si-what').textContent = s.what;
     fixEl.textContent = '';
-    s.fix.forEach(function(f){ var b = document.createElement('b'); b.textContent = f; fixEl.appendChild(b); });
+    var b = document.createElement('b'); b.textContent = s.fix; fixEl.appendChild(b);
+    q('.si-then').textContent = s.then;
   }
   function inView(){
     var r = si.getBoundingClientRect(), h = window.innerHeight;
