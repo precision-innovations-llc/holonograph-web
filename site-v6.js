@@ -511,6 +511,18 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
 })();
 
 
+/* home: the error flow runs once each time it enters view */
+(function(){
+  var f=document.getElementById('flow'); if(!f) return;
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){ f.classList.add('go'); return; }
+  setInterval(function(){
+    var r=f.getBoundingClientRect(), h=window.innerHeight, shown=r.height>0, on=f.classList.contains('go');
+    if(!on && shown && r.top<h*.65 && r.bottom>h*.3) f.classList.add('go');
+    else if(on && (!shown || r.bottom<0 || r.top>h)) f.classList.remove('go');
+  },250);
+})();
+
+
 /* seams: a thread through three planes, a taint mark through the code, a rail through the stages */
 (function(){
   var view=document.querySelector('.view[data-route="seams"]'); if(!view) return;

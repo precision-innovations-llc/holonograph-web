@@ -108,23 +108,31 @@
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>The risks with interpretive data</p>
       <h2>Where interpretation becomes authority</h2>
-      <p class="lead">Much of software&rsquo;s value comes from interpreting data and acting on the results. Regexes, fuzzy matching, forms, and <a class="term" href="/ai-attribution">language models</a> all contribute interpretations that can influence downstream <a class="term" href="/seams">decisions</a>.</p>
-      <p class="lead">As <a class="term" href="/builders">AI builders</a> accelerate software development, those interpretations can acquire consequential influence at machine speed without first establishing whether the assumptions behind them are justified.</p>
-      <div class="ic">
-        <span class="ic-k">Interpretive data creators</span>
-        <ul class="ic-list"><li>RegEx</li><li>Fuzzy Match</li><li>A Web Form</li><li class="ic-llm"><a href="/ai-attribution">LLMs<sup>*</sup></a></li></ul>
+      <div class="risks-top">
+        <div>
+          <p class="lead">Much of software&rsquo;s value comes from interpreting data and acting on the results. Regexes, fuzzy matching, forms, and <a class="term" href="/ai-attribution">language models</a> all contribute interpretations that can influence downstream <a class="term" href="/seams">decisions</a>.</p>
+          <p class="lead">As <a class="term" href="/builders">AI builders</a> accelerate software development, those interpretations can acquire consequential influence at machine speed without first establishing whether the assumptions behind them are justified.</p>
+        </div>
+        <div class="ic">
+          <span class="ic-k">Interpretive data creators</span>
+          <ul class="ic-list">
+            <li>RegEx</li>
+            <li>Fuzzy Match</li>
+            <li>A Web Form</li>
+            <li><a href="/ai-attribution">LLMs</a><small>Also act as <a href="/seams">decision points</a></small></li>
+          </ul>
+        </div>
       </div>
-      <div class="ic">
-        <span class="ic-k">How one error reaches a decision point</span>
-        <ol class="prop">
-          <li class="pr"><span class="pr-k">Input</span><q>Cook the steak until well done.</q></li>
-          <li class="pr"><span class="pr-k">Interpreter</span><p>A RegEx matches &ldquo;done&rdquo; and labels the task</p><code>status.DONE</code></li>
-          <li class="pr pr-elev"><span class="pr-k">Elevated to fact</span><p>The task record reads complete. Nothing on it says the status was inferred.</p><span class="pr-rec">Cook the steak <b>DONE</b></span></li>
-          <li class="pr pr-dp"><span class="pr-k">Decision point &middot; LLM call</span><p>The planning call reads the task as finished and moves on. No timer is set, and the agent reports dinner as ready.</p></li>
+      <figure class="flow" id="flow">
+        <figcaption class="ic-k">How one error reaches a decision point</figcaption>
+        <ol class="flow-steps">
+          <li class="fl"><span class="fl-k">Input</span><q>Cook the steak until well done.</q></li>
+          <li class="fl"><span class="fl-k">Interpreter</span><p>A RegEx matches &ldquo;done&rdquo; and labels the task.</p><span class="fl-v"><code>status.DONE</code><em>inferred</em></span></li>
+          <li class="fl fl-fact"><span class="fl-k">Elevated to fact</span><p>The task record reads complete. Nothing on it says the status was inferred.</p><span class="fl-v"><span>Cook the steak</span><code>DONE</code></span></li>
+          <li class="fl fl-dp"><span class="fl-k">Decision point &middot; LLM call</span><p>The planning call reads the task as finished and moves on. No timer is set, and the agent reports dinner as ready.</p></li>
         </ol>
         <p class="prop-fn">Every step ran valid code. An inference reached the decision point with the authority of a recorded fact. Holonograph maps that edge as a <a class="term" href="/seams">seam</a>.</p>
-      </div>
-      <p class="ic-fn"><sup>*</sup>LLMs are special interpretive creators that also act as <a href="/seams">Decision Points</a>.</p>
+      </figure>
     </div>
   </section>
 
