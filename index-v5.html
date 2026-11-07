@@ -1786,7 +1786,7 @@
     <div class="wrap">
     <div class="method-intro">
       <h2>What moved with a changed score?</h2>
-      <p class="method-lead"><b class="lead-in">A value changing is not yet an answer.</b> Holonograph decomposes a score by attributing each part to your agent, the model, or custom evaluation system, and separates real change from noise, quantifying how much each source moved with that number. This decomposition is the method under patent application. It turns the changed score into an actionable report. Substrate labeling further identifies which component of your agent&rsquo;s substrate contributed to the agent&rsquo;s part: lessons, skills, code, and prompt are each separated and attributed.</p>
+      <p class="method-lead"><b class="lead-in">A value changing is not yet an answer.</b> Holonograph decomposes a score by attributing each part to your agent, the model, or your eval, and separates real change from noise, quantifying how much each source changed with that number. This decomposition is the method under patent application. Substrate labeling further identifies which component of your agent&rsquo;s substrate contributed to the agent&rsquo;s part: lessons, skills, code, and prompt are each separated and attributed.</p>
     </div>
 
     <div class="method-flow">
@@ -1808,14 +1808,13 @@
 
         <div class="sources">
           <div class="source" data-src="agent" data-weight="2.4"><span class="source-k">your agent</span><p>The prompts, tools, and logic you built.</p></div>
-          <div class="source" data-src="model" data-weight="1.9"><span class="source-k">the model</span><p>The provider&rsquo;s weights, version, and token relationships. Aspects you can&rsquo;t control.</p></div>
-          <div class="source" data-src="eval" data-weight="1.4"><span class="source-k">your eval</span><p>The judge and/or rubric doing the scoring. If a judge, also subject to the same model black box as above.</p></div>
+          <div class="source" data-src="model" data-weight="1.9"><span class="source-k">the model</span><p>The provider&rsquo;s weights, version, and token relationships, outside your control.</p></div>
+          <div class="source" data-src="eval" data-weight="1.4"><span class="source-k">your eval</span><p>The judge or rubric doing the scoring. If a judge, also subject to the same model black box as above.</p></div>
           <div class="source noise" data-src="noise" data-weight="1.0"><span class="source-k">noise</span><p>Sampling and chance, identified and isolated.</p></div>
         </div>
       </div>
     </div>
 
-    <p class="method-callout">Past a certain scale, a metric that moves is not an answer. <b>Attribution is.</b></p>
     </div>
   </section>
 
@@ -1828,7 +1827,7 @@
     <div class="substrate-text">
       <p class="sec-eyebrow"><span class="dot"></span>The longitudinal substrate</p>
       <h2>Attribution requires memory</h2>
-      <p><b class="lead-in">A number can move without the behavior moving.</b> When the model is updated, or the lens that scores it is revised, the metric drifts while the underlying behavior does not change. Holonograph versions every lens and keeps the full history, so each reading is checked against the exact lens that produced it. The outcome is a clear behavioral attribution to the model, the substrate, or the judges themselves.</p>
+      <p><b class="lead-in">A score can change while the behavior stays the same.</b> When the model is updated, or the lens that scores it is revised, the metric drifts while the underlying behavior does not change. Holonograph versions every lens and keeps the full history, so each reading is checked against the exact lens that produced it. The outcome is a clear behavioral attribution to your agent, the model, or your eval.</p>
       <p>The model you asked for and the model that answered are two different facts. A vendor can re-route behind an unchanged alias. Holonograph records both sides, so that change has a name instead of showing up as unexplained drift. The judge has the same two sides.</p>
       <div class="link-row">
         <a class="arrow-link" href="guide/drift-attribution.html">Drift attribution <span aria-hidden="true">&rarr;</span></a>
@@ -1841,7 +1840,7 @@
   <section class="sec-pad bg-a" data-reveal>
     <div class="wrap">
       <h2>The attribution matrix</h2>
-      <p class="lead">A release moved several scores. The matrix reads each declared dimension against the axis of each source, in the terms the dashboard uses: the gap in points, whether chance explains it, and what stands in the way of attribution. A gap is a candidate. Attribution holds only where the record separates the sources.</p>
+      <p class="lead">A release changed several scores. The matrix reads each declared dimension against the axis of each source, in the terms the dashboard uses: the gap in points, whether chance explains it, and what stands in the way of attribution. A gap is a candidate. Attribution holds only where the record separates the sources.</p>
       <figure class="matrix">
         <div class="mx-top">
           <span class="mx-k">Release 0.43 against 0.42 &middot; gap in points, by axis</span>
@@ -1868,8 +1867,8 @@
         <div class="mk"><span class="mk-sw sw-row" aria-hidden="true"></span><h3>Rows</h3><p>Dimensions as declared in the lens, such as title_quality or tool_discipline.</p></div>
         <div class="mk"><span class="mk-sw sw-col" aria-hidden="true"></span><h3>Columns</h3><p>Each source is read on its own axis: the substrate, light_source_served_model, judge identity (rubric &middot; model &middot; scope), and the noise floor.</p></div>
         <div class="mk"><span class="mk-sw sw-cell" aria-hidden="true"><i></i><i></i><i></i></span><h3>Cells</h3><p>The gap in points between groups on that axis. A gap is a candidate for attribution, not a causal share. Brighter cells hold larger gaps.</p></div>
-        <div class="mk"><span class="mk-sw sw-t c-ok" aria-hidden="true"></span><h3>Not chance</h3><p>A gap this wide would show up by chance less than once in 1,000 samples. Here, tool_discipline moved with the substrate.</p></div>
-        <div class="mk"><span class="mk-sw sw-t c-orth" aria-hidden="true"></span><h3>Orthogonality</h3><p>The axis was declared one that shouldn&rsquo;t move the score at all, and the score moved with it.</p></div>
+        <div class="mk"><span class="mk-sw sw-t c-ok" aria-hidden="true"></span><h3>Not chance</h3><p>A gap this wide would show up by chance less than once in 1,000 samples. Here, tool_discipline changed with the substrate.</p></div>
+        <div class="mk"><span class="mk-sw sw-t c-orth" aria-hidden="true"></span><h3>Orthogonality</h3><p>The axis was declared one that shouldn&rsquo;t affect the score, and the score changed with it.</p></div>
         <div class="mk"><span class="mk-sw sw-t c-conf" aria-hidden="true"></span><h3>Confounded axis</h3><p>The light source and the judge changed in the same window, so the title_quality gap cannot be split between them. Separating the two takes its own probe.</p></div>
         <div class="mk"><span class="mk-sw sw-t c-conc" aria-hidden="true"></span><h3>Concentrated, smooth</h3><p>From the judge transfer curve. Concentrated: most scores land on a single value, and the judge is barely discriminating. Smooth: scores spread across many values, a graded response.</p></div>
         <div class="mk"><span class="mk-sw sw-t c-noise" aria-hidden="true"></span><h3>Within noise</h3><p>A gap smaller than the noise floor for that dimension.</p></div>
@@ -1883,7 +1882,7 @@
     <div class="readout-intro">
       <p class="sec-eyebrow"><span class="dot"></span>The analysis</p>
       <h2>Every finding names its source</h2>
-      <p class="readout-lead">The instrument returns the effect, the statistics behind it, and an honest account of what it cannot observe or separate, and clear instructions on how to achieve that state of observability.</p>
+      <p class="readout-lead">The instrument returns the effect, the statistics behind it, what it cannot observe or separate, and how to make it observable.</p>
     </div>
 
     <div class="readout-control">
@@ -1908,7 +1907,7 @@
             </div>
             <div class="rcard-body">
               <h3 class="finding" data-anchor="finding">Helpfulness changes by 4.3 points depending on region.</h3>
-              <p class="finding-sub"><code>region</code> was declared an axis that shouldn&rsquo;t move it at all.<span class="tag-axis" data-anchor="rule">orthogonality</span></p>
+              <p class="finding-sub"><code>region</code> was declared an axis that shouldn&rsquo;t affect it.<span class="tag-axis" data-anchor="rule">orthogonality</span></p>
 
               <div class="bars">
                 <p class="bars-cap"><b>Average helpfulness score, by region</b> &middot; scale 0&ndash;10 &middot; overall average 6.25</p>
@@ -1928,7 +1927,7 @@
               <div class="evidence" data-anchor="audit">
                 <div class="ev"><span class="ev-k">effect size</span><span class="ev-v">31%</span><span class="ev-d">share of the helpfulness swing traced to region</span></div>
                 <div class="ev"><span class="ev-k">bias-corrected</span><span class="ev-v">0.28</span><span class="ev-d">holds after correcting for small samples, so it isn&rsquo;t a group-size artifact</span></div>
-                <div class="ev"><span class="ev-k">adjusted p</span><span class="ev-v">&lt;0.001</span><span class="ev-d">after penalising every other check run on this surface</span></div>
+                <div class="ev"><span class="ev-k">adjusted p</span><span class="ev-v">&lt;0.001</span><span class="ev-d">after penalizing every other check run on this surface</span></div>
                 <div class="ev"><span class="ev-k">scored</span><span class="ev-v">240 &middot; 2 grp</span><span class="ev-d">turns carrying a helpfulness score and a region value</span></div>
                 <div class="ev"><span class="ev-k">gate</span><span class="ev-v">dependence-robust</span><span class="ev-d">multiple-comparison correction, re-derived on every read</span></div>
               </div>
@@ -1975,10 +1974,10 @@
 
         <div class="anno-deck">
           <div class="annos active" data-card="0">
-            <div class="anno" data-for="finding"><span class="anno-k">The effect</span><p>What moved, and by how much.</p></div>
-            <div class="anno" data-for="rule"><span class="anno-k">The rule it broke</span><p>You declared <code>region</code> can&rsquo;t move this score.</p></div>
+            <div class="anno" data-for="finding"><span class="anno-k">The effect</span><p>What changed, and by how much.</p></div>
+            <div class="anno" data-for="rule"><span class="anno-k">The rule it broke</span><p>You declared <code>region</code> can&rsquo;t affect this score.</p></div>
             <div class="anno" data-for="chance"><span class="anno-k">Not chance</span><p>A gap this wide is one in a thousand.</p></div>
-            <div class="anno hon" data-for="honest"><span class="anno-k">Honest by design</span><p>No guessing. It names the next probe.</p></div>
+            <div class="anno hon" data-for="honest"><span class="anno-k">Honest by design</span><p>Names the next probe.</p></div>
             <div class="anno" data-for="audit"><span class="anno-k">Auditable</span><p>Every statistic, re-derived on read.</p></div>
           </div>
           <div class="annos" data-card="1">
@@ -2041,7 +2040,7 @@
     <div class="facet-text" data-reveal>
       <p class="sec-eyebrow"><span class="dot"></span>Lens facets</p>
       <h2>When a rubric stops discriminating</h2>
-      <p>When one judge scores many concerns at once, its scale can come to rest at an anchor. A perfect ten and a nine stop being different readings, and a failure no longer tells you how many things went wrong, only that something did. Holonograph reports that condition rather than passing the number through as an ordinary score. Where a rubric resolves into separate facets of rubric, judge, and context scope, each is grouped and attributed on its own, and where two move together the apparatus says so instead of guessing between them.</p>
+      <p>When one judge scores many concerns at once, scores can concentrate at an anchor. A ten and a nine stop being different readings, and a failure shows only that something went wrong. Holonograph reports that condition on the event. Where a rubric resolves into facets, each is attributed on its own, and where two change together the reading is marked confounded.</p>
       <div class="link-row">
         <a class="arrow-link" href="lens-facets.html">The science of lens facets <span aria-hidden="true">&rarr;</span></a>
         <a class="arrow-link" href="#papers">What does an LLM judge actually measure? <span aria-hidden="true">&rarr;</span></a>
@@ -2054,7 +2053,7 @@
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>The multiplexer</p>
       <h2>One lens reads every vendor</h2>
-      <p class="lead">One call can land on several vendors at once: a primary whose reply the agent uses, and observers running the same input in parallel. The agent never knows. A change of vendor becomes a comparison on the same terms instead of a migration that resets your baseline.</p>
+      <p class="lead">One call can land on several vendors at once: a primary whose reply the agent uses, and observers running the same input in parallel. The agent never knows. A change of vendor becomes a comparison on the same terms, and your baseline carries over.</p>
       <figure class="mux">
         <div class="mux-top"><span class="lc-k">Same inputs, one surface</span><span class="il-tag">Illustrative</span></div>
         <div class="mux-row mux-h"><span>Vendor</span><span>Cost per 1k calls</span><span>Latency</span><span>Judged quality</span></div>
