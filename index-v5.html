@@ -1700,7 +1700,7 @@
           <h3>Builder hooks</h3>
           <p class="body-p">The scan also runs as a hook inside the coding session, on every edit, at the moment of writing.</p>
           <p class="body-p">When a seam reaches an authority sink, a note lands in the session that wrote it, naming the interpretation, the decision, the sink, and anything the scan could not follow. The builder declares the seam or restructures around it.</p>
-          <p class="body-p">The monitor flags and drafts. It does not edit code. <a href="#builders">Builders &rarr;</a></p>
+          <p class="body-p">The monitor flags seams and proposes candidate sinks and skip paths. It does not edit code. <a href="#builders">Builders &rarr;</a></p>
         </div>
         <div id="seam-soak">
           <p class="seam-at">On live traffic</p>
@@ -2031,7 +2031,8 @@
     <div class="wrap">
       <p class="sec-eyebrow"><span class="dot"></span>Builders</p>
       <h2 class="page-h1">Reported in the session that wrote it</h2>
-      <p class="lead">The <a class="term" href="guide/seam-monitor.html">seam monitor</a> runs inside the build loop. When a coding agent writes a decision that acts on an interpreted value and reaches something consequential, the note arrives in that same session, before the change is anywhere else.</p>
+      <p class="lead">Coding agents are agents. They are subject to the same inference violations, drift, and stochastic behavior as any other LLM agent, and teams now often use them to build agentic software.</p>
+      <p class="body-p">The <a class="term" href="guide/seam-monitor.html">seam monitor</a> runs inside the build loop. When a coding agent writes a decision that acts on an interpreted value and reaches something consequential, the note arrives in that same session, before the change is anywhere else.</p>
     </div>
   </section>
 
@@ -2048,7 +2049,7 @@
         <div class="lp lp-c"><span class="lp-n">4</span><h3>Declare or restructure</h3><p>The builder decides. Candidate sinks and skips are proposed from code already read.</p></div>
         <div class="lp lp-d"><span class="lp-n">5</span><h3>Into the lens</h3><p>Declarations go to the record. Accepted ones drop from the scan and the lens together.</p></div>
         <div class="lp lp-e"><span class="lp-n">6</span><h3>Soak and alarms</h3><p>Live traffic measures the seam; anything worth attention reaches the <a class="term" href="#attention-spine">attention spine</a>.</p></div>
-        <figcaption class="dg-cap"><span class="dot"></span>The monitor flags and drafts. It does not edit code and does not block a build on its own authority; whether a build stops is operator or CI policy.</figcaption>
+        <figcaption class="dg-cap"><span class="dot"></span>The monitor flags seams and proposes candidate sinks and skip paths. It does not edit code and does not block a build on its own authority; whether a build stops is operator or CI policy.</figcaption>
       </figure>
     </div>
   </section>
@@ -2056,7 +2057,7 @@
   <section class="sec-pad bg-a" data-reveal>
     <div class="wrap">
       <h2>Why a builder reads the note</h2>
-      <p class="lead">Any coding agent can write its own code walker in an afternoon. A note worth reading has to carry what a local walk cannot produce: knowledge of the running system, gathered over time.</p>
+      <p class="lead">Any coding agent can write its own code walker in an afternoon. A note worth reading has to carry what a local walk cannot produce: knowledge of the running system not readily or easily accessible to the builder.</p>
       <div class="carrot">
         <div class="cr"><span class="st st-now">Now</span><h3>The resolved path</h3><p>This value, through these hops, lands at that decision and reaches that consequence, followed across files the local walk would stop at.</p></div>
         <div class="cr"><span class="st st-next">Next</span><h3>Already governed elsewhere</h3><p>A declared boundary on another surface, with its contract ready to reuse.</p></div>
