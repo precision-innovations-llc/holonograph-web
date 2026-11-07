@@ -40,8 +40,8 @@
 
   var header =
     '<div class="wrap"><nav aria-label="Primary">' +
-      '<span class="brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>' +
-      '<span class="pp">patent&nbsp;pending</span></span>' +
+      '<a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span>' +
+      '<span class="pp">patent&nbsp;pending</span></a>' +
       '<span class="nav-links">' +
         NAV.map(function(n){ return '<a href="'+n.href+'"'+(n.key===active?' class="on"':'')+'>'+n.label+'</a>'; }).join('') +
       '</span>' +
@@ -51,10 +51,10 @@
   var footer =
     '<div class="wrap">' +
       '<div class="footer-grid">' +
-        '<div class="f-brand"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span>' +
+        '<div class="f-brand"><a class="mark" href="/"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></a>' +
           '<p class="f-tag">The self-hosted instrument for authority governance.</p>' +
-          '<p class="f-pp">Patent pending</p></div>' +
-        '<div class="f-col"><h4>Platform</h4><a href="/ai-attribution">AI Attribution</a><a href="/lens-facets">Lens facets</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority governance</a><a href="/seams">Seams</a><a href="/builders">Builders</a></div>' +
+          '<p class="f-pp"><a href="/">Patent pending</a></p></div>' +
+        '<div class="f-col"><h4><a href="/">Platform</a></h4><a href="/ai-attribution">AI Attribution</a><a href="/lens-facets">Lens facets</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority governance</a><a href="/seams">Seams</a><a href="/builders">Builders</a></div>' +
         '<div class="f-col"><h4>Resources</h4><a href="/guide/">Guide</a><a href="/glossary">Glossary</a><a href="/papers">Research</a><a href="/changelog">Changelog</a></div>' +
         '<div class="f-col"><h4>Company</h4><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></div>' +
       '</div>' +
