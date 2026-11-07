@@ -1128,6 +1128,52 @@
   @media (prefers-reduced-motion:reduce){
     .si-bar i,.si-fix b,.si-spark.draw .ln,.si-v,.si-t,.si-card,.si-row,.si-l small{transition:none}
   }
+
+  /* ── v15: what is a seam ── */
+  .sm{margin:clamp(24px,4vh,36px) 0 0;background:#fff;border:1px solid var(--line);border-radius:18px;padding:clamp(18px,3vw,28px);box-shadow:0 30px 70px -50px rgba(23,22,29,.35)}
+  .sm-tog{display:inline-flex;padding:4px;border:1px solid var(--line);border-radius:11px;background:var(--paper)}
+  .sm-tog button{all:unset;box-sizing:border-box;cursor:pointer;padding:8px 14px;border-radius:8px;font-size:14px;font-weight:500;color:var(--ink-2);transition:background .3s ease,color .3s ease}
+  .sm-tog button:hover{color:var(--ink)}
+  .sm-tog button:focus-visible{outline:2px solid var(--iris);outline-offset:2px}
+  .sm[data-st="closed"] .sm-tog [data-s="closed"]{background:var(--good);color:#fff}
+  .sm[data-st="open"] .sm-tog [data-s="open"]{background:var(--sun);color:#fff}
+  .sm-map{display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr) 56px minmax(0,1fr);row-gap:30px;align-items:stretch;margin-top:22px}
+  .sm-n{position:relative;border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 16px;transition:border-color .45s ease,background .45s ease,box-shadow .45s ease}
+  .sm-n span{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+  .sm-n b{display:block;margin-top:6px;font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.3}
+  .sm-n small{display:block;margin-top:3px;font-size:13px;color:var(--ink-2);line-height:1.4}
+  .sm-i{background:var(--iris-soft);border-color:rgba(95,61,220,.35)}
+  .sm-i span{color:var(--iris)}
+  .sm-dp{border-color:var(--iris)}
+  .sm-dp::after{content:"";position:absolute;left:50%;bottom:-31px;height:30px;width:2px;margin-left:-1px;background:var(--good);transition:background .45s ease}
+  .sm-e{align-self:center;height:2px;background:var(--iris);position:relative}
+  .sm-e::after{content:"";position:absolute;right:0;top:-4px;border-left:7px solid var(--iris);border-top:5px solid transparent;border-bottom:5px solid transparent}
+  .sm-x{grid-column:3;grid-row:2;border-color:rgba(31,125,89,.5);background:rgba(31,125,89,.06)}
+  .sm-x span{color:var(--good)}
+  .sm-l1,.sm-l2{grid-row:2;opacity:0;transition:opacity .45s ease}
+  .sm-l1{grid-column:4;align-self:center;border-top:2px dashed var(--sun)}
+  .sm-l2{grid-column:5;width:50%;height:calc(50% + 30px);margin-top:-30px;border-right:2px dashed var(--sun);border-bottom:2px dashed var(--sun);border-bottom-right-radius:12px}
+  .sm[data-st="open"] .sm-dp::after{background:var(--sun)}
+  .sm[data-st="open"] .sm-x{border-color:var(--sun);background:rgba(233,85,43,.07)}
+  .sm[data-st="open"] .sm-x span{color:var(--sun-ink)}
+  .sm[data-st="open"] .sm-c{border-color:var(--sun);box-shadow:0 0 0 4px rgba(233,85,43,.12)}
+  .sm[data-st="open"] .sm-c span{color:var(--sun-ink)}
+  .sm[data-st="open"] .sm-l1,.sm[data-st="open"] .sm-l2{opacity:1}
+  .sm .cf-trace{margin-top:18px}
+  .sm-terms{margin-top:clamp(24px,4vh,36px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.6vw,30px)}
+  .sm-hook{margin-top:clamp(22px,3.5vh,32px);display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;border:1px solid var(--line);border-left:3px solid var(--iris);border-radius:12px;background:#fff;padding:14px 18px;font-size:15px;color:var(--ink-2)}
+  .sm-hook .lc-k{color:var(--iris)}
+  .next-cta{margin-top:clamp(40px,7vh,72px)}
+  @media (max-width:760px){
+    .sm-map{grid-template-columns:1fr;row-gap:0}
+    .sm-e{justify-self:center;align-self:auto;width:2px;height:22px}
+    .sm-e::after{right:-4px;top:auto;bottom:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--iris);border-bottom:0}
+    .sm-dp::after,.sm-l1,.sm-l2{display:none}
+    .sm-x{grid-column:auto;grid-row:auto;order:1;margin-top:14px}
+    .sm-c{order:0}
+    .sm-terms{grid-template-columns:1fr}
+  }
+  @media (min-width:761px) and (max-width:980px){.sm-terms{grid-template-columns:1fr 1fr}}
 </style>
 <link rel="stylesheet" href="mobilenav.css">
 </head>
@@ -1562,64 +1608,44 @@
     </div>
   </section>
 
-  <section class="together sec-pad bg-b" id="together" data-reveal>
+  <section class="sec-pad bg-b" id="what-is-a-seam" data-reveal>
     <div class="wrap">
-      <p class="sec-eyebrow"><span class="dot"></span>How it comes together</p>
-      <h2>One dependency, followed from its source to its consequence</h2>
-      <p class="lead">Four things happen to every interpretive dependency Holonograph governs. They are one process over one record, in the order the dependency itself moves.</p>
-      <div class="together-grid">
-        <div class="tg">
-          <h3>Find it</h3>
-          <p>Source analysis locates where an interpreted value reaches a decision that matters. Runtime observation locates traffic arriving at a decision no one declared.</p>
-          <a class="tg-link" href="#provenance">Provenance across hops &rarr;</a>
+      <p class="sec-eyebrow"><span class="dot"></span>What is a seam?</p>
+      <h2>An edge from interpretation to decision</h2>
+      <p class="lead">A seam is the path a value travels from an interpretive source to the decision point that consumes it.</p>
+      <figure class="sm" id="sm" data-st="closed">
+        <div class="sm-tog" role="group" aria-label="Seam state">
+          <button type="button" data-s="closed" aria-pressed="true">Closed seam</button>
+          <button type="button" data-s="open" aria-pressed="false">Open seam</button>
         </div>
-        <div class="tg">
-          <h3>Measure it</h3>
-          <p>Once declared, the dependency is observed on real inputs: how often its no-match path fires, which branch runs, whether the decided value churns. A closed seam is ready to observe, not proven correct.</p>
-          <a class="tg-link" href="#builders">In the build loop &rarr;</a>
+        <div class="sm-map">
+          <div class="sm-n sm-i"><span>Interpretive</span><b>Keyword pattern</b><small>Matches &ldquo;down&rdquo; in a support ticket</small></div>
+          <i class="sm-e" aria-hidden="true"></i>
+          <div class="sm-n sm-dp"><span>Decision point</span><b>Page, reply, or queue</b><small>A branch on the value</small></div>
+          <i class="sm-e" aria-hidden="true"></i>
+          <div class="sm-n sm-c"><span>Consequence</span><b>Wake the on-call engineer</b><small>At 3am</small></div>
+          <div class="sm-n sm-x"><span class="sm-x-k"></span><b class="sm-x-b"></b><small class="sm-x-s"></small></div>
+          <i class="sm-l1" aria-hidden="true"></i>
+          <i class="sm-l2" aria-hidden="true"></i>
         </div>
-        <div class="tg">
-          <h3>Separate what moved</h3>
-          <p>When a reading changes, the change is split across the deployment, the model that answered, the evaluation, and noise, for every dimension and every version on the record.</p>
-          <a class="tg-link" href="#ai-attribution">AI Attribution &rarr;</a>
-        </div>
-        <div class="tg">
-          <h3>Derive authority</h3>
-          <p>From the declared conditions and the evidence on the record, each surface is read as one of six states, re-derived at every read. No person confers it and no judge votes it in.</p>
-          <a class="tg-link" href="#authority-governance">Authority governance &rarr;</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec-pad bg-a" id="provenance" data-reveal>
-    <div class="wrap">
-      <h2>Provenance survives every hop</h2>
-      <figure class="chain-fig">
-        <div class="cf-steps">
-          <div class="cf"><span class="cf-k">Source</span><b>&ldquo;Server down again!!&rdquo;</b><span class="cf-s">a support ticket</span></div>
-          <i aria-hidden="true">&rarr;</i>
-          <div class="cf"><span class="cf-k">Interpreter</span><b>Keyword pattern</b><span class="cf-s">matches &ldquo;down&rdquo;</span></div>
-          <i aria-hidden="true">&rarr;</i>
-          <div class="cf cf-val"><span class="cf-k">Value</span><b>page</b><span class="cf-s">one of three clean options</span></div>
-          <i aria-hidden="true">&rarr;</i>
-          <div class="cf cf-act"><span class="cf-k">Consequence</span><b>Wake the on-call engineer</b><span class="cf-s">at 3am</span></div>
-        </div>
-        <div class="cf-trace"><span>Interpreted</span></div>
-        <figcaption class="dg-cap"><span class="dot"></span>Turning text into a clean option changes the form of the value, not where it came from. The interpretation travels with it to the consequence.</figcaption>
+        <div class="cf-trace"><span>Provenance: interpreted</span></div>
       </figure>
-      <p class="body-p">A validation boundary filters the catastrophic and passes the shape-valid-but-wrong. It raises the floor and, in the same motion, makes the remaining error harder to see: the value now looks right, types right, and fails downstream. Moving the decision earlier only moves the seam; the next scan finds it in its new place.</p>
-      <div class="pair">
-        <div class="pair-c"><span class="pair-k">Closed</span><p>The decision has a defined path for inputs it does not recognize, and everything downstream either decides on the same terms or does not decide at all. Ready to observe.</p></div>
-        <div class="pair-c pair-open"><span class="pair-k">Open</span><p>Somewhere in the chain a decision has no answer for what it does not recognize, and the gap falls through into a consequence. The defective state.</p></div>
+      <div class="sm-terms">
+        <div class="tg"><h3>Interpretives</h3><p>A model output, a classifier, an approximate match, a pattern over free text, an external feed.</p></div>
+        <div class="tg"><h3>Decision points</h3><p>A branch, threshold, pattern, or key that acts on the value.</p></div>
+        <div class="tg"><h3>Open seams</h3><p>A decision point with no answer for what it does not recognize. The defective state.</p></div>
+        <div class="tg"><h3>Abstention</h3><p>The defined path for what a decision does not recognize. A decision point with one is attended.</p></div>
+        <div class="tg"><h3>Consequence</h3><p>The transition a decision governs. It is what makes a seam matter.</p></div>
+        <div class="tg"><h3>Provenance</h3><p>Where a request came from is as important as the request itself.</p></div>
       </div>
+      <p class="sm-hook"><span class="lc-k">Real-time attendance</span><span><a class="term" href="#builders">Builder hooks</a> report each seam into the session that wrote it, at the moment of writing.</span></p>
     </div>
   </section>
 
-  <section class="seams sec-pad bg-b" data-reveal>
+  <section class="seams sec-pad bg-a" data-reveal>
     <div class="wrap">
       <h2>A model is a seam whose interpreter moves</h2>
-      <p class="lead">A pattern does not rewrite itself between releases. A model can be re-routed behind an unchanged name, and the instrument scoring it is usually <a class="term" href="#ai-attribution">another model</a>. So a model seam carries more variance control. The lifecycle is the same.</p>
+      <p class="lead">A pattern does not rewrite itself between runs. A model can be re-routed behind an unchanged name, and the instrument scoring it is usually <a class="term" href="#ai-attribution">another model</a>. The lifecycle is the same, with monitoring properties unique to LLM seams.</p>
       <div class="compare" role="table" aria-label="Code seams and model seams compared">
         <div class="cmp-head" role="row"><span role="columnheader"></span><span role="columnheader">Code seam</span><span role="columnheader">Model seam</span></div>
         <div class="cmp-row" role="row"><span class="cmp-k" role="rowheader">The interpreter</span><span role="cell">A rule or pattern over open text.</span><span role="cell">A model's reading, or the model as the decider itself.</span></div>
@@ -1631,9 +1657,23 @@
         <div class="cmp-band"><span>Declared conditions</span><i>&rarr;</i><span>Evidence over time</span><i>&rarr;</i><span>Derived authority</span><i>&rarr;</i><span>Continuing observation</span></div>
       </div>
       <p class="body-p">A model can sit on either side of a seam: as the interpreter whose output a rule consumes, or as the decider that takes an interpreted input and chooses an action. Holonograph labels the interpretation, the decision, and the action separately, so a model in both roles is read as two dependencies.</p>
-      <div class="link-row">
-        <a class="arrow-link" href="guide/seams.html">Seams in the Guide <span aria-hidden="true">&rarr;</span></a>
-        <a class="arrow-link" href="guide/seam-monitor.html">The seam monitor <span aria-hidden="true">&rarr;</span></a>
+      <div class="cta-card next-cta">
+        <svg class="cta-cube" viewBox="0 0 96 96" aria-hidden="true">
+          <polygon points="48,48 48,6 84.4,27 84.4,69" fill="#a998f0" opacity="0.12"/>
+          <polygon points="48,48 11.6,69 11.6,27 48,6" fill="#a998f0" opacity="0.2"/>
+          <polygon points="48,48 84.4,69 48,90 11.6,69" fill="#a998f0" opacity="0.3"/>
+          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="none" stroke="#c9bdfb" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M48,48 L48,6 M48,48 L84.4,69 M48,48 L11.6,69" fill="none" stroke="#c9bdfb" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+          <circle cx="48" cy="48" r="6.5" fill="#e9552b"/>
+        </svg>
+        <div class="cta-text">
+          <p class="cta-k">Attend seams as they are written</p>
+          <p class="close-line">Seams in the build</p>
+        </div>
+        <div class="cta">
+          <a class="btn solid" href="#builders">Next: Builders <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn ghost" href="guide/seams.html">Seams in the Guide</a>
+        </div>
       </div>
     </div>
   </section>
@@ -1975,6 +2015,24 @@
         <dd>A development account, not an independently reproduced study. It shows the gap between a correct producer and an unjustified downstream decision, not a prevented failure.</dd>
       </dl>
       <a class="arrow-link" href="guide/seam-monitor.html">The seam monitor in the Guide <span aria-hidden="true">&rarr;</span></a>
+      <div class="cta-card next-cta">
+        <svg class="cta-cube" viewBox="0 0 96 96" aria-hidden="true">
+          <polygon points="48,48 48,6 84.4,27 84.4,69" fill="#a998f0" opacity="0.12"/>
+          <polygon points="48,48 11.6,69 11.6,27 48,6" fill="#a998f0" opacity="0.2"/>
+          <polygon points="48,48 84.4,69 48,90 11.6,69" fill="#a998f0" opacity="0.3"/>
+          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="none" stroke="#c9bdfb" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M48,48 L48,6 M48,48 L84.4,69 M48,48 L11.6,69" fill="none" stroke="#c9bdfb" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+          <circle cx="48" cy="48" r="6.5" fill="#e9552b"/>
+        </svg>
+        <div class="cta-text">
+          <p class="cta-k">From the build to the record</p>
+          <p class="close-line">Follow the seam</p>
+        </div>
+        <div class="cta">
+          <a class="btn solid" href="#attention-spine">Attention Spine <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn ghost" href="#authority-governance">Authority <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -2572,6 +2630,26 @@ window.HOLO_ANIM={ dur:620, ease:'cubic-bezier(.2,.8,.2,1)', stagger:150, draw:7
   load(0);
   if(reduce){ spark.classList.add('draw'); setStage(3); }
   else { last = performance.now(); schedule(); }
+})();
+</script>
+<script>
+/* what is a seam: closed and open states of one illustrative edge */
+(function(){
+  var sm = document.getElementById('sm'); if(!sm) return;
+  var T = {
+    closed:['Abstention','Defined no-match path','Attended. Ready to observe, not proven correct.'],
+    open:['No answer','No defined no-match path','The gap falls through into the consequence.']
+  };
+  var btns = sm.querySelectorAll('.sm-tog button');
+  function set(s){
+    sm.setAttribute('data-st', s);
+    [].forEach.call(btns, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-s') === s ? 'true' : 'false'); });
+    sm.querySelector('.sm-x-k').textContent = T[s][0];
+    sm.querySelector('.sm-x-b').textContent = T[s][1];
+    sm.querySelector('.sm-x-s').textContent = T[s][2];
+  }
+  [].forEach.call(btns, function(b){ b.addEventListener('click', function(){ set(b.getAttribute('data-s')); }); });
+  set('closed');
 })();
 </script>
 </body>
