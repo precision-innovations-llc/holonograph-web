@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="mobilenav.css">
 <link rel="stylesheet" href="nigel.css?v=10">
 <style>
-  .about-sec{max-width:740px;padding:clamp(24px,4vh,44px) 0;border-top:1px solid var(--line)}
+  .about-sec{padding:clamp(24px,4vh,44px) 0;border-top:1px solid var(--line)}
   .about-sec:first-of-type{border-top:0;padding-top:clamp(8px,2vh,20px)}
   .about-sec h2{font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--sun-ink);margin-bottom:14px}
   .about-sec p{font-size:17px;color:var(--ink-2);line-height:1.68}
@@ -49,7 +49,7 @@
   .founder .fbio{margin-top:12px;font-size:16px;color:var(--ink-2);line-height:1.62}
   .founder .fbio b{color:var(--ink);font-weight:600}
 
-  .about-cta{max-width:740px;margin:clamp(18px,3vh,32px) 0 clamp(44px,8vh,84px);display:flex;gap:12px;flex-wrap:wrap}
+  .about-cta{margin:clamp(18px,3vh,32px) 0 clamp(44px,8vh,84px);display:flex;gap:12px;flex-wrap:wrap}
   @media (max-width:600px){ .founder{flex-direction:column;gap:16px} }
 </style>
 </head>
@@ -58,9 +58,9 @@
 <header id="siteHeader"></header>
 
 <main class="wrap" id="main">
-  <section class="page-hero" data-hero data-reveal>
+  <section class="page-hero" style="max-width:none" data-hero data-reveal>
     <p class="eyebrow"><span class="dot"></span>About</p>
-    <h1>Built by the person who needed it first</h1>
+    <h1>Born of necessity</h1>
     <p class="sub">Holonograph is built by Precision Innovations. It began with a question every operator of an agentic system runs into: did this change fix the problem, and did it cause a new one nobody noticed?</p>
   </section>
 
