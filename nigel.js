@@ -236,8 +236,12 @@
      The pause is deliberate. Navigating the instant the reply paints means the
      visitor never reads it, and the page change reads as a glitch rather than as
      Nigel taking them somewhere. */
+  function samePage(path) {
+    return location.pathname.replace(/\/$/, '') === path.replace(/\/$/, '');
+  }
+
   function act(nav) {
-    if (nav.path) {
+    if (nav.path && !samePage(nav.path)) {
       rememberOpen(true);                   /* reopen on the far side */
       if (nav.selector) {
         try { sessionStorage.setItem('nigel.scrollTo', nav.selector); } catch (e) {}
