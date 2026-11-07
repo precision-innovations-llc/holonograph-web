@@ -204,7 +204,9 @@ const allHtml = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kodchasan:wght@200;300&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="./_assets/guide.css?v=6" />
+<link rel="stylesheet" href="../site.css?v=2" />
+<link rel="stylesheet" href="../mobilenav.css?v=2" />
+<link rel="stylesheet" href="./_assets/guide.css?v=10" />
 <!-- Google tag (gtag.js) — deferred / async so it never blocks first paint -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>
 <script>
@@ -215,14 +217,12 @@ const allHtml = `<!DOCTYPE html>
 </script>
 </head>
 <body>
-  <header class="guide-topbar">
-    <a href="../" class="guide-brand" aria-label="Holonograph home">HOLONOGRAPH<sup style="font-size:.52em;letter-spacing:0;font-weight:500">&trade;</sup></a>
-    <span class="guide-topbar-sep">/</span>
-    <span class="guide-crumb"><a href="./">The Guide</a> · Mark II</span>
-    <span class="guide-topbar-right">
-      <span class="guide-version">v${BIN} · client ${CLI}</span>
-      <a href="./" class="guide-back-link">chapter view</a>
-    </span>
+  <header class="site-header">
+    <div class="wrap"><nav>
+      <a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a>
+      <span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/" class="on">Guide</a></span>
+      <a class="pill" href="/contact">Request a demo</a>
+    </nav></div>
   </header>
 
   <div class="guide-shell">
@@ -261,6 +261,7 @@ ${chapterSections}
     <span>The Guide · Mark II</span>
     <span>Patent pending · v${BIN} · client ${CLI}</span>
   </footer>
+<script src="../mobilenav.js?v=2"></script>
 </body>
 </html>
 `;

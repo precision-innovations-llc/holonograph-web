@@ -258,14 +258,14 @@ function chrome(active) {
   return slots;
 }
 
-const SECONDARY = ["about", "changelog", "contact", "glossary", "lens-facets", "pricing", "privacy", "terms", "guide/index"];
+const SECONDARY = ["about", "changelog", "contact", "glossary", "lens-facets", "pricing", "privacy", "terms", "guide/index", "404"];
 for (const name of SECONDARY) {
   const file = join(ROOT, name + ".html");
   let html = readFileSync(file, "utf8");
   const active = (/<body data-nav="([^"]*)"/.exec(html) || [])[1] || "";
   const { siteHeader, siteFooter } = chrome(active);
   html = html.replace(/<header id="siteHeader"[^>]*>[\s\S]*?<\/header>/, `<header id="siteHeader" class="site-header">${siteHeader.innerHTML}</header>`);
-  html = html.replace(/<footer id="siteFooter"[^>]*>[\s\S]*?<\/footer>/, `<footer id="siteFooter" class="site-footer">${siteFooter.innerHTML}</footer>`);
+  if (name !== "404") html = html.replace(/<footer id="siteFooter"[^>]*>[\s\S]*?<\/footer>/, `<footer id="siteFooter" class="site-footer">${siteFooter.innerHTML}</footer>`);
   writeFileSync(file, html);
 }
 

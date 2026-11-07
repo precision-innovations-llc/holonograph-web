@@ -18,13 +18,14 @@
 }
 </script>
 <link rel="stylesheet" href="/site.css?v=2">
+<link rel="stylesheet" href="/mobilenav.css?v=2">
 <style>
   /* Self-contained: root-absolute links + assets so it works at any 404 path depth. */
   .stage{position:absolute;top:0;left:0;width:100%;height:100vh;z-index:0;overflow:hidden;pointer-events:none}
   #holon-lite{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:auto;touch-action:none}
   .wash{position:absolute;top:0;left:0;width:100%;height:100vh;pointer-events:none;
     background:linear-gradient(90deg,var(--paper) 0%,var(--paper) 50%,rgba(246,245,249,.88) 62%,rgba(246,245,249,0) 76%),linear-gradient(180deg,rgba(246,245,249,0) 84%,var(--paper) 100%)}
-  .nf-top{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:22px clamp(20px,4vw,44px)}
+  #siteHeader{position:relative;z-index:3}
   .nf-wrap{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:clamp(48px,14vh,140px) clamp(20px,4vw,44px) 80px;pointer-events:none}
   .nf-wrap > *{max-width:520px;pointer-events:auto}
   @media (max-width:860px){.stage{opacity:.12}.wash{background:linear-gradient(180deg,rgba(246,245,249,.35) 0%,rgba(246,245,249,0) 46%,var(--paper) 100%)}}
@@ -43,7 +44,7 @@
   <canvas id="holon-lite"></canvas>
   <div class="wash"></div>
 </div>
-<header class="nf-top"><a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a></header>
+<header id="siteHeader" class="site-header"><div class="wrap"><nav aria-label="Primary"><a class="brand" href="/"><span class="mark"><b>H</b>OLONOGRAPH<sup class="tm">&trade;</sup></span><span class="pp">patent&nbsp;pending</span></a><span class="nav-links"><a href="/ai-attribution">AI Attribution</a><a href="/attention-spine">Attention Spine</a><a href="/authority-governance/">Authority</a><a href="/seams">Seams</a><a href="/builders">Builders</a><a href="/guide/">Guide</a></span><a class="pill" href="/contact">Request a demo</a></nav></div></header>
 <main class="nf-wrap">
   <div class="nf-code">404</div>
   <h1>Page not found</h1>
@@ -55,6 +56,7 @@
     <a href="/changelog">Changelog</a>
   </nav>
 </main>
+<script src="/mobilenav.js?v=2"></script>
 <script type="module" src="/holon-light.js?v=15"></script>
 </body>
 </html>

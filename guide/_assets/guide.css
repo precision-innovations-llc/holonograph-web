@@ -562,17 +562,23 @@ html, body {
   margin: 4px 0 22px;
 }
 .guide-index-search { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.guide-index-onepage {
+.guide-index-search > * { margin: 0; }
+.guide-index-search .guide-search { flex: 0 1 320px; margin: 0; }
+a.guide-index-onepage,
+.guide-main a.guide-index-onepage {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--fg-dim);
   text-decoration: none;
-  padding: 3px 9px;
+  padding: 0 10px;
   border: 1px solid var(--rule);
   border-radius: 6px;
   transition: border-color 200ms ease, color 200ms ease;
 }
-.guide-index-onepage:hover { color: var(--accent); border-color: var(--accent); }
+.guide-main a.guide-index-onepage:hover { color: var(--accent); border-color: var(--accent); }
 
 .guide-main .guide-toc-full {
   max-width: 1180px;
@@ -1088,5 +1094,4 @@ html.gq-open { overflow: hidden; }
 
 /* index.html has no sidebar; the trigger sits under the one-page link. */
 .guide-index-search { margin: 18px 0 4px; }
-.guide-index-search .guide-search { flex: 0 1 320px; }
 .gq-hint.gq-relaxed { margin: 8px 18px 2px; font-size: 0.78rem; }
