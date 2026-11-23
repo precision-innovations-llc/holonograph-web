@@ -27,7 +27,7 @@ const PAGES = {
     file: "index.html",
     title: "Holonograph | Authority Governance",
     description:
-      "Build at machine speed, govern authority with evidence. An independent observation and governance instrument for interpreted decisions.",
+      "Build at machine speed, govern authority with evidence. An independent attribution and governance instrument for interpreted decisions.",
   },
   "ai-attribution": {
     file: "ai-attribution.html",
