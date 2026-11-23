@@ -14,7 +14,7 @@
 // gets its own head. Secondary pages keep site.js for their header and footer.
 
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { imageMeta } from "./og/cards.mjs";
+import { iconLinks, imageMeta } from "./og/cards.mjs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -78,7 +78,6 @@ writeFileSync(join(ROOT, "site-v6.css"), css.trim() + "\n");
 writeFileSync(join(ROOT, "site-v6.js"), inline.join("\n").trim() + "\n");
 
 // ---- pieces --------------------------------------------------------------
-const favicon = /<link rel="icon"[^>]*>/.exec(src)[0];
 const header = /<header class="site-header"[\s\S]*?<\/header>/.exec(src)[0];
 const footer = /<footer class="site-footer">[\s\S]*?<\/footer>/.exec(src)[0];
 const stage = /<div class="stage"[\s\S]*?<\/div>\s*<\/div>/.exec(src)[0];
@@ -148,7 +147,7 @@ function head(route) {
     '<meta name="twitter:creator" content="@holonograph">',
     `<meta name="twitter:title" content="${p.title}">`,
     `<meta name="twitter:description" content="${p.description}">`,
-    favicon,
+    ...iconLinks(),
     '<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>',
     "<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MX42B47LTP', { client_storage: 'none' });</script>",
   ];
