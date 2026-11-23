@@ -22,7 +22,7 @@
   if(!document.querySelector('script[type="application/ld+json"]')){
     var ld=document.createElement('script'); ld.type='application/ld+json';
     ld.textContent=JSON.stringify({"@context":"https://schema.org","@graph":[
-      {"@type":"Organization","@id":"https://holonograph.ai/#org","name":"Precision Innovations LLC","url":"https://precision-innovations.us","brand":"Holonograph","logo":"https://holonograph.ai/holonograph.webp","sameAs":["https://x.com/holonograph","https://www.reddit.com/user/holonograph","https://www.instagram.com/holonograph","https://github.com/holonograph","https://www.npmjs.com/org/holonograph","https://crates.io/users/holonograph"]},
+      {"@type":"Organization","@id":"https://holonograph.ai/#org","name":"Precision Innovations LLC","url":"https://precision-innovations.us","brand":"Holonograph","logo":"https://holonograph.ai/og/logo.png","sameAs":["https://x.com/holonograph","https://www.reddit.com/user/holonograph","https://www.instagram.com/holonograph","https://github.com/holonograph","https://www.npmjs.com/org/holonograph","https://crates.io/users/holonograph"]},
       {"@type":"WebSite","@id":"https://holonograph.ai/#website","url":"https://holonograph.ai/","name":"Holonograph","publisher":{"@id":"https://holonograph.ai/#org"}}
     ]});
     document.head.appendChild(ld);
