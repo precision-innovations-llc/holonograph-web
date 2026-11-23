@@ -50,3 +50,12 @@ export function imageMeta(key, close = "") {
     `<meta name="twitter:image:alt" content="${alt}"${close}>`,
   ];
 }
+
+/** Icon links for every page. `close` is "" or " /" to match the file's style. */
+export function iconLinks(close = "") {
+  return [
+    `<link rel="icon" href="/favicon.ico" sizes="32x32"${close}>`,
+    `<link rel="icon" href="/favicon.svg" type="image/svg+xml"${close}>`,
+    `<link rel="apple-touch-icon" href="/apple-touch-icon.png"${close}>`,
+  ];
+}
