@@ -1,6 +1,6 @@
 # Holonograph: Full Documentation
 
-> An independent observation and governance instrument for measuring interpreted decisions across complex software systems. Holonograph attributes a changed score to your agent, the model, your eval, or noise, ranks what needs attention on the Attention Spine, maps where interpreted values reach decisions, and derives authority per decision surface from the record. A self-hosted, licensed binary.
+> An independent attribution and governance instrument for measuring interpreted decisions across complex software systems. Holonograph attributes a changed score to your agent, the model, your eval, or noise, ranks what needs attention on the Attention Spine, maps where interpreted values reach decisions, and derives authority per decision surface from the record. A self-hosted, licensed binary.
 
 This is the long-form companion to https://holonograph.ai/llms.txt: the site's content plus extended methodology, full vocabulary, and disambiguation against adjacent fields.
 
