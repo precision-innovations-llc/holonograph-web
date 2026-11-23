@@ -14,12 +14,12 @@
 // gets its own head. Secondary pages keep site.js for their header and footer.
 
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { imageMeta } from "./og/cards.mjs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://holonograph.ai";
-const OG_IMAGE = `${SITE}/holonograph.webp`;
 const ASSET_V = "2";
 
 const PAGES = {
@@ -142,17 +142,12 @@ function head(route) {
     `<meta property="og:title" content="${p.title}">`,
     `<meta property="og:description" content="${p.description}">`,
     `<meta property="og:url" content="${url}">`,
-    `<meta property="og:image" content="${OG_IMAGE}">`,
-    '<meta property="og:image:width" content="2752">',
-    '<meta property="og:image:height" content="626">',
-    '<meta property="og:image:type" content="image/webp">',
-    '<meta property="og:image:alt" content="Holonograph wordmark over a multidimensional grid">',
+    ...imageMeta(route),
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta name="twitter:site" content="@holonograph">',
     '<meta name="twitter:creator" content="@holonograph">',
     `<meta name="twitter:title" content="${p.title}">`,
     `<meta name="twitter:description" content="${p.description}">`,
-    `<meta name="twitter:image" content="${OG_IMAGE}">`,
     favicon,
     '<script async src="https://www.googletagmanager.com/gtag/js?id=G-MX42B47LTP"></script>',
     "<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-MX42B47LTP', { client_storage: 'none' });</script>",
@@ -160,7 +155,7 @@ function head(route) {
   if (route === "home") {
     h.push(`<script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
-{"@type":"Organization","@id":"https://holonograph.ai/#org","name":"Precision Innovations LLC","url":"https://precision-innovations.us","brand":"Holonograph","logo":"https://holonograph.ai/holonograph.webp","sameAs":["https://x.com/holonograph","https://www.reddit.com/user/holonograph","https://www.instagram.com/holonograph","https://github.com/holonograph","https://www.npmjs.com/org/holonograph","https://crates.io/users/holonograph"]},
+{"@type":"Organization","@id":"https://holonograph.ai/#org","name":"Precision Innovations LLC","url":"https://precision-innovations.us","brand":"Holonograph","logo":"https://holonograph.ai/og/logo.png","sameAs":["https://x.com/holonograph","https://www.reddit.com/user/holonograph","https://www.instagram.com/holonograph","https://github.com/holonograph","https://www.npmjs.com/org/holonograph","https://crates.io/users/holonograph"]},
 {"@type":"WebSite","@id":"https://holonograph.ai/#website","url":"https://holonograph.ai/","name":"Holonograph","publisher":{"@id":"https://holonograph.ai/#org"}},
 {"@type":"SoftwareApplication","name":"Holonograph","applicationCategory":"DeveloperApplication","operatingSystem":"Self-hosted (macOS, Linux)","description":"${PAGES.home.description}","publisher":{"@id":"https://holonograph.ai/#org"}}
 ]}

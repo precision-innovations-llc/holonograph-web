@@ -11,6 +11,7 @@
 // article body, strips the per-chapter prev/next nav, wraps in a <section id>,
 // and stitches into one HTML page + one plaintext block.
 
+import { imageMeta } from "./og/cards.mjs";
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -194,11 +195,11 @@ const allHtml = `<!DOCTYPE html>
 <meta property="og:title" content="The Guide Mark II · Holonograph" />
 <meta property="og:description" content="The complete Holonograph guide on a single page, for offline reading and LLM ingestion." />
 <meta property="og:url" content="https://holonograph.ai/guide/all" />
-<meta property="og:image" content="https://holonograph.ai/holonograph.webp" />
+${imageMeta("guide", " /").filter((l) => !l.includes("twitter:")).join("\n")}
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="The Guide Mark II · Holonograph" />
 <meta name="twitter:description" content="The complete Holonograph guide on a single page, for offline reading and LLM ingestion." />
-<meta name="twitter:image" content="https://holonograph.ai/holonograph.webp" />
+${imageMeta("guide", " /").filter((l) => l.includes("twitter:")).join("\n")}
 <link rel="canonical" href="https://holonograph.ai/guide/all" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffffff'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%235f3ddc' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%235f3ddc' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
